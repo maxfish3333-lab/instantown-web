@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>INSTANTOWN — Servizi Essenziali</title>
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --rosso:#8B1A1A;--rosso-l:#C0392B;--rosso-p:#FDF0EF;
+  --ocra:#C8860A;--ocra-l:#E8A020;--ocra-p:#FDF3DC;
+  --cielo:#4A90C4;--cielo-l:#6AAFD8;
+  --verde:#1A7A3A;--verde-l:#22A050;--verde-p:#EAF5EE;
+  --ink:#1C1410;--ink-m:#3D2E24;--ink-mu:#6B5A4E;
+  --bianco:#FDFAF4;--rule:rgba(139,26,26,0.12);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
+
+/* ── STRIPE ── */
+.stripe{height:4px;background:linear-gradient(90deg,var(--rosso-l) 33.3%,#fff 33.3%,#fff 66.6%,var(--cielo) 66.6%);position:relative;z-index:1000;}
+
+/* ── TOP BAR ── */
+.topbar{
+  position:absolute;top:4px;left:0;right:0;z-index:900;
+  background:rgba(28,20,16,.88);backdrop-filter:blur(8px);
+  padding:10px 16px;display:flex;align-items:center;gap:12px;
+}
+.topbar-back{color:rgba(255,255,255,.5);font-size:13px;text-decoration:none;flex-shrink:0;}
+.topbar-back:hover{color:var(--ocra-l);}
+.topbar-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:#fff;flex:1;}
+.topbar-title span{color:var(--verde-l);}
+.gps-pill{
+  display:flex;align-items:center;gap:5px;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  border-radius:20px;padding:5px 12px;font-size:11px;color:rgba(255,255,255,.6);
+  flex-shrink:0;
+}
+.gps-dot{width:7px;height:7px;border-radius:50%;background:#666;flex-shrink:0;}
+.gps-dot.active{background:var(--verde-l);animation:blink 1.4s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── MAPPA ── */
+#map{
+  position:absolute;top:0;left:0;right:0;bottom:0;z-index:1;
+}
+
+/* ── RADAR OVERLAY ── */
+.radar-ring{
+  position:absolute;z-index:50;pointer-events:none;
+  border-radius:50%;border:1.5px solid rgba(34,160,80,.35);
+  transform:translate(-50%,-50%);
+  animation:radarPulse 3s ease-out infinite;
+}
+@keyframes radarPulse{
+  0%{opacity:.8;transform:translate(-50%,-50%) scale(.6);}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.4);}
+}
+
+/* ── FILTRI CATEGORIA ── */
+.filtri{
+  position:absolute;bottom:0;left:0;right:0;z-index:800;
+  padding:10px 12px 14px;
+  display:flex;gap:7px;overflow-x:auto;
+  background:linear-gradient(to top,rgba(28,20,16,.7) 0%,transparent 100%);
+  scrollbar-width:none;
+}
+.filtri::-webkit-scrollbar{display:none;}
+.filtro{
+  flex-shrink:0;padding:6px 14px;border-radius:20px;border:1.5px solid rgba(255,255,255,.25);
+  background:rgba(28,20,16,.6);backdrop-filter:blur(6px);
+  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;
+  color:rgba(255,255,255,.75);cursor:pointer;transition:all .2s;white-space:nowrap;
+}
+.filtro:hover{border-color:rgba(255,255,255,.5);}
+.filtro.active{background:var(--verde);border-color:var(--verde-l);color:#fff;}
+.filtro.active-ocra{background:var(--ocra);border-color:var(--ocra-l);color:var(--ink);}
+
+/* ── SCHEDA POI (bottom sheet) ── */
+.poi-sheet{
+  position:absolute;bottom:-300px;left:0;right:0;z-index:900;
+  background:var(--bianco);border-radius:20px 20px 0 0;
+  box-shadow:0 -4px 32px rgba(0,0,0,.25);
+  transition:bottom .35s cubic-bezier(.32,1,.52,.98);
+  padding:0 0 32px;
+}
+.poi-sheet.open{bottom:0;}
+.sheet-handle{width:36px;height:4px;background:var(--rule);border-radius:2px;margin:12px auto 0;}
+.sheet-body{padding:18px 20px 0;}
+.sheet-row1{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;}
+.sheet-emoji{font-size:36px;flex-shrink:0;}
+.sheet-info{flex:1;}
+.sheet-cat{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--verde);margin-bottom:4px;}
+.sheet-name{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--ink);line-height:1.2;margin-bottom:4px;}
+.sheet-desc{font-size:13px;color:var(--ink-mu);line-height:1.6;}
+.sheet-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
+.sheet-badge{font-size:10px;font-weight:500;padding:3px 10px;border-radius:20px;border:1px solid;}
+.badge-verde{background:var(--verde-p);color:var(--verde);border-color:rgba(26,122,58,.2);}
+.badge-ocra{background:var(--ocra-p);color:var(--ocra);border-color:rgba(200,134,10,.2);}
+.badge-cielo{background:#E8F4FB;color:var(--cielo);border-color:rgba(74,144,196,.2);}
+.badge-rosso{background:var(--rosso-p);color:var(--rosso);border-color:rgba(139,26,26,.2);}
+.btn-portami{
+  width:100%;padding:15px;border:none;border-radius:8px;
+  background:var(--verde);color:#fff;
+  font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  gap:10px;transition:background .2s;letter-spacing:.02em;
+}
+.btn-portami:hover{background:var(--verde-l);}
+.btn-portami-icon{font-size:20px;}
+.sheet-close{
+  position:absolute;top:14px;right:16px;
+  background:none;border:none;font-size:20px;color:var(--ink-mu);
+  cursor:pointer;padding:4px 8px;border-radius:4px;
+}
+.sheet-close:hover{background:var(--rule);}
+
+/* ── MARKER PERSONALIZZATI ── */
+.marker-wrap{
+  min-width:52px;height:36px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+  font-size:13px;font-weight:700;cursor:pointer;
+  box-shadow:0 3px 14px rgba(0,0,0,.45);
+  border:2px solid rgba(255,255,255,.9);
+  transition:transform .18s;padding:0 10px;
+  font-family:'DM Sans',sans-serif;letter-spacing:.01em;
+  white-space:nowrap;
+}
+.marker-wrap:hover{transform:scale(1.08);}
+.marker-pubblico{background:#1A7A3A;color:#fff;}
+.marker-iconico{background:#C8860A;color:#fff;}
+.marker-bagni{background:#1A4A8A;color:#fff;}
+.marker-wrap .m-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.8);flex-shrink:0;}
+
+/* ── LOADING ── */
+.gps-loading{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  z-index:800;background:rgba(28,20,16,.82);backdrop-filter:blur(8px);
+  border-radius:12px;padding:24px 28px;text-align:center;color:#fff;
+}
+.gps-spinner{width:32px;height:32px;border:3px solid rgba(255,255,255,.15);
+  border-top-color:var(--verde-l);border-radius:50%;
+  animation:spin .8s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.gps-loading p{font-size:13px;color:rgba(255,255,255,.6);}
+</style>
+</head>
+<body>
+
+<div class="stripe"></div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <a href="index.html" class="topbar-back">←</a>
+  <img src="data:image/png;base64,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" alt="INSTANTOWN" style="width:38px;height:38px;border-radius:8px;flex-shrink:0;display:block;">
+  <div class="topbar-title">🗺️ <span>Servizi</span> Essenziali</div>
+  <div class="gps-pill">
+    <div class="gps-dot" id="gps-dot"></div>
+    <span id="gps-label">GPS...</span>
+  </div>
+</div>
+
+<!-- MAPPA -->
+<div id="map"></div>
+
+<!-- GPS LOADING -->
+<div class="gps-loading" id="gps-loading">
+  <div class="gps-spinner"></div>
+  <p>Acquisizione posizione GPS...</p>
+</div>
+
+<!-- FILTRI -->
+<div class="filtri">
+  <button class="filtro active" onclick="filtra('tutti',this)">🗂 Tutti</button>
+  <button class="filtro" onclick="filtra('pubblico',this)">💧 Servizi pubblici</button>
+  <button class="filtro" onclick="filtra('iconico',this)">🏛 Luoghi iconici</button>
+</div>
+
+<!-- SCHEDA POI -->
+<div class="poi-sheet" id="poi-sheet">
+  <button class="sheet-close" onclick="chiudiSheet()">✕</button>
+  <div class="sheet-handle"></div>
+  <div class="sheet-body">
+    <div class="sheet-row1">
+      <div class="sheet-emoji" id="s-emoji">📍</div>
+      <div class="sheet-info">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <div class="sheet-cat" id="s-cat"></div>
+      <div id="s-dist" style="display:none;font-size:11px;font-weight:600;
+        background:#EAF5EE;color:#1A7A3A;border:1px solid rgba(26,122,58,.2);
+        padding:2px 10px;border-radius:20px;letter-spacing:.04em;">
+        📍 — m
+      </div>
+    </div>
+        <div class="sheet-name" id="s-name"></div>
+        <div class="sheet-desc" id="s-desc"></div>
+      </div>
+    </div>
+    <div class="sheet-meta" id="s-meta"></div>
+    <button class="btn-portami" id="btn-portami" onclick="portaMiQui()">
+      <span class="btn-portami-icon">🧭</span>
+      PORTAMI QUI
+    </button>
+  </div>
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+<script>
+// ═══════════════════════════════════════════════
+// DATI POI
+// ═══════════════════════════════════════════════
+const POIS = [
+  // ── SERVIZI PUBBLICI ──
+  {
+    id:'nasoni', tipo:'pubblico', emoji:'💧',
+    nome:'Fontanelle pubbliche (Nasoni)',
+    cat:'Servizi pubblici',
+    desc:'Oltre 2.500 nasoni con acqua potabile gratuita in tutta Roma. Il simbolo idrico della città.',
+    badges:[{t:'Gratuito',c:'verde'},{t:'H24',c:'verde'},{t:'Acqua potabile',c:'cielo'}],
+    lat:41.8967, lon:12.4822,
+    dest:'nasoni+fontanelle+Roma+acqua+potabile'
+  },
+  {
+    id:'bagni', tipo:'bagni', emoji:'🚻',
+    nome:'Bagni pubblici comunali',
+    cat:'Servizi pubblici',
+    desc:'Servizi igienici pubblici con indicazione di accessibilità, orari di apertura e disponibilità.',
+    badges:[{t:'Comune di Roma',c:'verde'},{t:'Accessibile',c:'cielo'}],
+    lat:41.8980, lon:12.4765,
+    dest:'bagni+pubblici+Roma+centro'
+  },
+  {
+    id:'wifi', tipo:'pubblico', emoji:'📶',
+    nome:'Wi-Fi pubblico gratuito',
+    cat:'Connettività',
+    desc:'Reti Wi-Fi comunali gratuite nelle piazze principali, parchi e siti culturali di Roma.',
+    badges:[{t:'Gratuito',c:'cielo'},{t:'No registrazione',c:'verde'}],
+    lat:41.8955, lon:12.4823,
+    dest:'wifi+pubblico+gratuito+Roma'
+  },
+  // ── LUOGHI ICONICI ──
+  {
+    id:'papa', tipo:'iconico', emoji:'✝️',
+    nome:'Tomba di Papa Francesco',
+    cat:'Pellegrinaggio',
+    desc:'Basilica di Santa Maria Maggiore — tomba di Papa Francesco, accessibile liberamente ai fedeli e ai visitatori.',
+    badges:[{t:'Ingresso libero',c:'rosso'},{t:'Basilica Papale',c:'ocra'}],
+    lat:41.8976, lon:12.4994,
+    dest:'Basilica+Santa+Maria+Maggiore+Roma'
+  },
+  {
+    id:'vaticano', tipo:'iconico', emoji:'🕍',
+    nome:'Città del Vaticano',
+    cat:'Patrimonio UNESCO',
+    desc:'Piazza San Pietro, Basilica di San Pietro, Musei Vaticani e Cappella Sistina. Il cuore della Cristianità.',
+    badges:[{t:'UNESCO',c:'ocra'},{t:'Patrimonio mondiale',c:'ocra'}],
+    lat:41.9022, lon:12.4539,
+    dest:'Piazza+San+Pietro+Vaticano+Roma'
+  },
+  {
+    id:'spagna', tipo:'iconico', emoji:'🌸',
+    nome:'Piazza di Spagna',
+    cat:'Icona di Roma',
+    desc:'La Scalinata di Trinità dei Monti e la Fontana della Barcaccia. Uno dei luoghi più fotografati al mondo.',
+    badges:[{t:'Monumento',c:'ocra'},{t:'Centro storico',c:'rosso'}],
+    lat:41.9058, lon:12.4823,
+    dest:'Piazza+di+Spagna+Roma+Scalinata'
+  },
+];
+
+// ═══════════════════════════════════════════════
+// STATO
+// ═══════════════════════════════════════════════
+let map, userMarker, userLat, userLon;
+let poiSelezionato = null;
+let filtroAttivo   = 'tutti';
+let markers        = {};
+
+// ═══════════════════════════════════════════════
+// INIT MAPPA
+// ═══════════════════════════════════════════════
+function initMappa(lat, lon) {
+  document.getElementById('gps-loading').style.display = 'none';
+  document.getElementById('gps-dot').classList.add('active');
+  document.getElementById('gps-label').textContent = 'GPS attivo';
+
+  userLat = lat; userLon = lon;
+
+  map = L.map('map', {
+    center: [lat, lon],
+    zoom: 15,
+    zoomControl: false,
+    attributionControl: true
+  });
+
+  // Tile OpenStreetMap — stile scuro per contrasto
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution:'© <a href="https://www.openstreetmap.org/copyright">OSM</a> © <a href="https://carto.com/">CARTO</a>',
+    subdomains:'abcd', maxZoom:19
+  }).addTo(map);
+
+  // Marker utente
+  const userIcon = L.divIcon({
+    html:`<div style="
+      width:18px;height:18px;border-radius:50%;
+      background:var(--cielo);border:3px solid #fff;
+      box-shadow:0 0 0 6px rgba(74,144,196,.25);
+    "></div>`,
+    iconSize:[18,18], iconAnchor:[9,9], className:''
+  });
+  userMarker = L.marker([lat,lon], {icon:userIcon, zIndexOffset:1000}).addTo(map);
+
+  // Cerchio raggio 200m
+  L.circle([lat,lon], {
+    radius:200, color:'rgba(34,160,80,.4)',
+    fillColor:'rgba(34,160,80,.05)', fillOpacity:1, weight:1.5
+  }).addTo(map);
+
+  // Aggiungi tutti i POI
+  POIS.forEach(addMarker);
+}
+
+// ═══════════════════════════════════════════════
+// MARKER POI
+// ═══════════════════════════════════════════════
+// Etichette brevi per i marker
+const MARKER_LABEL = {
+  nasoni:'💧 Nasoni', bagni:'🚻 Bagni', wifi:'📶 Wi-Fi',
+  papa:'✝ Papa Francesco', vaticano:'🕍 Vaticano', spagna:'🌸 P.za di Spagna'
+};
+
+function addMarker(poi) {
+  const colClass = poi.tipo === 'pubblico' ? 'marker-pubblico' : poi.tipo === 'bagni' ? 'marker-bagni' : 'marker-iconico';
+  const label = MARKER_LABEL[poi.id] || poi.nome.substring(0,14);
+  const icon = L.divIcon({
+    html:`<div class="marker-wrap ${colClass}"><span class="m-dot"></span>${label}</div>`,
+    iconSize:[null,36], iconAnchor:[0,18], className:''
+  });
+  const m = L.marker([poi.lat, poi.lon], {icon}).addTo(map);
+  m.on('click', () => apriSheet(poi));
+  markers[poi.id] = {marker:m, poi};
+}
+
+// ═══════════════════════════════════════════════
+// SCHEDA POI
+// ═══════════════════════════════════════════════
+// ── HAVERSINE ──
+function haversine(lat1,lon1,lat2,lon2){
+  const R=6371000, toRad=x=>x*Math.PI/180;
+  const dLat=toRad(lat2-lat1), dLon=toRad(lon2-lon1);
+  const a=Math.sin(dLat/2)**2+Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+  return Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
+}
+
+function formatDist(m){
+  if(m<1000) return m+'m';
+  return (m/1000).toFixed(1).replace('.',',')+'km';
+}
+
+function apriSheet(poi) {
+  poiSelezionato = poi;
+  document.getElementById('s-emoji').textContent = poi.emoji;
+  document.getElementById('s-cat').textContent   = poi.cat;
+  document.getElementById('s-name').textContent  = poi.nome;
+  document.getElementById('s-desc').textContent  = poi.desc;
+  document.getElementById('s-meta').innerHTML    =
+    poi.badges.map(b=>`<span class="sheet-badge badge-${b.c}">${b.t}</span>`).join('');
+
+  // Distanza dall utente
+  const distEl = document.getElementById('s-dist');
+  if(userLat && userLon){
+    const d = haversine(userLat,userLon,poi.lat,poi.lon);
+    distEl.textContent = '📍 '+formatDist(d)+' da te';
+    distEl.style.display='inline-block';
+    // Colore in base alla distanza
+    if(d<=300){
+      distEl.style.background='#EAF5EE';distEl.style.color='#1A7A3A';distEl.style.borderColor='rgba(26,122,58,.2)';
+    } else if(d<=1000){
+      distEl.style.background='#FDF3DC';distEl.style.color='#C8860A';distEl.style.borderColor='rgba(200,134,10,.2)';
+    } else {
+      distEl.style.background='#FDF0EF';distEl.style.color='#8B1A1A';distEl.style.borderColor='rgba(139,26,26,.2)';
+    }
+  } else {
+    distEl.style.display='none';
+  }
+
+  document.getElementById('poi-sheet').classList.add('open');
+  map.panTo([poi.lat, poi.lon], {animate:true, duration:.5});
+}
+
+function chiudiSheet() {
+  document.getElementById('poi-sheet').classList.remove('open');
+  poiSelezionato = null;
+}
+
+// ═══════════════════════════════════════════════
+// PORTAMI QUI
+// ═══════════════════════════════════════════════
+function portaMiQui() {
+  if(!poiSelezionato) return;
+  const dest = poiSelezionato.dest;
+  let url;
+  if(userLat && userLon) {
+    // Con posizione utente — percorso da → a
+    url = `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLon}&destination=${dest}&travelmode=walking`;
+  } else {
+    // Senza GPS — apre solo la destinazione
+    url = `https://www.google.com/maps/dir/?api=1&destination=${dest}&travelmode=walking`;
+  }
+  window.open(url, '_blank');
+}
+
+// ═══════════════════════════════════════════════
+// FILTRI
+// ═══════════════════════════════════════════════
+function filtra(tipo, btn) {
+  filtroAttivo = tipo;
+  document.querySelectorAll('.filtro').forEach(b => {
+    b.classList.remove('active','active-ocra');
+  });
+  btn.classList.add(tipo === 'iconico' ? 'active-ocra' : 'active');
+
+  Object.values(markers).forEach(({marker, poi}) => {
+    if(tipo === 'tutti' || poi.tipo === tipo) {
+      if(!map.hasLayer(marker)) map.addLayer(marker);
+    } else {
+      if(map.hasLayer(marker)) map.removeLayer(marker);
+    }
+  });
+
+  chiudiSheet();
+}
+
+// ═══════════════════════════════════════════════
+// GPS
+// ═══════════════════════════════════════════════
+function startGPS() {
+  if(!navigator.geolocation) {
+    // Fallback: centra su Roma
+    initMappa(41.9028, 12.4964);
+    document.getElementById('gps-label').textContent = 'GPS non disponibile';
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    pos => initMappa(pos.coords.latitude, pos.coords.longitude),
+    () => {
+      // Fallback Roma centro
+      initMappa(41.9028, 12.4964);
+      document.getElementById('gps-label').textContent = 'Roma (default)';
+    },
+    {enableHighAccuracy:true, timeout:8000, maximumAge:0}
+  );
+
+  // Aggiornamento continuo posizione
+  navigator.geolocation.watchPosition(pos => {
+    const {latitude:lat, longitude:lon} = pos.coords;
+    userLat = lat; userLon = lon;
+    if(userMarker) userMarker.setLatLng([lat,lon]);
+  }, null, {enableHighAccuracy:true});
+}
+
+// Chiudi sheet cliccando sulla mappa
+document.getElementById('map').addEventListener('click', e => {
+  if(e.target.id === 'map') chiudiSheet();
+});
+
+// Swipe down per chiudere sheet
+let touchStartY = 0;
+document.getElementById('poi-sheet').addEventListener('touchstart', e => {
+  touchStartY = e.touches[0].clientY;
+});
+document.getElementById('poi-sheet').addEventListener('touchend', e => {
+  if(e.changedTouches[0].clientY - touchStartY > 60) chiudiSheet();
+});
+
+startGPS();
+</script>
+</body>
+</html>

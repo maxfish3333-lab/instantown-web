@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>INSTANTOWN — Radar</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rosso:#8B1A1A;--rosso-l:#C0392B;--rosso-p:#FDF0EF;
+  --ocra:#C8860A;--ocra-l:#E8A020;--ocra-p:#FDF3DC;
+  --cielo:#4A90C4;--cielo-l:#6AAFD8;--cielo-p:#E8F4FB;
+  --verde:#1A7A3A;--verde-l:#22A050;--verde-p:#EAF5EE;
+  --ink:#1C1410;--ink-mu:#6B5A4E;--bianco:#FDFAF4;
+  --rule:rgba(139,26,26,0.12);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
+.stripe{height:4px;background:linear-gradient(90deg,var(--rosso-l) 33.3%,#fff 33.3%,#fff 66.6%,var(--cielo) 66.6%);position:relative;z-index:1000;}
+
+/* TOP BAR */
+.topbar{position:absolute;top:4px;left:0;right:0;z-index:900;
+  background:rgba(28,20,16,.9);backdrop-filter:blur(8px);
+  padding:10px 14px;display:flex;align-items:center;gap:8px;}
+.topbar-back{color:rgba(255,255,255,.5);font-size:18px;text-decoration:none;flex-shrink:0;}
+.topbar-back:hover{color:var(--ocra-l);}
+.topbar-brand{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:#fff;flex:1;}
+.topbar-brand span{color:var(--rosso-l);}
+.raggio-sel{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);
+  color:#fff;font-family:'DM Sans',sans-serif;font-size:11px;padding:5px 10px;border-radius:20px;cursor:pointer;}
+.lang-sel{background:rgba(200,134,10,.15);border:1px solid rgba(200,134,10,.3);
+  color:var(--ocra-l);font-family:'DM Sans',sans-serif;font-size:11px;padding:5px 10px;border-radius:20px;cursor:pointer;}
+.gps-pill{display:flex;align-items:center;gap:5px;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  border-radius:20px;padding:5px 10px;font-size:11px;color:rgba(255,255,255,.6);flex-shrink:0;}
+.gps-dot{width:7px;height:7px;border-radius:50%;background:#666;flex-shrink:0;}
+.gps-dot.active{background:var(--verde-l);animation:blink 1.4s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+#map{position:absolute;top:0;left:0;right:0;bottom:0;z-index:1;}
+
+/* BADGE */
+.badge-count{position:absolute;top:58px;left:50%;transform:translateX(-50%);
+  z-index:800;background:var(--rosso);color:#fff;border-radius:20px;padding:6px 16px;
+  font-size:12px;font-weight:500;box-shadow:0 2px 12px rgba(139,26,26,.4);
+  white-space:nowrap;display:none;}
+
+/* FILTRI */
+.cat-bar{position:absolute;bottom:0;left:0;right:0;z-index:800;
+  padding:10px 12px 16px;display:flex;gap:7px;overflow-x:auto;
+  background:linear-gradient(to top,rgba(28,20,16,.75) 0%,transparent 100%);
+  scrollbar-width:none;}
+.cat-bar::-webkit-scrollbar{display:none;}
+.cat-fil{flex-shrink:0;padding:6px 14px;border-radius:20px;
+  border:1.5px solid rgba(255,255,255,.25);
+  background:rgba(28,20,16,.65);backdrop-filter:blur(6px);
+  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;
+  color:rgba(255,255,255,.8);cursor:pointer;transition:all .2s;white-space:nowrap;}
+.cat-fil.active{background:var(--rosso);border-color:var(--rosso-l);color:#fff;}
+
+/* SCHEDA */
+.offerta-sheet{position:fixed;bottom:-600px;left:0;right:0;z-index:990;
+  background:var(--bianco);border-radius:20px 20px 0 0;
+  box-shadow:0 -4px 32px rgba(0,0,0,.3);
+  transition:bottom .35s cubic-bezier(.32,1,.52,.98);max-height:88vh;overflow-y:auto;}
+.offerta-sheet.open{bottom:0;}
+.sheet-handle{width:36px;height:4px;background:var(--rule);border-radius:2px;margin:12px auto 0;}
+.sheet-close{position:absolute;top:14px;right:16px;background:none;border:none;
+  font-size:20px;color:var(--ink-mu);cursor:pointer;padding:4px 8px;border-radius:4px;z-index:10;}
+
+.sheet-foto{width:100%;height:180px;object-fit:cover;display:block;}
+.sheet-foto-ph{width:100%;height:100px;background:var(--bianco);
+  display:flex;align-items:center;justify-content:center;font-size:40px;}
+
+.sheet-body{padding:16px 20px 28px;}
+.sheet-pills{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px;align-items:center;}
+.pill{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 10px;border-radius:20px;}
+.pill-att{background:var(--verde-p);color:var(--verde);}
+.pill-cat{background:var(--ocra-p);color:var(--ocra);}
+.pill-dist{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;}
+.pill-dist-near{background:var(--verde-p);color:var(--verde);}
+.pill-dist-mid{background:var(--ocra-p);color:var(--ocra);}
+.pill-dist-far{background:var(--rosso-p);color:var(--rosso);}
+.pill-raggio{background:var(--cielo-p);color:var(--cielo);}
+
+.sheet-negozio{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:4px;}
+.sheet-desc{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;
+  color:var(--ink);line-height:1.2;margin-bottom:3px;text-transform:capitalize;}
+.sheet-misura{font-size:12px;color:var(--ink-mu);margin-bottom:4px;}
+.sheet-addr{font-size:12px;color:var(--ink-mu);margin-bottom:14px;}
+.sheet-prezzi{display:flex;align-items:baseline;gap:10px;margin-bottom:14px;}
+.p-flash{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:600;color:var(--rosso);}
+.p-std{font-size:14px;color:var(--ink-mu);text-decoration:line-through;}
+.p-sc{font-size:11px;font-weight:600;background:var(--ocra-p);color:var(--ocra);
+  padding:3px 9px;border-radius:3px;}
+.sheet-orario{background:var(--bianco);border:1px solid var(--rule);border-radius:6px;
+  padding:10px 14px;font-size:12px;color:var(--ink-mu);margin-bottom:16px;}
+.sheet-orario strong{color:var(--ink);}
+
+.btn-prenota{width:100%;padding:16px;background:var(--rosso);color:#fff;border:none;
+  border-radius:8px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;
+  cursor:pointer;letter-spacing:.04em;transition:background .2s;}
+.btn-prenota:hover{background:var(--rosso-l);}
+.btn-prenota:disabled{opacity:.4;cursor:not-allowed;}
+.escrow-note{font-size:11px;color:var(--ink-mu);text-align:center;margin-top:8px;}
+
+/* QR MODAL */
+.qr-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);
+  z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.qr-overlay.open{display:flex;}
+.qr-box{background:#fff;border-radius:16px;padding:28px 24px;max-width:340px;width:90%;
+  text-align:center;}
+.qr-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;
+  color:var(--ink);margin-bottom:4px;}
+.qr-sub{font-size:12px;color:var(--ink-mu);margin-bottom:20px;}
+.qr-img{width:180px;height:180px;margin:0 auto 16px;border:3px solid var(--rule);
+  border-radius:8px;padding:6px;display:block;}
+.qr-idtx{font-family:monospace;font-size:11px;color:var(--ink-mu);
+  background:var(--bianco);padding:6px 12px;border-radius:4px;
+  border:1px solid var(--rule);margin-bottom:18px;word-break:break-all;}
+.qr-note{font-size:12px;color:var(--ink-mu);line-height:1.6;margin-bottom:18px;
+  background:var(--verde-p);padding:10px 14px;border-radius:6px;color:var(--verde);}
+.btn-qr-close{width:100%;padding:12px;background:var(--rosso);color:#fff;border:none;
+  border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;}
+
+/* LOADING */
+.gps-loading{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  z-index:800;background:rgba(28,20,16,.9);backdrop-filter:blur(8px);
+  border-radius:12px;padding:24px 28px;text-align:center;color:#fff;
+  display:flex;flex-direction:column;align-items:center;gap:12px;}
+.spinner{width:32px;height:32px;border:3px solid rgba(255,255,255,.15);
+  border-top-color:var(--verde-l);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+<script src="i18n.js"></script>
+</head>
+<body>
+<div class="stripe"></div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <a href="index.html" class="topbar-back">←</a>
+  <a href="mio-account.html" style="background:rgba(200,134,10,.2);border:1px solid rgba(200,134,10,.35);
+    color:var(--ocra-l);font-size:11px;padding:5px 11px;border-radius:20px;
+    text-decoration:none;white-space:nowrap;flex-shrink:0;">🎫 I miei QR</a>
+  <div class="topbar-brand">⚡ <span>PROX</span> Radar</div>
+  <select class="raggio-sel" id="raggio-sel" onchange="cambiaRaggio(this.value)">
+    <option value="200">200 m</option>
+    <option value="300">300 m</option>
+    <option value="500">500 m</option>
+    <option value="9999">Tutte</option>
+  </select>
+  <select class="lang-sel" id="lang-sel" onchange="setLang(this.value)">
+    <option value="it">🇮🇹 IT</option>
+    <option value="en">🇬🇧 EN</option>
+    <option value="zh">🇨🇳 中文</option>
+    <option value="es">🇪🇸 ES</option>
+    <option value="fr">🇫🇷 FR</option>
+  </select>
+  <div class="gps-pill">
+    <div class="gps-dot" id="gps-dot"></div>
+    <span id="gps-label">GPS...</span>
+  </div>
+</div>
+
+<div id="map"></div>
+<div class="badge-count" id="badge-count"></div>
+
+<div class="gps-loading" id="gps-loading">
+  <div class="spinner"></div>
+  <p id="gps-loading-txt">Acquisizione posizione GPS...</p>
+</div>
+
+<!-- FILTRI -->
+<div class="cat-bar" id="cat-bar">
+  <button class="cat-fil active" data-cat="TUTTE" onclick="filtraCat('TUTTE',this)">🗂 <span data-t="all">Tutte</span></button>
+  <button class="cat-fil" data-cat="CIBO" onclick="filtraCat('CIBO',this)">🍕 <span data-t="food">Cibo</span></button>
+  <button class="cat-fil" data-cat="MODA" onclick="filtraCat('MODA',this)">👗 <span data-t="fashion">Moda</span></button>
+  <button class="cat-fil" data-cat="TECH" onclick="filtraCat('TECH',this)">📱 Tech</button>
+  <button class="cat-fil" data-cat="VIAGGI" onclick="filtraCat('VIAGGI',this)">✈️ <span data-t="travel">Viaggi</span></button>
+  <button class="cat-fil" data-cat="DIVERTIMENTO" onclick="filtraCat('DIVERTIMENTO',this)">🎭 <span data-t="fun">Diverti.</span></button>
+  <button class="cat-fil" data-cat="ALTRO" onclick="filtraCat('ALTRO',this)">🛍️ <span data-t="other">Altro</span></button>
+</div>
+
+<!-- SCHEDA OFFERTA -->
+<div class="offerta-sheet" id="offerta-sheet">
+  <button class="sheet-close" onclick="chiudiSheet()">✕</button>
+  <div class="sheet-handle"></div>
+  <div id="sheet-foto-wrap"></div>
+  <div class="sheet-body">
+    <div class="sheet-pills" id="sheet-pills"></div>
+    <div class="sheet-negozio" id="sheet-negozio"></div>
+    <div class="sheet-desc" id="sheet-desc"></div>
+    <div class="sheet-misura" id="sheet-misura"></div>
+    <div class="sheet-addr" id="sheet-addr"></div>
+    <div class="sheet-prezzi">
+      <span class="p-flash" id="s-flash"></span>
+      <span class="p-std" id="s-std"></span>
+      <span class="p-sc" id="s-sc" style="display:none"></span>
+    </div>
+    <div class="sheet-orario" id="s-orario"></div>
+    <button class="btn-prenota" id="btn-prenota" onclick="prenota()">
+      <span id="btn-prenota-txt">PRENOTA E PAGA</span>
+    </button>
+    <button id="btn-portami" onclick="portamiLi()" style="
+      width:100%;padding:14px;background:var(--verde);color:#fff;border:none;
+      border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;
+      cursor:pointer;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px;">
+      🧭 <span id="btn-portami-txt">PORTAMI LÌ</span>
+    </button>
+    <div class="escrow-note" id="escrow-note">🔐 Fondi bloccati in escrow fino all'incontro fisico</div>
+  </div>
+</div>
+
+<!-- QR MODAL -->
+<div class="qr-overlay" id="qr-overlay">
+  <div class="qr-box">
+    <div class="qr-title" id="qr-title">QR-B Cliente</div>
+    <div class="qr-sub" id="qr-sub">Mostralo all'esercente per sbloccare i fondi</div>
+    <div id="qr-img" style="width:180px;height:180px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;"></div>
+    <div class="qr-idtx" id="qr-idtx"></div>
+    <div class="qr-note" id="qr-note">✓ L'esercente mostrerà QR-A — fai scansionare al suo terminale. Solo la coppia libera i fondi.</div>
+    <div style="font-size:13px;color:var(--ink-mu);margin-bottom:12px;">
+      Il tuo PIN: <strong id="qr-pin-display" style="font-family:monospace;font-size:18px;color:var(--rosso);letter-spacing:.15em;">—</strong>
+    </div>
+    <a href="mio-account.html" style="display:block;text-align:center;font-size:12px;
+      color:var(--cielo);margin-bottom:14px;text-decoration:none;">
+      🎫 Ritrova questo QR in "I miei QR" →
+    </a>
+    <button class="btn-qr-close" onclick="chiudiQR()" id="btn-qr-close">Ho capito — vai all'esercente</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+let lang = localStorage.getItem('it_lang') || 'it';
+function t(k){ return (T[lang]||T.it)[k] || k; }
+
+function setLang(l){ applyLang(l);
+  lang=l;
+  localStorage.setItem('it_lang',l);
+  document.getElementById('lang-sel').value=l;
+  // Aggiorna testi UI
+  document.getElementById('gps-loading-txt').textContent=i18n('loading');
+  document.getElementById('escrow-note').textContent=i18n('escrow');
+  document.getElementById('btn-prenota-txt').textContent=i18n('book');
+  const bpt = document.getElementById('btn-portami-txt');
+  if(bpt) bpt.textContent = i18n('goThere') || 'PORTAMI LÌ';
+  // Filtri
+  document.querySelectorAll('[data-t]').forEach(el=>{
+    el.textContent=t(el.getAttribute('data-t'));
+  });
+  // Se scheda aperta riaggiorna
+  if(offertaCorrente) apriScheda(offertaCorrente);
+}
+
+// Sync con lingua homepage
+document.getElementById('lang-sel').value = localStorage.getItem('it_lang')||'it';
+
+// ═══════════════════════
+// CONFIG
+// ═══════════════════════
+const SHEET_ID='1m5ovESlhcbVwafN3EOpuYpWUGm1tbH6CtNPTBNZZrOI';
+const SHEET_NAME='offerte';
+const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
+const CATS=['CIBO','MODA','TECH','VIAGGI','DIVERTIMENTO','ALTRO'];
+const EMOJI={CIBO:'🍕',MODA:'👗',TECH:'📱',VIAGGI:'✈️',DIVERTIMENTO:'🎭',ALTRO:'🛍️'};
+
+let map,userMarker,userCircle;
+let userLat=null,userLon=null;
+let tutteOfferte=[];
+let markers=[];
+let raggioAttivo=200;
+let catAttiva='TUTTE';
+let offertaCorrente=null;
+const prefCats=JSON.parse(localStorage.getItem('it_categorie')||'[]');
+
+// ═══════════════════════
+// UTILS
+// ═══════════════════════
+function haversine(a,b,c,d){
+  const R=6371000,r=x=>x*Math.PI/180;
+  const dL=r(c-a),dO=r(d-b);
+  const e=Math.sin(dL/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(dO/2)**2;
+  return Math.round(R*2*Math.atan2(Math.sqrt(e),Math.sqrt(1-e)));
+}
+function fmtDist(m){return m<1000?m+'m':(m/1000).toFixed(1)+'km';}
+function parseLon(v){
+  if(v === null || v === undefined || v === '') return 0;
+  var n = parseFloat(v);
+  if(isNaN(n)) return 0;
+  // Google Sheets manda 12.55402 come 1255402.0 (formato #,##0.00 senza decimali)
+  // Sanity check: lon Roma deve essere tra 11 e 16
+  if(n > 100) n = n / 100000.0;
+  return n;
+}
+function inferCat(d){
+  const s=(d||'').toLowerCase();
+  if(/pizza|pane|farin|caffe|vino|mangi|kg|pax|food|pranzo|cena|colaz/.test(s))return'CIBO';
+  if(/moda|abito|vestit|scarpe|borsa/.test(s))return'MODA';
+  if(/tech|gadget|elettr|phone|jack|computer/.test(s))return'TECH';
+  if(/viaggio|hotel|volo|tour/.test(s))return'VIAGGI';
+  if(/concert|spett|teatro|divert|event/.test(s))return'DIVERTIMENTO';
+  return'ALTRO';
+}
+
+// ═══════════════════════
+// CARICA OFFERTE via Apps Script
+// ═══════════════════════
+async function caricaOfferte(){
+  try{
+    // Usiamo Apps Script come proxy — legge Sheet e restituisce JSON pulito
+    const url = APPS_SCRIPT_URL + '?azione=getOfferte';
+    const res = await fetch(url);
+    const json = await res.json();
+    if(json.offerte && json.offerte.length > 0){
+      return json.offerte.filter(o => o.descrizione && o.lat && o.lon && o.stato === 'ATTIVA');
+    }
+    return [];
+  }catch(e){
+    console.warn('Apps Script non raggiungibile:', e);
+    return [];
+  }
+}
+
+// ═══════════════════════
+// INIT MAPPA
+// ═══════════════════════
+function initMappa(lat,lon){
+  document.getElementById('gps-loading').style.display='none';
+  document.getElementById('gps-dot').classList.add('active');
+  document.getElementById('gps-label').textContent=i18n('gpsActive');
+  userLat=lat;userLon=lon;
+
+  map=L.map('map',{center:[lat,lon],zoom:15,zoomControl:false});
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
+    attribution:'© OpenStreetMap contributors © CARTO',
+    subdomains:'abcd',maxZoom:20
+  }).addTo(map);
+
+  // Utente
+  const ui=L.divIcon({
+    html:`<div style="width:14px;height:14px;border-radius:50%;background:var(--cielo);
+      border:3px solid #fff;box-shadow:0 0 0 6px rgba(74,144,196,.2);"></div>`,
+    iconSize:[14,14],iconAnchor:[7,7],className:''
+  });
+  userMarker=L.marker([lat,lon],{icon:ui,zIndexOffset:1000}).addTo(map);
+  userCircle=L.circle([lat,lon],{
+    radius:raggioAttivo,color:'rgba(139,26,26,.35)',
+    fillColor:'rgba(139,26,26,.04)',fillOpacity:1,weight:1.5,dashArray:'6,4'
+  }).addTo(map);
+
+  caricaOfferte().then(o=>{
+    tutteOfferte=o;
+    renderMarkers();
+  });
+}
+
+// ═══════════════════════
+// JITTER — sparge marker sovrapposti
+// ═══════════════════════
+function jitterCoords(offerte){
+  // Raggruppa per coordinate identiche
+  const gruppi = {};
+  offerte.forEach((o,i) => {
+    const key = o.lat.toFixed(4)+','+o.lon.toFixed(4);
+    if(!gruppi[key]) gruppi[key] = [];
+    gruppi[key].push(i);
+  });
+  // Per ogni gruppo con più elementi, disponi in cerchio
+  const result = offerte.map(o => ({...o}));
+  Object.values(gruppi).forEach(indices => {
+    if(indices.length <= 1) return;
+    const n = indices.length;
+    const raggio = 0.0003; // ~30 metri
+    indices.forEach((idx, k) => {
+      const angolo = (2 * Math.PI * k) / n - Math.PI/2;
+      result[idx].lat = offerte[idx].lat + raggio * Math.cos(angolo);
+      result[idx].lon = offerte[idx].lon + raggio * Math.sin(angolo);
+    });
+  });
+  return result;
+}
+
+// ═══════════════════════
+// MARKERS
+// ═══════════════════════
+function renderMarkers(){
+  if(!map) return;
+  markers.forEach(m=>map.removeLayer(m));
+  markers=[];
+
+  // Mostra TUTTE le offerte attive sulla mappa
+  // Il raggio filtra solo il badge "nel raggio"
+  const filtCat=tutteOfferte.filter(o=>catAttiva==='TUTTE'||o.categoria===catAttiva);
+
+  // Conta quelle nel raggio
+  const nelRaggio=filtCat.filter(o=>{
+    if(!userLat||!o.lat) return true;
+    return haversine(userLat,userLon,o.lat,o.lon)<=raggioAttivo;
+  });
+
+  const badge=document.getElementById('badge-count');
+  if(nelRaggio.length>0){
+    badge.style.display='block';
+    const n=nelRaggio.length;
+    badge.textContent=n+' '+(n===1?i18n('offers'):i18n('offersP'))+' '+i18n('inRadius');
+  } else {
+    badge.style.display='none';
+  }
+
+  const filtCatJ = jitterCoords(filtCat);
+  filtCatJ.forEach(o=>{
+    if(!o.lat||!o.lon) return;
+    const dist=userLat?haversine(userLat,userLon,o.lat,o.lon):null;
+    const nelR=!dist||dist<=raggioAttivo;
+    const sc=o.prezzoStd>0?Math.round((1-o.prezzoFlash/o.prezzoStd)*100):0;
+    const isPref=prefCats.includes(o.categoria);
+    const bg=nelR?(isPref?'var(--cielo)':'var(--rosso)'):'rgba(80,80,80,.8)';
+    const emoji=EMOJI[o.categoria]||'🛍️';
+
+    const icon=L.divIcon({
+      html:`<div style="background:${bg};color:#fff;border:2px solid ${nelR?'#fff':'rgba(255,255,255,.3)'};
+        border-radius:20px;padding:5px 11px;font-size:12px;font-weight:700;
+        white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.4);
+        font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:4px;
+        opacity:${nelR?1:.55};">
+        ${emoji} €${o.prezzoFlash.toFixed(0)}${sc>0?` <span style="background:rgba(255,255,255,.25);border-radius:10px;padding:1px 5px;font-size:10px;">-${sc}%</span>`:''}
+      </div>`,
+      iconSize:[null,32],iconAnchor:[0,16],className:''
+    });
+    const m=L.marker([o.lat,o.lon],{icon}).addTo(map);
+    m.on('click',()=>apriScheda(o));
+    markers.push(m);
+  });
+}
+
+// ═══════════════════════
+// SCHEDA
+// ═══════════════════════
+function apriScheda(o){
+  offertaCorrente=o;
+  const sc=o.prezzoStd>0?Math.round((1-o.prezzoFlash/o.prezzoStd)*100):0;
+  const emoji=EMOJI[o.categoria]||'🛍️';
+  const dist=userLat&&o.lat?haversine(userLat,userLon,o.lat,o.lon):null;
+  const nelR=!dist||dist<=raggioAttivo;
+
+  // Foto
+  const fw=document.getElementById('sheet-foto-wrap');
+  fw.innerHTML=o.foto
+    ?`<img src="${o.foto}" class="sheet-foto" alt="">`
+    :`<div class="sheet-foto-ph">${emoji}</div>`;
+
+  // Pills
+  let ph=`<span class="pill pill-att">ATTIVA</span>`;
+  ph+=`<span class="pill pill-cat">${emoji} ${o.categoria}</span>`;
+  if(dist){
+    const cl=dist<=300?'pill-dist-near':dist<=1000?'pill-dist-mid':'pill-dist-far';
+    ph+=`<span class="pill-dist ${cl}">📍 ${fmtDist(dist)} ${i18n('distLabel')}</span>`;
+  }
+  if(!nelR) ph+=`<span class="pill pill-raggio" style="background:#f1f1f1;color:#888;">Fuori raggio ${raggioAttivo}m</span>`;
+  document.getElementById('sheet-pills').innerHTML=ph;
+
+  document.getElementById('sheet-negozio').textContent=o.negozio?'🏪 '+o.negozio:'';
+  document.getElementById('sheet-desc').textContent=
+    o.descrizione.charAt(0).toUpperCase()+o.descrizione.slice(1).toLowerCase();
+  document.getElementById('sheet-misura').textContent=
+    (o.quantita&&o.unita)?o.quantita+' '+o.unita:'';
+  document.getElementById('sheet-addr').textContent=o.indirizzo?'📍 '+o.indirizzo:'';
+  document.getElementById('s-flash').textContent='€ '+o.prezzoFlash.toFixed(2);
+  document.getElementById('s-std').textContent=o.prezzoStd>0?'€ '+o.prezzoStd.toFixed(2):'';
+  const se=document.getElementById('s-sc');
+  if(sc>0){se.textContent='-'+sc+'%';se.style.display='inline';}else se.style.display='none';
+
+  const or=(o.inizio&&o.fine)
+    ?`⏱ <strong>${o.inizio}</strong> → <strong>${o.fine}</strong>`
+    :i18n('orario');
+  document.getElementById('s-orario').innerHTML=or;
+  document.getElementById('escrow-note').textContent=i18n('escrow');
+
+  const btn=document.getElementById('btn-prenota');
+  document.getElementById('btn-prenota-txt').textContent=i18n('book')+' — €'+o.prezzoFlash.toFixed(2);
+  btn.disabled=false;
+
+  document.getElementById('offerta-sheet').classList.add('open');
+  map.panTo([o.lat,o.lon],{animate:true,duration:.4});
+}
+
+function chiudiSheet(){
+  document.getElementById('offerta-sheet').classList.remove('open');
+  offertaCorrente=null;
+}
+
+function portamiLi(){
+  if(!offertaCorrente) return;
+  const o = offertaCorrente;
+  const dest = encodeURIComponent(o.indirizzo || (o.lat+','+o.lon));
+  let url;
+  if(userLat && userLon){
+    url = `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLon}&destination=${dest}&travelmode=walking`;
+  } else {
+    url = `https://www.google.com/maps/dir/?api=1&destination=${dest}&travelmode=walking`;
+  }
+  window.open(url, '_blank');
+}
+
+// ═══════════════════════
+// PRENOTA + QR
+// ═══════════════════════
+function prenota(){
+  if(!offertaCorrente) return;
+  const o=offertaCorrente;
+
+  // Genera ID univoco per questa prenotazione
+  const bookingId='BK-'+Date.now();
+  const mioPin = localStorage.getItem('it_pin') || 'NESSUNO';
+  const qrBData=JSON.stringify({
+    type:'QR-B',
+    booking:bookingId,
+    idtx:o.idtx,
+    negozio:o.negozio,
+    desc:o.descrizione,
+    prezzo:o.prezzoFlash,
+    pin:mioPin,
+    ts:new Date().toISOString(),
+  });
+
+  // Genera PIN se non esiste
+  if(!localStorage.getItem('it_pin')){
+    const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let pin='';
+    for(let i=0;i<6;i++) pin+=chars[Math.floor(Math.random()*chars.length)];
+    localStorage.setItem('it_pin',pin);
+  }
+  // Salva prenotazione in localStorage
+  const prenotazioni=JSON.parse(localStorage.getItem('it_prenotazioni')||'[]');
+  prenotazioni.push({bookingId,idtx:o.idtx,negozio:o.negozio,
+    desc:o.descrizione,prezzo:o.prezzoFlash,ts:new Date().toISOString(),stato:'IN_ATTESA'});
+  localStorage.setItem('it_prenotazioni',JSON.stringify(prenotazioni));
+
+  // Mostra QR-B per il cliente
+  mostraQR(bookingId,qrBData,o);
+
+  // Invia notifica al server (Apps Script)
+  fetch(APPS_SCRIPT_URL,{
+    method:'POST',mode:'no-cors',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      azione:'prenotazione',
+      bookingId,idtx:o.idtx,
+      negozio:o.negozio,descrizione:o.descrizione,
+      prezzo:o.prezzoFlash,lang,
+      foglio:'prenotazioni'
+    })
+  }).catch(()=>{});
+}
+
+// ═══════════════════════
+// GENERA QR
+// ═══════════════════════
+let qrInstance=null;
+function mostraQR(bookingId,data,o){
+  chiudiSheet();
+
+  // Testi in lingua
+  document.getElementById('qr-title').textContent=i18n('qrTitle');
+  document.getElementById('qr-sub').textContent=i18n('qrSub');
+  document.getElementById('qr-note').textContent=i18n('qrNote');
+  // Aggiungo PIN nel modal
+  const pinEl = document.getElementById('qr-pin-display');
+  if(pinEl) pinEl.textContent = localStorage.getItem('it_pin') || '—';
+  document.getElementById('btn-qr-close').textContent=i18n('qrClose');
+  document.getElementById('qr-idtx').textContent=bookingId+' · '+o.negozio;
+
+  // Genera QR code
+  const container=document.getElementById('qr-img');
+  container.innerHTML='';
+  // Piccolo delay per assicurarsi che il DOM sia pronto
+  setTimeout(()=>{
+    try {
+      new QRCode(container,{
+        text:data,
+        width:168,height:168,
+        colorDark:'#1C1410',
+        colorLight:'#ffffff',
+        correctLevel:QRCode.CorrectLevel.M
+      });
+    } catch(e) {
+      container.innerHTML='<div style="font-size:12px;color:red;text-align:center;">QR non generato.<br>'+e+'</div>';
+    }
+  }, 100);
+
+  document.getElementById('qr-overlay').classList.add('open');
+}
+
+function chiudiQR(){
+  document.getElementById('qr-overlay').classList.remove('open');
+}
+
+// ═══════════════════════
+// FILTRI
+// ═══════════════════════
+function filtraCat(cat,btn){
+  catAttiva=cat;
+  document.querySelectorAll('.cat-fil').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  chiudiSheet();renderMarkers();
+}
+function cambiaRaggio(val){
+  raggioAttivo=parseInt(val);
+  if(userCircle){
+    if(raggioAttivo===9999) userCircle.setStyle({opacity:0,fillOpacity:0});
+    else{userCircle.setStyle({opacity:1,fillOpacity:1});userCircle.setRadius(raggioAttivo);}
+  }
+  chiudiSheet();renderMarkers();
+}
+
+// ═══════════════════════
+// GPS
+// ═══════════════════════
+function startGPS(){
+  document.getElementById('gps-loading-txt').textContent=i18n('loading');
+  if(!navigator.geolocation){
+    initMappa(41.9028,12.4964);
+    document.getElementById('gps-label').textContent=i18n('gpsDefault');
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    p=>initMappa(p.coords.latitude,p.coords.longitude),
+    ()=>{initMappa(41.9028,12.4964);document.getElementById('gps-label').textContent=i18n('gpsDefault');},
+    {enableHighAccuracy:true,timeout:8000,maximumAge:0}
+  );
+  navigator.geolocation.watchPosition(p=>{
+    userLat=p.coords.latitude;userLon=p.coords.longitude;
+    if(userMarker)userMarker.setLatLng([userLat,userLon]);
+  },null,{enableHighAccuracy:true});
+}
+
+// Swipe down chiude scheda
+let ty=0;
+document.getElementById('offerta-sheet').addEventListener('touchstart',e=>{ty=e.touches[0].clientY;});
+document.getElementById('offerta-sheet').addEventListener('touchend',e=>{
+  if(e.changedTouches[0].clientY-ty>60)chiudiSheet();
+});
+
+// Tap fuori dal QR chiude
+document.getElementById('qr-overlay').addEventListener('click',e=>{
+  if(e.target===e.currentTarget)chiudiQR();
+});
+
+// Ricarica ogni 60s
+setInterval(()=>{
+  if(!userLat)return;
+  caricaOfferte().then(o=>{
+    tutteOfferte=o;
+    renderMarkers();
+  });
+},60000);
+
+// Apply saved lang
+applyLang(lang);
+startGPS();
+</script>
+</body>
+</html>

@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InstantTown PROX — Architettura Istituzionale</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --rosso:   #8B1A1A;
+  --rosso-m: #A52828;
+  --rosso-l: #C0392B;
+  --ocra:    #C8860A;
+  --ocra-l:  #E8A020;
+  --ocra-p:  #FDF3DC;
+  --cielo:   #4A90C4;
+  --cielo-l: #6AAFD8;
+  --cielo-p: #E8F4FB;
+  --bianco:  #FDFAF4;
+  --ink:     #1C1410;
+  --ink-m:   #3D2E24;
+  --ink-mu:  #6B5A4E;
+  --rule:    rgba(139,26,26,0.15);
+  --rule-s:  rgba(139,26,26,0.30);
+  --sh:      0 2px 20px rgba(28,20,16,0.08);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--ink);font-size:15px;line-height:1.7;}
+
+/* ── LANG BAR ── */
+.lang-bar{background:var(--ink);padding:10px 40px;display:flex;align-items:center;gap:6px;position:sticky;top:0;z-index:200;}
+.lang-label{color:var(--ocra-l);font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-right:10px;font-weight:500;}
+.lang-btn{background:none;border:1px solid rgba(200,134,10,.3);color:rgba(255,255,255,.5);font-family:'DM Sans',sans-serif;font-size:12px;letter-spacing:.06em;padding:5px 14px;cursor:pointer;border-radius:2px;transition:all .2s;}
+.lang-btn:hover{border-color:var(--ocra-l);color:var(--ocra-l);}
+.lang-btn.active{background:var(--ocra);border-color:var(--ocra);color:var(--ink);font-weight:500;}
+
+/* ── HEADER ── */
+header{background:var(--ink);color:var(--bianco);padding:0 40px 0;position:relative;overflow:hidden;}
+header::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(200,134,10,.05) 59px,rgba(200,134,10,.05) 60px);pointer-events:none;}
+.header-stripe{height:7px;background:linear-gradient(90deg,var(--rosso-l) 33.3%,var(--bianco) 33.3%,var(--bianco) 66.6%,var(--cielo) 66.6%);}
+.header-inner{max-width:980px;margin:0 auto;position:relative;padding:36px 0 40px;display:grid;grid-template-columns:auto 1fr;gap:32px;align-items:start;}
+.header-logo{width:90px;height:90px;object-fit:contain;border-radius:12px;flex-shrink:0;}
+.header-text{}
+.header-badge{display:inline-block;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ocra-l);border:1px solid rgba(200,134,10,.35);padding:4px 12px;border-radius:2px;margin-bottom:14px;}
+.header-title{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,4.5vw,50px);font-weight:600;line-height:1.1;letter-spacing:-.01em;margin-bottom:6px;}
+.header-title .it{color:var(--rosso-l);}
+.header-title .town{color:var(--ocra-l);}
+.header-sub{font-size:13px;color:rgba(255,255,255,.45);letter-spacing:.04em;margin-bottom:24px;}
+.header-meta{display:flex;gap:28px;flex-wrap:wrap;border-top:1px solid rgba(200,134,10,.18);padding-top:18px;}
+.hm{font-size:12px;color:rgba(255,255,255,.45);letter-spacing:.04em;}
+.hm strong{color:var(--ocra-l);font-weight:500;display:block;font-size:13px;}
+
+/* ── VIGNETTA BAND ── */
+.vignetta-band{background:var(--ink);padding:0 40px 40px;}
+.vignetta-inner{max-width:980px;margin:0 auto;}
+.vignetta-img{width:100%;max-height:340px;object-fit:cover;border-radius:8px;border:2px solid rgba(200,134,10,.25);display:block;}
+
+/* ── MAIN ── */
+main{max-width:980px;margin:0 auto;padding:48px 40px 80px;}
+
+/* ── SECTION ── */
+.section{margin-bottom:52px;}
+.section-header{display:flex;align-items:baseline;gap:16px;margin-bottom:24px;padding-bottom:10px;border-bottom:2px solid var(--rule-s);}
+.section-num{font-family:'Cormorant Garamond',serif;font-size:12px;color:var(--rosso);letter-spacing:.1em;font-weight:600;min-width:26px;}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:var(--ink);letter-spacing:-.01em;}
+
+/* ── FLOW ── */
+.flow{display:flex;align-items:stretch;background:#fff;border:1px solid var(--rule);border-radius:4px;overflow:hidden;box-shadow:var(--sh);flex-wrap:wrap;}
+.flow-step{flex:1;min-width:140px;padding:18px 16px;border-right:1px solid var(--rule);position:relative;}
+.flow-step:last-child{border-right:none;}
+.flow-step::after{content:'→';position:absolute;right:-11px;top:50%;transform:translateY(-50%);color:var(--ocra);font-size:14px;z-index:1;background:#fff;padding:0 2px;}
+.flow-step:last-child::after{display:none;}
+.flow-num{font-size:10px;letter-spacing:.14em;color:var(--rosso);text-transform:uppercase;margin-bottom:5px;font-weight:500;}
+.flow-title{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:3px;line-height:1.3;}
+.flow-desc{font-size:11.5px;color:var(--ink-mu);line-height:1.5;}
+.flow-step.hl{background:var(--ocra-p);}
+.flow-step.hl::after{background:var(--ocra-p);}
+.flow-step.hl .flow-num{color:var(--ocra);}
+
+/* ── PILLARS ── */
+.pillar-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;}
+.pillar{background:#fff;border:1px solid var(--rule);border-radius:4px;padding:22px 20px;box-shadow:var(--sh);border-top:3px solid var(--cielo);}
+.pillar-icon{font-size:26px;margin-bottom:10px;}
+.pillar-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;margin-bottom:7px;color:var(--ink);}
+.pillar-body{font-size:13px;color:var(--ink-mu);line-height:1.65;}
+.pillar-tag{display:inline-block;margin-top:10px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--cielo);font-weight:500;border:1px solid rgba(74,144,196,.3);padding:3px 10px;border-radius:2px;}
+
+/* ── TABLE ── */
+.gtable{width:100%;border-collapse:collapse;background:#fff;box-shadow:var(--sh);border-radius:4px;overflow:hidden;font-size:13px;}
+.gtable thead{background:var(--rosso);}
+.gtable thead th{padding:12px 18px;text-align:left;color:#fff;font-weight:500;font-size:11px;letter-spacing:.1em;text-transform:uppercase;}
+.gtable tbody tr{border-bottom:1px solid var(--rule);}
+.gtable tbody tr:last-child{border-bottom:none;}
+.gtable tbody tr:hover{background:var(--ocra-p);}
+.gtable td{padding:13px 18px;vertical-align:top;}
+.gtable td:first-child{font-weight:500;color:var(--ink);width:36%;}
+.gtable td:last-child{color:var(--ink-mu);}
+.ck{color:var(--rosso);font-weight:600;}
+
+/* ── COMMISSION ── */
+.comm{background:var(--ink);color:#fff;border-radius:4px;padding:28px 32px;display:flex;align-items:center;gap:48px;flex-wrap:wrap;box-shadow:var(--sh);border-left:4px solid var(--ocra);}
+.comm-num{font-family:'Cormorant Garamond',serif;font-size:56px;font-weight:600;color:var(--ocra-l);line-height:1;}
+.comm-lbl{font-size:11px;color:rgba(255,255,255,.45);letter-spacing:.07em;margin-top:3px;}
+.comm-detail{font-size:13px;color:rgba(255,255,255,.7);line-height:1.8;}
+.comm-detail strong{color:var(--ocra-l);font-weight:500;}
+
+/* ── COMPLIANCE ── */
+.comp-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}
+.cpill{background:#fff;border:1px solid var(--rule-s);border-radius:2px;padding:7px 14px;font-size:12px;font-weight:500;color:var(--ink-m);letter-spacing:.04em;}
+.cpill span{color:var(--rosso);margin-right:5px;}
+
+/* ── FOOTER ── */
+footer{background:var(--ink);color:rgba(255,255,255,.3);font-size:11px;letter-spacing:.06em;text-align:center;padding:20px 40px;}
+footer strong{color:var(--ocra-l);font-weight:500;}
+.footer-stripe{height:5px;background:linear-gradient(90deg,var(--rosso-l) 33.3%,#fff 33.3%,#fff 66.6%,var(--cielo) 66.6%);}
+
+/* ── LANG SWITCH ── */
+.lang-section{display:none;}
+.lang-section.active{display:block;}
+
+@media(max-width:640px){
+  header,main,.vignetta-band{padding-left:18px;padding-right:18px;}
+  .lang-bar{padding:10px 18px;}
+  .header-inner{grid-template-columns:1fr;gap:16px;}
+  .header-logo{width:64px;height:64px;}
+  .flow{flex-direction:column;}
+  .flow-step{border-right:none;border-bottom:1px solid var(--rule);}
+  .flow-step::after{content:'↓';right:auto;left:50%;top:auto;bottom:-12px;transform:translateX(-50%);background:var(--bianco);}
+  .flow-step.hl::after{background:var(--ocra-p);}
+  .comm{gap:20px;}
+}
+</style>
+</head>
+<body>
+
+<div class="lang-bar">
+  <span class="lang-label">Lingua / Language</span>
+  <button class="lang-btn active" onclick="setLang('it',this)">IT</button>
+  <button class="lang-btn" onclick="setLang('en',this)">EN</button>
+  <button class="lang-btn" onclick="setLang('zh',this)">中文</button>
+  <button class="lang-btn" onclick="setLang('es',this)">ES</button>
+  <button class="lang-btn" onclick="setLang('fr',this)">FR</button>
+</div>
+
+<!-- ══════════════════════════════════════════ ITALIANO ══ -->
+<div class="lang-section active" id="lang-it">
+<div class="header-stripe"></div>
+<header>
+  <div class="header-inner">
+    <img src="Nuovo_logo_3_diss.png" alt="Logo InstantTown" class="header-logo">
+    <div class="header-text">
+      <div class="header-badge">Architettura di Sistema — Documento Formale</div>
+      <h1 class="header-title"><span class="it">Instant</span><span class="town">Town</span> PROX</h1>
+      <p class="header-sub">Piattaforma digitale di prossimità per commercio locale, turismo e servizi pubblici urbani</p>
+      <div class="header-meta">
+        <div class="hm"><strong>Versione</strong>1.0 — 2025</div>
+        <div class="hm"><strong>Città pilota</strong>Roma, Italia</div>
+        <div class="hm"><strong>Soggetto proponente</strong>InstantTown S.r.l. (in costituzione)</div>
+        <div class="hm"><strong>Conformità</strong>GDPR · PSD2 · D.Lgs. 231/2001</div>
+      </div>
+    </div>
+  </div>
+</header>
+<div class="vignetta-band">
+  <div class="vignetta-inner">
+    <img src="Vignetta.png" alt="InstantTown — Il mondo ai tuoi piedi" class="vignetta-img">
+  </div>
+</div>
+<main>
+  <div class="section">
+    <div class="section-header"><span class="section-num">01</span><h2 class="section-title">Flusso operativo certificato</h2></div>
+    <div class="flow">
+      <div class="flow-step"><div class="flow-num">Passo 1</div><div class="flow-title">GPS &amp; Geofence</div><div class="flow-desc">Localizzazione in tempo reale entro 200/300/500 m via algoritmo Haversine.</div></div>
+      <div class="flow-step"><div class="flow-num">Passo 2</div><div class="flow-title">Offerta validata</div><div class="flow-desc">Verifica P.IVA, coordinate fisiche e conformità prima della pubblicazione.</div></div>
+      <div class="flow-step hl"><div class="flow-num">Passo 3</div><div class="flow-title">Escrow sicuro</div><div class="flow-desc">Il pagamento è trattenuto in garanzia. Nessuno accede ai fondi prima del matching.</div></div>
+      <div class="flow-step hl"><div class="flow-num">Passo 4</div><div class="flow-title">QR-A + QR-B</div><div class="flow-desc">Solo la coppia fisica abbinata sblocca il pagamento. Impossibile aggirare.</div></div>
+      <div class="flow-step"><div class="flow-num">Passo 5</div><div class="flow-title">Liquidazione</div><div class="flow-desc">Esercente riceve 98,25% netto. Commissione 1,75%. Nessun canone fisso.</div></div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-header"><span class="section-num">02</span><h2 class="section-title">Servizi pubblici urbani integrati</h2></div>
+    <div class="pillar-grid">
+      <div class="pillar"><div class="pillar-icon">💧</div><div class="pillar-title">Nasoni e fontane pubbliche</div><div class="pillar-body">Mappatura georeferenziata delle fontanelle comunali, aggiornata in tempo reale. Accessibile senza registrazione.</div><span class="pillar-tag">Gratuito · No registrazione</span></div>
+      <div class="pillar"><div class="pillar-icon">🚻</div><div class="pillar-title">Servizi igienici pubblici</div><div class="pillar-body">Localizzazione con accessibilità, orari e stato. Contributo alla dignità urbana e al turismo accessibile.</div><span class="pillar-tag">Accessibilità certificata</span></div>
+      <div class="pillar"><div class="pillar-icon">📶</div><div class="pillar-title">Punti Wi-Fi pubblici</div><div class="pillar-body">Aggregazione reti Wi-Fi comunali e convenzionate. Connettività per turisti, studenti e lavoratori.</div><span class="pillar-tag">Connettività pubblica</span></div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-header"><span class="section-num">03</span><h2 class="section-title">Sistema di garanzia anti-frode</h2></div>
+    <table class="gtable">
+      <thead><tr><th>Rischio</th><th>Meccanismo di protezione InstantTown</th></tr></thead>
+      <tbody>
+        <tr><td>Esercente non verificato</td><td><span class="ck">✓</span> Registrazione con P.IVA obbligatoria, anti-duplicati, validazione coordinate fisiche dello stabilimento</td></tr>
+        <tr><td>Offerta falsa o ingannevole</td><td><span class="ck">✓</span> Validazione automatica (prezzo, disponibilità, ATECO) prima della pubblicazione. Admin può sospendere in tempo reale.</td></tr>
+        <tr><td>Mancata consegna</td><td><span class="ck">✓</span> Pagamento in escrow fino al doppio abbinamento fisico QR-A + QR-B. Senza matching nessun fondo sbloccato.</td></tr>
+        <tr><td>Frode sul pagamento</td><td><span class="ck">✓</span> Integrazione Stripe Connect / Mangopay. I fondi non transitano mai direttamente tra le parti.</td></tr>
+        <tr><td>Tracciamento GPS non autorizzato</td><td><span class="ck">✓</span> Coordinate utente mai memorizzate sui server. Calcolo prossimità on-device (lato cliente).</td></tr>
+        <tr><td>Prezzo gonfiato post-accordo</td><td><span class="ck">✓</span> Prezzo cristallizzato alla creazione dell'offerta. Non modificabile dopo l'accettazione.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="section">
+    <div class="section-header"><span class="section-num">04</span><h2 class="section-title">Modello commissionale trasparente</h2></div>
+    <div class="comm">
+      <div><div class="comm-num">1,75%</div><div class="comm-lbl">Commissione totale InstantTown</div></div>
+      <div class="comm-detail">L'esercente riceve <strong>98,25% netto</strong> su ogni transazione.<br>Nessun canone mensile. Nessun costo di iscrizione.<br>Circuiti tradizionali: commissioni tra <strong>15% e 25%</strong>.</div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-header"><span class="section-num">05</span><h2 class="section-title">Conformità normativa</h2></div>
+    <div class="comp-row">
+      <div class="cpill"><span>✓</span>GDPR 2016/679 — Privacy by design</div>
+      <div class="cpill"><span>✓</span>PSD2 — Servizi di pagamento</div>
+      <div class="cpill"><span>✓</span>D.Lgs. 231/2001 — Resp. amministrativa</div>
+      <div class="cpill"><span>✓</span>D.Lgs. 114/1998 — Commercio</div>
+      <div class="cpill"><span>✓</span>Art. 67 TUIR — Redditi occasionali</div>
+      <div class="cpill"><span>✓</span>ATECO 2025 — Classificazione attività</div>
+    </div>
+  </div>
+</main>
+<div class="footer-stripe"></div>
+<footer>
+  <div style="margin:0 auto 16px;text-align:center;">
+  <svg width="80" height="96" viewBox="0 0 80 96" xmlns="http://www.w3.org/2000/svg">
+    <!-- sfondo celeste arrotondato -->
+    <rect width="80" height="96" rx="14" fill="#5BACD8"/>
+    <!-- pallina verde (punto della i) -->
+    <circle cx="40" cy="18" r="11" fill="#2E8B2E"/>
+    <circle cx="36" cy="14" r="4" fill="#4DB84D" opacity="0.5"/>
+    <!-- corpo della i: banda verde sinistra -->
+    <path d="M24 34 Q24 82 32 88 Q36 92 40 92 L40 34 Z" fill="#2E8B2E"/>
+    <!-- corpo della i: banda bianca centro -->
+    <path d="M40 34 L40 92 Q44 92 48 88 Q52 82 52 70 L52 34 Z" fill="white"/>
+    <!-- corpo della i: banda rossa destra (curva) -->
+    <path d="M52 34 L52 70 Q52 84 44 90 Q50 88 56 80 Q62 70 62 56 L62 34 Z" fill="#C0392B"/>
+    <!-- riflesso lucido -->
+    <path d="M27 36 Q30 34 34 35 L34 50 Q30 49 27 51 Z" fill="white" opacity="0.25"/>
+  </svg>
+  <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;letter-spacing:.12em;color:#5BACD8;margin-top:8px;">INSTANTOWN</div>
+</div>
+  <strong>InstantTown PROX</strong> — Documento riservato a uso istituzionale &nbsp;·&nbsp; Roma, Italia, 2025 &nbsp;·&nbsp; Tutti i diritti riservati
+</footer>
+</div>
+
+<!-- ══════════════════════════════════════════ ENGLISH ══ -->
+<div class="lang-section" id="lang-en">
+<div class="header-stripe"></div>
+<header>
+  <div class="header-inner">
+    <img src="Nuovo_logo_3_diss.png" alt="InstantTown Logo" class="header-logo">
+    <div class="header-text">
+      <div class="header-badge">System Architecture — Formal Document</div>
+      <h1 class="header-title"><span class="it">Instant</span><span class="town">Town</span> PROX</h1>
+      <p class="header-sub">Digital proximity platform for local commerce, tourism and urban public services</p>
+      <div class="header-meta">
+        <div class="hm"><strong>Version</strong>1.0 — 2025</div>
+        <div class="hm"><strong>Pilot city</strong>Rome, Italy</div>
+        <div class="hm"><strong>Applicant</strong>InstantTown S.r.l. (in formation)</div>
+        <div class="hm"><strong>Compliance</strong>GDPR · PSD2 · D.Lgs. 231/2001</div>
+      </div>
+    </div>
+  </div>
+</header>
+<div class="vignetta-band">
+  <div class="vignetta-inner">
+    <img src="Vignetta.png" alt="InstantTown — The world at your feet" class="vignetta-img">
+  </div>
+</div>
+<main>
+  <div class="section">
+    <div class="section-header"><span class="section-num">01</span><h2 class="section-title">Certified operational flow</h2></div>
+    <div class="flow">
+      <div class="flow-step"><div class="flow-num">Step 1</div><div class="flow-title">GPS &amp; Geofence</div><div class="flow-desc">Real-time localisation within 200/300/500 m via Haversine algorithm.</div></div>
+      <div class="flow-step"><div class="flow-num">Step 2</div><div class="flow-title">Validated offer</div><div class="flow-desc">VAT number, physical coordinates and compliance verified before publication.</div></div>
+      <div class="flow-step hl"><div class="flow-num">Step 3</div><div class="flow-title">Secure escrow</div><div class="flow-desc">Payment held in escrow. No party accesses funds before QR matching.</div></div>
+      <div class="flow-step hl"><div class="flow-num">Step 4</div><div class="flow-title">QR-A + QR-B</div><div class="flow-desc">Only the physically matched pair unlocks payment. Cannot be bypassed.</div></div>
+      <div class="flow-step"><div class="flow-num">Step 5</div><div class="flow-title">Settlement</div><div class="flow-desc">Merchant receives 98.25% net. Commission 1.75%. No fixed monthly fee.</div></div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-header"><span class="section-num">02</span><h2 class="section-title">Integrated urban public services</h2></div>
+    <div class="pillar-grid">
+      <div class="pillar"><div class="pillar-icon">💧</div><div class="pillar-title">Public drinking fountains</div><div class="pillar-body">Georeferenced mapping of municipal fountains, updated in real time. Accessible without registration.</div><span class="pillar-tag">Free · No sign-up</span></div>
+      <div class="pillar"><div class="pillar-icon">🚻</div><div class="pillar-title">Public restrooms</div><div class="pillar-body">Location with accessibility status, opening hours and real-time availability. Supporting accessible tourism.</div><span class="pillar-tag">Accessibility certified</span></div>
+      <div class="pillar"><div class="pillar-icon">📶</div><div class="pillar-title">Public Wi-Fi hotspots</div><div class="pillar-body">Aggregation of municipal and partner Wi-Fi networks. Connectivity for tourists, students and workers.</div><span class="pillar-tag">Public connectivity</span></div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-header"><span class="section-num">03</span><h2 class="section-title">Anti-fraud guarantee system</h2></div>
+    <table class="gtable">
+      <thead><tr><th>Risk</th><th>InstantTown protection mechanism</th></tr></thead>
+      <tbody>
+        <tr><td>Unverified merchant</td><td><span class="ck">✓</span> Mandatory VAT registration, anti-duplicate control, physical location coordinate validation</td></tr>
+        <tr><td>False or misleading offer</td><td><span class="ck">✓</span> Automatic validation (price, availability, activity category) before publication. Admin can suspend in real time.</td></tr>
+        <tr><td>Non-delivery of goods/service</td><td><span class="ck">✓</span> Payment in escrow until physical dual QR-A + QR-B match. No funds released without physical matching.</td></tr>
+        <tr><td>Payment fraud</td><td><span class="ck">✓</span> Stripe Connect / Mangopay integration. Funds never transit directly between parties.</td></tr>
+        <tr><td>Unauthorised GPS tracking</td><td><span class="ck">✓</span> User coordinates never stored on servers. Proximity calculation on-device (client-side).</td></tr>
+        <tr><td>Price inflation after agreement</td><td><span class="ck">✓</span> Price locked at offer creation. Cannot be modified after customer acceptance.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="section">
+    <div class="section-header"><span class="section-num">04</span><h2 class="section-title">Transparent commission model</h2></div>
+    <div class="comm">
+      <div><div class="comm-num">1.75%</div><div class="comm-lbl">Total InstantTown commission</div></div>
+      <div class="comm-detail">Merchant receives <strong>98.25% net</strong> on every transaction.<br>No monthly fee. No registration cost.<br>Traditional circuits charge between <strong>15% and 25%</strong>.</div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-header"><span class="section-num">05</span><h2 class="section-title">Regulatory compliance</h2></div>
+    <div class="comp-row">
+      <div class="cpill"><span>✓</span>GDPR 2016/679 — Privacy by design</div>
+      <div class="cpill"><span>✓</span>PSD2 — Payment services directive</div>
+      <div class="cpill"><span>✓</span>D.Lgs. 231/2001 — Corporate liability</div>
+      <div class="cpill"><span>✓</span>D.Lgs. 114/1998 — Commerce regulation</div>
+      <div class="cpill"><span>✓</span>Art. 67 TUIR — Occasional income</div>
+      <div class="cpill"><span>✓</span>ATECO 2025 — Activity classification</div>
+    </div>
+  </div>
+</main>
+<div class="footer-stripe"></div>
+<footer>
+  <div style="margin:0 auto 16px;text-align:center;">
+  <svg width="80" height="96" viewBox="0 0 80 96" xmlns="http://www.w3.org/2000/svg">
+    <!-- sfondo celeste arrotondato -->
+    <rect width="80" height="96" rx="14" fill="#5BACD8"/>
+    <!-- pallina verde (punto della i) -->
+    <circle cx="40" cy="18" r="11" fill="#2E8B2E"/>
+    <circle cx="36" cy="14" r="4" fill="#4DB84D" opacity="0.5"/>
+    <!-- corpo della i: banda verde sinistra -->
+    <path d="M24 34 Q24 82 32 88 Q36 92 40 92 L40 34 Z" fill="#2E8B2E"/>
+    <!-- corpo della i: banda bianca centro -->
+    <path d="M40 34 L40 92 Q44 92 48 88 Q52 82 52 70 L52 34 Z" fill="white"/>
+    <!-- corpo della i: banda rossa destra (curva) -->
+    <path d="M52 34 L52 70 Q52 84 44 90 Q50 88 56 80 Q62 70 62 56 L62 34 Z" fill="#C0392B"/>
+    <!-- riflesso lucido -->
+    <path d="M27 36 Q30 34 34 35 L34 50 Q30 49 27 51 Z" fill="white" opacity="0.25"/>
+  </svg>
+  <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;letter-spacing:.12em;color:#5BACD8;margin-top:8px;">INSTANTOWN</div>
+</div>
+  <strong>InstantTown PROX</strong> — Confidential document for institutional use &nbsp;·&nbsp; Rome, Italy, 2025 &nbsp;·&nbsp; All rights reserved
+</footer>
+</div>
+
+<!-- ══════════════════════════════════════════ 中文 ══ -->
+<div class="lang-section" id="lang-zh">
+<div class="header-stripe"></div>
+<header>
+  <div class="header-inner">
+    <img src="Nuovo_logo_3_diss.png" alt="InstantTown 标志" class="header-logo">
+    <div class="header-text">
+      <div class="header-badge">系统架构 — 正式文件</div>
+      <h1 class="header-title"><span class="it">Instant</span><span class="town">Town</span> PROX</h1>
+      <p class="header-sub">面向本地商业、旅游业及城市公共服务的数字近邻平台</p>
+      <div class="header-meta">
+        <div class="hm"><strong>版本</strong>1.0 — 2025年</div>
+        <div class="hm"><strong>试点城市</strong>意大利·罗马</div>
+        <div class="hm"><strong>申报主体</strong>InstantTown S.r.l.（筹建中）</div>
+        <div class="hm"><strong>合规认证</strong>GDPR · PSD2 · D.Lgs. 231/2001</div>
+      </div>
+    </div>
+  </div>
+</header>
+<div class="vignetta-band">
+  <div class="vignetta-inner">
+    <img src="Vignetta.png" alt="InstantTown — 世界在您脚下" class="vignetta-img">
+  </div>
+</div>
+<main>
+  <div class="section">
+    <div class="section-header"><span class="section-num">01</span><h2 class="section-title">认证操作流程</h2></div>
+    <div class="flow">
+      <div class="flow-step"><div class="flow-num">第一步</div><div class="flow-title">GPS 定位与地理围栏</div><div class="flow-desc">通过 Haversine 算法实时计算 200/300/500 米范围内距离。</div></div>
+      <div class="flow-step"><div class="flow-num">第二步</div><div class="flow-title">经过验证的优惠</div><div class="flow-desc">发布前自动核查增值税号、实体坐标及合规性。</div></div>
+      <div class="flow-step hl"><div class="flow-num">第三步</div><div class="flow-title">安全资金托管</div><div class="flow-desc">付款进入托管账户，QR 码匹配完成前任何人无法动用资金。</div></div>
+      <div class="flow-step hl"><div class="flow-num">第四步</div><div class="flow-title">QR-A + QR-B 双码核验</div><div class="flow-desc">仅当两码物理配对成功时资金方可解锁，无法绕过。</div></div>
+      <div class="flow-step"><div class="flow-num">第五步</div><div class="flow-title">资金结算</div><div class="flow-desc">商户到账 98.25% 净额，手续费仅 1.75%，无月费。</div></div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-header"><span class="section-num">02</span><h2 class="section-title">城市公共服务整合</h2></div>
+    <div class="pillar-grid">
+      <div class="pillar"><div class="pillar-icon">💧</div><div class="pillar-title">公共饮水点</div><div class="pillar-body">实时地理定位市政公共饮水点，游客与居民无需注册即可免费使用。</div><span class="pillar-tag">免费 · 无需注册</span></div>
+      <div class="pillar"><div class="pillar-icon">🚻</div><div class="pillar-title">公共卫生间</div><div class="pillar-body">提供卫生间无障碍状态、开放时间及实时可用情况，助力无障碍旅游。</div><span class="pillar-tag">无障碍认证</span></div>
+      <div class="pillar"><div class="pillar-icon">📶</div><div class="pillar-title">公共 Wi-Fi 热点</div><div class="pillar-body">整合市政及合作伙伴 Wi-Fi 网络，为游客、学生及远程办公者提供连接支持。</div><span class="pillar-tag">公共网络接入</span></div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-header"><span class="section-num">03</span><h2 class="section-title">防欺诈保障机制</h2></div>
+    <table class="gtable">
+      <thead><tr><th>风险类型</th><th>InstantTown 保护机制</th></tr></thead>
+      <tbody>
+        <tr><td>未经验证的商户</td><td><span class="ck">✓</span> 强制增值税号注册、防重复审核、实体门店坐标验证</td></tr>
+        <tr><td>虚假或误导性优惠</td><td><span class="ck">✓</span> 发布前自动审核（价格、库存、经营类别），管理员可实时暂停。</td></tr>
+        <tr><td>商品或服务未交付</td><td><span class="ck">✓</span> 付款留存托管，须完成 QR-A + QR-B 线下双码核验方可解锁。</td></tr>
+        <tr><td>支付欺诈</td><td><span class="ck">✓</span> 接入 Stripe Connect / Mangopay 合规渠道，资金不直接在双方之间流转。</td></tr>
+        <tr><td>未授权 GPS 追踪</td><td><span class="ck">✓</span> 用户坐标从不上传服务器，近邻计算在用户设备本地完成。</td></tr>
+        <tr><td>成交后价格变动</td><td><span class="ck">✓</span> 优惠价格在创建时锁定，顾客接受后不得更改。</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="section">
+    <div class="section-header"><span class="section-num">04</span><h2 class="section-title">透明佣金模式</h2></div>
+    <div class="comm">
+      <div><div class="comm-num">1.75%</div><div class="comm-lbl">InstantTown 综合手续费率</div></div>
+      <div class="comm-detail">商户每笔交易到账 <strong>98.25% 净额</strong>。<br>无月费，无注册费。<br>传统中间渠道手续费通常为 <strong>15% 至 25%</strong>。</div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-header"><span class="section-num">05</span><h2 class="section-title">法规合规</h2></div>
+    <div class="comp-row">
+      <div class="cpill"><span>✓</span>GDPR 2016/679 — 隐私设计原则</div>
+      <div class="cpill"><span>✓</span>PSD2 — 欧盟支付服务指令</div>
+      <div class="cpill"><span>✓</span>D.Lgs. 231/2001 — 企业行政责任法</div>
+      <div class="cpill"><span>✓</span>D.Lgs. 114/1998 — 商业法规</div>
+      <div class="cpill"><span>✓</span>Art. 67 TUIR — 偶发性收入条款</div>
+      <div class="cpill"><span>✓</span>ATECO 2025 — 经济活动分类标准</div>
+    </div>
+  </div>
+</main>
+<div class="footer-stripe"></div>
+<footer>
+  <div style="margin:0 auto 16px;text-align:center;">
+  <svg width="80" height="96" viewBox="0 0 80 96" xmlns="http://www.w3.org/2000/svg">
+    <!-- sfondo celeste arrotondato -->
+    <rect width="80" height="96" rx="14" fill="#5BACD8"/>
+    <!-- pallina verde (punto della i) -->
+    <circle cx="40" cy="18" r="11" fill="#2E8B2E"/>
+    <circle cx="36" cy="14" r="4" fill="#4DB84D" opacity="0.5"/>
+    <!-- corpo della i: banda verde sinistra -->
+    <path d="M24 34 Q24 82 32 88 Q36 92 40 92 L40 34 Z" fill="#2E8B2E"/>
+    <!-- corpo della i: banda bianca centro -->
+    <path d="M40 34 L40 92 Q44 92 48 88 Q52 82 52 70 L52 34 Z" fill="white"/>
+    <!-- corpo della i: banda rossa destra (curva) -->
+    <path d="M52 34 L52 70 Q52 84 44 90 Q50 88 56 80 Q62 70 62 56 L62 34 Z" fill="#C0392B"/>
+    <!-- riflesso lucido -->
+    <path d="M27 36 Q30 34 34 35 L34 50 Q30 49 27 51 Z" fill="white" opacity="0.25"/>
+  </svg>
+  <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;letter-spacing:.12em;color:#5BACD8;margin-top:8px;">INSTANTOWN</div>
+</div>
+  <strong>InstantTown PROX</strong> — 机构专用保密文件 &nbsp;·&nbsp; 意大利·罗马，2025年 &nbsp;·&nbsp; 版权所有
+</footer>
+</div>
+
+<!-- ══════════════════════════════════════════ ESPAÑOL ══ -->
+<div class="lang-section" id="lang-es">
+<div class="header-stripe"></div>
+<header>
+  <div class="header-inner">
+    <img src="Nuovo_logo_3_diss.png" alt="Logo InstantTown" class="header-logo">
+    <div class="header-text">
+      <div class="header-badge">Arquitectura del Sistema — Documento Formal</div>
+      <h1 class="header-title"><span class="it">Instant</span><span class="town">Town</span> PROX</h1>
+      <p class="header-sub">Plataforma digital de proximidad para el comercio local, el turismo y los servicios públicos urbanos</p>
+      <div class="header-meta">
+        <div class="hm"><strong>Versión</strong>1.0 — 2025</div>
+        <div class="hm"><strong>Ciudad piloto</strong>Roma, Italia</div>
+        <div class="hm"><strong>Solicitante</strong>InstantTown S.r.l. (en constitución)</div>
+        <div class="hm"><strong>Cumplimiento</strong>GDPR · PSD2 · D.Lgs. 231/2001</div>
+      </div>
+    </div>
+  </div>
+</header>
+<div class="vignetta-band">
+  <div class="vignetta-inner">
+    <img src="Vignetta.png" alt="InstantTown — El mundo a tus pies" class="vignetta-img">
+  </div>
+</div>
+<main>
+  <div class="section">
+    <div class="section-header"><span class="section-num">01</span><h2 class="section-title">Flujo operativo certificado</h2></div>
+    <div class="flow">
+      <div class="flow-step"><div class="flow-num">Paso 1</div><div class="flow-title">GPS y geovalla</div><div class="flow-desc">Localización en tiempo real en un radio de 200/300/500 m mediante el algoritmo Haversine.</div></div>
+      <div class="flow-step"><div class="flow-num">Paso 2</div><div class="flow-title">Oferta validada</div><div class="flow-desc">NIF, coordenadas físicas y cumplimiento normativo verificados antes de la publicación.</div></div>
+      <div class="flow-step hl"><div class="flow-num">Paso 3</div><div class="flow-title">Depósito en garantía</div><div class="flow-desc">El pago queda retenido. Nadie accede a los fondos antes del cruce de QR.</div></div>
+      <div class="flow-step hl"><div class="flow-num">Paso 4</div><div class="flow-title">QR-A + QR-B</div><div class="flow-desc">Solo el par físicamente emparejado libera el pago. Imposible eludirlo.</div></div>
+      <div class="flow-step"><div class="flow-num">Paso 5</div><div class="flow-title">Liquidación</div><div class="flow-desc">El comerciante recibe el 98,25% neto. Comisión 1,75%. Sin cuota mensual fija.</div></div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-header"><span class="section-num">02</span><h2 class="section-title">Servicios públicos urbanos integrados</h2></div>
+    <div class="pillar-grid">
+      <div class="pillar"><div class="pillar-icon">💧</div><div class="pillar-title">Fuentes de agua potable</div><div class="pillar-body">Cartografía georreferenciada de fuentes municipales, actualizada en tiempo real. Accesible sin registro.</div><span class="pillar-tag">Gratuito · Sin registro</span></div>
+      <div class="pillar"><div class="pillar-icon">🚻</div><div class="pillar-title">Aseos públicos</div><div class="pillar-body">Localización con accesibilidad, horarios y disponibilidad en tiempo real. Apoyo al turismo accesible.</div><span class="pillar-tag">Accesibilidad certificada</span></div>
+      <div class="pillar"><div class="pillar-icon">📶</div><div class="pillar-title">Puntos de Wi-Fi público</div><div class="pillar-body">Agregación de redes Wi-Fi municipales y convenidas. Conectividad para turistas, estudiantes y teletrabajadores.</div><span class="pillar-tag">Conectividad pública</span></div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-header"><span class="section-num">03</span><h2 class="section-title">Sistema de garantía antifraude</h2></div>
+    <table class="gtable">
+      <thead><tr><th>Riesgo</th><th>Mecanismo de protección InstantTown</th></tr></thead>
+      <tbody>
+        <tr><td>Comerciante no verificado</td><td><span class="ck">✓</span> Registro obligatorio con NIF, control anti-duplicados, validación de coordenadas físicas del establecimiento</td></tr>
+        <tr><td>Oferta falsa o engañosa</td><td><span class="ck">✓</span> Validación automática (precio, disponibilidad, categoría) antes de la publicación. El administrador puede suspender en tiempo real.</td></tr>
+        <tr><td>Incumplimiento de entrega</td><td><span class="ck">✓</span> Pago en depósito hasta el doble cruce físico QR-A + QR-B. Sin coincidencia física no se libera ningún fondo.</td></tr>
+        <tr><td>Fraude en el pago</td><td><span class="ck">✓</span> Integración Stripe Connect / Mangopay. Los fondos nunca circulan directamente entre las partes.</td></tr>
+        <tr><td>Rastreo GPS no autorizado</td><td><span class="ck">✓</span> Coordenadas del usuario nunca almacenadas en servidores. Cálculo de proximidad on-device.</td></tr>
+        <tr><td>Modificación del precio acordado</td><td><span class="ck">✓</span> Precio fijado en el momento de crear la oferta. No modificable tras la aceptación del cliente.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="section">
+    <div class="section-header"><span class="section-num">04</span><h2 class="section-title">Modelo comisional transparente</h2></div>
+    <div class="comm">
+      <div><div class="comm-num">1,75%</div><div class="comm-lbl">Comisión total InstantTown</div></div>
+      <div class="comm-detail">El comerciante recibe el <strong>98,25% neto</strong> en cada transacción.<br>Sin cuota mensual. Sin tarifa de inscripción.<br>Circuitos tradicionales: comisiones entre <strong>15% y 25%</strong>.</div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-header"><span class="section-num">05</span><h2 class="section-title">Cumplimiento normativo</h2></div>
+    <div class="comp-row">
+      <div class="cpill"><span>✓</span>GDPR 2016/679 — Privacidad desde el diseño</div>
+      <div class="cpill"><span>✓</span>PSD2 — Directiva de servicios de pago</div>
+      <div class="cpill"><span>✓</span>D.Lgs. 231/2001 — Responsabilidad corporativa</div>
+      <div class="cpill"><span>✓</span>D.Lgs. 114/1998 — Regulación comercial</div>
+      <div class="cpill"><span>✓</span>Art. 67 TUIR — Ingresos ocasionales</div>
+      <div class="cpill"><span>✓</span>ATECO 2025 — Clasificación de actividades</div>
+    </div>
+  </div>
+</main>
+<div class="footer-stripe"></div>
+<footer>
+  <div style="margin:0 auto 16px;text-align:center;">
+  <svg width="80" height="96" viewBox="0 0 80 96" xmlns="http://www.w3.org/2000/svg">
+    <!-- sfondo celeste arrotondato -->
+    <rect width="80" height="96" rx="14" fill="#5BACD8"/>
+    <!-- pallina verde (punto della i) -->
+    <circle cx="40" cy="18" r="11" fill="#2E8B2E"/>
+    <circle cx="36" cy="14" r="4" fill="#4DB84D" opacity="0.5"/>
+    <!-- corpo della i: banda verde sinistra -->
+    <path d="M24 34 Q24 82 32 88 Q36 92 40 92 L40 34 Z" fill="#2E8B2E"/>
+    <!-- corpo della i: banda bianca centro -->
+    <path d="M40 34 L40 92 Q44 92 48 88 Q52 82 52 70 L52 34 Z" fill="white"/>
+    <!-- corpo della i: banda rossa destra (curva) -->
+    <path d="M52 34 L52 70 Q52 84 44 90 Q50 88 56 80 Q62 70 62 56 L62 34 Z" fill="#C0392B"/>
+    <!-- riflesso lucido -->
+    <path d="M27 36 Q30 34 34 35 L34 50 Q30 49 27 51 Z" fill="white" opacity="0.25"/>
+  </svg>
+  <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;letter-spacing:.12em;color:#5BACD8;margin-top:8px;">INSTANTOWN</div>
+</div>
+  <strong>InstantTown PROX</strong> — Documento confidencial de uso institucional &nbsp;·&nbsp; Roma, Italia, 2025 &nbsp;·&nbsp; Todos los derechos reservados
+</footer>
+</div>
+
+<!-- ══════════════════════════════════════════ FRANÇAIS ══ -->
+<div class="lang-section" id="lang-fr">
+<div class="header-stripe"></div>
+<header>
+  <div class="header-inner">
+    <img src="Nuovo_logo_3_diss.png" alt="Logo InstantTown" class="header-logo">
+    <div class="header-text">
+      <div class="header-badge">Architecture du Système — Document Formel</div>
+      <h1 class="header-title"><span class="it">Instant</span><span class="town">Town</span> PROX</h1>
+      <p class="header-sub">Plateforme numérique de proximité pour le commerce local, le tourisme et les services publics urbains</p>
+      <div class="header-meta">
+        <div class="hm"><strong>Version</strong>1.0 — 2025</div>
+        <div class="hm"><strong>Ville pilote</strong>Rome, Italie</div>
+        <div class="hm"><strong>Porteur de projet</strong>InstantTown S.r.l. (en cours de constitution)</div>
+        <div class="hm"><strong>Conformité</strong>RGPD · DSP2 · D.Lgs. 231/2001</div>
+      </div>
+    </div>
+  </div>
+</header>
+<div class="vignetta-band">
+  <div class="vignetta-inner">
+    <img src="Vignetta.png" alt="InstantTown — Le monde à vos pieds" class="vignetta-img">
+  </div>
+</div>
+<main>
+  <div class="section">
+    <div class="section-header"><span class="section-num">01</span><h2 class="section-title">Flux opérationnel certifié</h2></div>
+    <div class="flow">
+      <div class="flow-step"><div class="flow-num">Étape 1</div><div class="flow-title">GPS et géofence</div><div class="flow-desc">Géolocalisation en temps réel dans un rayon de 200/300/500 m via l'algorithme de Haversine.</div></div>
+      <div class="flow-step"><div class="flow-num">Étape 2</div><div class="flow-title">Offre validée</div><div class="flow-desc">Numéro de TVA, coordonnées physiques et conformité vérifiés avant publication.</div></div>
+      <div class="flow-step hl"><div class="flow-num">Étape 3</div><div class="flow-title">Séquestre sécurisé</div><div class="flow-desc">Le paiement est placé sous séquestre. Aucun accès aux fonds avant la correspondance QR.</div></div>
+      <div class="flow-step hl"><div class="flow-num">Étape 4</div><div class="flow-title">QR-A + QR-B</div><div class="flow-desc">Seule la paire physiquement appariée libère le paiement. Impossible à contourner.</div></div>
+      <div class="flow-step"><div class="flow-num">Étape 5</div><div class="flow-title">Règlement</div><div class="flow-desc">Le commerçant reçoit 98,25 % net. Commission 1,75 %. Sans abonnement mensuel fixe.</div></div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-header"><span class="section-num">02</span><h2 class="section-title">Services publics urbains intégrés</h2></div>
+    <div class="pillar-grid">
+      <div class="pillar"><div class="pillar-icon">💧</div><div class="pillar-title">Fontaines d'eau potable</div><div class="pillar-body">Cartographie géoréférencée des fontaines municipales, mise à jour en temps réel. Accessible sans inscription.</div><span class="pillar-tag">Gratuit · Sans inscription</span></div>
+      <div class="pillar"><div class="pillar-icon">🚻</div><div class="pillar-title">Toilettes publiques</div><div class="pillar-body">Localisation avec accessibilité, horaires et disponibilité en temps réel. Soutien au tourisme accessible.</div><span class="pillar-tag">Accessibilité certifiée</span></div>
+      <div class="pillar"><div class="pillar-icon">📶</div><div class="pillar-title">Points Wi-Fi publics</div><div class="pillar-body">Agrégation des réseaux Wi-Fi municipaux et conventionnés. Connectivité pour touristes, étudiants et télétravailleurs.</div><span class="pillar-tag">Connectivité publique</span></div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-header"><span class="section-num">03</span><h2 class="section-title">Système de garantie antifraude</h2></div>
+    <table class="gtable">
+      <thead><tr><th>Risque</th><th>Mécanisme de protection InstantTown</th></tr></thead>
+      <tbody>
+        <tr><td>Commerçant non vérifié</td><td><span class="ck">✓</span> Enregistrement obligatoire avec numéro de TVA, contrôle anti-doublons, validation des coordonnées physiques</td></tr>
+        <tr><td>Offre fausse ou trompeuse</td><td><span class="ck">✓</span> Validation automatique (prix, disponibilité, catégorie) avant publication. L'administrateur peut suspendre en temps réel.</td></tr>
+        <tr><td>Non-livraison du bien ou service</td><td><span class="ck">✓</span> Paiement sous séquestre jusqu'au double appariement physique QR-A + QR-B. Sans correspondance physique, aucun fonds libéré.</td></tr>
+        <tr><td>Fraude au paiement</td><td><span class="ck">✓</span> Intégration Stripe Connect / Mangopay. Les fonds ne transitent jamais directement entre les parties.</td></tr>
+        <tr><td>Géolocalisation non autorisée</td><td><span class="ck">✓</span> Coordonnées de l'utilisateur jamais stockées sur les serveurs. Calcul de proximité on-device.</td></tr>
+        <tr><td>Modification du prix après accord</td><td><span class="ck">✓</span> Prix cristallisé à la création de l'offre. Non modifiable après acceptation du client.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="section">
+    <div class="section-header"><span class="section-num">04</span><h2 class="section-title">Modèle de commission transparent</h2></div>
+    <div class="comm">
+      <div><div class="comm-num">1,75%</div><div class="comm-lbl">Commission totale InstantTown</div></div>
+      <div class="comm-detail">Le commerçant perçoit <strong>98,25 % net</strong> sur chaque transaction.<br>Sans abonnement mensuel. Sans frais d'inscription.<br>Circuits traditionnels : commissions entre <strong>15 % et 25 %</strong>.</div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-header"><span class="section-num">05</span><h2 class="section-title">Conformité réglementaire</h2></div>
+    <div class="comp-row">
+      <div class="cpill"><span>✓</span>RGPD 2016/679 — Protection des données</div>
+      <div class="cpill"><span>✓</span>DSP2 — Directive services de paiement</div>
+      <div class="cpill"><span>✓</span>D.Lgs. 231/2001 — Responsabilité des entreprises</div>
+      <div class="cpill"><span>✓</span>D.Lgs. 114/1998 — Réglementation commerciale</div>
+      <div class="cpill"><span>✓</span>Art. 67 TUIR — Revenus occasionnels</div>
+      <div class="cpill"><span>✓</span>ATECO 2025 — Classification des activités</div>
+    </div>
+  </div>
+</main>
+<div class="footer-stripe"></div>
+<footer>
+  <div style="margin:0 auto 16px;text-align:center;">
+  <svg width="80" height="96" viewBox="0 0 80 96" xmlns="http://www.w3.org/2000/svg">
+    <!-- sfondo celeste arrotondato -->
+    <rect width="80" height="96" rx="14" fill="#5BACD8"/>
+    <!-- pallina verde (punto della i) -->
+    <circle cx="40" cy="18" r="11" fill="#2E8B2E"/>
+    <circle cx="36" cy="14" r="4" fill="#4DB84D" opacity="0.5"/>
+    <!-- corpo della i: banda verde sinistra -->
+    <path d="M24 34 Q24 82 32 88 Q36 92 40 92 L40 34 Z" fill="#2E8B2E"/>
+    <!-- corpo della i: banda bianca centro -->
+    <path d="M40 34 L40 92 Q44 92 48 88 Q52 82 52 70 L52 34 Z" fill="white"/>
+    <!-- corpo della i: banda rossa destra (curva) -->
+    <path d="M52 34 L52 70 Q52 84 44 90 Q50 88 56 80 Q62 70 62 56 L62 34 Z" fill="#C0392B"/>
+    <!-- riflesso lucido -->
+    <path d="M27 36 Q30 34 34 35 L34 50 Q30 49 27 51 Z" fill="white" opacity="0.25"/>
+  </svg>
+  <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;letter-spacing:.12em;color:#5BACD8;margin-top:8px;">INSTANTOWN</div>
+</div>
+  <strong>InstantTown PROX</strong> — Document confidentiel à usage institutionnel &nbsp;·&nbsp; Rome, Italie, 2025 &nbsp;·&nbsp; Tous droits réservés
+</footer>
+</div>
+
+<script>
+function setLang(code, btn) {
+  document.querySelectorAll('.lang-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('lang-' + code).classList.add('active');
+  btn.classList.add('active');
+  document.documentElement.lang = code === 'zh' ? 'zh-Hans' : code;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>

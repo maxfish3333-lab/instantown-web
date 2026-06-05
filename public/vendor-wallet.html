@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Instantown - Vendor Wallet</title>
+    <style>
+        :root { --green: #22c55e; --black: #050505; --grey: #1a1a1a; --gold: #f59e0b; }
+        body { margin: 0; background: var(--black); color: white; font-family: sans-serif; padding: 20px; }
+        
+        .balance-card { 
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+            padding: 30px; border-radius: 25px; border: 1px solid #333; text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin-bottom: 25px;
+        }
+
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .stat-box { background: var(--grey); padding: 15px; border-radius: 15px; border: 1px solid #222; }
+        .stat-label { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-value { font-size: 18px; font-weight: bold; margin-top: 5px; }
+
+        .history-list { background: var(--grey); border-radius: 20px; overflow: hidden; border: 1px solid #222; }
+        .history-item { padding: 15px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+        .history-item:last-child { border-bottom: none; }
+
+        .bonus-tag { background: rgba(245, 158, 11, 0.1); color: var(--gold); padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; }
+        
+        .btn-withdraw { width: 100%; padding: 18px; background: white; color: black; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="margin: 0;">Portafoglio Vendor</h2>
+        <a href="index.html" style="color: #666; text-decoration: none; font-size: 12px;">← Esci</a>
+    </div>
+
+    <!-- PULSANTE SCANNER QR -->
+    <a href="esercente-scan.html" style="
+      display:flex;align-items:center;justify-content:center;gap:12px;
+      width:100%;padding:18px;background:linear-gradient(135deg,#1A7A3A,#22A050);
+      color:#fff;text-decoration:none;border-radius:15px;font-weight:bold;
+      font-size:16px;margin-bottom:24px;box-shadow:0 4px 20px rgba(26,122,58,.4);
+      letter-spacing:.02em;">
+      <span style="font-size:24px;">📷</span>
+      SCANSIONA QR-B CLIENTE
+      <span style="font-size:12px;opacity:.7;">sblocca i fondi</span>
+    </a>
+
+    <div class="balance-card">
+        <div style="font-size: 12px; color: #888; text-transform: uppercase;">Saldo Disponibile</div>
+        <div style="font-size: 42px; font-weight: 900; color: var(--green); margin: 10px 0;">€ 12.458,50</div>
+        <div style="font-size: 11px; color: #444;">ID ACCOUNT: IT-VENDOR-9912</div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div class="stat-label">Vendite Base</div>
+            <div class="stat-value">€ 12.375,00</div>
+        </div>
+        <div class="stat-box" style="border-color: var(--gold);">
+            <div class="stat-label" style="color: var(--gold);">Bonus Proroghe</div>
+            <div class="stat-value" style="color: var(--gold);">+ € 83,50</div>
+        </div>
+    </div>
+
+    <h4 style="margin-bottom: 15px; color: #888;">Ultime Transazioni</h4>
+
+    <div class="history-list">
+        <div class="history-item">
+            <div>
+                <div style="font-size: 14px; font-weight: bold;">Lotto #442 - Finder Alfa</div>
+                <div style="font-size: 11px; color: #666;">Sbloccato con ritardo (Proroga 1.00%)</div>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 15px; font-weight: bold;">€ 5.025,00</div>
+                <div class="bonus-tag">+ € 25,00 Bonus</div>
+            </div>
+        </div>
+
+        <div class="history-item">
+            <div>
+                <div style="font-size: 14px; font-weight: bold;">Lotto #439 - Finder Beta</div>
+                <div style="font-size: 11px; color: #666;">Sbloccato con ritardo (Proroga 0.80%)</div>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 15px; font-weight: bold;">€ 2.008,00</div>
+                <div class="bonus-tag">+ € 8,00 Bonus</div>
+            </div>
+        </div>
+
+        <div class="history-item">
+            <div>
+                <div style="font-size: 14px; font-weight: bold;">Lotto #435 - Finder Gamma</div>
+                <div style="font-size: 11px; color: #666;">Sbloccato entro i termini</div>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 15px; font-weight: bold;">€ 3.400,00</div>
+                <div style="font-size: 10px; color: #444;">Puntuale</div>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn-withdraw" onclick="alert('Trasferimento di € 12.458,50 verso il tuo IBAN avviato!')">PRELEVA FONDI</button>
+
+</body>
+</html>

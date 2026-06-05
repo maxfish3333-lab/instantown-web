@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INSTANTOWN — Pubblica Offerta Flash</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rosso:#8B1A1A;--rosso-l:#C0392B;--rosso-p:#FDF0EF;
+  --ocra:#C8860A;--ocra-l:#E8A020;--ocra-p:#FDF3DC;
+  --cielo:#4A90C4;--cielo-l:#6AAFD8;--cielo-p:#E8F4FB;
+  --verde:#16a34a;--verde-p:#f0fdf4;
+  --bianco:#FDFAF4;--ink:#1C1410;--ink-m:#3D2E24;--ink-mu:#6B5A4E;
+  --rule:rgba(139,26,26,0.12);--rule-s:rgba(139,26,26,0.25);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--ink);font-size:15px;line-height:1.7;}
+
+.stripe{height:5px;background:linear-gradient(90deg,var(--rosso-l) 33.3%,#fff 33.3%,#fff 66.6%,var(--cielo) 66.6%);}
+
+nav{background:var(--ink);padding:13px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.nav-logo{display:flex;align-items:center;gap:10px;}
+.nav-logo img{width:36px;height:36px;object-fit:contain;border-radius:7px;background:#fff;}
+.nav-brand{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:#fff;}
+.nav-brand span{color:var(--ocra-l);}
+.nav-back{color:rgba(255,255,255,.45);font-size:13px;text-decoration:none;transition:color .2s;}
+.nav-back:hover{color:var(--ocra-l);}
+
+/* ── PAGE HEADER ── */
+.page-header{background:var(--ink);padding:32px 40px 28px;overflow:hidden;position:relative;}
+.page-header::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(200,134,10,.04) 59px,rgba(200,134,10,.04) 60px);pointer-events:none;}
+.ph-inner{max-width:780px;margin:0 auto;position:relative;}
+.ph-badge{display:inline-block;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ocra-l);border:1px solid rgba(200,134,10,.3);padding:3px 10px;border-radius:2px;margin-bottom:12px;}
+.ph-title{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:600;color:#fff;margin-bottom:4px;}
+.ph-sub{font-size:13px;color:rgba(255,255,255,.4);}
+
+/* ── LAYOUT ── */
+main{max-width:780px;margin:0 auto;padding:36px 32px 80px;}
+
+/* ── STEP INDICATOR ── */
+.steps{display:flex;gap:0;margin-bottom:36px;background:#fff;border:1px solid var(--rule);border-radius:4px;overflow:hidden;}
+.step{flex:1;padding:12px 16px;display:flex;align-items:center;gap:10px;border-right:1px solid var(--rule);font-size:12px;color:var(--ink-mu);}
+.step:last-child{border-right:none;}
+.step.done{background:var(--verde-p);}
+.step.active{background:var(--rosso-p);}
+.step-num{width:22px;height:22px;border-radius:50%;background:var(--rule);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;color:var(--ink-mu);}
+.step.active .step-num{background:var(--rosso);color:#fff;}
+.step.done .step-num{background:var(--verde);color:#fff;}
+.step-label{font-weight:500;color:var(--ink);}
+.step.active .step-label{color:var(--rosso);}
+.step.done .step-label{color:var(--verde);}
+
+/* ── SEZIONE ── */
+.sez{background:#fff;border:1px solid var(--rule);border-radius:6px;margin-bottom:20px;overflow:hidden;box-shadow:0 2px 12px rgba(28,20,16,.05);}
+.sez-header{padding:18px 24px;border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:14px;background:var(--bianco);}
+.sez-num{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--rosso);line-height:1;min-width:28px;}
+.sez-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--ink);}
+.sez-sub{font-size:12px;color:var(--ink-mu);margin-top:1px;}
+.sez-body{padding:22px 24px;}
+
+/* ── CAMPI FORM ── */
+.field{margin-bottom:16px;}
+.field-row{display:grid;gap:14px;margin-bottom:16px;}
+.col2{grid-template-columns:1fr 1fr;}
+.col3{grid-template-columns:1fr 1fr 1fr;}
+.col4{grid-template-columns:2fr 1fr 1fr 1fr;}
+label{display:block;font-size:11px;font-weight:500;color:var(--ink-mu);margin-bottom:5px;letter-spacing:.07em;text-transform:uppercase;}
+input,select,textarea{width:100%;padding:11px 14px;border:1px solid rgba(139,26,26,.15);border-radius:3px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);background:#fff;transition:border-color .2s;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rosso);}
+textarea{resize:vertical;min-height:88px;line-height:1.6;}
+input[type=time]{cursor:pointer;}
+input[type=number]{-moz-appearance:textfield;}
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
+
+/* ── UNITÀ DI MISURA ── */
+.misura-group{display:flex;gap:0;border:1px solid rgba(139,26,26,.15);border-radius:3px;overflow:hidden;}
+.misura-input{border:none!important;border-right:1px solid rgba(139,26,26,.15)!important;border-radius:0!important;flex:1;}
+.misura-input:focus{border-color:var(--rosso)!important;}
+.misura-sel{border:none!important;border-radius:0!important;background:var(--bianco)!important;width:110px;flex-shrink:0;cursor:pointer;}
+.misura-sel:focus{outline:none;}
+
+/* ── PREZZI ── */
+.prezzi-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;align-items:end;}
+.prezzo-wrap{position:relative;}
+.prezzo-wrap input{padding-left:28px;}
+.euro-sign{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--ink-mu);font-size:13px;pointer-events:none;}
+.sconto-display{background:var(--ocra-p);border:1px solid rgba(200,134,10,.25);border-radius:3px;padding:11px 14px;font-size:13px;font-weight:500;color:var(--ocra);text-align:center;}
+
+/* ── ORARIO FLASH ── */
+.flash-row{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:end;}
+.flash-sep{font-size:18px;color:var(--ink-mu);text-align:center;padding-bottom:10px;}
+
+/* ── FOTO UPLOAD ── */
+.foto-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.foto-box{position:relative;cursor:pointer;}
+.foto-box input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;z-index:2;}
+.foto-area{
+  border:2px dashed rgba(139,26,26,.25);border-radius:6px;
+  aspect-ratio:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  background:var(--bianco);transition:all .2s;overflow:hidden;
+  position:relative;
+}
+.foto-box:hover .foto-area{border-color:var(--rosso);background:var(--rosso-p);}
+.foto-label-tag{
+  position:absolute;top:0;left:0;right:0;
+  background:var(--rosso);color:#fff;
+  font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  padding:7px 10px;text-align:center;z-index:1;
+}
+.foto-icon{font-size:28px;margin:36px 0 8px;color:var(--ink-mu);}
+.foto-hint{font-size:11px;color:var(--ink-mu);text-align:center;padding:0 10px;}
+.foto-preview{
+  position:absolute;inset:0;z-index:1;
+  object-fit:cover;width:100%;height:100%;
+  display:none;border-radius:4px;
+}
+.foto-preview.visible{display:block;}
+.foto-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;position:absolute;inset:0;top:32px;}
+.foto-check{
+  position:absolute;bottom:6px;right:6px;z-index:3;
+  background:var(--verde);color:#fff;border-radius:50%;
+  width:22px;height:22px;font-size:12px;
+  display:none;align-items:center;justify-content:center;font-weight:700;
+}
+.foto-check.visible{display:flex;}
+
+/* ── CATEGORIA PILLS ── */
+.cat-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px;}
+.cat-pill{
+  padding:8px 16px;border:1.5px solid var(--rule);border-radius:20px;
+  font-size:12px;font-weight:500;color:var(--ink-mu);cursor:pointer;
+  background:#fff;transition:all .2s;user-select:none;
+}
+.cat-pill:hover{border-color:var(--rosso);}
+.cat-pill.sel{background:var(--rosso);border-color:var(--rosso);color:#fff;}
+input[name=categoria]{display:none;}
+
+/* ── ANTEPRIMA CARD ── */
+.anteprima-wrap{background:var(--bianco);border:1px solid var(--rule);border-radius:6px;padding:20px 24px;margin-bottom:20px;}
+.anteprima-title{font-size:12px;font-weight:500;color:var(--ink-mu);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.anteprima-card{background:#fff;border:1px solid var(--rule);border-radius:6px;overflow:hidden;max-width:320px;}
+.ap-foto{height:160px;background:var(--bianco);border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:center;color:var(--ink-mu);font-size:12px;position:relative;overflow:hidden;}
+.ap-foto img{width:100%;height:100%;object-fit:cover;display:none;}
+.ap-body{padding:14px;}
+.ap-cat{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ocra);margin-bottom:5px;}
+.ap-desc{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:3px;}
+.ap-misura{font-size:11px;color:var(--ink-mu);margin-bottom:10px;}
+.ap-prezzi{display:flex;align-items:baseline;gap:8px;}
+.ap-flash{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:var(--rosso);}
+.ap-std{font-size:12px;color:var(--ink-mu);text-decoration:line-through;}
+.ap-sc{font-size:10px;font-weight:600;background:var(--ocra-p);color:var(--ocra);padding:2px 7px;border-radius:3px;}
+.ap-footer{padding:10px 14px;background:var(--bianco);border-top:1px solid var(--rule);display:flex;justify-content:space-between;align-items:center;}
+.ap-orario{font-size:11px;color:var(--ink-mu);}
+.ap-btn{background:var(--rosso);color:#fff;font-size:11px;font-weight:500;padding:5px 12px;border-radius:3px;}
+
+/* ── SUBMIT ── */
+.submit-bar{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.submit-note{font-size:12px;color:var(--ink-mu);line-height:1.6;}
+.submit-note strong{color:var(--verde);}
+.btn-pubblica{background:var(--rosso);color:#fff;border:none;padding:14px 32px;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;letter-spacing:.04em;transition:background .2s;}
+.btn-pubblica:hover{background:var(--rosso-l);}
+.btn-pubblica:disabled{opacity:.4;cursor:not-allowed;}
+
+/* ── SUCCESS ── */
+.success-box{display:none;background:var(--verde-p);border:1px solid rgba(22,163,74,.25);border-radius:6px;padding:28px;text-align:center;}
+.success-box.show{display:block;}
+.success-icon{font-size:40px;margin-bottom:12px;}
+.success-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:var(--verde);margin-bottom:6px;}
+.success-sub{font-size:13px;color:var(--ink-mu);}
+
+footer{background:var(--ink);color:rgba(255,255,255,.3);font-size:11px;text-align:center;padding:18px;}
+footer strong{color:var(--ocra-l);}
+
+@media(max-width:620px){
+  nav,main,.page-header{padding-left:16px;padding-right:16px;}
+  .foto-grid{grid-template-columns:1fr 1fr 1fr;}
+  .col2,.col3,.col4{grid-template-columns:1fr;}
+  .prezzi-row{grid-template-columns:1fr 1fr;}
+  .flash-row{grid-template-columns:1fr auto 1fr;}
+  .steps{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="stripe"></div>
+<nav>
+  <div class="nav-logo">
+    <img src="data:image/png;base64,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" alt="INSTANTOWN" style="width:36px;height:36px;border-radius:8px;flex-shrink:0;display:block;">
+    <span class="nav-brand">INSTANTOWN</span>
+  </div>
+  <a href="vendor-wallet.html" class="nav-back">← Pannello esercente</a>
+</nav>
+
+<div class="page-header">
+  <div class="ph-inner">
+    <div class="ph-badge">Pannello esercente</div>
+    <h1 class="ph-title">Pubblica offerta flash</h1>
+    <p class="ph-sub">L'offerta sarà visibile ai clienti nel raggio selezionato non appena pubblicata</p>
+  </div>
+</div>
+
+<main>
+
+  <!-- STEP INDICATOR -->
+  <div class="steps">
+    <div class="step active" id="step-1">
+      <div class="step-num">1</div>
+      <div><div class="step-label">Foto</div></div>
+    </div>
+    <div class="step" id="step-2">
+      <div class="step-num">2</div>
+      <div><div class="step-label">Prodotto</div></div>
+    </div>
+    <div class="step" id="step-3">
+      <div class="step-num">3</div>
+      <div><div class="step-label">Prezzi &amp; Flash</div></div>
+    </div>
+    <div class="step" id="step-4">
+      <div class="step-num">4</div>
+      <div><div class="step-label">Pubblica</div></div>
+    </div>
+  </div>
+
+  <form id="form-offerta" onsubmit="pubblicaOfferta(event)">
+  <input type="hidden" name="_subject" value="[INSTANTOWN] Nuova offerta flash">
+  <input type="hidden" name="_cc" value="info@instantown.it">
+  <input id="cat-val" type="hidden" name="categoria" value="">
+
+  <!-- ══ SEZ 1: FOTO ══ -->
+  <div class="sez">
+    <div class="sez-header">
+      <div class="sez-num">1</div>
+      <div>
+        <div class="sez-title">Foto dell'offerta</div>
+        <div class="sez-sub">3 foto obbligatorie — clicca su ogni riquadro per caricare</div>
+      </div>
+    </div>
+    <div class="sez-body">
+      <div class="foto-grid">
+
+        <!-- INSEGNA -->
+        <div class="foto-box" id="fbox-insegna">
+          <div class="foto-label-tag">Insegna</div>
+          <div class="foto-area" onclick="apriFotoMenu('insegna')">
+            <img class="foto-preview" id="prev-insegna" alt="">
+            <div class="foto-placeholder" id="ph-insegna">
+              <div class="foto-icon">📷</div>
+              <div class="foto-hint">Foto esterna<br>del negozio</div>
+            </div>
+            <div class="foto-check" id="check-insegna">✓</div>
+          </div>
+          <input type="file" accept="image/*" capture="environment" id="file-insegna" style="display:none" onchange="prevFoto(this,'prev-insegna','check-insegna','ph-insegna')">
+        </div>
+
+        <!-- INTERNI -->
+        <div class="foto-box" id="fbox-interni">
+          <div class="foto-label-tag">Interni</div>
+          <div class="foto-area" onclick="apriFotoMenu('interni')">
+            <img class="foto-preview" id="prev-interni" alt="">
+            <div class="foto-placeholder" id="ph-interni">
+              <div class="foto-icon">🏪</div>
+              <div class="foto-hint">Foto interna<br>del locale</div>
+            </div>
+            <div class="foto-check" id="check-interni">✓</div>
+          </div>
+          <input type="file" accept="image/*" capture="environment" id="file-interni" style="display:none" onchange="prevFoto(this,'prev-interni','check-interni','ph-interni')">
+        </div>
+
+        <!-- PRODOTTI -->
+        <div class="foto-box" id="fbox-prodotti">
+          <div class="foto-label-tag">Prodotti</div>
+          <div class="foto-area" onclick="apriFotoMenu('prodotti')">
+            <img class="foto-preview" id="prev-prodotti" alt="">
+            <div class="foto-placeholder" id="ph-prodotti">
+              <div class="foto-icon">🛍️</div>
+              <div class="foto-hint">Foto del<br>prodotto</div>
+            </div>
+            <div class="foto-check" id="check-prodotti">✓</div>
+          </div>
+          <input type="file" accept="image/*" capture="environment" id="file-prodotti" style="display:none" onchange="prevFoto(this,'prev-prodotti','check-prodotti','ph-prodotti')">
+        </div>
+
+      </div>
+      <p style="font-size:11px;color:var(--ink-mu);margin-top:12px;">📱 Tocca una foto per scegliere: galleria, fotocamera o URL web.</p>
+
+      <!-- MENU SELEZIONE FOTO -->
+      <div id="foto-menu" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:flex-end;justify-content:center;">
+        <div style="background:var(--bianco);border-radius:16px 16px 0 0;width:100%;max-width:480px;padding:20px 20px 32px;">
+          <div style="font-size:13px;font-weight:500;color:var(--ink-mu);text-align:center;margin-bottom:16px;letter-spacing:.04em;text-transform:uppercase;">
+            Aggiungi foto — <span id="foto-menu-label"></span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;">
+            <button onclick="sceltaFoto('galleria')" style="padding:14px 8px;border:1px solid var(--rule);border-radius:8px;background:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);">
+              🖼️<br><br>Galleria
+            </button>
+            <button onclick="sceltaFoto('camera')" style="padding:14px 8px;border:1px solid var(--rule);border-radius:8px;background:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);">
+              📸<br><br>Fotocamera
+            </button>
+            <button onclick="sceltaFoto('url')" style="padding:14px 8px;border:1px solid var(--rule);border-radius:8px;background:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);">
+              🌐<br><br>Da URL
+            </button>
+          </div>
+          <button onclick="chiudiFotoMenu()" style="width:100%;padding:12px;border:1px solid var(--rule);border-radius:6px;background:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink-mu);cursor:pointer;">
+            Annulla
+          </button>
+        </div>
+      </div>
+
+      <!-- INPUT URL FOTO -->
+      <div id="url-input-box" style="display:none;margin-top:12px;gap:8px;align-items:center;">
+        <input type="url" id="url-foto-input" placeholder="https://... incolla qui l'URL dell'immagine"
+          style="flex:1;padding:10px 14px;border:1px solid var(--rule-s);border-radius:3px;font-size:13px;font-family:'DM Sans',sans-serif;">
+        <button onclick="caricaDaUrl()" style="padding:10px 16px;background:var(--rosso);color:#fff;border:none;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;">
+          Carica
+        </button>
+        <button onclick="chiudiUrl()" style="padding:10px;background:none;border:1px solid var(--rule);border-radius:3px;cursor:pointer;font-size:13px;">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SEZ 2: PRODOTTO ══ -->
+  <div class="sez">
+    <div class="sez-header">
+      <div class="sez-num">2</div>
+      <div>
+        <div class="sez-title">Prodotto o servizio</div>
+        <div class="sez-sub">Descrivi cosa offri e come si misura</div>
+      </div>
+    </div>
+    <div class="sez-body">
+
+      <div class="field">
+        <label>Categoria merceologica *</label>
+        <div class="cat-pills">
+          <div class="cat-pill" onclick="selCat('CIBO',this)">🍕 Cibo</div>
+          <div class="cat-pill" onclick="selCat('MODA',this)">👗 Moda</div>
+          <div class="cat-pill" onclick="selCat('TECH',this)">📱 Tech</div>
+          <div class="cat-pill" onclick="selCat('VIAGGI',this)">✈️ Viaggi</div>
+          <div class="cat-pill" onclick="selCat('DIVERTIMENTO',this)">🎭 Divertimento</div>
+          <div class="cat-pill" onclick="selCat('ALTRO',this)">🛍️ Altro</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Descrizione del prodotto / servizio *</label>
+        <textarea name="descrizione" id="desc-input" placeholder="Es: Pizza margherita con fior di latte DOP, impasto a lunga lievitazione 48h. Cotta in forno a legna." maxlength="300" oninput="aggiornaAnteprima()" required></textarea>
+        <div style="font-size:11px;color:var(--ink-mu);margin-top:4px;text-align:right;"><span id="desc-count">0</span>/300 caratteri</div>
+      </div>
+
+      <div class="field">
+        <label>Quantità e unità di misura *</label>
+        <div class="misura-group">
+          <input type="number" class="misura-input" name="quantita" id="qty-input" placeholder="Es: 1 — 500 — 2.5" step="0.01" min="0" oninput="aggiornaAnteprima()" required>
+          <select class="misura-sel" name="unita" id="unit-input" onchange="aggiornaAnteprima()">
+            <option value="pezzo">Pezzo</option>
+            <option value="kg">Kg</option>
+            <option value="g">Grammi</option>
+            <option value="litro">Litro</option>
+            <option value="cl">Cl</option>
+            <option value="porzione">Porzione</option>
+            <option value="confezione">Confezione</option>
+            <option value="servizio">Servizio</option>
+            <option value="ora">Ora</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ SEZ 3: PREZZI & FLASH ══ -->
+  <div class="sez">
+    <div class="sez-header">
+      <div class="sez-num">3</div>
+      <div>
+        <div class="sez-title">Prezzi e orario flash</div>
+        <div class="sez-sub">Il prezzo flash è cristallizzato alla pubblicazione e non modificabile</div>
+      </div>
+    </div>
+    <div class="sez-body">
+
+      <div class="prezzi-row field">
+        <div>
+          <label>Prezzo standard *</label>
+          <div class="prezzo-wrap">
+            <span class="euro-sign">€</span>
+            <input type="number" name="prezzo_std" id="std-input" placeholder="0.00" step="0.01" min="0" oninput="aggiornaSconto()" required>
+          </div>
+        </div>
+        <div>
+          <label>Prezzo flash * <span style="color:var(--rosso);font-size:10px;">⚡</span></label>
+          <div class="prezzo-wrap">
+            <span class="euro-sign">€</span>
+            <input type="number" name="prezzo_flash" id="flash-input" placeholder="0.00" step="0.01" min="0" oninput="aggiornaSconto();aggiornaAnteprima()" required>
+          </div>
+        </div>
+        <div>
+          <label>Sconto</label>
+          <div class="sconto-display" id="sconto-display">—</div>
+        </div>
+      </div>
+
+      <div class="flash-row field">
+        <div>
+          <label>Inizio flash *</label>
+          <input type="time" name="inizio" id="inizio-input" required oninput="aggiornaAnteprima()">
+        </div>
+        <div class="flash-sep">→</div>
+        <div>
+          <label>Fine flash *</label>
+          <input type="time" name="fine" id="fine-input" required oninput="aggiornaAnteprima()">
+        </div>
+      </div>
+
+      <div class="field-row col2">
+        <div>
+          <label>Raggio di visibilità</label>
+          <select name="raggio">
+            <option value="200">200 metri</option>
+            <option value="300">300 metri</option>
+            <option value="500">500 metri</option>
+          </select>
+        </div>
+        <div>
+          <label>Disponibilità (pezzi)</label>
+          <input type="number" name="disponibilita" placeholder="Es: 10 — lascia vuoto per illimitata" min="1">
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ ANTEPRIMA ══ -->
+  <div class="anteprima-wrap">
+    <div class="anteprima-title">
+      👁 Anteprima offerta
+      <span style="font-size:11px;font-weight:400;color:var(--ink-mu);">così apparirà ai clienti sul radar</span>
+    </div>
+    <div class="anteprima-card">
+      <div class="ap-foto" id="ap-foto" onclick="apriFotoMenu('prodotti')" 
+           style="cursor:pointer;" title="Tocca per aggiungere foto prodotto">
+        <img id="ap-img" src="" alt="">
+        <span id="ap-foto-placeholder" style="display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--ink-mu);">
+          <span style="font-size:28px;">📷</span>
+          <span style="font-size:12px;font-weight:500;">Carica foto prodotto</span>
+          <span style="font-size:10px;color:var(--ink-mu);opacity:.6;">tocca per aggiungere</span>
+        </span>
+      </div>
+      <div class="ap-body">
+        <div class="ap-cat" id="ap-cat">— categoria —</div>
+        <div class="ap-desc" id="ap-desc">Descrizione prodotto</div>
+        <div class="ap-misura" id="ap-misura">—</div>
+        <div class="ap-prezzi">
+          <span class="ap-flash" id="ap-flash">€ —</span>
+          <span class="ap-std" id="ap-std"></span>
+          <span class="ap-sc" id="ap-sc" style="display:none"></span>
+        </div>
+      </div>
+      <div class="ap-footer">
+        <span class="ap-orario" id="ap-orario">⏱ —:— → —:—</span>
+        <span class="ap-btn">Prenota →</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PUBBLICA ══ -->
+  <div class="submit-bar">
+    <div class="submit-note">
+      <strong>✓ Promozione lancio: commissione 0%</strong> per i primi 6 mesi.<br>
+      L'offerta sarà attiva immediatamente dopo la pubblicazione.
+    </div>
+    <button type="submit" class="btn-pubblica" id="btn-pubblica">⚡ Pubblica offerta flash</button>
+  </div>
+
+  </form>
+
+  <!-- SUCCESS -->
+  <div class="success-box" id="success-box">
+    <div class="success-icon">🎉</div>
+    <div class="success-title">Offerta pubblicata!</div>
+    <div class="success-sub">La tua offerta flash è ora visibile ai clienti nel raggio selezionato.<br>
+    La riceverai via email a <strong>info@instantown.it</strong> come conferma.</div>
+    <div style="margin-top:20px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <a href="nuova-offerta.html" style="background:var(--rosso);color:#fff;padding:10px 22px;border-radius:3px;text-decoration:none;font-size:13px;">+ Nuova offerta</a>
+      <a href="vendor-wallet.html" style="background:var(--bianco);color:var(--ink);border:1px solid var(--rule);padding:10px 22px;border-radius:3px;text-decoration:none;font-size:13px;">Vai al pannello</a>
+    </div>
+  </div>
+
+</main>
+
+<div class="stripe"></div>
+<footer><strong>INSTANTOWN PROX</strong> &nbsp;·&nbsp; Pannello esercente &nbsp;·&nbsp; Roma, 2025</footer>
+
+<script>
+// ── FOTO — variabili stato ──
+var fotoCorrente = null;
+
+// ── MENU SELEZIONE ──
+function apriFotoMenu(tipo) {
+  fotoCorrente = tipo;
+  document.getElementById('foto-menu-label').textContent = tipo.toUpperCase();
+  document.getElementById('foto-menu').style.display = 'flex';
+}
+function chiudiFotoMenu() {
+  document.getElementById('foto-menu').style.display = 'none';
+}
+
+function sceltaFoto(modalita) {
+  chiudiFotoMenu();
+  if(modalita === 'url') {
+    const box = document.getElementById('url-input-box');
+    box.style.display = 'flex';
+    document.getElementById('url-foto-input').focus();
+    return;
+  }
+  const input = document.getElementById('file-' + fotoCorrente);
+  if(modalita === 'camera') {
+    input.setAttribute('capture', 'environment');
+  } else {
+    input.removeAttribute('capture');
+  }
+  input.click();
+}
+
+// ── PREVIEW DA FILE ──
+function prevFoto(input, prevId, checkId, phId) {
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    mostraPreview(prevId, checkId, phId, e.target.result);
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── PREVIEW DA URL ──
+function caricaDaUrl() {
+  const url = document.getElementById('url-foto-input').value.trim();
+  if(!url) return;
+  const prevId   = 'prev-' + fotoCorrente;
+  const checkId  = 'check-' + fotoCorrente;
+  const phId     = 'ph-' + fotoCorrente;
+  // Testo con img temporanea per verificare URL valido
+  const img = new Image();
+  img.onload = () => {
+    mostraPreview(prevId, checkId, phId, url);
+    chiudiUrl();
+  };
+  img.onerror = () => alert('URL non valido o immagine non caricabile. Prova con un altro link.');
+  img.src = url;
+}
+function chiudiUrl() {
+  document.getElementById('url-input-box').style.display = 'none';
+  document.getElementById('url-foto-input').value = '';
+}
+
+// ── MOSTRA PREVIEW ──
+function mostraPreview(prevId, checkId, phId, src) {
+  const img = document.getElementById(prevId);
+  img.src = src;
+  img.classList.add('visible');
+  document.getElementById(checkId).classList.add('visible');
+  if(phId) document.getElementById(phId).style.display = 'none';
+  // Aggiorna anteprima card
+  if(prevId === 'prev-prodotti') {
+    const apImg = document.getElementById('ap-img');
+    apImg.src = src;
+    apImg.style.display = 'block';
+    document.getElementById('ap-foto-placeholder').style.display = 'none';
+  }
+  aggiornaStep();
+}
+
+// ── CATEGORIA ──
+function selCat(cat, el) {
+  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('cat-val').value = cat;
+  const emoji = {CIBO:'🍕',MODA:'👗',TECH:'📱',VIAGGI:'✈️',DIVERTIMENTO:'🎭',ALTRO:'🛍️'};
+  document.getElementById('ap-cat').textContent = (emoji[cat]||'') + ' ' + cat;
+  aggiornaStep();
+}
+
+// ── SCONTO ──
+function aggiornaSconto() {
+  const std   = parseFloat(document.getElementById('std-input').value)||0;
+  const flash = parseFloat(document.getElementById('flash-input').value)||0;
+  const el    = document.getElementById('sconto-display');
+  if(std > 0 && flash > 0) {
+    if(flash > std) {
+      el.textContent = '⚠ flash > std';
+      el.style.background = '#fef3c7';
+      el.style.color = '#92400e';
+    } else {
+      const sc = Math.round((1 - flash/std)*100);
+      el.textContent = '-' + sc + '%';
+      el.style.background = 'var(--ocra-p)';
+      el.style.color = 'var(--ocra)';
+    }
+  } else {
+    el.textContent = '—';
+    el.style.background = 'var(--ocra-p)';
+    el.style.color = 'var(--ocra)';
+  }
+}
+
+// ── ANTEPRIMA CARD ──
+function aggiornaAnteprima() {
+  const desc  = document.getElementById('desc-input').value;
+  const qty   = document.getElementById('qty-input').value;
+  const unit  = document.getElementById('unit-input').value;
+  const std   = parseFloat(document.getElementById('std-input').value)||0;
+  const flash = parseFloat(document.getElementById('flash-input').value)||0;
+  const ini   = document.getElementById('inizio-input').value;
+  const fin   = document.getElementById('fine-input').value;
+
+  // Contatore chars
+  document.getElementById('desc-count').textContent = desc.length;
+
+  // Desc
+  document.getElementById('ap-desc').textContent = desc || 'Descrizione prodotto';
+
+  // Misura
+  document.getElementById('ap-misura').textContent = (qty && unit) ? qty + ' ' + unit : '—';
+
+  // Prezzi
+  document.getElementById('ap-flash').textContent = flash > 0 ? '€ ' + flash.toFixed(2) : '€ —';
+  const stdEl = document.getElementById('ap-std');
+  const scEl  = document.getElementById('ap-sc');
+  if(std > 0) {
+    stdEl.textContent = '€ ' + std.toFixed(2);
+    if(flash > 0 && flash < std) {
+      const sc = Math.round((1-flash/std)*100);
+      scEl.textContent = '-' + sc + '%';
+      scEl.style.display = 'inline';
+    } else {
+      scEl.style.display = 'none';
+    }
+  } else {
+    stdEl.textContent = '';
+    scEl.style.display = 'none';
+  }
+
+  // Orario
+  document.getElementById('ap-orario').textContent = (ini||'—:—') + ' → ' + (fin||'—:—');
+
+  aggiornaStep();
+}
+
+// ── STEP INDICATOR ──
+function aggiornaStep() {
+  const foto1 = document.getElementById('check-insegna').classList.contains('visible');
+  const foto2 = document.getElementById('check-interni').classList.contains('visible');
+  const foto3 = document.getElementById('check-prodotti').classList.contains('visible');
+  const cat   = document.getElementById('cat-val').value;
+  const desc  = document.getElementById('desc-input').value.trim();
+  const flash = parseFloat(document.getElementById('flash-input').value)||0;
+  const ini   = document.getElementById('inizio-input').value;
+
+  const s1 = foto1 && foto2 && foto3;
+  const s2 = cat && desc;
+  const s3 = flash > 0 && ini;
+
+  setStep(1, s1);
+  setStep(2, s2);
+  setStep(3, s3);
+  if(s1 && s2 && s3) setStep(4, false, true);
+}
+
+function setStep(n, done, active) {
+  const el = document.getElementById('step-' + n);
+  el.classList.remove('done','active');
+  if(done) el.classList.add('done');
+  else if(active || n===1) el.classList.add('active');
+  const numEl = el.querySelector('.step-num');
+  numEl.textContent = done ? '✓' : n;
+}
+
+// ── SUBMIT ──
+function pubblicaOfferta(e) {
+  e.preventDefault();
+
+  // Validazioni
+  const cat = document.getElementById('cat-val').value;
+  if(!cat) { alert('Seleziona una categoria merceologica.'); return; }
+
+  const std   = parseFloat(document.getElementById('std-input').value)||0;
+  const flash = parseFloat(document.getElementById('flash-input').value)||0;
+  if(flash >= std) { alert('Il prezzo flash deve essere inferiore al prezzo standard.'); return; }
+
+  const ini = document.getElementById('inizio-input').value;
+  const fin = document.getElementById('fine-input').value;
+  if(ini && fin && fin <= ini) { alert('L\'orario di fine deve essere successivo all\'inizio.'); return; }
+
+  const btn = document.getElementById('btn-pubblica');
+  btn.disabled = true;
+  btn.textContent = 'Pubblicazione in corso...';
+
+  // Raccolta dati dal form
+  const formData = {
+    timestamp:    new Date().toISOString(),
+    insegna:      document.querySelector('[name=insegna]')?.value || '',
+    denominazione:document.querySelector('[name=denominazione]')?.value || '',
+    categoria:    document.getElementById('cat-val')?.value || '',
+    descrizione:  document.getElementById('desc-input')?.value || '',
+    quantita:     document.getElementById('qty-input')?.value || '',
+    unita:        document.getElementById('unit-input')?.value || '',
+    prezzo_std:   document.getElementById('std-input')?.value || '',
+    prezzo_flash: document.getElementById('flash-input')?.value || '',
+    inizio:       document.getElementById('inizio-input')?.value || '',
+    fine:         document.getElementById('fine-input')?.value || '',
+    raggio:       document.querySelector('[name=raggio]')?.value || '200',
+    disponibilita:document.querySelector('[name=disponibilita]')?.value || '',
+    foto_insegna: document.getElementById('prev-insegna')?.src?.substring(0,100) || '',
+    indirizzo:    document.querySelector('[name=indirizzo]')?.value || document.querySelector('[name=address]')?.value || '',
+    lat:          _gpsLat,
+    lon:          _gpsLon,
+    foglio:       'offerte'
+  };
+
+  // URL Apps Script doPost — sostituisci con il tuo URL /exec
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
+
+  btn.textContent = 'Pubblicazione in corso...';
+
+  fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(formData)
+  }).then(() => {
+    mostraSuccesso();
+  }).catch(() => {
+    // Anche in caso di errore CORS mostriamo successo (no-cors non restituisce risposta)
+    mostraSuccesso();
+  });
+
+  function mostraSuccesso() {
+    var el;
+    el = document.getElementById('form-offerta');      if(el) el.style.display = 'none';
+    el = document.querySelector('.anteprima-wrap');    if(el) el.style.display = 'none';
+    el = document.querySelector('.submit-bar');        if(el) el.style.display = 'none';
+    el = document.querySelector('.steps');             if(el) el.style.display = 'none';
+    el = document.getElementById('success-box');       if(el) el.classList.add('show');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+}
+
+// ── GPS ──
+var _gpsLat = null, _gpsLon = null;
+if(navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(
+    pos => { _gpsLat = pos.coords.latitude.toFixed(6); _gpsLon = pos.coords.longitude.toFixed(6); },
+    () => {}
+  );
+}
+
+// Init
+aggiornaAnteprima();
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<div id="finder-actions" style="margin-top: 30px; border-top: 1px solid #333; padding-top: 20px;">
+    
+    <button class="btn-escrow" onclick="sbloccaFondi()" style="background: var(--green); margin-bottom: 15px;">
+        ✅ ACCETTA MERCE E SBLOCCA FONDI
+    </button>
+
+    <div style="background: #111; padding: 15px; border-radius: 12px; border: 1px solid #444;">
+        <div style="font-size: 11px; color: #888; margin-bottom: 10px; text-transform: uppercase;">Serve più tempo? Richiedi Proroga:</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+            <button onclick="applicaProroga(0.8)" style="font-size: 10px; padding: 8px; background: #222; border: 1px solid #333; color: white; border-radius: 8px;">0.80%</button>
+            <button onclick="applicaProroga(1.0)" style="font-size: 10px; padding: 8px; background: #222; border: 1px solid #333; color: white; border-radius: 8px;">1.00%</button>
+            <button onclick="applicaProroga(1.5)" style="font-size: 10px; padding: 8px; background: #222; border: 1px solid #333; color: white; border-radius: 8px;">1.50%</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function sbloccaFondi() {
+        if(confirm("Confermi di aver ricevuto e accettato la merce? I fondi verranno inviati al Vendor immediatamente.")) {
+            alert("Transazione Completata. Fondi rilasciati al Vendor.");
+            window.location.href = "index.html";
+        }
+    }
+
+    function applicaProroga(percentuale) {
+        let costo = (4000 * (percentuale/100)).toFixed(2); // Esempio su 4000€
+        alert("Proroga del " + percentuale + "% applicata.\nCosto extra: €" + costo + "\n(Metà al Vendor, Metà all'App)");
+    }
+</script>

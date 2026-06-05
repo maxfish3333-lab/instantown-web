@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>INSTANTOWN — Il mio account</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{
+  --rosso:#8B1A1A;--rosso-l:#C0392B;--rosso-p:#FDF0EF;
+  --ocra:#C8860A;--ocra-l:#E8A020;--ocra-p:#FDF3DC;
+  --cielo:#4A90C4;--cielo-l:#6AAFD8;--cielo-p:#E8F4FB;
+  --verde:#1A7A3A;--verde-l:#22A050;--verde-p:#EAF5EE;
+  --ink:#1C1410;--ink-m:#3D2E24;--ink-mu:#6B5A4E;
+  --bianco:#FDFAF4;--rule:rgba(139,26,26,0.12);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--ink);min-height:100vh;}
+.stripe{height:5px;background:linear-gradient(90deg,var(--rosso-l) 33.3%,#fff 33.3%,#fff 66.6%,var(--cielo) 66.6%);}
+nav{background:var(--ink);padding:12px 24px;display:flex;align-items:center;gap:12px;}
+nav a{color:rgba(255,255,255,.5);font-size:13px;text-decoration:none;}
+nav a:hover{color:var(--ocra-l);}
+.nav-brand{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:#fff;flex:1;}
+.nav-brand span{color:var(--ocra-l);}
+
+main{max-width:600px;margin:0 auto;padding:28px 20px 80px;}
+
+/* ── PIN CARD ── */
+.pin-card{background:#fff;border:1px solid var(--rule);border-radius:8px;
+  padding:24px;margin-bottom:20px;box-shadow:0 2px 12px rgba(28,20,16,.05);}
+.pin-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-mu);margin-bottom:8px;font-weight:500;}
+.pin-value{font-family:monospace;font-size:32px;font-weight:700;color:var(--rosso);
+  letter-spacing:.2em;margin-bottom:8px;}
+.pin-note{font-size:12px;color:var(--ink-mu);line-height:1.6;}
+.pin-copy{background:var(--ocra);color:var(--ink);border:none;padding:8px 18px;
+  border-radius:4px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;
+  cursor:pointer;margin-top:10px;}
+
+/* ── SEZIONE QR ── */
+.section-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;
+  color:var(--ink);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.badge-count{background:var(--rosso);color:#fff;font-size:11px;font-weight:600;
+  padding:2px 10px;border-radius:20px;}
+
+.empty-state{text-align:center;padding:48px 20px;color:var(--ink-mu);}
+.empty-icon{font-size:40px;margin-bottom:12px;}
+.empty-text{font-size:14px;line-height:1.7;}
+
+/* ── QR CARD ── */
+.qr-card{background:#fff;border:1px solid var(--rule);border-radius:8px;
+  margin-bottom:14px;overflow:hidden;box-shadow:0 2px 10px rgba(28,20,16,.04);}
+.qr-card-header{padding:14px 18px;border-bottom:1px solid var(--rule);
+  display:flex;align-items:center;gap:12px;}
+.qr-card-body{padding:18px;display:flex;gap:18px;align-items:flex-start;}
+.qr-box-img{flex-shrink:0;width:120px;height:120px;
+  border:2px solid var(--rule);border-radius:6px;padding:4px;
+  display:flex;align-items:center;justify-content:center;}
+.qr-info{flex:1;}
+.qr-negozio{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:3px;}
+.qr-desc{font-size:14px;color:var(--ink-m);margin-bottom:4px;text-transform:capitalize;}
+.qr-prezzo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--rosso);}
+.qr-id{font-family:monospace;font-size:10px;color:var(--ink-mu);margin-top:6px;
+  background:var(--bianco);padding:3px 8px;border-radius:3px;border:1px solid var(--rule);}
+.qr-stato{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-top:6px;}
+.stato-attesa{background:var(--ocra-p);color:var(--ocra);}
+.stato-usato{background:var(--verde-p);color:var(--verde);}
+.stato-scaduto{background:#f1f1f1;color:#999;}
+.qr-card-footer{padding:12px 18px;border-top:1px solid var(--rule);
+  display:flex;gap:8px;align-items:center;}
+.btn-mostra{background:var(--rosso);color:#fff;border:none;padding:8px 16px;
+  border-radius:4px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;}
+.btn-elimina{background:none;border:1px solid var(--rule);color:var(--ink-mu);
+  padding:8px 14px;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;}
+
+/* ── MODAL QR GRANDE ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);
+  z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#fff;border-radius:16px;padding:28px 24px;
+  max-width:320px;width:90%;text-align:center;}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;
+  color:var(--ink);margin-bottom:4px;}
+.modal-sub{font-size:12px;color:var(--ink-mu);margin-bottom:20px;line-height:1.6;}
+#modal-qr-img{width:200px;height:200px;margin:0 auto 16px;
+  border:3px solid var(--rule);border-radius:8px;padding:6px;
+  display:flex;align-items:center;justify-content:center;}
+.modal-id{font-family:monospace;font-size:11px;color:var(--ink-mu);
+  background:var(--bianco);padding:6px 12px;border-radius:4px;
+  border:1px solid var(--rule);margin-bottom:16px;word-break:break-all;}
+.modal-istr{font-size:12px;color:var(--verde);background:var(--verde-p);
+  padding:10px 14px;border-radius:6px;line-height:1.6;margin-bottom:16px;}
+.modal-pin{font-size:13px;color:var(--ink-mu);margin-bottom:16px;}
+.modal-pin strong{font-family:monospace;font-size:18px;color:var(--rosso);letter-spacing:.15em;}
+.btn-modal-close{width:100%;padding:12px;background:var(--rosso);color:#fff;border:none;
+  border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<div class="stripe"></div>
+<nav>
+  <a href="index.html">←</a>
+  <span class="nav-brand">INSTANT<span>TOWN</span></span>
+  <a href="map.html">Radar →</a>
+</nav>
+
+<main>
+
+  <!-- PIN UTENTE -->
+  <div class="pin-card">
+    <div class="pin-label">Il tuo PIN personale INSTANTOWN</div>
+    <div class="pin-value" id="pin-display">——</div>
+    <div class="pin-note">
+      Questo PIN identifica il tuo account. Comunicalo all'esercente insieme al QR-B
+      per completare il matching e sbloccare i fondi in escrow.
+    </div>
+    <button class="pin-copy" onclick="copiaPIN()">📋 Copia PIN</button>
+  </div>
+
+  <!-- QR SALVATI -->
+  <div class="section-title">
+    I miei QR-B
+    <span class="badge-count" id="qr-count">0</span>
+  </div>
+
+  <div id="qr-lista"></div>
+
+</main>
+
+<!-- MODAL QR GRANDE -->
+<div class="modal-overlay" id="modal-qr">
+  <div class="modal-box">
+    <div class="modal-title">QR-B — Mostra all'esercente</div>
+    <div class="modal-sub" id="modal-negozio-desc"></div>
+    <div id="modal-qr-img"></div>
+    <div class="modal-id" id="modal-booking-id"></div>
+    <div class="modal-pin">Il tuo PIN: <strong id="modal-pin-val"></strong></div>
+    <div class="modal-istr">
+      ✓ L'esercente mostrerà QR-A — fai scansionare al suo terminale.<br>
+      Solo la coppia QR-A + QR-B sblocca i fondi.
+    </div>
+    <button class="btn-modal-close" onclick="chiudiModal()">Chiudi</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════
+// PIN — generato una volta e salvato
+// ══════════════════════════════════
+function generaPIN() {
+  // PIN 6 cifre alfanumerico maiuscolo
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let pin = '';
+  for(let i=0; i<6; i++) pin += chars[Math.floor(Math.random()*chars.length)];
+  return pin;
+}
+
+let mioPin = localStorage.getItem('it_pin');
+if(!mioPin) {
+  mioPin = generaPIN();
+  localStorage.setItem('it_pin', mioPin);
+}
+document.getElementById('pin-display').textContent = mioPin;
+
+function copiaPIN() {
+  navigator.clipboard.writeText(mioPin).then(()=>{
+    const btn = document.querySelector('.pin-copy');
+    btn.textContent = '✓ Copiato!';
+    setTimeout(()=>btn.textContent='📋 Copia PIN', 2000);
+  });
+}
+
+// ══════════════════════════════════
+// CARICA QR SALVATI
+// ══════════════════════════════════
+function caricaQR() {
+  const prenotazioni = JSON.parse(localStorage.getItem('it_prenotazioni') || '[]');
+  const lista = document.getElementById('qr-lista');
+  const count = document.getElementById('qr-count');
+  count.textContent = prenotazioni.length;
+
+  if(prenotazioni.length === 0) {
+    lista.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🎫</div>
+        <div class="empty-text">
+          Non hai ancora QR-B salvati.<br>
+          Prenota un'offerta dal Radar per generare il tuo primo QR.
+        </div>
+        <a href="map.html" style="display:inline-block;margin-top:16px;
+          background:var(--rosso);color:#fff;padding:10px 24px;border-radius:4px;
+          text-decoration:none;font-size:14px;font-weight:500;">
+          Apri il Radar →
+        </a>
+      </div>`;
+    return;
+  }
+
+  lista.innerHTML = prenotazioni.reverse().map((p,i) => {
+    const idx = prenotazioni.length - 1 - i;
+    const data = new Date(p.ts).toLocaleDateString('it-IT',
+      {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    const statoClass = p.stato==='USATO' ? 'stato-usato' :
+                       p.stato==='SCADUTO' ? 'stato-scaduto' : 'stato-attesa';
+    const statoLabel = p.stato==='USATO' ? '✓ Completato' :
+                       p.stato==='SCADUTO' ? 'Scaduto' : '⏳ In attesa';
+    return `
+    <div class="qr-card" id="card-${idx}">
+      <div class="qr-card-header">
+        <div style="flex:1;">
+          <div style="font-size:10px;color:var(--ink-mu);letter-spacing:.06em;">${data}</div>
+          <div class="qr-negozio">${p.negozio||'Esercente'}</div>
+        </div>
+        <span class="qr-stato ${statoClass}">${statoLabel}</span>
+      </div>
+      <div class="qr-card-body">
+        <div class="qr-box-img" id="qr-mini-${idx}"></div>
+        <div class="qr-info">
+          <div class="qr-desc">${(p.desc||'').toLowerCase()}</div>
+          <div class="qr-prezzo">€ ${parseFloat(p.prezzo).toFixed(2)}</div>
+          <div class="qr-id">${p.bookingId}</div>
+        </div>
+      </div>
+      <div class="qr-card-footer">
+        <button class="btn-mostra" onclick="mostraQR(${idx})">🔍 Mostra QR grande</button>
+        <button class="btn-elimina" onclick="eliminaQR(${idx})">Elimina</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Genera QR mini per ogni card
+  prenotazioni.forEach((p, i) => {
+    const idx = prenotazioni.length - 1 - i;
+    const container = document.getElementById('qr-mini-'+idx);
+    if(!container) return;
+    const data = JSON.stringify({
+      type:'QR-B', booking:p.bookingId, idtx:p.idtx,
+      negozio:p.negozio, desc:p.desc, prezzo:p.prezzo,
+      pin:mioPin, ts:p.ts
+    });
+    setTimeout(()=>{
+      try {
+        new QRCode(container, {
+          text:data, width:108, height:108,
+          colorDark:'#1C1410', colorLight:'#ffffff',
+          correctLevel:QRCode.CorrectLevel.M
+        });
+      } catch(e) {}
+    }, 100 * i);
+  });
+}
+
+// ══════════════════════════════════
+// MOSTRA QR GRANDE
+// ══════════════════════════════════
+function mostraQR(idx) {
+  const prenotazioni = JSON.parse(localStorage.getItem('it_prenotazioni') || '[]');
+  const p = prenotazioni[idx];
+  if(!p) return;
+
+  document.getElementById('modal-negozio-desc').textContent =
+    (p.negozio||'Esercente') + ' — ' + (p.desc||'');
+  document.getElementById('modal-booking-id').textContent = p.bookingId;
+  document.getElementById('modal-pin-val').textContent = mioPin;
+
+  const container = document.getElementById('modal-qr-img');
+  container.innerHTML = '';
+  const data = JSON.stringify({
+    type:'QR-B', booking:p.bookingId, idtx:p.idtx,
+    negozio:p.negozio, desc:p.desc, prezzo:p.prezzo,
+    pin:mioPin, ts:p.ts
+  });
+  setTimeout(()=>{
+    new QRCode(container, {
+      text:data, width:188, height:188,
+      colorDark:'#1C1410', colorLight:'#ffffff',
+      correctLevel:QRCode.CorrectLevel.M
+    });
+  }, 50);
+
+  document.getElementById('modal-qr').classList.add('open');
+}
+
+function chiudiModal() {
+  document.getElementById('modal-qr').classList.remove('open');
+  document.getElementById('modal-qr-img').innerHTML = '';
+}
+
+// ══════════════════════════════════
+// ELIMINA QR
+// ══════════════════════════════════
+function eliminaQR(idx) {
+  if(!confirm('Eliminare questo QR-B? Non potrai più usarlo per il matching.')) return;
+  const prenotazioni = JSON.parse(localStorage.getItem('it_prenotazioni') || '[]');
+  prenotazioni.splice(idx, 1);
+  localStorage.setItem('it_prenotazioni', JSON.stringify(prenotazioni));
+  caricaQR();
+}
+
+// Chiudi modal cliccando fuori
+document.getElementById('modal-qr').addEventListener('click', e => {
+  if(e.target === e.currentTarget) chiudiModal();
+});
+
+caricaQR();
+</script>
+</body>
+</html>
