@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INSTANTOWN — Il mondo ai tuoi piedi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#8B1A1A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="INSTANTOWN">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<style>
+
+:root{
+  --rosso:#8B1A1A;--rosso-l:#C0392B;--rosso-p:#FDF0EF;
+  --ocra:#C8860A;--ocra-l:#E8A020;--ocra-p:#FDF3DC;
+  --cielo:#4A90C4;--cielo-l:#6AAFD8;--cielo-p:#E8F4FB;
+  --verde:#1A7A3A;--verde-l:#22A050;--verde-p:#EAF5EE;
+  --giallo:#C8A000;--giallo-l:#E8C000;--giallo-p:#FEFADC;
+  --bianco:#FDFAF4;--ink:#1C1410;--ink-m:#3D2E24;--ink-mu:#6B5A4E;
+  --rule:rgba(139,26,26,0.10);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;}
+
+/* ── STRIPE TRICOLORE ── */
+.stripe{height:5px;background:linear-gradient(90deg,var(--rosso-l) 33.3%,#fff 33.3%,#fff 66.6%,var(--cielo) 66.6%);}
+
+/* ── NAV ── */
+nav{background:var(--ink);padding:13px 32px;display:flex;align-items:center;justify-content:space-between;}
+.nav-logo{display:flex;align-items:center;gap:11px;}
+.nav-logo img{width:40px;height:40px;object-fit:contain;border-radius:8px;background:#fff;}
+.nav-brand{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:#fff;letter-spacing:-.01em;}
+.nav-brand span{color:var(--ocra-l);}
+.nav-link{color:rgba(255,255,255,.4);font-size:12px;text-decoration:none;letter-spacing:.04em;transition:color .2s;}
+.nav-link:hover{color:var(--ocra-l);}
+
+/* ══════════════════════════════════════
+   HERO — immagine + claim
+══════════════════════════════════════ */
+.hero{background:var(--ink);position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(200,134,10,.04) 59px,rgba(200,134,10,.04) 60px);
+  pointer-events:none;}
+.hero-inner{max-width:960px;margin:0 auto;padding:52px 32px 0;
+  display:grid;grid-template-columns:1fr 1.1fr;gap:32px;align-items:end;}
+.hero-text{padding-bottom:52px;}
+.hero-kicker{display:inline-block;font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ocra-l);border:1px solid rgba(200,134,10,.3);padding:4px 12px;border-radius:2px;margin-bottom:18px;}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(38px,5vw,60px);
+  font-weight:600;line-height:1.06;color:#fff;margin-bottom:16px;}
+.hero-title em{color:var(--ocra-l);font-style:normal;}
+.hero-desc{font-size:14px;color:rgba(255,255,255,.45);line-height:1.8;max-width:380px;}
+.hero-img img{width:100%;max-height:none;border-radius:8px 8px 0 0;border:1px solid rgba(200,134,10,.18);display:block;}
+
+/* ══════════════════════════════════════
+   BOX ESPLICATIVI
+══════════════════════════════════════ */
+.boxes{max-width:960px;margin:0 auto;padding:44px 32px 0;
+  display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+
+.box{background:#fff;border:1px solid var(--rule);border-radius:8px;
+  padding:28px 26px;box-shadow:0 2px 16px rgba(28,20,16,.05);}
+.box-icon{font-size:30px;margin-bottom:12px;}
+.box-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;
+  color:var(--ink);margin-bottom:8px;line-height:1.2;}
+.box-text{font-size:13px;color:var(--ink-mu);line-height:1.75;}
+
+.box.accent-rosso{border-top:3px solid var(--rosso);}
+.box.accent-ocra{border-top:3px solid var(--ocra);}
+.box.accent-cielo{border-top:3px solid var(--cielo);}
+.box.accent-verde{border-top:3px solid var(--verde-l);}
+
+/* ══════════════════════════════════════
+   I 2 PULSANTI PRINCIPALI
+══════════════════════════════════════ */
+.cta-main{max-width:960px;margin:36px auto 0;padding:0 32px 48px;
+  display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+
+.btn-main{
+  border:none;border-radius:10px;padding:28px 24px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:flex-start;gap:8px;
+  font-family:'DM Sans',sans-serif;text-decoration:none;
+  transition:transform .18s, box-shadow .18s;
+  box-shadow:0 4px 24px rgba(0,0,0,.12);
+}
+.btn-main:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,.18);}
+.btn-main:active{transform:translateY(-1px);}
+
+.btn-servizi{background:linear-gradient(135deg,#1A7A3A,#22A050);}
+.btn-occasioni{background:linear-gradient(135deg,#B8900A,#E8C000);}
+
+.btn-main-icon{font-size:36px;line-height:1;}
+.btn-main-label{font-size:22px;font-weight:500;color:#fff;letter-spacing:-.01em;font-family:'Cormorant Garamond',serif;}
+.btn-main-sub{font-size:12px;color:rgba(255,255,255,.72);line-height:1.5;}
+.btn-main-arrow{margin-top:6px;font-size:20px;color:rgba(255,255,255,.6);}
+
+/* ══════════════════════════════════════
+   MODAL SERVIZI
+══════════════════════════════════════ */
+.modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(28,20,16,.55);
+  z-index:500;align-items:flex-end;justify-content:center;
+  backdrop-filter:blur(3px);
+}
+.modal-overlay.open{display:flex;}
+
+.modal{
+  background:var(--bianco);border-radius:20px 20px 0 0;
+  width:100%;max-width:600px;max-height:90vh;overflow-y:auto;
+  padding:0 0 32px;animation:slideUp .3s ease;
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+
+.modal-handle{width:40px;height:4px;background:var(--rule);border-radius:2px;margin:14px auto 0;}
+.modal-header{padding:20px 24px 16px;border-bottom:1px solid var(--rule);
+  display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--ink);}
+.modal-close{background:none;border:none;font-size:22px;color:var(--ink-mu);cursor:pointer;padding:4px 8px;border-radius:4px;}
+.modal-close:hover{background:var(--rule);}
+
+/* ── POI LIST ── */
+.poi-list{padding:16px 20px;display:flex;flex-direction:column;gap:10px;}
+.poi-card{background:#fff;border:1px solid var(--rule);border-radius:8px;
+  padding:14px 16px;display:flex;align-items:center;gap:14px;
+  text-decoration:none;transition:box-shadow .18s;}
+.poi-card:hover{box-shadow:0 3px 16px rgba(28,20,16,.08);}
+.poi-emoji{font-size:28px;flex-shrink:0;width:44px;text-align:center;}
+.poi-info{flex:1;}
+.poi-name{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:2px;}
+.poi-desc{font-size:12px;color:var(--ink-mu);line-height:1.5;}
+.poi-badge{font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;
+  white-space:nowrap;flex-shrink:0;}
+.badge-verde{background:var(--verde-p);color:var(--verde);}
+.badge-cielo{background:var(--cielo-p);color:var(--cielo);}
+.badge-ocra{background:var(--ocra-p);color:var(--ocra);}
+.badge-rosso{background:var(--rosso-p);color:var(--rosso);}
+.poi-arrow{font-size:16px;color:var(--ink-mu);flex-shrink:0;}
+
+.poi-section-label{
+  font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-mu);padding:8px 20px 4px;
+}
+
+/* ══════════════════════════════════════
+   MODAL OCCASIONI — categorie
+══════════════════════════════════════ */
+.cat-grid-modal{
+  padding:16px 20px;
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;
+}
+.cat-card-modal{
+  background:#fff;border:1px solid var(--rule);border-radius:8px;
+  padding:18px 16px;display:flex;flex-direction:column;align-items:center;
+  gap:6px;cursor:pointer;text-decoration:none;transition:all .18s;
+  position:relative;overflow:hidden;
+}
+.cat-card-modal:hover{border-color:var(--rosso);transform:translateY(-2px);box-shadow:0 4px 16px rgba(139,26,26,.1);}
+.cat-card-modal.pref{border-color:var(--cielo);background:var(--cielo-p);}
+.cat-emoji{font-size:32px;}
+.cat-name-modal{font-size:14px;font-weight:500;color:var(--ink);}
+.cat-count-modal{font-size:11px;color:var(--ink-mu);}
+.pref-dot{position:absolute;top:8px;right:8px;width:8px;height:8px;
+  border-radius:50%;background:var(--cielo);}
+
+.cat-pref-bar{
+  margin:0 20px 4px;padding:10px 14px;background:var(--cielo-p);
+  border:1px solid rgba(74,144,196,.2);border-radius:6px;
+  font-size:12px;color:var(--cielo);display:flex;align-items:center;gap:8px;
+}
+
+/* ── FOOTER ── */
+footer{margin-top:auto;background:var(--ink);color:rgba(255,255,255,.28);
+  font-size:11px;letter-spacing:.05em;text-align:center;padding:18px 32px;}
+footer strong{color:var(--ocra-l);}
+footer a{color:rgba(255,255,255,.3);text-decoration:none;margin:0 6px;}
+footer a:hover{color:var(--ocra-l);}
+
+@media(max-width:640px){
+  nav{padding:12px 16px;}
+  .hero-inner{grid-template-columns:1fr;gap:0;}
+  .hero-img{display:none;}
+  .hero-text{padding-bottom:36px;}
+  .boxes{grid-template-columns:1fr;padding:28px 16px 0;}
+  .cta-main{grid-template-columns:1fr;padding:0 16px 40px;margin-top:24px;}
+  .btn-main{padding:22px 20px;}
+  .cat-grid-modal{grid-template-columns:1fr 1fr;}
+}
+
+
+/* ── MEDIA BOX (TV + Giornali) ── */
+#media-box{display:flex;flex-direction:column;justify-content:center;gap:0;}
+.media-panel{width:100%;}
+.media-card-wrap{display:flex;flex-direction:column;gap:12px;padding:8px 0;}
+.media-card{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.06);border:1px solid rgba(200,134,10,.2);border-radius:10px;padding:14px 16px;text-decoration:none;transition:all .2s;cursor:pointer;}
+.media-card:hover{background:rgba(200,134,10,.12);border-color:rgba(200,134,10,.5);transform:translateX(4px);}
+.media-icon{font-size:28px;flex-shrink:0;width:40px;text-align:center;}
+.media-info{flex:1;}
+.media-name{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:#fff;margin-bottom:2px;}
+.media-desc{font-size:11px;color:rgba(255,255,255,.45);line-height:1.4;}
+.media-arrow{font-size:16px;color:rgba(200,134,10,.6);flex-shrink:0;}
+
+/* ── BANNER RITORNO APP ── */
+#back-banner{display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:var(--ink);border-top:2px solid var(--ocra);padding:12px 20px;text-align:center;}
+#back-banner a{color:var(--ocra-l);font-size:14px;font-weight:500;text-decoration:none;letter-spacing:.04em;}
+#back-banner a:hover{color:#fff;}
+
+</style>
+</head>
+<body>
+<!-- LANGUAGE BAR -->
+<div id="lang-bar" style="position:fixed;top:0;left:0;right:0;z-index:1000;background:#1C1410;border-bottom:1px solid rgba(200,134,10,.2);padding:7px 32px;display:flex;align-items:center;gap:6px;">
+  <img src="Nuovo_logo_3_diss.png" style="width:28px;height:28px;border-radius:5px;margin-right:8px;flex-shrink:0;" onerror="this.style.display='none'">
+  <span style="font-size:10px;letter-spacing:.14em;color:rgba(255,255,255,.35);text-transform:uppercase;margin-right:8px;">Lingua</span>
+  <button onclick="applyLang('it')" class="lbtn active" data-lang="it">🇮🇹 IT</button>
+  <button onclick="applyLang('en')" class="lbtn" data-lang="en">🇬🇧 EN</button>
+  <button onclick="applyLang('zh')" class="lbtn" data-lang="zh">🇨🇳 中文</button>
+  <button onclick="applyLang('es')" class="lbtn" data-lang="es">🇪🇸 ES</button>
+  <button onclick="applyLang('fr')" class="lbtn" data-lang="fr">🇫🇷 FR</button>
+</div>
+<!-- ══ BANNER VIP PROMINENTE ══ -->
+<div style="
+  background:linear-gradient(135deg,#C8860A 0%,#E8A020 50%,#C8860A 100%);
+  padding:16px 32px;
+  text-align:center;
+  position:sticky;top:0;z-index:400;
+  box-shadow:0 2px 20px rgba(200,134,10,.4);
+">
+  <div style="max-width:960px;margin:0 auto;display:flex;align-items:center;
+    justify-content:center;gap:16px;flex-wrap:wrap;">
+    <span style="font-size:28px;line-height:1;">👑</span>
+    <div>
+      <span style="font-family:'Cormorant Garamond',serif;font-size:clamp(18px,3vw,26px);
+        font-weight:600;color:#1C1410;letter-spacing:-.01em;">
+        L'utente è sempre VIP
+      </span>
+      <span style="font-size:clamp(11px,1.5vw,14px);color:rgba(28,20,16,.65);
+        margin-left:12px;font-weight:400;">
+        — non paga mai se non riceve il prodotto o il servizio
+      </span>
+    </div>
+    <span style="font-size:28px;line-height:1;">👑</span>
+  </div>
+</div>
+
+<div class="stripe"></div>
+
+<nav>
+  <div class="nav-logo">
+    <img src="data:image/png;base64,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" alt="INSTANTOWN" style="width:46px;height:46px;border-radius:10px;flex-shrink:0;display:block;">
+    <span class="nav-brand">INSTANTOWN</span>
+  </div>
+  <a href="registrazione.html" class="nav-link-cta" data-i18n="reg">Registrati come esercente →</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-kicker" data-i18n="kicker">Roma — Città Pilota 2025</div>
+      <h1 class="hero-title" data-i18n="title">Il mondo<br><em>ai tuoi piedi.</em></h1>
+      <p class="hero-desc" data-i18n="desc">Offerte flash a 200 metri, servizi pubblici sulla mappa, pagamenti garantiti. INSTANTOWN connette cittadini, turisti ed esercenti in tempo reale.</p>
+    </div>
+    <div class="hero-img" id="media-box">
+
+      <!-- IT -->
+      <div class="media-panel" data-langs="it">
+        <div class="media-card-wrap">
+          <a class="media-card" href="https://www.raiplay.it" target="_blank" rel="noopener" data-back="true">
+            <div class="media-icon">📺</div>
+            <div class="media-info">
+              <div class="media-name">RAI 1</div>
+              <div class="media-desc">Il canale più seguito d'Italia</div>
+            </div>
+            <div class="media-arrow">↗</div>
+          </a>
+          <a class="media-card" href="https://www.corriere.it" target="_blank" rel="noopener" data-back="true">
+            <div class="media-icon">📰</div>
+            <div class="media-info">
+              <div class="media-name">Corriere della Sera</div>
+              <div class="media-desc">Il quotidiano più letto d'Italia</div>
+            </div>
+            <div class="media-arrow">↗</div>
+          </a>
+        </div>
+      </div>
+
+      <!-- EN -->
+      <div class="media-panel" data-langs="en" style="display:none;">
+        <div class="media-card-wrap">
+          <a class="media-card" href="https://www.euronews.com/live" target="_blank" rel="noopener" data-back="true">
+            <div class="media-icon">📺</div>
+            <div class="media-info">
+              <div class="media-name">Euronews Live</div>
+              <div class="media-desc">Free live news — available worldwide</div>
+            </div>
+            <div class="media-arrow">↗</div>
+          </a>
+          <a class="media-card" href="https://www.theguardian.com" target="_blank" rel="noopener" data-back="true">
+            <div class="media-icon">📰</div>
+            <div class="media-info">
+              <div class="media-name">The Guardian</div>
+              <div class="media-desc">Leading English-language newspaper</div>
+            </div>
+            <div class="media-arrow">↗</div>
+          </a>
+        </div>
+      </div>
+
+      <!-- ZH -->
+      <div class="media-panel" data-langs="zh" style="display:none;">
+        <div class="media-card-wrap">
+          <a class="media-card" href="https://tv.cctv.com" target="_blank" rel="noopener" data-back="true">
+            <div class="media-icon">📺</div>
+            <div class="media-info">
+              <div class="media-name">CCTV-1 央视</div>
+              <div class="media-desc">中国收视率最高的电视频道</div>
+            </div>
+            <div class="media-arrow">↗</div>
+          </a>
+          <a class="media-card" href="http://www.people.com.cn" target="_blank" rel="noopener" data-back="true">
+            <div class="media-icon">📰</div>
+            <div class="media-info">
+              <div class="media-name">人民日报</div>
+              <div class="media-desc">中国发行量最大的报纸</div>
+            </div>
+            <div class="media-arrow">↗</div>
+          </a>
+        </div>
+      </div>
+
+      <!-- ES -->
+      <div class="media-panel" data-langs="es" style="display:none;">
+        <div class="media-card-wrap">
+          <a class="media-card" href="https://www.atresplayer.com" target="_blank" rel="noopener" data-back="true">
+            <div class="media-icon">📺</div>
+            <div class="media-info">
+              <div class="media-name">Antena 3</div>
+              <div class="media-desc">El canal más visto de España</div>
+            </div>
+            <div class="media-arrow">↗</div>
+          </a>
+          <a class="media-card" href="https://www.marca.com" target="_blank" rel="noopener" data-back="true">
+            <div class="media-icon">📰</div>
+            <div class="media-info">
+              <div class="media-name">Marca</div>
+              <div class="media-desc">El diario más leído de España</div>
+            </div>
+            <div class="media-arrow">↗</div>
+          </a>
+        </div>
+      </div>
+
+      <!-- FR -->
+      <div class="media-panel" data-langs="fr" style="display:none;">
+        <div class="media-card-wrap">
+          <a class="media-card" href="https://www.tf1plus.fr" target="_blank" rel="noopener" data-back="true">
+            <div class="media-icon">📺</div>
+            <div class="media-info">
+              <div class="media-name">TF1</div>
+              <div class="media-desc">La chaîne la plus regardée de France</div>
+            </div>
+            <div class="media-arrow">↗</div>
+          </a>
+          <a class="media-card" href="https://www.lemonde.fr" target="_blank" rel="noopener" data-back="true">
+            <div class="media-icon">📰</div>
+            <div class="media-info">
+              <div class="media-name">Le Monde</div>
+              <div class="media-desc">Le journal de référence en France</div>
+            </div>
+            <div class="media-arrow">↗</div>
+          </a>
+        </div>
+      </div>
+
+    </div>
+</div>
+</div>
+
+<!-- BOX ESPLICATIVI -->
+<div class="boxes">
+
+  <div class="box accent-rosso">
+    <div class="box-icon">📍</div>
+    <div class="box-title">Prossimità reale, non pubblicità</div>
+    <div class="box-text">Il GPS calcola cosa c'è attorno a te — a 200, 300 o 500 metri. Vedi solo offerte di esercenti fisici raggiungibili a piedi. Nessun algoritmo, nessuna sponsorizzazione.</div>
+  </div>
+
+  <div class="box accent-ocra">
+    <div class="box-icon">🔐</div>
+    <div class="box-title">Pagamento in escrow, prezzo bloccato</div>
+    <div class="box-text">Il denaro rimane congelato fino all'incontro fisico tra QR-A (esercente) e QR-B (cliente). Il prezzo che vedi è il prezzo che paghi — cristallizzato alla prenotazione, immutabile.</div>
+  </div>
+
+  <div class="box accent-cielo">
+    <div class="box-icon">💧</div>
+    <div class="box-title">Servizi pubblici integrati</div>
+    <div class="box-text">Fontanelle, bagni pubblici, Wi-Fi gratuito — tutto sulla stessa mappa delle offerte. I monumenti e i luoghi iconici della città sono sempre a portata di tap. Gratis, senza login.</div>
+  </div>
+
+  <div class="box accent-verde">
+    <div class="box-icon">🏪</div>
+    <div class="box-title">Anti-frode by design</div>
+    <div class="box-text">Ogni esercente è verificato con P.IVA reale. Ogni offerta passa validazione automatica. Il doppio QR fisico rende impossibile frodare: senza incontro reale, nessun fondo viene sbloccato.</div>
+  </div>
+
+</div>
+
+<!-- I 2 PULSANTI PRINCIPALI -->
+
+<!-- ══ SEZIONE VIP ══ -->
+<section style="background:linear-gradient(135deg,#1C1410 0%,#2D1F14 100%);padding:48px 32px;">
+  <div style="max-width:960px;margin:0 auto;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;">
+
+      <!-- UTENTE VIP -->
+      <div style="background:rgba(200,134,10,.06);border:1px solid rgba(200,134,10,.2);
+        border-top:3px solid var(--ocra);border-radius:8px;padding:28px 24px;">
+        <div style="font-size:36px;margin-bottom:12px;">👑</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;
+          color:var(--ocra-l);margin-bottom:10px;">L'utente è sempre VIP</div>
+        <p style="font-size:13px;color:rgba(255,255,255,.55);line-height:1.8;margin:0;">
+          Non paga mai se non riceve il prodotto o il servizio. 
+          I fondi restano bloccati in escrow fino all'incontro fisico. 
+          Se qualcosa va storto, non perdi nulla.
+        </p>
+      </div>
+
+      <!-- ESERCENTE -->
+      <div style="background:rgba(26,122,58,.06);border:1px solid rgba(26,122,58,.2);
+        border-top:3px solid var(--verde-l);border-radius:8px;padding:28px 24px;">
+        <div style="font-size:36px;margin-bottom:12px;">🏪</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;
+          color:#6BCF8A;margin-bottom:10px;">L'esercente non anticipa nulla</div>
+        <p style="font-size:13px;color:rgba(255,255,255,.55);line-height:1.8;margin:0;">
+          Zero abbonamenti. Zero canoni. Zero setup. 
+          Commissione solo sul transato reale — 1,75% quando incassi, 
+          0% per i primi 6 mesi.
+        </p>
+      </div>
+
+      <!-- INSTANTOWN -->
+      <div style="background:rgba(139,26,26,.06);border:1px solid rgba(139,26,26,.2);
+        border-top:3px solid var(--rosso-l);border-radius:8px;padding:28px 24px;">
+        <div style="font-size:36px;margin-bottom:12px;">⚖️</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;
+          color:var(--rosso-l);margin-bottom:10px;">INSTANTOWN guadagna solo se guadagnate voi</div>
+        <p style="font-size:13px;color:rgba(255,255,255,.55);line-height:1.8;margin:0;">
+          Tutti i costi tecnologici, legali e operativi sono a carico di INSTANTOWN. 
+          Il rischio è nostro. Il guadagno è vostro.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- FRASE CENTRALE -->
+    <div style="text-align:center;margin-top:36px;padding:24px;
+      border:1px solid rgba(200,134,10,.15);border-radius:8px;
+      background:rgba(200,134,10,.04);">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:clamp(18px,2.5vw,26px);
+        font-weight:600;color:#fff;line-height:1.5;margin:0;">
+        "Nessuno paga nulla in anticipo.<br>
+        <span style="color:var(--ocra-l);">INSTANTOWN guadagna solo quando guadagnate voi.</span>"
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<div class="cta-main">
+
+  <a class="btn-main btn-servizi" href="servizi.html">
+    <div class="btn-main-icon">🗺️</div>
+    <div class="btn-main-label">Servizi essenziali</div>
+    <div class="btn-main-sub">Fontanelle · Bagni · Wi-Fi<br>Luoghi iconici di Roma</div>
+    <div class="btn-main-arrow">↗</div>
+  </a>
+
+  <button class="btn-main btn-occasioni" onclick="apriOccasioni()">
+    <div class="btn-main-icon">⚡</div>
+    <div class="btn-main-label">Occasioni flash</div>
+    <div class="btn-main-sub">Cibo · Moda · Tech · Viaggi<br>Divertimento · Altro</div>
+    <div class="btn-main-arrow">↗</div>
+  </button>
+
+</div>
+
+<!-- ══ MODAL SERVIZI ══ -->
+<div class="modal-overlay" id="modal-servizi" onclick="chiudiSeOverlay(event,'modal-servizi')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title">🗺️ Servizi essenziali</span>
+      <button class="modal-close" onclick="chiudi('modal-servizi')">✕</button>
+    </div>
+
+    <div class="poi-section-label">Servizi pubblici gratuiti</div>
+    <div class="poi-list">
+
+      <a class="poi-card" href="https://www.google.com/maps/dir/?api=1&destination=nasoni+fontanelle+Roma&travelmode=walking" target="_blank">
+        <div class="poi-emoji">💧</div>
+        <div class="poi-info">
+          <div class="poi-name">Fontanelle pubbliche (Nasoni)</div>
+          <div class="poi-desc">Acqua potabile gratuita — oltre 2.500 punti in tutta Roma</div>
+        </div>
+        <span class="poi-badge badge-verde">Gratuito</span>
+        <div class="poi-arrow">↗</div>
+      </a>
+
+      <a class="poi-card" href="https://www.google.com/maps/dir/?api=1&destination=bagni+pubblici+Roma&travelmode=walking" target="_blank">
+        <div class="poi-emoji">🚻</div>
+        <div class="poi-info">
+          <div class="poi-name">Bagni pubblici</div>
+          <div class="poi-desc">Servizi igienici comunali con orari e accessibilità</div>
+        </div>
+        <span class="poi-badge badge-verde">Gratuito</span>
+        <div class="poi-arrow">↗</div>
+      </a>
+
+      <a class="poi-card" href="https://www.google.com/maps/dir/?api=1&destination=wifi+pubblico+Roma&travelmode=walking" target="_blank">
+        <div class="poi-emoji">📶</div>
+        <div class="poi-info">
+          <div class="poi-name">Wi-Fi pubblico</div>
+          <div class="poi-desc">Reti comunali gratuite — piazze, parchi e siti culturali</div>
+        </div>
+        <span class="poi-badge badge-cielo">Connettività</span>
+        <div class="poi-arrow">↗</div>
+      </a>
+
+    </div>
+
+    <div class="poi-section-label">Luoghi iconici di Roma</div>
+    <div class="poi-list" style="padding-top:4px;">
+
+      <a class="poi-card" href="https://www.google.com/maps/dir/?api=1&destination=Basilica+Santa+Maria+Maggiore+Roma&travelmode=walking" target="_blank">
+        <div class="poi-emoji">✝️</div>
+        <div class="poi-info">
+          <div class="poi-name">Tomba di Papa Francesco</div>
+          <div class="poi-desc">Basilica di Santa Maria Maggiore — accesso libero ai fedeli</div>
+        </div>
+        <span class="poi-badge badge-rosso">Pellegrinaggio</span>
+        <div class="poi-arrow">↗</div>
+      </a>
+
+      <a class="poi-card" href="https://www.google.com/maps/dir/?api=1&destination=Piazza+San+Pietro+Roma&travelmode=walking" target="_blank">
+        <div class="poi-emoji">🕍</div>
+        <div class="poi-info">
+          <div class="poi-name">Città del Vaticano</div>
+          <div class="poi-desc">Piazza San Pietro, Basilica, Musei Vaticani e Cappella Sistina</div>
+        </div>
+        <span class="poi-badge badge-ocra">Patrimonio UNESCO</span>
+        <div class="poi-arrow">↗</div>
+      </a>
+
+      <a class="poi-card" href="https://www.google.com/maps/dir/?api=1&destination=Piazza+di+Spagna+Roma&travelmode=walking" target="_blank">
+        <div class="poi-emoji">🌸</div>
+        <div class="poi-info">
+          <div class="poi-name">Piazza di Spagna</div>
+          <div class="poi-desc">La Scalinata di Trinità dei Monti e la Fontana della Barcaccia</div>
+        </div>
+        <span class="poi-badge badge-ocra">Icona di Roma</span>
+        <div class="poi-arrow">↗</div>
+      </a>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL OCCASIONI ══ -->
+<div class="modal-overlay" id="modal-occasioni" onclick="chiudiSeOverlay(event,'modal-occasioni')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title">⚡ Occasioni flash</span>
+      <button class="modal-close" onclick="chiudi('modal-occasioni')">✕</button>
+    </div>
+
+    <div id="pref-bar-occasioni" style="display:none" class="cat-pref-bar">
+      <span>⭐</span>
+      <span id="pref-bar-text"></span>
+      <a href="#" onclick="chiudi('modal-occasioni')" style="margin-left:auto;color:var(--cielo);font-size:11px;text-decoration:none;">modifica</a>
+    </div>
+
+    <div class="cat-grid-modal" id="cat-grid-modal">
+
+      <a class="cat-card-modal" href="offerte.html?cat=CIBO" id="cat-CIBO">
+        <div class="cat-emoji">🍕</div>
+        <div class="cat-name-modal">Cibo</div>
+        <div class="cat-count-modal" id="ccnt-CIBO">— offerte</div>
+      </a>
+      <a class="cat-card-modal" href="offerte.html?cat=MODA" id="cat-MODA">
+        <div class="cat-emoji">👗</div>
+        <div class="cat-name-modal">Moda</div>
+        <div class="cat-count-modal" id="ccnt-MODA">— offerte</div>
+      </a>
+      <a class="cat-card-modal" href="offerte.html?cat=TECH" id="cat-TECH">
+        <div class="cat-emoji">📱</div>
+        <div class="cat-name-modal">Tech</div>
+        <div class="cat-count-modal" id="ccnt-TECH">— offerte</div>
+      </a>
+      <a class="cat-card-modal" href="offerte.html?cat=VIAGGI" id="cat-VIAGGI">
+        <div class="cat-emoji">✈️</div>
+        <div class="cat-name-modal">Viaggi</div>
+        <div class="cat-count-modal" id="ccnt-VIAGGI">— offerte</div>
+      </a>
+      <a class="cat-card-modal" href="offerte.html?cat=DIVERTIMENTO" id="cat-DIVERTIMENTO">
+        <div class="cat-emoji">🎭</div>
+        <div class="cat-name-modal">Divertimento</div>
+        <div class="cat-count-modal" id="ccnt-DIVERTIMENTO">— offerte</div>
+      </a>
+      <a class="cat-card-modal" href="offerte.html?cat=ALTRO" id="cat-ALTRO">
+        <div class="cat-emoji">🛍️</div>
+        <div class="cat-name-modal">Altro</div>
+        <div class="cat-count-modal" id="ccnt-ALTRO">— offerte</div>
+      </a>
+
+    </div>
+
+    <div style="padding:4px 20px 8px;">
+      <a href="offerte.html" style="display:block;text-align:center;background:var(--rosso);color:#fff;padding:13px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:500;transition:background .2s;"
+         onmouseover="this.style.background='var(--rosso-l)'" onmouseout="this.style.background='var(--rosso)'">
+        Vedi tutte le offerte →
+      </a>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ SEZIONE FINDER ══ -->
+<section style="background:var(--ink);color:#fff;padding:64px 40px;">
+  <div style="max-width:960px;margin:0 auto;">
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+      <span style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+        color:var(--ocra-l);border:1px solid rgba(200,134,10,.3);padding:4px 12px;border-radius:2px;">
+        Prossimamente — Fase 2
+      </span>
+    </div>
+
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(30px,4vw,46px);
+      font-weight:600;line-height:1.1;margin-bottom:16px;color:#fff;">
+      INSTANTOWN <span style="color:var(--ocra-l);">FINDER</span><br>
+      <em style="font-style:italic;font-weight:400;font-size:.75em;color:rgba(255,255,255,.55);">
+        Il mercato nazionale che non ti ha mai visto.
+      </em>
+    </h2>
+
+    <p style="font-size:15px;color:rgba(255,255,255,.55);line-height:1.85;max-width:700px;margin-bottom:40px;">
+      Ci sono migliaia di imprese in Italia che producono eccellenza — vini, formaggi, ceramiche, 
+      lavorazioni meccaniche, tessuti, conserve — ma che non hanno mai avuto accesso ai mercati 
+      nazionali e internazionali. Non per mancanza di qualità. Per mancanza di ribalta.
+    </p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:40px;">
+
+      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(200,134,10,.15);
+        border-radius:8px;padding:24px 20px;border-top:3px solid var(--ocra);">
+        <div style="font-size:28px;margin-bottom:12px;">🏘️</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;
+          color:var(--ocra-l);margin-bottom:8px;">Il piccolo paese trova il grande mercato</div>
+        <p style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.7;">
+          Un produttore di nduja in Calabria, un oleificio nel Molise, un artigiano della ceramica 
+          in Basilicata. Con FINDER entrano nel catalogo nazionale e vengono trovati da chi li cerca — 
+          senza fiere, senza agenti, senza intermediari costosi.
+        </p>
+      </div>
+
+      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(200,134,10,.15);
+        border-radius:8px;padding:24px 20px;border-top:3px solid var(--cielo);">
+        <div style="font-size:28px;margin-bottom:12px;">🤝</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;
+          color:var(--cielo-l);margin-bottom:8px;">L'intermediario ha già il cliente</div>
+        <p style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.7;">
+          Il Finder è chi ha già un acquirente interessato e cerca il fornitore migliore nel 
+          catalogo ATECO 2025. Compra e rivende con il suo margine libero. 
+          Il pagamento in escrow tutela entrambe le parti fino alla consegna.
+        </p>
+      </div>
+
+      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(200,134,10,.15);
+        border-radius:8px;padding:24px 20px;border-top:3px solid var(--verde-l);">
+        <div style="font-size:28px;margin-bottom:12px;">⚖️</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;
+          color:#6BCF8A;margin-bottom:8px;">Fiscalmente trasparente</div>
+        <p style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.7;">
+          Sotto 5.000€/anno: reddito occasionale art. 67 TUIR, zero burocrazia. 
+          Sopra la soglia: INSTANTOWN monitora e notifica in tempo reale l'obbligo 
+          di apertura P.IVA. Il nostro Studio commercialista può gestire tutto 
+          il resto con un piccolo contributo mensile.
+        </p>
+      </div>
+
+    </div>
+
+    <div style="background:rgba(200,134,10,.08);border:1px solid rgba(200,134,10,.2);
+      border-radius:8px;padding:20px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+      <div style="font-size:32px;">📍</div>
+      <div>
+        <div style="font-size:13px;font-weight:500;color:var(--ocra-l);margin-bottom:4px;
+          letter-spacing:.04em;text-transform:uppercase;">Sud Italia — priorità di lancio</div>
+        <p style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.6;margin:0;">
+          Campania, Calabria, Sicilia, Puglia, Basilicata, Molise, Abruzzo — le regioni con la 
+          maggiore concentrazione di eccellenze produttive senza accesso ai mercati saranno 
+          le prime ad essere integrate nel catalogo FINDER.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ COME FUNZIONA ══ -->
+<section style="background:var(--bianco);padding:56px 40px;">
+  <div style="max-width:960px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:36px;">
+      <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+        color:var(--rosso);margin-bottom:10px;">PROX — Come funziona</div>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(26px,3.5vw,38px);
+        font-weight:600;color:var(--ink);">Tre passi. Niente di più.</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0;
+      background:#fff;border:1px solid var(--rule);border-radius:8px;overflow:hidden;
+      box-shadow:0 2px 20px rgba(28,20,16,.06);">
+
+      <div style="padding:28px 24px;border-right:1px solid var(--rule);position:relative;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:600;
+          color:var(--rosso);opacity:.15;position:absolute;top:16px;right:20px;line-height:1;">01</div>
+        <div style="font-size:32px;margin-bottom:14px;">📍</div>
+        <div style="font-size:15px;font-weight:500;color:var(--ink);margin-bottom:6px;">Apri il radar</div>
+        <p style="font-size:13px;color:var(--ink-mu);line-height:1.65;margin:0;">
+          Il GPS trova le offerte flash degli esercenti entro 200 metri da te — in questo momento, 
+          in questa strada.
+        </p>
+      </div>
+
+      <div style="padding:28px 24px;border-right:1px solid var(--rule);position:relative;
+        background:var(--rosso-p);">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:600;
+          color:var(--rosso);opacity:.15;position:absolute;top:16px;right:20px;line-height:1;">02</div>
+        <div style="font-size:32px;margin-bottom:14px;">🔐</div>
+        <div style="font-size:15px;font-weight:500;color:var(--ink);margin-bottom:6px;">Prenota e paga in escrow</div>
+        <p style="font-size:13px;color:var(--ink-mu);line-height:1.65;margin:0;">
+          Il prezzo si blocca al momento della prenotazione. Il pagamento va in escrow — 
+          nessuno lo tocca finché non incontri l'esercente.
+        </p>
+      </div>
+
+      <div style="padding:28px 24px;position:relative;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:600;
+          color:var(--rosso);opacity:.15;position:absolute;top:16px;right:20px;line-height:1;">03</div>
+        <div style="font-size:32px;margin-bottom:14px;">✅</div>
+        <div style="font-size:15px;font-weight:500;color:var(--ink);margin-bottom:6px;">QR match — fondi sbloccati</div>
+        <p style="font-size:13px;color:var(--ink-mu);line-height:1.65;margin:0;">
+          L'esercente mostra QR-A, tu scansioni QR-B. Solo la coppia fisica sblocca i fondi. 
+          Impossibile frodare.
+        </p>
+      </div>
+
+    </div>
+    <div style="text-align:center;margin-top:24px;">
+      <a href="map.html" style="display:inline-block;background:var(--rosso);color:#fff;
+        padding:13px 32px;border-radius:4px;text-decoration:none;font-size:14px;font-weight:500;
+        letter-spacing:.04em;transition:background .2s;"
+        onmouseover="this.style.background='var(--rosso-l)'"
+        onmouseout="this.style.background='var(--rosso)'">
+        Apri il Radar GPS →
+      </a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ SEZIONE FUMETTI ══ -->
+<section id="comics" style="background:var(--ink);padding:52px 32px;">
+  <div style="max-width:960px;margin:0 auto;">
+
+    <div style="text-align:center;margin-bottom:32px;">
+      <div style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+        color:var(--ocra-l);margin-bottom:10px;">COME FUNZIONA · HOW IT WORKS · 如何运作 · CÓMO FUNCIONA</div>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(26px,3.5vw,40px);
+        font-weight:600;color:#fff;">INSTANTOWN in 4 scene</h2>
+    </div>
+
+    <!-- Fumetto IT/EN — visibile per IT e EN -->
+    <div class="comic-panel" data-langs="it,en,fr">
+      <img src="Fumetto_inglese.png" alt="INSTANTOWN — How it works"
+        style="width:100%;border-radius:12px;box-shadow:0 4px 32px rgba(0,0,0,.4);display:block;">
+    </div>
+
+    <!-- Fumetto ZH principale -->
+    <div class="comic-panel" data-langs="zh" style="display:none;">
+      <img src="Fumetto_Cinese.png" alt="INSTANTOWN — 瞬城 app"
+        style="width:100%;border-radius:12px;box-shadow:0 4px 32px rgba(0,0,0,.4);display:block;">
+    </div>
+
+    <!-- Fumetto ES -->
+    <div class="comic-panel" data-langs="es" style="display:none;">
+      <img src="Fumetto_Spagnolo.png" alt="INSTANTOWN — Cómo funciona"
+        style="width:100%;border-radius:12px;box-shadow:0 4px 32px rgba(0,0,0,.4);display:block;">
+    </div>
+
+    <!-- Depliant cinese — sotto il fumetto ZH -->
+    <div class="comic-panel comic-extra" data-langs="zh" style="display:none;margin-top:20px;">
+      <img src="depliant_cinese.png" alt="INSTANTOWN — 瞬城 depliant"
+        style="width:100%;border-radius:12px;box-shadow:0 4px 32px rgba(0,0,0,.4);display:block;">
+    </div>
+
+    <!-- Secondo fumetto ES -->
+    <div class="comic-panel comic-extra" data-langs="es" style="display:none;margin-top:20px;">
+      <img src="Altro_fumetto_spagnolo.png" alt="INSTANTOWN — España"
+        style="width:100%;border-radius:12px;box-shadow:0 4px 32px rgba(0,0,0,.4);display:block;">
+    </div>
+
+    <!-- Secondo fumetto ZH -->
+    <div class="comic-panel comic-extra2" data-langs="zh" style="display:none;margin-top:20px;">
+      <img src="altro_fumetto_cinese.png" alt="INSTANTOWN — 瞬城"
+        style="width:100%;border-radius:12px;box-shadow:0 4px 32px rgba(0,0,0,.4);display:block;">
+    </div>
+
+  </div>
+</section>
+
+
+<section style="background:#1C1410;padding:40px 32px;text-align:center;"><div style="max-width:960px;margin:0 auto;"><p style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#E8A020;margin-bottom:12px;">COME FUNZIONA</p><img id="fumetto-img" src="Fumetto_inglese.png" style="width:100%;max-width:800px;border-radius:12px;" alt="INSTANTOWN fumetto"></div></section><footer>
+  <strong>INSTANTOWN PROX</strong> &nbsp;·&nbsp;
+  <a href="offerte.html">Offerte</a>
+  <a href="servizi.html">Servizi</a>
+  <a href="registrazione.html">Registrati</a>
+  <a href="nuova-offerta.html">Pubblica offerta</a>
+  <a href="instantown_presentation.html">Presentazione istituzionale</a>
+  &nbsp;·&nbsp;
+  <span style="color:rgba(200,134,10,.5);">FINDER — prossimamente</span>
+  &nbsp;·&nbsp; Roma, Italia, 2025
+</footer>
+
+<script>
+// RESET localStorage corrotto
+(function() {
+  var saved = localStorage.getItem('it_lang');
+  var ok = ['it','en','zh','es','fr'];
+  if (saved && !ok.includes(saved)) localStorage.removeItem('it_lang');
+})();
+
+// MODAL
+function apriServizi()   { document.getElementById('modal-servizi').classList.add('open');   document.body.style.overflow='hidden'; }
+function apriOccasioni() { document.getElementById('modal-occasioni').classList.add('open'); document.body.style.overflow='hidden'; caricaCounts(); mostraPref(); }
+function chiudi(id)      { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+function chiudiSeOverlay(e,id) { if(e.target===e.currentTarget) chiudi(id); }
+document.addEventListener('keydown', function(e) { if(e.key==='Escape'){ chiudi('modal-servizi'); chiudi('modal-occasioni'); } });
+
+// TRADUZIONI
+var I18N = {
+  it: {
+    kicker: 'Roma \u2014 Citt\u00E0 Pilota 2025',
+    title:  'Il mondo<br><em>ai tuoi piedi.</em>',
+    desc:   'Offerte flash a 200 metri, servizi pubblici sulla mappa, pagamenti garantiti. INSTANTOWN connette cittadini, turisti ed esercenti in tempo reale.',
+    reg:    'Registrati come esercente \u2192',
+    btn1: 'Servizi essenziali', sub1: 'Fontanelle \u00B7 Bagni \u00B7 Wi-Fi<br>Luoghi iconici di Roma',
+    btn2: 'Occasioni flash',    sub2: 'Cibo \u00B7 Moda \u00B7 Tech \u00B7 Viaggi<br>Divertimento \u00B7 Altro',
+    b1t: 'Prossimit\u00E0 reale, non pubblicit\u00E0',
+    b1d: 'Il GPS calcola cosa c\u2019\u00E8 attorno a te. Solo esercenti fisici raggiungibili a piedi.',
+    b2t: 'Pagamento in escrow, prezzo bloccato',
+    b2d: 'Il denaro rimane congelato fino all\u2019incontro fisico. Il prezzo che vedi \u00E8 il prezzo che paghi.',
+    b3t: 'Servizi pubblici integrati',
+    b3d: 'Fontanelle, bagni pubblici, Wi-Fi gratuito sulla stessa mappa. Roma a portata di tap.',
+    b4t: 'Anti-frode by design',
+    b4d: 'Ogni esercente verificato con P.IVA reale. Il doppio QR fisico rende impossibile frodare.'
+  },
+  en: {
+    kicker: 'Rome \u2014 Pilot City 2025',
+    title:  'The world<br><em>at your feet.</em>',
+    desc:   'Flash offers within 200 metres, public services on the map, guaranteed payments. INSTANTOWN connects citizens, tourists and merchants in real time.',
+    reg:    'Register as a merchant \u2192',
+    btn1: 'Essential services', sub1: 'Drinking fountains \u00B7 Toilets \u00B7 Wi-Fi<br>Rome landmarks',
+    btn2: 'Flash deals',        sub2: 'Food \u00B7 Fashion \u00B7 Tech \u00B7 Travel<br>Entertainment \u00B7 Other',
+    b1t: 'Real proximity, not advertising',
+    b1d: 'GPS calculates what is around you within 200 metres. Only physical merchants reachable on foot.',
+    b2t: 'Escrow payment, locked price',
+    b2d: 'Money stays frozen until the physical QR match. The price you see is the price you pay.',
+    b3t: 'Integrated public services',
+    b3d: 'Drinking fountains, public toilets, free Wi-Fi on the same map. Rome landmarks always one tap away.',
+    b4t: 'Anti-fraud by design',
+    b4d: 'Every merchant is verified with a real VAT number. The physical dual QR makes fraud impossible.'
+  },
+  zh: {
+    kicker: '\u7F57\u9A6C \u2014 \u8BD5\u70B9\u57CE\u5E02 2025',
+    title:  '\u4E16\u754C<br><em>\u5728\u60A8\u811A\u4E0B\u3002</em>',
+    desc:   '200\u7C73\u5185\u7684\u95EA\u8D2D\u4F18\u60E0\uFF0C\u5730\u56FE\u4E0A\u7684\u516C\u5171\u670D\u52A1\uFF0C\u6709\u4FDD\u969C\u7684\u4ED8\u6B3E\u3002INSTANTOWN\u5B9E\u65F6\u8FDE\u63A5\u5E02\u6C11\u3001\u6E38\u5BA2\u548C\u5546\u5BB6\u3002',
+    reg:    '\u6CE8\u518C\u4E3A\u5546\u5BB6 \u2192',
+    btn1: '\u57FA\u672C\u670D\u52A1', sub1: '\u996E\u6C34\u70B9 \u00B7 \u536B\u751F\u95F4 \u00B7 Wi-Fi<br>\u7F57\u9A6C\u5730\u6807',
+    btn2: '\u9650\u65F6\u7279\u60E0', sub2: '\u9910\u996E \u00B7 \u65F6\u5C1A \u00B7 \u79D1\u6280 \u00B7 \u65C5\u6E38<br>\u5A31\u4E50 \u00B7 \u5176\u4ED6',
+    b1t: '\u771F\u5B9E\u8FD1\u90BB\uFF0C\u975E\u5E7F\u544A',
+    b1d: 'GPS\u5B9E\u65F6\u8BA1\u7B97\u60A8\u5468\u56F4200\u7C73\u5185\u7684\u5546\u5BB6\u3002',
+    b2t: '\u8D44\u91D1\u6258\u7BA1\uFF0C\u4EF7\u683C\u9501\u5B9A',
+    b2d: '\u8D44\u91D1\u51BB\u7ED3\u81F3\u7EBF\u4E0B\u53CC\u7801\u6838\u9A8C\u5B8C\u6210\u3002\u60A8\u770B\u5230\u7684\u4EF7\u683C\u5373\u60A8\u652F\u4ED8\u7684\u4EF7\u683C\u3002',
+    b3t: '\u516C\u5171\u670D\u52A1\u6574\u5408',
+    b3d: '\u996E\u6C34\u70B9\u3001\u516C\u5171\u536B\u751F\u95F4\u3001\u514D\u8D39Wi-Fi\u5728\u540C\u4E00\u5730\u56FE\u4E0A\u3002',
+    b4t: '\u9632\u6B3A\u8BC8\u8BBE\u8BA1',
+    b4d: '\u6BCF\u4F4D\u5546\u5BB6\u5747\u901A\u8FC7\u589E\u503C\u7A0E\u53F7\u5B9E\u540D\u9A8C\u8BC1\u3002'
+  },
+  es: {
+    kicker: 'Roma \u2014 Ciudad Piloto 2025',
+    title:  'El mundo<br><em>a tus pies.</em>',
+    desc:   'Ofertas flash a 200 metros, servicios p\u00FAblicos en el mapa, pagos garantizados. INSTANTOWN conecta ciudadanos, turistas y comerciantes en tiempo real.',
+    reg:    'Reg\u00EDstrate como comerciante \u2192',
+    btn1: 'Servicios esenciales', sub1: 'Fuentes \u00B7 Aseos \u00B7 Wi-Fi<br>Monumentos de Roma',
+    btn2: 'Ofertas flash',        sub2: 'Comida \u00B7 Moda \u00B7 Tech \u00B7 Viajes<br>Ocio \u00B7 Otros',
+    b1t: 'Proximidad real, no publicidad',
+    b1d: 'El GPS calcula lo que hay a tu alrededor. Solo ves ofertas de comerciantes f\u00EDsicos accesibles a pie.',
+    b2t: 'Pago en dep\u00F3sito, precio bloqueado',
+    b2d: 'El dinero queda congelado hasta el encuentro f\u00EDsico QR-A y QR-B.',
+    b3t: 'Servicios p\u00FAblicos integrados',
+    b3d: 'Fuentes de agua, aseos p\u00FAblicos, Wi-Fi gratuito, todo en el mismo mapa.',
+    b4t: 'Antifraude by design',
+    b4d: 'Cada comerciante se verifica con NIF real. El doble QR f\u00EDsico hace imposible el fraude.'
+  },
+  fr: {
+    kicker: 'Rome \u2014 Ville Pilote 2025',
+    title:  'Le monde<br><em>\u00E0 vos pieds.</em>',
+    desc:   'Offres flash \u00E0 200 m\u00E8tres, services publics sur la carte, paiements garantis. INSTANTOWN connecte citoyens, touristes et commer\u00E7ants en temps r\u00E9el.',
+    reg:    'S\u2019inscrire comme commer\u00E7ant \u2192',
+    btn1: 'Services essentiels', sub1: 'Fontaines \u00B7 Toilettes \u00B7 Wi-Fi<br>Monuments de Rome',
+    btn2: 'Offres flash',        sub2: 'Nourriture \u00B7 Mode \u00B7 Tech \u00B7 Voyages<br>Loisirs \u00B7 Autres',
+    b1t: 'Proximit\u00E9 r\u00E9elle, pas de publicit\u00E9',
+    b1d: 'Le GPS calcule ce qui vous entoure \u00E0 200 m\u00E8tres.',
+    b2t: 'Paiement s\u00E9questre, prix bloqu\u00E9',
+    b2d: 'L\u2019argent reste gel\u00E9 jusqu\u2019\u00E0 la correspondance physique QR-A et QR-B.',
+    b3t: 'Services publics int\u00E9gr\u00E9s',
+    b3d: 'Fontaines, toilettes publiques, Wi-Fi gratuit, tout sur la m\u00EAme carte.',
+    b4t: 'Antifraude by design',
+    b4d: 'Chaque commer\u00E7ant est v\u00E9rifi\u00E9 avec un vrai num\u00E9ro de TVA.'
+  }
+};
+
+function applyLang(lang) {
+  var ok = ['it','en','zh','es','fr'];
+  if (!ok.includes(lang)) lang = 'it';
+  localStorage.setItem('it_lang', lang);
+  var L = I18N[lang] || I18N.it;
+
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    var k = el.getAttribute('data-i18n');
+    if (L[k] !== undefined) el.innerHTML = L[k];
+  });
+
+  var btns = document.querySelectorAll('.btn-main');
+  if (btns[0]) {
+    var l0 = btns[0].querySelector('.btn-main-label');
+    var s0 = btns[0].querySelector('.btn-main-sub');
+    if (l0) l0.textContent = L.btn1;
+    if (s0) s0.innerHTML   = L.sub1;
+  }
+  if (btns[1]) {
+    var l1 = btns[1].querySelector('.btn-main-label');
+    var s1 = btns[1].querySelector('.btn-main-sub');
+    if (l1) l1.textContent = L.btn2;
+    if (s1) s1.innerHTML   = L.sub2;
+  }
+
+  var boxes = document.querySelectorAll('.box');
+  var bkeys = [['b1t','b1d'],['b2t','b2d'],['b3t','b3d'],['b4t','b4d']];
+  boxes.forEach(function(box, i) {
+    if (!bkeys[i]) return;
+    var t = box.querySelector('.box-title');
+    var d = box.querySelector('.box-text');
+    if (t) t.textContent = L[bkeys[i][0]];
+    if (d) d.textContent = L[bkeys[i][1]];
+  });
+
+  document.querySelectorAll('.comic-panel').forEach(function(p) {
+    var langs = (p.getAttribute('data-langs') || '').split(',');
+    p.style.display = langs.includes(lang) ? 'block' : 'none';
+  });
+
+  // Media box — lingua attiva
+  document.querySelectorAll('.media-panel').forEach(function(p) {
+    var langs = (p.getAttribute('data-langs') || '').split(',');
+    p.style.display = langs.includes(lang) ? 'block' : 'none';
+  });
+
+  document.querySelectorAll('.lbtn').forEach(function(b) {
+    b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Resetta TUTTE le chiavi lingua vecchie e incompatibili
+  var legacyKeys = ['lang','language','locale','it_language','currentLang','activeLang'];
+  legacyKeys.forEach(function(k){ localStorage.removeItem(k); });
+
+  var saved = localStorage.getItem('it_lang');
+  var ok    = ['it','en','zh','es','fr'];
+  // Se il valore salvato non è una scelta valida, forza italiano
+  if (!saved || !ok.includes(saved)) {
+    saved = null;
+    localStorage.removeItem('it_lang');
+  }
+  // Usa la lingua salvata, altrimenti italiano (NON navigator.language)
+  var lang = saved || 'it';
+  applyLang(lang);
+});
+
+// CATEGORIE
+var CATS = ['CIBO','MODA','TECH','VIAGGI','DIVERTIMENTO','ALTRO'];
+var EMOJI = {CIBO:'\uD83C\uDF55',MODA:'\uD83D\uDC57',TECH:'\uD83D\uDCF1',VIAGGI:'\u2708\uFE0F',DIVERTIMENTO:'\uD83C\uDFAD',ALTRO:'\uD83D\uDECD\uFE0F'};
+var prefCats = JSON.parse(localStorage.getItem('it_categorie') || '[]');
+
+function mostraPref() {
+  var bar = document.getElementById('pref-bar-occasioni');
+  var txt = document.getElementById('pref-bar-text');
+  CATS.forEach(function(c) {
+    var el = document.getElementById('cat-' + c);
+    if (!el) return;
+    el.classList.toggle('pref', prefCats.includes(c));
+    var dot = el.querySelector('.pref-dot');
+    if (dot) dot.remove();
+    if (prefCats.includes(c)) el.insertAdjacentHTML('beforeend','<div class="pref-dot"></div>');
+  });
+  if (prefCats.length > 0) {
+    if (bar) bar.style.display = 'flex';
+    if (txt) txt.textContent = 'Preferenze: ' + prefCats.map(function(c){ return EMOJI[c]+' '+c; }).join(' \u00B7 ');
+  } else {
+    if (bar) bar.style.display = 'none';
+  }
+}
+
+document.querySelectorAll('.cat-card-modal').forEach(function(card) {
+  card.addEventListener('click', function(e) {
+    e.preventDefault();
+    var cat = this.id.replace('cat-','');
+    var idx = prefCats.indexOf(cat);
+    if (idx !== -1) prefCats.splice(idx, 1);
+    else { if (prefCats.length >= 2) prefCats.shift(); prefCats.push(cat); }
+    localStorage.setItem('it_categorie', JSON.stringify(prefCats));
+    setTimeout(function(){ window.location.href = card.getAttribute('href'); }, 200);
+  });
+});
+
+// CONTATORI
+var SHEET_ID   = '1m5ovESlhcbVwafN3EOpuYpWUGm1tbH6CtNPTBNZZrOI';
+var SHEET_NAME = 'offerte';
+
+function inferisciCat(desc) {
+  var d = (desc || '').toLowerCase();
+  if (/pizza|pane|farin|cibo|colaz|mangi|kg|pax|food|caffe/.test(d)) return 'CIBO';
+  if (/moda|abito|vestit|scarpe|borsa/.test(d))                       return 'MODA';
+  if (/tech|gadget|elettr|computer|phone|jack/.test(d))               return 'TECH';
+  if (/viaggio|hotel|volo|tour/.test(d))                              return 'VIAGGI';
+  if (/concert|spett|teatro|divert|event/.test(d))                    return 'DIVERTIMENTO';
+  return 'ALTRO';
+}
+
+async function caricaCounts() {
+  try {
+    var url  = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:json&sheet=' + encodeURIComponent(SHEET_NAME);
+    var res  = await fetch(url);
+    var text = await res.text();
+    var json = JSON.parse(text.substring(47).slice(0,-2));
+    var cols = json.table.cols.map(function(c){ return c.label.toLowerCase().trim(); });
+    var gi   = function(l){ return cols.findIndex(function(c){ return c.includes(l); }); };
+    var gv   = function(row,l){ var i=gi(l); return i>=0&&row.c[i]?(row.c[i].v!=null?row.c[i].v:row.c[i].f||''):''; };
+    var counts = {};
+    CATS.forEach(function(c){ counts[c]=0; });
+    json.table.rows.forEach(function(row) {
+      var desc = gv(row,'descrizione');
+      if (!desc) return;
+      var cat = (gv(row,'categoria')||'').toUpperCase();
+      if (!CATS.includes(cat)) cat = inferisciCat(desc);
+      counts[cat]++;
+    });
+    CATS.forEach(function(c) {
+      var el = document.getElementById('ccnt-'+c);
+      if (el) el.textContent = counts[c]+(counts[c]===1?' offerta':' offerte');
+    });
+    localStorage.setItem('it_cat_counts', JSON.stringify(counts));
+  } catch(e) {
+    var counts = JSON.parse(localStorage.getItem('it_cat_counts')||'{}');
+    CATS.forEach(function(c) {
+      var el = document.getElementById('ccnt-'+c);
+      if (el && counts[c]!==undefined) el.textContent = counts[c]+' offerte';
+    });
+  }
+}
+
+caricaCounts();
+</script>
+</body>
+</html>
