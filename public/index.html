@@ -230,19 +230,7 @@ footer a:hover{color:var(--ocra-l);}
 .i18n-grid{display:none;}
 .i18n-grid.active{display:grid;}
 
-/* ── PWA INSTALL BANNER ── */
-#pwa-banner{display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:9999;background:var(--ink);border:1px solid rgba(200,134,10,.4);border-radius:14px;padding:16px 20px;box-shadow:0 8px 40px rgba(0,0,0,.5);max-width:360px;width:calc(100% - 40px);animation:slideUpBanner .3s ease;}
-@keyframes slideUpBanner{from{transform:translateX(-50%) translateY(20px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
-#pwa-banner-inner{display:flex;align-items:center;gap:14px;}
-#pwa-banner img{width:48px;height:48px;border-radius:10px;flex-shrink:0;}
-#pwa-banner-text{flex:1;}
-#pwa-banner-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:#fff;margin-bottom:2px;}
-#pwa-banner-sub{font-size:11px;color:rgba(255,255,255,.5);line-height:1.4;}
-#pwa-banner-btns{display:flex;gap:8px;margin-top:10px;}
-#pwa-btn-install{background:var(--ocra);color:#1C1410;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s;}
-#pwa-btn-install:hover{background:var(--ocra-l);}
-#pwa-btn-dismiss{background:none;color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:8px 12px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
-#pwa-btn-dismiss:hover{color:rgba(255,255,255,.7);}
+
 
 
 /* ── NAV CTA pulsante registrazione ── */
@@ -479,20 +467,45 @@ footer a:hover{color:var(--ocra-l);}
   </div>
 </section>
 
-<!-- PWA INSTALL BANNER -->
-<div id="pwa-banner">
-  <div id="pwa-banner-inner">
-    <img src="Nuovo_logo_3_diss.png" onerror="this.src='icon-192.png'" alt="INSTANTOWN">
-    <div id="pwa-banner-text">
-      <div id="pwa-banner-title">Aggiungi INSTANTOWN</div>
-      <div id="pwa-banner-sub">Accedi subito dalla schermata home</div>
-      <div id="pwa-banner-btns">
-        <button id="pwa-btn-install">&#x2B; Aggiungi</button>
-        <button id="pwa-btn-dismiss">Non ora</button>
-      </div>
-    </div>
+          </div>
   </div>
 </div>
+
+<!-- AREA ESERCENTE -->
+<section id="esercente" style="background:#1C1410;padding:40px 20px;border-top:2px solid rgba(200,134,10,.3);">
+  <div style="max-width:960px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(200,134,10,.6);margin-bottom:8px;">ACCESSO RISERVATO</div>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:#fff;">Sei un esercente?</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+      <a href="registrazione.html" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(200,134,10,.2);border-left:4px solid rgba(255,255,255,.3);border-radius:10px;padding:16px 18px;text-decoration:none;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background='rgba(255,255,255,.05)'">
+        <span style="font-size:28px;">&#x1F4CB;</span>
+        <div><div style="font-size:15px;font-weight:600;color:#fff;">Registrati</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;">Nuovo esercente INSTANTOWN</div></div>
+      </a>
+      <a href="nuova-offerta.html" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(200,134,10,.2);border-left:4px solid var(--ocra,#C8860A);border-radius:10px;padding:16px 18px;text-decoration:none;transition:background .2s;" onmouseover="this.style.background='rgba(200,134,10,.1)'" onmouseout="this.style.background='rgba(255,255,255,.05)'">
+        <span style="font-size:28px;">&#x26A1;</span>
+        <div><div style="font-size:15px;font-weight:600;color:#fff;">Pubblica offerta</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;">Crea nuova offerta flash</div></div>
+      </a>
+      <a href="vendor-wallet.html" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(200,134,10,.2);border-left:4px solid var(--verde-l,#22A050);border-radius:10px;padding:16px 18px;text-decoration:none;transition:background .2s;" onmouseover="this.style.background='rgba(34,160,80,.1)'" onmouseout="this.style.background='rgba(255,255,255,.05)'">
+        <span style="font-size:28px;">&#x1F4B0;</span>
+        <div><div style="font-size:15px;font-weight:600;color:#fff;">Portafoglio</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;">Saldo e transazioni</div></div>
+      </a>
+      <a href="chat-esercente.html" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(200,134,10,.2);border-left:4px solid var(--cielo,#4A90C4);border-radius:10px;padding:16px 18px;text-decoration:none;transition:background .2s;" onmouseover="this.style.background='rgba(74,144,196,.1)'" onmouseout="this.style.background='rgba(255,255,255,.05)'">
+        <span style="font-size:28px;">&#x1F4AC;</span>
+        <div><div style="font-size:15px;font-weight:600;color:#fff;">Messaggi clienti</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;">Dashboard chat</div></div>
+      </a>
+      <a href="esercente-scan.html" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(200,134,10,.2);border-left:4px solid var(--rosso-l,#C0392B);border-radius:10px;padding:16px 18px;text-decoration:none;transition:background .2s;" onmouseover="this.style.background='rgba(192,57,43,.1)'" onmouseout="this.style.background='rgba(255,255,255,.05)'">
+        <span style="font-size:28px;">&#x1F4F7;</span>
+        <div><div style="font-size:15px;font-weight:600;color:#fff;">Scansiona QR</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;">Sblocca fondi cliente</div></div>
+      </a>
+      <a href="instantown_presentation.html" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(200,134,10,.2);border-left:4px solid rgba(200,134,10,.5);border-radius:10px;padding:16px 18px;text-decoration:none;transition:background .2s;" onmouseover="this.style.background='rgba(200,134,10,.08)'" onmouseout="this.style.background='rgba(255,255,255,.05)'">
+        <span style="font-size:28px;">&#x1F4CA;</span>
+        <div><div style="font-size:15px;font-weight:600;color:#fff;">Presentazione</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;">Istituzionale INSTANTOWN</div></div>
+      </a>
+    </div>
+  </div>
+</section>
 
 <footer>
   <strong>INSTANTOWN PROX</strong> &nbsp;·&nbsp;
@@ -790,79 +803,7 @@ async function caricaCounts() {
 }
 
 caricaCounts();
-// ══════════════════════════════════════
-// PWA INSTALL PROMPT
-// ══════════════════════════════════════
-var deferredPrompt = null;
-var pwaTexts = {
-  it: { title: 'Aggiungi INSTANTOWN', sub: 'Accedi subito dalla schermata home', btn: '+ Aggiungi', dismiss: 'Non ora' },
-  en: { title: 'Add INSTANTOWN', sub: 'Quick access from your home screen', btn: '+ Add', dismiss: 'Not now' },
-  zh: { title: '添加INSTANTOWN', sub: '即可从主屏幕访问', btn: '+ 添加', dismiss: '暫不添加' },
-  es: { title: 'Añadir INSTANTOWN', sub: 'Acceso rápido desde tu pantalla de inicio', btn: '+ Añadir', dismiss: 'Ahora no' },
-  fr: { title: 'Ajouter INSTANTOWN', sub: 'Accès rapide depuis votre écran d’accueil', btn: '+ Ajouter', dismiss: 'Pas maintenant' }
-};
 
-function updatePwaBannerLang(lang) {
-  var t = pwaTexts[lang] || pwaTexts.it;
-  var el = document.getElementById('pwa-banner-title');
-  var es = document.getElementById('pwa-banner-sub');
-  var eb = document.getElementById('pwa-btn-install');
-  var ed = document.getElementById('pwa-btn-dismiss');
-  if (el) el.textContent = t.title;
-  if (es) es.textContent = t.sub;
-  if (eb) eb.textContent = t.btn;
-  if (ed) ed.textContent = t.dismiss;
-}
-
-// Intercetta il prompt del browser
-window.addEventListener('beforeinstallprompt', function(e) {
-  e.preventDefault();
-  deferredPrompt = e;
-  // Mostra il banner dopo 3 secondi
-  setTimeout(function() {
-    var banner = document.getElementById('pwa-banner');
-    if (banner) banner.style.display = 'block';
-  }, 3000);
-});
-
-document.getElementById('pwa-btn-install').addEventListener('click', function() {
-  var banner = document.getElementById('pwa-banner');
-  if (banner) banner.style.display = 'none';
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(function(result) {
-      deferredPrompt = null;
-    });
-  }
-});
-
-document.getElementById('pwa-btn-dismiss').addEventListener('click', function() {
-  var banner = document.getElementById('pwa-banner');
-  if (banner) banner.style.display = 'none';
-  // Non mostrare più per 7 giorni
-  localStorage.setItem('pwa_dismissed', Date.now());
-});
-
-// iOS: mostra istruzioni manuali
-var isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
-var isInStandaloneMode = window.navigator.standalone;
-if (isIos && !isInStandaloneMode) {
-  setTimeout(function() {
-    var dismissed = localStorage.getItem('pwa_dismissed');
-    if (dismissed && Date.now() - dismissed < 7 * 24 * 60 * 60 * 1000) return;
-    var banner = document.getElementById('pwa-banner');
-    var sub = document.getElementById('pwa-banner-sub');
-    if (sub) sub.textContent = 'Tocca ― poi "Aggiungi a schermata Home"';
-    if (banner) banner.style.display = 'block';
-  }, 3000);
-}
-
-// Aggiungi updatePwaBannerLang alla funzione applyLang esistente
-var _origApplyLang = applyLang;
-applyLang = function(lang) {
-  _origApplyLang(lang);
-  updatePwaBannerLang(lang);
-};
 
 </script>
 </body>

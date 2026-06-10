@@ -182,9 +182,43 @@ footer strong{color:var(--ocra-l);}
   .flash-row{grid-template-columns:1fr auto 1fr;}
   .steps{display:none;}
 }
+
+/* ── BOX PIN ESERCENTE ── */
+#pin-gate{position:fixed;inset:0;background:var(--ink,#1C1410);z-index:9999;display:flex;align-items:center;justify-content:center;padding:32px 20px;}
+.pin-box{background:rgba(255,255,255,.04);border:1px solid rgba(200,134,10,.25);border-radius:16px;padding:36px 32px;max-width:380px;width:100%;text-align:center;}
+.pin-box-icon{font-size:48px;margin-bottom:14px;}
+.pin-box-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:#fff;margin-bottom:8px;}
+.pin-box-desc{font-size:13px;color:rgba(255,255,255,.5);line-height:1.6;margin-bottom:24px;}
+.pin-box-input{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(200,134,10,.3);border-radius:8px;padding:14px 16px;font-size:22px;color:#fff;font-family:monospace;letter-spacing:.2em;text-align:center;outline:none;transition:border .2s;}
+.pin-box-input:focus{border-color:#E8A020;}
+.pin-box-input::placeholder{color:rgba(255,255,255,.2);letter-spacing:.05em;font-size:14px;}
+.pin-box-btn{width:100%;margin-top:14px;background:#C8860A;color:#1C1410;border:none;border-radius:8px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.pin-box-error{color:#ff6b6b;font-size:12px;margin-top:10px;display:none;}
+.pin-negozio-card{background:rgba(200,134,10,.08);border:1px solid rgba(200,134,10,.2);border-radius:10px;padding:16px;margin-top:16px;text-align:left;display:none;}
+.pin-neg-nome{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:#E8A020;}
+.pin-neg-info{font-size:12px;color:rgba(255,255,255,.5);margin-top:4px;line-height:1.6;}
+.pin-box-confirm{width:100%;margin-top:12px;background:#1A7A3A;color:#fff;border:none;border-radius:8px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;display:none;}
+
 </style>
 </head>
 <body>
+
+<div id="pin-gate">
+  <a href="index.html#esercente" style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;background:#1C1410;border:2px solid rgba(200,134,10,.6);border-radius:50%;color:#fff;font-size:24px;font-weight:bold;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.4);position:fixed;top:16px;right:16px;z-index:99999;">&#8592;</a>
+  <div class="pin-box">
+    <div class="pin-box-icon">&#x1F3EA;</div>
+    <div class="pin-box-title">Accesso esercente</div>
+    <div class="pin-box-desc">Inserisci il tuo PIN per accedere. I dati del tuo negozio verranno caricati automaticamente.</div>
+    <input class="pin-box-input" id="pin-input-offerta" type="password" placeholder="Inserisci PIN" maxlength="10" autocomplete="off">
+    <button class="pin-box-btn" onclick="verificaPin()">Verifica PIN &#x2192;</button>
+    <div class="pin-box-error" id="pin-error">PIN non trovato. Controlla e riprova.</div>
+    <div class="pin-negozio-card" id="pin-negozio-card">
+      <div class="pin-neg-nome" id="pin-neg-nome"></div>
+      <div class="pin-neg-info" id="pin-neg-info"></div>
+    </div>
+    <button class="pin-box-confirm" id="pin-confirm-btn" onclick="confermaAccesso()">✓ Entra e pubblica offerta</button>
+  </div>
+</div>
 
 <div class="stripe"></div>
 <nav>
@@ -229,7 +263,15 @@ footer strong{color:var(--ocra-l);}
   <input type="hidden" name="_subject" value="[INSTANTOWN] Nuova offerta flash">
   <input type="hidden" name="_cc" value="info@instantown.it">
   <input id="cat-val" type="hidden" name="categoria" value="">
+  <input id="negozio-hidden" type="hidden" name="negozio" value="">
+  <input id="indirizzo-hidden" type="hidden" name="indirizzo" value="">
+  <input id="piva-hidden" type="hidden" name="piva" value="">
+  <input id="lat-hidden" type="hidden" name="lat" value="">
+  <input id="lon-hidden" type="hidden" name="lon" value="">
+  <input id="pin-hidden" type="hidden" name="pin_esercente" value="">
 
+  
+  <div id="negozio-info-bar" style="display:none;background:rgba(200,134,10,.1);border:1px solid rgba(200,134,10,.3);border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:13px;color:#E8A020;font-weight:500;"></div>
   <!-- ══ SEZ 1: FOTO ══ -->
   <div class="sez">
     <div class="sez-header">
@@ -761,6 +803,86 @@ if(navigator.geolocation) {
 
 // Init
 aggiornaAnteprima();
+// ══ PIN GATE ══
+let datiNegozio = null;
+const SHEET_ID_NEG = '1m5ovESlhcbVwafN3EOpuYpWUGm1tbH6CtNPTBNZZrOI';
+
+async function verificaPin() {
+  const pin = document.getElementById('pin-input-offerta').value.trim();
+  if (!pin) return;
+  const btn = document.querySelector('.pin-box-btn');
+  btn.textContent = 'Verifica...'; btn.disabled = true;
+  try {
+    const url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID_NEG + '/gviz/tq?tqx=out:json&sheet=DB_Attivazioni';
+    const res = await fetch(url);
+    const text = await res.text();
+    const json = JSON.parse(text.substring(47).slice(0,-2));
+    const cols = json.table.cols.map(c => c.label.toLowerCase().trim());
+    const pinIdx  = cols.findIndex(c => c.includes('pin'));
+    const nomeIdx = cols.findIndex(c => c.includes('nome'));
+    const indiIdx = cols.findIndex(c => c.includes('indirizz'));
+    const pivaIdx = cols.findIndex(c => c.includes('p_iva') || c.includes('piva') || c.includes('p.iva'));
+    const latIdx  = cols.findIndex(c => c.includes('lat'));
+    const lonIdx  = cols.findIndex(c => c.includes('lon'));
+    let trovato = null;
+    for (const row of json.table.rows) {
+      if (!row.c[pinIdx]) continue;
+      // PIN può essere numero (274768.0) o stringa — confronta sempre come intero
+      const pinVal = Math.round(parseFloat((row.c[pinIdx].v||'').toString())).toString();
+      if (pinVal === pin) {
+        trovato = {
+          pin,
+          nome:      row.c[nomeIdx]  ? (row.c[nomeIdx].v  || '') : '',
+          indirizzo: row.c[indiIdx]  ? (row.c[indiIdx].v  || '') : '',
+          piva:      row.c[pivaIdx]  ? (row.c[pivaIdx].v  || '') : '',
+          lat:       row.c[latIdx]   ? (row.c[latIdx].v   || '') : '',
+          lon:       row.c[lonIdx]   ? (row.c[lonIdx].v   || '') : '',
+        };
+        break;
+      }
+    }
+    if (!trovato) {
+      document.getElementById('pin-error').style.display = 'block';
+      btn.textContent = 'Verifica PIN →'; btn.disabled = false;
+      return;
+    }
+    datiNegozio = trovato;
+    document.getElementById('pin-neg-nome').textContent = trovato.nome;
+    document.getElementById('pin-neg-info').textContent = trovato.indirizzo + (trovato.piva ? ' · P.IVA ' + trovato.piva : '');
+    document.getElementById('pin-negozio-card').style.display = 'block';
+    document.getElementById('pin-confirm-btn').style.display = 'block';
+    document.getElementById('pin-error').style.display = 'none';
+    btn.textContent = 'Verifica PIN →'; btn.disabled = false;
+  } catch(e) {
+    document.getElementById('pin-error').textContent = 'Errore di connessione. Riprova.';
+    document.getElementById('pin-error').style.display = 'block';
+    btn.textContent = 'Verifica PIN →'; btn.disabled = false;
+  }
+}
+
+function confermaAccesso() {
+  if (!datiNegozio) return;
+  document.getElementById('pin-gate').style.display = 'none';
+  // Precompila campi hidden
+  const sv = (id, v) => { const el = document.getElementById(id); if(el) el.value = v; };
+  const sn = (n, v) => { const el = document.querySelector('[name="'+n+'"]'); if(el) el.value = v; };
+  sv('negozio-hidden', datiNegozio.nome);
+  sv('indirizzo-hidden', datiNegozio.indirizzo);
+  sv('piva-hidden', datiNegozio.piva);
+  sv('lat-hidden', datiNegozio.lat);
+  sv('lon-hidden', datiNegozio.lon);
+  sv('pin-hidden', datiNegozio.pin);
+  sn('denominazione', datiNegozio.nome);
+  sn('negozio', datiNegozio.nome);
+  const bar = document.getElementById('negozio-info-bar');
+  if (bar) { bar.textContent = datiNegozio.nome + ' · ' + datiNegozio.indirizzo; bar.style.display = 'block'; }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const pi = document.getElementById('pin-input-offerta');
+  if (pi) pi.addEventListener('keydown', function(e){ if(e.key==='Enter') verificaPin(); });
+});
+
 </script>
 </body>
 </html>

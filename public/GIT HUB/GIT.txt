@@ -1,0 +1,12 @@
+
+PRIMA DI NIZIARE
+
+cd "C:\Users\...\InstantownWeb"
+git pull
+
+DOPO QUESTI COMANDI
+
+git add .
+git commit -m "descrizione"
+git push
+firebase deploy --only hosting

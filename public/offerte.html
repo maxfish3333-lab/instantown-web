@@ -101,6 +101,34 @@ main{max-width:1000px;margin:0 auto;padding:24px 32px 80px;}
 footer{background:var(--ink);color:rgba(255,255,255,.3);font-size:11px;text-align:center;padding:18px;}
 footer strong{color:var(--ocra-l);}
 
+/* ── FULL PAGE OVERLAY ── */
+.offer-overlay{display:none;position:fixed;inset:0;z-index:999;background:var(--bianco);overflow-y:auto;}
+.offer-overlay.open{display:block;}
+.ov-stripe{height:5px;background:linear-gradient(90deg,var(--rosso-l) 33.3%,#fff 33.3%,#fff 66.6%,var(--cielo) 66.6%);}
+.ov-header{background:var(--ink);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+.ov-brand{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:#fff;}
+.ov-back{background:none;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.6);padding:7px 16px;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:all .2s;}
+.ov-back:hover{border-color:var(--ocra-l);color:var(--ocra-l);}
+.ov-body{max-width:680px;margin:0 auto;padding:40px 32px 80px;}
+.ov-cat-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+.ov-title{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:600;color:var(--ink);line-height:1.2;margin-bottom:16px;text-transform:capitalize;}
+.ov-divider{height:1px;background:var(--rule);margin:20px 0;}
+.ov-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;}
+.ov-info-item{background:#fff;border:1px solid var(--rule);border-radius:4px;padding:14px 18px;}
+.ov-info-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-mu);margin-bottom:4px;}
+.ov-info-value{font-size:15px;font-weight:500;color:var(--ink);}
+.ov-prezzi-block{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:22px 24px;margin-bottom:28px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+.ov-prezzo-flash{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:600;color:var(--rosso);line-height:1;}
+.ov-prezzo-std{font-size:16px;color:var(--ink-mu);text-decoration:line-through;}
+.ov-sconto{background:var(--ocra-p);color:var(--ocra);font-size:13px;font-weight:600;padding:4px 12px;border-radius:3px;}
+.ov-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.btn-conferma{background:var(--rosso);color:#fff;border:none;padding:14px 32px;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;text-decoration:none;display:inline-block;transition:background .2s;}
+.btn-conferma:hover{background:var(--rosso-l);}
+.btn-ci-ripenso{background:none;border:1px solid var(--rule);color:var(--ink-mu);padding:14px 24px;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;transition:all .2s;}
+.btn-ci-ripenso:hover{border-color:var(--ink-mu);color:var(--ink);}
+.ov-tx{font-size:10px;color:rgba(139,26,26,.35);font-family:monospace;margin-top:16px;}
+@media(max-width:600px){.ov-body{padding:24px 16px 60px;}.ov-info-grid{grid-template-columns:1fr;}.ov-prezzo-flash{font-size:36px;}}
+
 @media(max-width:600px){
   nav,main,.sub-bar,.pref-banner,.page-header{padding-left:16px;padding-right:16px;}
   .offerte-grid{grid-template-columns:1fr;}
@@ -110,7 +138,231 @@ footer strong{color:var(--ocra-l);}
 .btn-messaggia{display:inline-flex;align-items:center;gap:5px;background:none;border:1px solid var(--cielo);color:var(--cielo);border-radius:4px;padding:7px 12px;font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;transition:all .2s;font-family:'DM Sans',sans-serif;}
 .btn-messaggia:hover{background:var(--cielo);color:#fff;}
 </style>
-<script src="i18n.js"></script>
+<script>
+// ── i18n DICTIONARY ──────────────────────────────────────────────
+const I18N = {
+  it: {
+    offerteTitle:   'Offerte Flash',
+    liveUpdate:     'Aggiornamento live',
+    loading:        'Carico le offerte...',
+    noOffers:       'Nessuna offerta per questa selezione.',
+    catTutte:       'Tutte',
+    catCibo:        'Cibo',
+    catModa:        'Moda',
+    catTech:        'Tech',
+    catViaggi:      'Viaggi',
+    catDivert:      'Divertimento',
+    catAltro:       'Altro',
+    subTutte:       'Tutte',
+    subAttive:      'Solo attive',
+    subScadute:     'Scadute',
+    raggioLabel:    'Raggio:',
+    raggioTutti:    'Tutti',
+    statTotali:     'Offerte totali',
+    statAttive:     'Attive ora',
+    statRisparmio:  'Risparmio medio',
+    statAnomalie:   'Da verificare',
+    btnPrenota:     'Prenota →',
+    btnMessageggia: '💬 Messaggia',
+    orarioNd:       'Orario n.d.',
+    prefLabel:      'Le tue preferenze:',
+    prefModifica:   'Modifica',
+    anomTag:        '⚠ verifica',
+    adminReview:    'Admin review',
+    navBack:        '← Homepage',
+    langLabel:      'Lang',
+    footerText:     'Foglio: offerte · Roma, 2025',
+    datiLocali:     'dati locali (Sheet non raggiungibile)',
+    aggiornato:     'aggiornato: ',
+    ciRipenso:'Ci ripenso',ovIndirizzo:'Indirizzo',ovOrario:'Orario',ovCategoria:'Categoria',ovRaggio:'Raggio',ovPrezzoFlash:'Prezzo Flash',ovPrezzoStd:'Prezzo standard',ovConferma:'Conferma e prenota →',
+  },
+    offerteTitle:   'Flash Deals',
+    liveUpdate:     'Live update',
+    loading:        'Loading offers...',
+    noOffers:       'No offers for this selection.',
+    catTutte:       'All',
+    catCibo:        'Food',
+    catModa:        'Fashion',
+    catTech:        'Tech',
+    catViaggi:      'Travel',
+    catDivert:      'Entertainment',
+    catAltro:       'Other',
+    subTutte:       'All',
+    subAttive:      'Active only',
+    subScadute:     'Expired',
+    raggioLabel:    'Radius:',
+    raggioTutti:    'All',
+    statTotali:     'Total offers',
+    statAttive:     'Active now',
+    statRisparmio:  'Avg. saving',
+    statAnomalie:   'To review',
+    btnPrenota:     'Book →',
+    btnMessageggia: '💬 Message',
+    orarioNd:       'Time n/a',
+    prefLabel:      'Your preferences:',
+    prefModifica:   'Edit',
+    anomTag:        '⚠ review',
+    adminReview:    'Admin review',
+    navBack:        '← Homepage',
+    langLabel:      'Lang',
+    footerText:     'Sheet: offers · Rome, 2025',
+    datiLocali:     'local data (Sheet unreachable)',
+    aggiornato:     'updated: ',
+    ciRipenso:'Never mind',ovIndirizzo:'Address',ovOrario:'Time',ovCategoria:'Category',ovRaggio:'Radius',ovPrezzoFlash:'Flash Price',ovPrezzoStd:'Standard price',ovConferma:'Confirm & book →',
+  },
+    offerteTitle:   '闪购优惠',
+    liveUpdate:     '实时更新',
+    loading:        '正在加载优惠...',
+    noOffers:       '该分类暂无优惠。',
+    catTutte:       '全部',
+    catCibo:        '餐饮',
+    catModa:        '时尚',
+    catTech:        '科技',
+    catViaggi:      '旅行',
+    catDivert:      '娱乐',
+    catAltro:       '其他',
+    subTutte:       '全部',
+    subAttive:      '仅限有效',
+    subScadute:     '已过期',
+    raggioLabel:    '范围：',
+    raggioTutti:    '全部',
+    statTotali:     '优惠总数',
+    statAttive:     '当前有效',
+    statRisparmio:  '平均节省',
+    statAnomalie:   '待审核',
+    btnPrenota:     '预订 →',
+    btnMessageggia: '💬 消息',
+    orarioNd:       '时间未知',
+    prefLabel:      '您的偏好：',
+    prefModifica:   '修改',
+    anomTag:        '⚠ 审核',
+    adminReview:    '管理员审核',
+    navBack:        '← 首页',
+    langLabel:      '语言',
+    footerText:     '工作表：优惠 · 罗马，2025',
+    datiLocali:     '本地数据（无法连接工作表）',
+    aggiornato:     '已更新：',
+    ciRipenso:'我再想想',ovIndirizzo:'地址',ovOrario:'时间',ovCategoria:'分类',ovRaggio:'范围',ovPrezzoFlash:'闪购价',ovPrezzoStd:'原价',ovConferma:'确认预订 →',
+  },
+    offerteTitle:   'Ofertas Flash',
+    liveUpdate:     'Actualización en vivo',
+    loading:        'Cargando ofertas...',
+    noOffers:       'Sin ofertas para esta selección.',
+    catTutte:       'Todas',
+    catCibo:        'Comida',
+    catModa:        'Moda',
+    catTech:        'Tech',
+    catViaggi:      'Viajes',
+    catDivert:      'Entretenimiento',
+    catAltro:       'Otros',
+    subTutte:       'Todas',
+    subAttive:      'Solo activas',
+    subScadute:     'Caducadas',
+    raggioLabel:    'Radio:',
+    raggioTutti:    'Todos',
+    statTotali:     'Ofertas totales',
+    statAttive:     'Activas ahora',
+    statRisparmio:  'Ahorro medio',
+    statAnomalie:   'Por revisar',
+    btnPrenota:     'Reservar →',
+    btnMessageggia: '💬 Mensaje',
+    orarioNd:       'Horario n/d',
+    prefLabel:      'Tus preferencias:',
+    prefModifica:   'Editar',
+    anomTag:        '⚠ revisar',
+    adminReview:    'Revisión admin',
+    navBack:        '← Inicio',
+    langLabel:      'Idioma',
+    footerText:     'Hoja: ofertas · Roma, 2025',
+    datiLocali:     'datos locales (Hoja no disponible)',
+    aggiornato:     'actualizado: ',
+    ciRipenso:'Lo reconsidero',ovIndirizzo:'Dirección',ovOrario:'Horario',ovCategoria:'Categoría',ovRaggio:'Radio',ovPrezzoFlash:'Precio Flash',ovPrezzoStd:'Precio estándar',ovConferma:'Confirmar y reservar →',
+  },
+    offerteTitle:   'Offres Flash',
+    liveUpdate:     'Mise à jour en direct',
+    loading:        'Chargement des offres...',
+    noOffers:       'Aucune offre pour cette sélection.',
+    catTutte:       'Toutes',
+    catCibo:        'Nourriture',
+    catModa:        'Mode',
+    catTech:        'Tech',
+    catViaggi:      'Voyages',
+    catDivert:      'Divertissement',
+    catAltro:       'Autre',
+    subTutte:       'Toutes',
+    subAttive:      'Actives seulement',
+    subScadute:     'Expirées',
+    raggioLabel:    'Rayon :',
+    raggioTutti:    'Tous',
+    statTotali:     'Offres totales',
+    statAttive:     'Actives maintenant',
+    statRisparmio:  'Économie moy.',
+    statAnomalie:   'À vérifier',
+    btnPrenota:     'Réserver →',
+    btnMessageggia: '💬 Message',
+    orarioNd:       'Horaire n/d',
+    prefLabel:      'Vos préférences :',
+    prefModifica:   'Modifier',
+    anomTag:        '⚠ vérifier',
+    adminReview:    'Révision admin',
+    navBack:        '← Accueil',
+    langLabel:      'Langue',
+    footerText:     'Feuille : offres · Rome, 2025',
+    datiLocali:     'données locales (Feuille inaccessible)',
+    aggiornato:     'mis à jour : ',
+    ciRipenso:"J'hésite",ovIndirizzo:'Adresse',ovOrario:'Horaire',ovCategoria:'Catégorie',ovRaggio:'Rayon',ovPrezzoFlash:'Prix Flash',ovPrezzoStd:'Prix standard',ovConferma:'Confirmer et réserver →',
+  }
+};
+
+function t(key) {
+  var lang = localStorage.getItem('it_lang') || 'it';
+  return (I18N[lang] && I18N[lang][key]) || (I18N['it'][key]) || key;
+}
+
+function applyI18nDOM() {
+  var lang = localStorage.getItem('it_lang') || 'it';
+  // Elementi con data-i18n
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+  // Nav back
+  var nb = document.querySelector('.nav-back');
+  if(nb) nb.textContent = t('navBack');
+  // Page header badge
+  var badge = document.querySelector('.ph-badge');
+  if(badge) badge.textContent = t('liveUpdate');
+  // Cat tabs (preserva il contatore)
+  var catMap = {TUTTE:'catTutte',CIBO:'catCibo',MODA:'catModa',TECH:'catTech',VIAGGI:'catViaggi',DIVERTIMENTO:'catDivert',ALTRO:'catAltro'};
+  var emojiMap = {TUTTE:'🗂',CIBO:'🍕',MODA:'👗',TECH:'📱',VIAGGI:'✈️',DIVERTIMENTO:'🎭',ALTRO:'🛍️'};
+  document.querySelectorAll('.cat-tab').forEach(function(btn) {
+    var cat = btn.getAttribute('data-cat');
+    if(cat && catMap[cat]) {
+      var counter = btn.querySelector('.tab-count');
+      var countHTML = counter ? counter.outerHTML : '';
+      btn.innerHTML = (emojiMap[cat]||'') + ' ' + t(catMap[cat]) + ' ' + countHTML;
+    }
+  });
+  // Sub filtri
+  var subBtns = document.querySelectorAll('.sub-btn');
+  var subKeys = ['subTutte','subAttive','subScadute'];
+  subBtns.forEach(function(b, i){ if(subKeys[i]) b.textContent = t(subKeys[i]); });
+  // Raggio label
+  var rLabel = document.querySelector('.sub-raggio > span');
+  if(rLabel) rLabel.textContent = t('raggioLabel');
+  var rSelect = document.querySelector('.sub-raggio select option[value="0"]');
+  if(rSelect) rSelect.textContent = t('raggioTutti');
+  // Stat labels
+  var statMap = ['st-totali','st-attive','st-risparmio','st-anomalie'];
+  var statKeys = ['statTotali','statAttive','statRisparmio','statAnomalie'];
+  statMap.forEach(function(id, i) {
+    var el = document.getElementById(id);
+    if(el && el.nextElementSibling) el.nextElementSibling.textContent = t(statKeys[i]);
+  });
+  // Footer
+  var footer = document.querySelector('footer');
+  if(footer) footer.innerHTML = '<strong>INSTANTOWN PROX</strong> &nbsp;·&nbsp; ' + t('footerText');
+}
+</script>
 </head>
 <body>
 
@@ -120,7 +372,7 @@ footer strong{color:var(--ocra-l);}
     <img src="data:image/png;base64,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" alt="INSTANTOWN" style="width:46px;height:46px;border-radius:10px;flex-shrink:0;display:block;">
     <span class="nav-brand">INSTANTOWN</span>
   </div>
-  <a href="index.html" class="nav-back">← Homepage</a>
+  <a href="index.html" class="nav-back" data-i18n="navBack">← Homepage</a>
 </nav>
 <div style="background:var(--ink);border-bottom:1px solid rgba(200,134,10,.15);
   padding:6px 32px;display:flex;align-items:center;gap:6px;">
@@ -198,6 +450,16 @@ footer strong{color:var(--ocra-l);}
     <div class="loading"><div class="spinner"></div>Carico le offerte...</div>
   </div>
 </main>
+
+<!-- FULL PAGE OFFER OVERLAY -->
+<div class="offer-overlay" id="offer-overlay">
+  <div class="ov-stripe"></div>
+  <div class="ov-header">
+    <span class="ov-brand">INSTANTOWN</span>
+    <button class="ov-back" onclick="chiudiOverlay()" id="ov-back-btn">← Ci ripenso</button>
+  </div>
+  <div class="ov-body" id="ov-body"></div>
+</div>
 
 <div class="stripe"></div>
 <footer><strong>INSTANTOWN PROX</strong> &nbsp;·&nbsp; Foglio: offerte &nbsp;·&nbsp; Roma, 2025</footer>
@@ -280,6 +542,7 @@ async function caricaDaSheet() {
       stato:       gv(row,'stato')||'ATTIVA',
       raggio:      parseInt(gv(row,'raggio'))||200,
       categoria:   (gv(row,'categoria')||'').toUpperCase(),
+          traduzioni: (function(){ try{ return JSON.parse(gv(row,'traduzioni')||'{}'||gv(row,'Traduzioni')||'{}')} catch(e){return {};} })(),
     })).filter(o => o.descrizione);
   } catch(e) { return null; }
 }
@@ -326,18 +589,23 @@ function mostraPref() {
   if(prefCats.length === 0) { banner.style.display='none'; return; }
   banner.style.display = '';
   const emoji = {CIBO:'🍕',MODA:'👗',TECH:'📱',VIAGGI:'✈️',DIVERTIMENTO:'🎭',ALTRO:'🛍️'};
-  inner.innerHTML = '<span style="font-size:12px;font-weight:500;">Le tue preferenze:</span> '
+  inner.innerHTML = `<span style="font-size:12px;font-weight:500;">${t('prefLabel')}</span> `
     + prefCats.map(c=>`<span class="pref-tag">${emoji[c]||''} ${c}</span>`).join('')
-    + ' <a href="index.html" style="color:var(--cielo);font-size:11px;margin-left:8px;">Modifica</a>';
+    + ` <a href="index.html" style="color:var(--cielo);font-size:11px;margin-left:8px;">${t('prefModifica')}</a>`;
+}
+
+function getDesc(o) {
+  var lang = localStorage.getItem('it_lang') || 'it';
+  if (lang !== 'it' && o.traduzioni && o.traduzioni[lang]) return o.traduzioni[lang];
+  return o.descrizione || '';
 }
 
 function renderCard(o) {
   const sc   = sconto(o.prezzoStd, o.prezzoFlash);
   const anom = isAnomalia(o);
-  const desc = o.descrizione
-    ? o.descrizione.charAt(0).toUpperCase() + o.descrizione.slice(1).toLowerCase()
-    : '—';
-  const orario = (o.inizio&&o.fine) ? `${o.inizio} → ${o.fine}` : 'Orario n.d.';
+  var rawDesc = getDesc(o);
+  const desc = rawDesc ? rawDesc.charAt(0).toUpperCase() + rawDesc.slice(1).toLowerCase() : '—';
+  const orario = (o.inizio&&o.fine) ? `${o.inizio} → ${o.fine}` : t('orarioNd');
   const emoji  = {CIBO:'🍕',MODA:'👗',TECH:'📱',VIAGGI:'✈️',DIVERTIMENTO:'🎭',ALTRO:'🛍️'};
   const isPref = prefCats.includes(o.categoria);
 
@@ -349,7 +617,7 @@ function renderCard(o) {
         <span class="pill-cat">${emoji[o.categoria]||''} ${o.categoria}</span>
         <span class="pill-raggio">${o.raggio}m</span>
       </div>
-      <div class="card-desc">${desc}${anom?'<span class="anomalia-tag">⚠ verifica</span>':''}</div>
+      <div class="card-desc">${desc}${anom?`<span class="anomalia-tag">${t('anomTag')}</span>`:''}</div>
       <div class="card-addr">📍 ${o.indirizzo||'—'}</div>
       <div class="card-prezzi">
         <span class="prezzo-flash">€ ${o.prezzoFlash.toFixed(2)}</span>
@@ -362,7 +630,7 @@ function renderCard(o) {
         <div class="card-orario">⏱ <span>${orario}</span></div>
         ${o.idtx?`<div class="card-tx">${o.idtx}</div>`:''}
       </div>
-      ${!anom?`<div class="card-actions"><a href="checkout.html" class="btn-prenota">Prenota →</a>${o.idtx?`<a href="chat.html?tx=${o.idtx}" class="btn-messaggia">💬 Messaggia</a>`:''}</div>`:`<span style="font-size:11px;color:#92400e;">Admin review</span>`}
+      ${!anom?`<div class="card-actions"><button class="btn-prenota" onclick='apriOverlay(${JSON.stringify(o)})'>${t('btnPrenota')}</button>${o.idtx?`<a href="chat.html?tx=${o.idtx}" class="btn-messaggia">${t('btnMessageggia')}</a>`:''}</div>`:`<span style="font-size:11px;color:#92400e;">${t('adminReview')}</span>`}
     </div>
   </div>`;
 }
@@ -384,7 +652,7 @@ function renderLista() {
 
   const container = document.getElementById('offerte-container');
   if(filtrate.length === 0) {
-    container.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><p>Nessuna offerta per questa selezione.</p></div>`;
+    container.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><p>${t('noOffers')}</p></div>`;
     return;
   }
   container.innerHTML = `<div class="offerte-grid">${filtrate.map(renderCard).join('')}</div>`;
@@ -408,18 +676,19 @@ function filtraRaggio(v) {
 }
 
 async function init() {
-  document.getElementById('ultimo-agg').textContent = 'caricamento...';
+  document.getElementById('ultimo-agg').textContent = t('loading');
   let dati = await caricaDaSheet();
   if(!dati) {
     tutteOfferte = normalizza(CSV_FALLBACK);
-    document.getElementById('ultimo-agg').textContent = 'dati locali (Sheet non raggiungibile)';
+    document.getElementById('ultimo-agg').textContent = t('datiLocali');
   } else {
     tutteOfferte = normalizza(dati);
-    document.getElementById('ultimo-agg').textContent = 'aggiornato: ' + new Date().toLocaleTimeString('it-IT');
+    document.getElementById('ultimo-agg').textContent = t('aggiornato') + new Date().toLocaleTimeString('it-IT');
   }
   aggiornaCounts(tutteOfferte);
   aggiornaStats(tutteOfferte);
   mostraPref();
+  applyI18nDOM();
 
   // Se arrivo da homepage con categoria preferita, pre-filtro
   const params = new URLSearchParams(location.search);
@@ -434,34 +703,75 @@ async function init() {
   setInterval(init, 60000);
 }
 
+function apriOverlay(o) {
+  const sc = sconto(o.prezzoStd, o.prezzoFlash);
+  const anom = isAnomalia(o);
+  const emoji = {CIBO:'🍕',MODA:'👗',TECH:'📱',VIAGGI:'✈️',DIVERTIMENTO:'🎭',ALTRO:'🛍️'};
+  const desc = getDesc(o);
+  const descFmt = desc ? desc.charAt(0).toUpperCase() + desc.slice(1) : '—';
+  const orario = (o.inizio && o.fine) ? `${o.inizio} → ${o.fine}` : t('orarioNd');
+  const checkoutUrl = 'checkout.html' + (o.idtx ? `?tx=${o.idtx}` : '');
+
+  document.getElementById('ov-back-btn').textContent = '← ' + t('ciRipenso');
+  document.getElementById('ov-body').innerHTML = `
+    <div class="ov-cat-row">
+      <span class="pill-stato ${o.stato==='ATTIVA'?'pill-attiva':'pill-scaduta'}">${o.stato}</span>
+      <span class="pill-cat">${emoji[o.categoria]||''} ${o.categoria}</span>
+      <span class="pill-raggio">${o.raggio}m</span>
+    </div>
+    <div class="ov-title">${descFmt}${anom?` <span class="anomalia-tag">${t('anomTag')}</span>`:''}</div>
+    <div class="ov-divider"></div>
+    <div class="ov-info-grid">
+      <div class="ov-info-item"><div class="ov-info-label">📍 ${t('ovIndirizzo')}</div><div class="ov-info-value">${o.indirizzo||'—'}</div></div>
+      <div class="ov-info-item"><div class="ov-info-label">⏱ ${t('ovOrario')}</div><div class="ov-info-value">${orario}</div></div>
+      <div class="ov-info-item"><div class="ov-info-label">🏷️ ${t('ovCategoria')}</div><div class="ov-info-value">${emoji[o.categoria]||''} ${o.categoria}</div></div>
+      <div class="ov-info-item"><div class="ov-info-label">📡 ${t('ovRaggio')}</div><div class="ov-info-value">${o.raggio} m</div></div>
+    </div>
+    <div class="ov-prezzi-block">
+      <div><div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-mu);margin-bottom:4px;">${t('ovPrezzoFlash')}</div><span class="ov-prezzo-flash">€ ${o.prezzoFlash.toFixed(2)}</span></div>
+      ${o.prezzoStd>0?`<div><div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-mu);margin-bottom:4px;">${t('ovPrezzoStd')}</div><span class="ov-prezzo-std">€ ${o.prezzoStd.toFixed(2)}</span></div>`:''}
+      ${sc>0&&!anom?`<span class="ov-sconto">-${sc}%</span>`:''}
+    </div>
+    <div class="ov-actions">
+      <a href="${checkoutUrl}" class="btn-conferma">${t('ovConferma')}</a>
+      <button class="btn-ci-ripenso" onclick="chiudiOverlay()">← ${t('ciRipenso')}</button>
+    </div>
+    ${o.idtx?`<div class="ov-tx">${o.idtx}</div>`:''}
+  `;
+  const overlay = document.getElementById('offer-overlay');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  overlay.scrollTop = 0;
+}
+
+function chiudiOverlay() {
+  document.getElementById('offer-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') chiudiOverlay(); });
+
 init();
+function applyLang(lang) {
+  var ok = ['it','en','zh','es','fr'];
+  if (!ok.includes(lang)) lang = 'it';
+  localStorage.setItem('it_lang', lang);
+  document.querySelectorAll('.lbtn').forEach(function(b) {
+    b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+    b.style.background = b.getAttribute('data-lang') === lang ? 'var(--ocra)' : 'none';
+    b.style.color = b.getAttribute('data-lang') === lang ? 'var(--ink)' : 'rgba(255,255,255,.5)';
+    b.style.fontWeight = b.getAttribute('data-lang') === lang ? '700' : '400';
+  });
+  applyI18nDOM();
+  if (typeof renderLista === 'function') renderLista();
+}
+
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // Sync lingua con resto dell'app
   const lang = localStorage.getItem('it_lang') || 'it';
-  document.querySelectorAll('.lbtn').forEach(b => {
-    const isActive = b.getAttribute('data-lang') === lang;
-    b.style.background = isActive ? 'var(--ocra)' : 'none';
-    b.style.color = isActive ? 'var(--ink)' : 'rgba(255,255,255,.5)';
-    b.style.fontWeight = isActive ? '700' : '400';
-  });
+  applyLang(lang);
 });
-
-// Override applyLang per aggiornare anche i testi dinamici
-const _baseApply = window.applyLang;
-window.applyLang = function(lang) {
-  if(_baseApply) _baseApply(lang);
-  // Riaggiorna lista offerte con nuova lingua
-  if(typeof renderLista === 'function') renderLista();
-  // Aggiorna stile pulsanti
-  document.querySelectorAll('.lbtn').forEach(b => {
-    const isActive = b.getAttribute('data-lang') === lang;
-    b.style.background = isActive ? 'var(--ocra)' : 'none';
-    b.style.color = isActive ? 'var(--ink)' : 'rgba(255,255,255,.5)';
-    b.style.fontWeight = isActive ? '700' : '400';
-  });
-};
 </script>
 </body>
 </html>
