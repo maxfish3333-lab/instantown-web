@@ -69,8 +69,6 @@ main{max-width:1000px;margin:0 auto;padding:24px 32px 80px;}
 
 .offerta-card{background:#fff;border:1px solid var(--rule);border-radius:6px;overflow:hidden;box-shadow:0 2px 10px rgba(28,20,16,.04);transition:box-shadow .2s;}
 .offerta-card:hover{box-shadow:0 4px 20px rgba(28,20,16,.09);}
-.card-foto{width:100%;height:160px;object-fit:cover;display:block;border-bottom:1px solid var(--rule);background:var(--bianco);}
-.card-foto-placeholder{width:100%;height:120px;display:flex;align-items:center;justify-content:center;background:var(--bianco);border-bottom:1px solid var(--rule);color:var(--ink-mu);font-size:24px;}
 .card-top{padding:16px 16px 12px;border-bottom:1px solid var(--rule);}
 .card-row1{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
 .pill-stato{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:20px;}
@@ -113,7 +111,6 @@ footer strong{color:var(--ocra-l);}
 .ov-back:hover{border-color:var(--ocra-l);color:var(--ocra-l);}
 .ov-body{max-width:680px;margin:0 auto;padding:40px 32px 80px;}
 .ov-cat-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
-.ov-gallery{display:flex;overflow-x:scroll;scroll-snap-type:x mandatory;gap:0;margin-bottom:20px;border-radius:8px;width:100%;}
 .ov-title{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:600;color:var(--ink);line-height:1.2;margin-bottom:16px;text-transform:capitalize;}
 .ov-divider{height:1px;background:var(--rule);margin:20px 0;}
 .ov-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;}
@@ -140,6 +137,15 @@ footer strong{color:var(--ocra-l);}
 .card-actions{display:flex;gap:8px;align-items:center;}
 .btn-messaggia{display:inline-flex;align-items:center;gap:5px;background:none;border:1px solid var(--cielo);color:var(--cielo);border-radius:4px;padding:7px 12px;font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;transition:all .2s;font-family:'DM Sans',sans-serif;}
 .btn-messaggia:hover{background:var(--cielo);color:#fff;}
+
+.card-cover{margin-bottom:12px;border-radius:10px;overflow:hidden;background:#f3f4f6;}
+.card-cover img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;}
+
+.ov-gallery{display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;touch-action:pan-x;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;margin:0 -32px 8px;padding:0 32px;scrollbar-width:none;}
+.ov-gallery::-webkit-scrollbar{display:none;}
+.ov-gallery-slide{flex:0 0 100%;scroll-snap-align:start;border-radius:12px;overflow:hidden;background:#f3f4f6;}
+.ov-gallery-slide img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;}
+.ov-gallery-hint{font-size:12px;color:#94a3b8;text-align:center;margin-bottom:16px;}
 </style>
 <script>
 // ── i18n DICTIONARY ──────────────────────────────────────────────
@@ -376,7 +382,6 @@ async function caricaDaSheet() {
     const cols = json.table.cols.map(c => c.label.toLowerCase().trim());
     const gi = l => cols.findIndex(c => c.includes(l));
     const gv = (row, l) => { const i=gi(l); return i>=0&&row.c[i]?(row.c[i].v??row.c[i].f??''):''; };
-    const parseFoto = (val) => String(val||'').split(/[,\n|]/).map(s=>s.trim()).filter(Boolean);
     const parseTime = (row, label) => {
       const i=gi(label); if(i<0||!row.c[i]) return '';
       const v=row.c[i].v||'';
@@ -393,14 +398,13 @@ async function caricaDaSheet() {
       fine:        parseTime(row,'fine'),
       indirizzo:   gv(row,'indirizzo'),
       negozio:     gv(row,'negozio'),
-      foto:        gv(row,'foto'),
-      fotos:       parseFoto(gv(row,'foto')),
       lat:         parseFloat(gv(row,'lat'))||0,
       lon:         parseLon(gv(row,'lon')),
       idtx:        gv(row,'id tx')||gv(row,'idtx'),
       stato:       gv(row,'stato')||'ATTIVA',
       raggio:      parseInt(gv(row,'raggio'))||200,
       categoria:   (gv(row,'categoria')||'').toUpperCase(),
+      foto:        gv(row,'foto'),
     })).filter(o => o.descrizione);
   } catch(e) {
     const el = document.getElementById('ultimo-agg');
@@ -470,10 +474,12 @@ function renderCard(o) {
   const orario = (o.inizio&&o.fine) ? `${o.inizio} → ${o.fine}` : t('orarioNd');
   const emoji  = {CIBO:'🍕',MODA:'👗',TECH:'📱',VIAGGI:'✈️',DIVERTIMENTO:'🎭',ALTRO:'🛍️'};
   const isPref = prefCats.includes(o.categoria);
+  const fotos = (o.foto ? String(o.foto).split(',').map(s=>s.trim()).filter(Boolean) : []);
+  const cover = fotos[0] || '';
 
   return `
   <div class="offerta-card ${anom?'anomalia':''}" style="${isPref?'border-color:var(--cielo);':''}">
-    ${(o.fotos&&o.fotos.length)?`<img class="card-foto" src="${o.fotos[0]}" alt="${desc}" onerror="this.style.display='none'">`:`<div class="card-foto-placeholder">📷</div>`}
+    ${cover ? `<div class="card-cover"><img src="${cover}" alt="" loading="lazy"></div>` : ''}
     <div class="card-top">
       <div class="card-row1">
         <span class="pill-stato ${o.stato==='ATTIVA'?'pill-attiva':'pill-scaduta'}">${o.stato}</span>
@@ -571,13 +577,18 @@ function apriOverlayBtn(btn) {
 }
 
 function apriOverlay(o) {
-  console.log('fotos:', o.fotos, 'length:', o.fotos ? o.fotos.length : 0);
   const sc = sconto(o.prezzoStd, o.prezzoFlash);
   const anom = isAnomalia(o);
   const emoji = {CIBO:'🍕',MODA:'👗',TECH:'📱',VIAGGI:'✈️',DIVERTIMENTO:'🎭',ALTRO:'🛍️'};
   const desc = getDesc(o);
   const descFmt = desc ? desc.charAt(0).toUpperCase() + desc.slice(1) : '—';
   const orario = (o.inizio && o.fine) ? `${o.inizio} → ${o.fine}` : t('orarioNd');
+  const fotos = (o.foto ? String(o.foto).split(',').map(s=>s.trim()).filter(Boolean) : []);
+  const galleriaHtml = fotos.length ? `
+    <div class="ov-gallery" role="region" aria-label="Foto offerta">
+      ${fotos.map((src,i)=>`<div class="ov-gallery-slide"><img src="${src}" alt="Foto ${i+1}" loading="lazy"></div>`).join('')}
+    </div>
+    ${fotos.length>1 ? `<div class="ov-gallery-hint">← scorri per altre foto →</div>` : ''}` : '';
   const checkoutUrl = 'checkout.html?' + new URLSearchParams({
     tx:       o.idtx || '',
     amount:   o.prezzoFlash.toFixed(2),
@@ -598,12 +609,7 @@ function apriOverlay(o) {
       <span class="pill-cat">${emoji[o.categoria]||''} ${o.categoria}</span>
       <span class="pill-raggio">${o.raggio}m</span>
     </div>
-    ${(o.fotos&&o.fotos.length)?(o.fotos.length>1
-      ? `<div style="display:flex;overflow-x:auto;width:100%;margin-bottom:20px;border-radius:8px;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;">
-${o.fotos.map(f=>`<img src="${f}" alt="${descFmt}" style="flex-shrink:0;width:100%;height:220px;object-fit:cover;scroll-snap-align:start;" onerror="this.style.display='none'">`).join('')}
-</div>`
-      : `<img src="${o.fotos[0]}" alt="${descFmt}" style="width:100%;max-height:260px;object-fit:cover;border-radius:8px;margin-bottom:20px;" onerror="this.style.display='none'">`
-    ):''}
+    ${galleriaHtml}
     <div class="ov-title">${descFmt}${anom?` <span class="anomalia-tag">${t('anomTag')}</span>`:''}</div>
     <div class="ov-divider"></div>
     <div class="ov-info-grid">
