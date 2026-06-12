@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Instantown - Secure Checkout</title>
+    <script src="i18n.js"></script>
     <style>
         :root { --green: #22c55e; --black: #050505; --grey: #1a1a1a; }
         body { margin: 0; background: var(--black); color: white; font-family: sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; box-sizing: border-box; }
@@ -26,37 +27,37 @@
 <body>
 
     <div style="width: 100%; max-width: 400px;">
-        <a href="map.html" style="color: #666; text-decoration: none; font-size: 13px;">← Torna alla mappa</a>
-        <h2 style="margin: 20px 0 10px 0;">Pagamento con Garanzia Bancaria</h2>
-        <p style="color: #666; font-size: 14px; margin-bottom: 30px;">I fondi verranno trattenuti e rilasciati solo all'incontro fisico.</p>
+        <a href="map.html" data-i18n="ck_back_map" style="color: #666; text-decoration: none; font-size: 13px;">← Torna alla mappa</a>
+        <h2 data-i18n="ck_titolo" style="margin: 20px 0 10px 0;">Pagamento con Garanzia Bancaria</h2>
+        <p data-i18n="ck_fondi_info" style="color: #666; font-size: 14px; margin-bottom: 30px;">I fondi verranno trattenuti e rilasciati solo all'incontro fisico.</p>
     </div>
 
     <div class="checkout-box">
         <div class="summary">
-            <div style="font-size: 11px; color: #666; text-transform: uppercase;">Totale da bloccare</div>
+            <div data-i18n="ck_totale_label" style="font-size: 11px; color: #666; text-transform: uppercase;">Totale da bloccare</div>
             <div style="font-size: 28px; font-weight: 900; color: var(--green); margin: 5px 0;">€ 4.00</div>
-            <div style="font-size: 12px; color: #aaa;">Oggetto: 5kg Farina 00</div>
+            <div data-i18n="ck_oggetto" style="font-size: 12px; color: #aaa;">Oggetto: 5kg Farina 00</div>
         </div>
 
-        <label>Numero della Carta</label>
+        <label data-i18n="ck_label_carta">Numero della Carta</label>
         <input type="text" placeholder="0000 0000 0000 0000" id="card-num" maxlength="19" inputmode="numeric">
 
         <div class="card-extra">
             <div>
-                <label>Scadenza</label>
+                <label data-i18n="ck_label_scadenza">Scadenza</label>
                 <input type="text" placeholder="MM/AA" maxlength="5" id="card-exp">
             </div>
             <div>
-                <label>CVV</label>
+                <label data-i18n="ck_label_cvv">CVV</label>
                 <input type="password" placeholder="***" maxlength="3" id="card-cvv">
             </div>
         </div>
 
-        <button class="btn-pay" id="pay-button" onclick="processPayment()">AUTORIZZA E BLOCCA</button>
-        
+        <button class="btn-pay" id="pay-button" data-i18n="ck_btn_paga" onclick="processPayment()">AUTORIZZA E BLOCCA</button>
+
         <div class="secure-badge">
-            <span style="font-size: 14px;">🔒</span> 
-            CRITTOGRAFIA SSL ATTIVA - INSTANTOWN PAY
+            <span style="font-size: 14px;">🔒</span>
+            <span data-i18n="ck_secure_badge">CRITTOGRAFIA SSL ATTIVA - INSTANTOWN PAY</span>
         </div>
     </div>
 
@@ -104,6 +105,12 @@
         document.getElementById('card-exp').oninput = function (e) {
             this.value = this.value.replace(/[^\d]/g, '').replace(/(.{2})/, '$1/').trim();
         };
+    </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const lang = localStorage.getItem('it_lang') || 'it';
+      if (typeof applyLang === 'function') applyLang(lang);
+    });
     </script>
 </body>
 </html>
