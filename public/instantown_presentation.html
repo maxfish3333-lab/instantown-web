@@ -173,7 +173,7 @@ footer strong{color:var(--ocra-l);font-weight:500;}
     <div class="flow">
       <div class="flow-step"><div class="flow-num">Passo 1</div><div class="flow-title">GPS &amp; Geofence</div><div class="flow-desc">Localizzazione in tempo reale entro 200/300/500 m via algoritmo Haversine.</div></div>
       <div class="flow-step"><div class="flow-num">Passo 2</div><div class="flow-title">Offerta validata</div><div class="flow-desc">Verifica P.IVA, coordinate fisiche e conformità prima della pubblicazione.</div></div>
-      <div class="flow-step hl"><div class="flow-num">Passo 3</div><div class="flow-title">Escrow sicuro</div><div class="flow-desc">Il pagamento è trattenuto in garanzia. Nessuno accede ai fondi prima del matching.</div></div>
+      <div class="flow-step hl"><div class="flow-num">Passo 3</div><div class="flow-title">Garanzia Bancaria</div><div class="flow-desc">Il pagamento è trattenuto in garanzia. Nessuno accede ai fondi prima del matching.</div></div>
       <div class="flow-step hl"><div class="flow-num">Passo 4</div><div class="flow-title">QR-A + QR-B</div><div class="flow-desc">Solo la coppia fisica abbinata sblocca il pagamento. Impossibile aggirare.</div></div>
       <div class="flow-step"><div class="flow-num">Passo 5</div><div class="flow-title">Liquidazione</div><div class="flow-desc">Esercente riceve 98,25% netto. Commissione 1,75%. Nessun canone fisso.</div></div>
     </div>
@@ -193,7 +193,7 @@ footer strong{color:var(--ocra-l);font-weight:500;}
       <tbody>
         <tr><td>Esercente non verificato</td><td><span class="ck">✓</span> Registrazione con P.IVA obbligatoria, anti-duplicati, validazione coordinate fisiche dello stabilimento</td></tr>
         <tr><td>Offerta falsa o ingannevole</td><td><span class="ck">✓</span> Validazione automatica (prezzo, disponibilità, ATECO) prima della pubblicazione. Admin può sospendere in tempo reale.</td></tr>
-        <tr><td>Mancata consegna</td><td><span class="ck">✓</span> Pagamento in escrow fino al doppio abbinamento fisico QR-A + QR-B. Senza matching nessun fondo sbloccato.</td></tr>
+        <tr><td>Mancata consegna</td><td><span class="ck">✓</span> Pagamento con Garanzia Bancaria fino al doppio abbinamento fisico QR-A + QR-B. Senza matching nessun fondo sbloccato.</td></tr>
         <tr><td>Frode sul pagamento</td><td><span class="ck">✓</span> Integrazione Stripe Connect / Mangopay. I fondi non transitano mai direttamente tra le parti.</td></tr>
         <tr><td>Tracciamento GPS non autorizzato</td><td><span class="ck">✓</span> Coordinate utente mai memorizzate sui server. Calcolo prossimità on-device (lato cliente).</td></tr>
         <tr><td>Prezzo gonfiato post-accordo</td><td><span class="ck">✓</span> Prezzo cristallizzato alla creazione dell'offerta. Non modificabile dopo l'accettazione.</td></tr>
@@ -273,7 +273,7 @@ footer strong{color:var(--ocra-l);font-weight:500;}
     <div class="flow">
       <div class="flow-step"><div class="flow-num">Step 1</div><div class="flow-title">GPS &amp; Geofence</div><div class="flow-desc">Real-time localisation within 200/300/500 m via Haversine algorithm.</div></div>
       <div class="flow-step"><div class="flow-num">Step 2</div><div class="flow-title">Validated offer</div><div class="flow-desc">VAT number, physical coordinates and compliance verified before publication.</div></div>
-      <div class="flow-step hl"><div class="flow-num">Step 3</div><div class="flow-title">Secure escrow</div><div class="flow-desc">Payment held in escrow. No party accesses funds before QR matching.</div></div>
+      <div class="flow-step hl"><div class="flow-num">Step 3</div><div class="flow-title">Bank Guarantee</div><div class="flow-desc">Payment held under Bank Guarantee. No party accesses funds before QR matching.</div></div>
       <div class="flow-step hl"><div class="flow-num">Step 4</div><div class="flow-title">QR-A + QR-B</div><div class="flow-desc">Only the physically matched pair unlocks payment. Cannot be bypassed.</div></div>
       <div class="flow-step"><div class="flow-num">Step 5</div><div class="flow-title">Settlement</div><div class="flow-desc">Merchant receives 98.25% net. Commission 1.75%. No fixed monthly fee.</div></div>
     </div>
@@ -293,7 +293,7 @@ footer strong{color:var(--ocra-l);font-weight:500;}
       <tbody>
         <tr><td>Unverified merchant</td><td><span class="ck">✓</span> Mandatory VAT registration, anti-duplicate control, physical location coordinate validation</td></tr>
         <tr><td>False or misleading offer</td><td><span class="ck">✓</span> Automatic validation (price, availability, activity category) before publication. Admin can suspend in real time.</td></tr>
-        <tr><td>Non-delivery of goods/service</td><td><span class="ck">✓</span> Payment in escrow until physical dual QR-A + QR-B match. No funds released without physical matching.</td></tr>
+        <tr><td>Non-delivery of goods/service</td><td><span class="ck">✓</span> Payment under Bank Guarantee until physical dual QR-A + QR-B match. No funds released without physical matching.</td></tr>
         <tr><td>Payment fraud</td><td><span class="ck">✓</span> Stripe Connect / Mangopay integration. Funds never transit directly between parties.</td></tr>
         <tr><td>Unauthorised GPS tracking</td><td><span class="ck">✓</span> User coordinates never stored on servers. Proximity calculation on-device (client-side).</td></tr>
         <tr><td>Price inflation after agreement</td><td><span class="ck">✓</span> Price locked at offer creation. Cannot be modified after customer acceptance.</td></tr>
