@@ -391,17 +391,17 @@ footer a:hover{color:var(--ocra-l);}
 <div class="modal-overlay" id="modal-occasioni" onclick="chiudiSeOverlay(event,'modal-occasioni')">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-header"><span class="modal-title">&#x26A1; Occasioni flash</span><button class="modal-close" onclick="chiudi('modal-occasioni')">&#x2715;</button></div>
+    <div class="modal-header"><span class="modal-title" id="mod-occasioni-title">&#x26A1; Occasioni flash</span><button class="modal-close" onclick="chiudi('modal-occasioni')">&#x2715;</button></div>
     <div id="pref-bar-occasioni" style="display:none" class="cat-pref-bar"><span>&#x2B50;</span><span id="pref-bar-text"></span><a href="#" onclick="chiudi('modal-occasioni')" style="margin-left:auto;color:var(--cielo);font-size:11px;text-decoration:none;">modifica</a></div>
     <div class="cat-grid-modal" id="cat-grid-modal">
-      <a class="cat-card-modal" href="offerte.html?cat=CIBO" id="cat-CIBO"><div class="cat-emoji">&#x1F355;</div><div class="cat-name-modal">Cibo</div><div class="cat-count-modal" id="ccnt-CIBO">— offerte</div></a>
-      <a class="cat-card-modal" href="offerte.html?cat=MODA" id="cat-MODA"><div class="cat-emoji">&#x1F457;</div><div class="cat-name-modal">Moda</div><div class="cat-count-modal" id="ccnt-MODA">— offerte</div></a>
-      <a class="cat-card-modal" href="offerte.html?cat=TECH" id="cat-TECH"><div class="cat-emoji">&#x1F4F1;</div><div class="cat-name-modal">Tech</div><div class="cat-count-modal" id="ccnt-TECH">— offerte</div></a>
-      <a class="cat-card-modal" href="offerte.html?cat=VIAGGI" id="cat-VIAGGI"><div class="cat-emoji">&#x2708;&#xFE0F;</div><div class="cat-name-modal">Viaggi</div><div class="cat-count-modal" id="ccnt-VIAGGI">— offerte</div></a>
-      <a class="cat-card-modal" href="offerte.html?cat=DIVERTIMENTO" id="cat-DIVERTIMENTO"><div class="cat-emoji">&#x1F3AD;</div><div class="cat-name-modal">Divertimento</div><div class="cat-count-modal" id="ccnt-DIVERTIMENTO">— offerte</div></a>
-      <a class="cat-card-modal" href="offerte.html?cat=ALTRO" id="cat-ALTRO"><div class="cat-emoji">&#x1F6CD;&#xFE0F;</div><div class="cat-name-modal">Altro</div><div class="cat-count-modal" id="ccnt-ALTRO">— offerte</div></a>
+      <a class="cat-card-modal" href="offerte.html?cat=CIBO" id="cat-CIBO"><div class="cat-emoji">&#x1F355;</div><div class="cat-name-modal" id="mod-cibo">Cibo</div><div class="cat-count-modal" id="ccnt-CIBO">— offerte</div></a>
+      <a class="cat-card-modal" href="offerte.html?cat=MODA" id="cat-MODA"><div class="cat-emoji">&#x1F457;</div><div class="cat-name-modal" id="mod-moda">Moda</div><div class="cat-count-modal" id="ccnt-MODA">— offerte</div></a>
+      <a class="cat-card-modal" href="offerte.html?cat=TECH" id="cat-TECH"><div class="cat-emoji">&#x1F4F1;</div><div class="cat-name-modal" id="mod-tech">Tech</div><div class="cat-count-modal" id="ccnt-TECH">— offerte</div></a>
+      <a class="cat-card-modal" href="offerte.html?cat=VIAGGI" id="cat-VIAGGI"><div class="cat-emoji">&#x2708;&#xFE0F;</div><div class="cat-name-modal" id="mod-viaggi">Viaggi</div><div class="cat-count-modal" id="ccnt-VIAGGI">— offerte</div></a>
+      <a class="cat-card-modal" href="offerte.html?cat=DIVERTIMENTO" id="cat-DIVERTIMENTO"><div class="cat-emoji">&#x1F3AD;</div><div class="cat-name-modal" id="mod-divert">Divertimento</div><div class="cat-count-modal" id="ccnt-DIVERTIMENTO">— offerte</div></a>
+      <a class="cat-card-modal" href="offerte.html?cat=ALTRO" id="cat-ALTRO"><div class="cat-emoji">&#x1F6CD;&#xFE0F;</div><div class="cat-name-modal" id="mod-altro">Altro</div><div class="cat-count-modal" id="ccnt-ALTRO">— offerte</div></a>
     </div>
-    <div style="padding:4px 20px 8px;"><a href="offerte.html" style="display:block;text-align:center;background:var(--rosso);color:#fff;padding:13px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:500;" onmouseover="this.style.background='var(--rosso-l)'" onmouseout="this.style.background='var(--rosso)'">Vedi tutte le offerte →</a></div>
+    <div style="padding:4px 20px 8px;"><a href="offerte.html" style="display:block;text-align:center;background:var(--rosso);color:#fff;padding:13px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:500;" onmouseover="this.style.background='var(--rosso-l)'" onmouseout="this.style.background='var(--rosso)'" id="mod-vedi-tutte">Vedi tutte le offerte →</a></div>
   </div>
 </div>
 
@@ -545,7 +545,7 @@ var I18N = {
     'hero-title': "Il mondo<br><em>ai tuoi piedi.</em>",
     'hero-desc': "Offerte flash a 200 metri, servizi pubblici sulla mappa, pagamenti garantiti. INSTANTOWN connette cittadini, turisti ed esercenti in tempo reale.",
     'b1t': "Prossimità reale, non pubblicità", 'b1d': "Il GPS calcola cosa c’è attorno a te. Solo esercenti fisici raggiungibili a piedi.",
-    'b2t': "Pagamento con Garanzia Bancaria, prezzo bloccato", 'b2d': "Il denaro rimane congelato fino all’incontro fisico. Il prezzo che vedi è il prezzo che paghi.",
+    'b2t': "Pagamento con Garanzia Bancaria, prezzo bloccato", 'mod-occasioni-title': "⚡ Occasioni flash", 'mod-cibo': "Cibo", 'mod-moda': "Moda", 'mod-tech': "Tech", 'mod-viaggi': "Viaggi", 'mod-divert': "Divertimento", 'mod-altro': "Altro", 'mod-vedi-tutte': "Vedi tutte le offerte →", 'b2d': "Il denaro rimane congelato fino all’incontro fisico. Il prezzo che vedi è il prezzo che paghi.",
     'b3t': "Servizi pubblici integrati", 'b3d': "Fontanelle, bagni pubblici, Wi-Fi gratuito sulla stessa mappa. Roma a portata di tap.",
     'b4t': "Anti-frode by design", 'b4d': "Ogni esercente verificato con P.IVA reale. Il doppio QR fisico rende impossibile frodare.",
     'vip1-t': "L’utente è sempre VIP", 'vip1-d': "Non paga mai se non riceve il prodotto o il servizio. I fondi restano in Garanzia Bancaria fino all’incontro fisico. Se qualcosa va storto, non perdi nulla.",
@@ -576,7 +576,7 @@ var I18N = {
     'hero-title': "The world<br><em>at your feet.</em>",
     'hero-desc': "Flash offers within 200 metres, public services on the map, guaranteed payments. INSTANTOWN connects citizens, tourists and merchants in real time.",
     'b1t': "Real proximity, not advertising", 'b1d': "GPS calculates what is around you within 200 metres. Only physical merchants reachable on foot.",
-    'b2t': "Bank Guarantee payment, locked price", 'b2d': "Money stays frozen until the physical QR match. The price you see is the price you pay.",
+    'b2t': "Bank Guarantee payment, locked price", 'mod-occasioni-title': "⚡ Flash deals", 'mod-cibo': "Food", 'mod-moda': "Fashion", 'mod-tech': "Tech", 'mod-viaggi': "Travel", 'mod-divert': "Entertainment", 'mod-altro': "Other", 'mod-vedi-tutte': "See all offers →", 'b2d': "Money stays frozen until the physical QR match. The price you see is the price you pay.",
     'b3t': "Integrated public services", 'b3d': "Drinking fountains, public toilets, free Wi-Fi on the same map. Rome landmarks always one tap away.",
     'b4t': "Anti-fraud by design", 'b4d': "Every merchant is verified with a real VAT number. The physical dual QR makes fraud impossible.",
     'vip1-t': "The user is always VIP", 'vip1-d': "Never pays if the product or service is not received. Funds remain under Bank Guarantee until the physical meeting. If something goes wrong, you lose nothing.",
@@ -607,7 +607,7 @@ var I18N = {
     'hero-title': "世界<br><em>在您脚下。</em>",
     'hero-desc': "200米内的闪购优惠，地图上的公共服务，有保障的付款。INSTANTOWN实时连接市民、游客和商家。",
     'b1t': "真实近邻，非广告", 'b1d': "GPS实时计算您周围200米内的商家。只显示可步行到达的实体商家。",
-    'b2t': "银行担保，价格锁定", 'b2d': "资金冻结至线下双码核验完成。您看到的价格即您支付的价格。",
+    'b2t': "银行担保，价格锁定", 'mod-occasioni-title': "⚡ 闪购优惠", 'mod-cibo': "餐饮", 'mod-moda': "时尚", 'mod-tech': "科技", 'mod-viaggi': "旅行", 'mod-divert': "娱乐", 'mod-altro': "其他", 'mod-vedi-tutte': "查看所有优惠 →", 'b2d': "资金冻结至线下双码核验完成。您看到的价格即您支付的价格。",
     'b3t': "公共服务整合", 'b3d': "饮水点、公共卫生间、免费Wi-Fi在同一地图上。罗马地标随时触手可及。",
     'b4t': "防欺诈设计", 'b4d': "每位商家均通过增值税号实名验证。实体双重QR码使欺诈成为不可能。",
     'vip1-t': "用户始终是VIP", 'vip1-d': "未收到产品或服务则无需付款。资金冻结至线下交汇完成。若出现问题，您不会损失任何费用。",
@@ -638,7 +638,7 @@ var I18N = {
     'hero-title': "El mundo<br><em>a tus pies.</em>",
     'hero-desc': "Ofertas flash a 200 metros, servicios públicos en el mapa, pagos garantizados. INSTANTOWN conecta ciudadanos, turistas y comerciantes en tiempo real.",
     'b1t': "Proximidad real, no publicidad", 'b1d': "El GPS calcula lo que hay a tu alrededor. Solo ves ofertas de comerciantes físicos accesibles a pie.",
-    'b2t': "Pago con Garantía Bancaria, precio bloqueado", 'b2d': "El dinero queda congelado hasta el encuentro físico QR-A y QR-B. El precio que ves es el precio que pagas.",
+    'b2t': "Pago con Garantía Bancaria, precio bloqueado", 'mod-occasioni-title': "⚡ Ofertas flash", 'mod-cibo': "Comida", 'mod-moda': "Moda", 'mod-tech': "Tech", 'mod-viaggi': "Viajes", 'mod-divert': "Entretenimiento", 'mod-altro': "Otros", 'mod-vedi-tutte': "Ver todas las ofertas →", 'b2d': "El dinero queda congelado hasta el encuentro físico QR-A y QR-B. El precio que ves es el precio que pagas.",
     'b3t': "Servicios públicos integrados", 'b3d': "Fuentes, aseos públicos, Wi-Fi gratuito en el mismo mapa. Monumentos de Roma siempre a un toque.",
     'b4t': "Antifraude by design", 'b4d': "Cada comerciante se verifica con NIF real. El doble QR físico hace imposible el fraude.",
     'vip1-t': "El usuario siempre es VIP", 'vip1-d': "Nunca paga si no recibe el producto o servicio. Los fondos quedan bajo Garantía Bancaria. Si algo sale mal, no pierdes nada.",
@@ -669,7 +669,7 @@ var I18N = {
     'hero-title': "Le monde<br><em>à vos pieds.</em>",
     'hero-desc': "Offres flash à 200 mètres, services publics sur la carte, paiements garantis. INSTANTOWN connecte citoyens, touristes et commerçants en temps réel.",
     'b1t': "Proximité réelle, pas de publicité", 'b1d': "Le GPS calcule ce qui vous entoure à 200 mètres. Vous ne voyez que les offres de commerçants physiques accessibles à pied.",
-    'b2t': "Paiement avec Garantie Bancaire, prix bloqué", 'b2d': "L’argent reste gelé jusqu’à la correspondance physique QR-A et QR-B. Le prix affiché est le prix payé.",
+    'b2t': "Paiement avec Garantie Bancaire, prix bloqué", 'mod-occasioni-title': "⚡ Offres flash", 'mod-cibo': "Nourriture", 'mod-moda': "Mode", 'mod-tech': "Tech", 'mod-viaggi': "Voyages", 'mod-divert': "Divertissement", 'mod-altro': "Autre", 'mod-vedi-tutte': "Voir toutes les offres →", 'b2d': "L’argent reste gelé jusqu’à la correspondance physique QR-A et QR-B. Le prix affiché est le prix payé.",
     'b3t': "Services publics intégrés", 'b3d': "Fontaines, toilettes publiques, Wi-Fi gratuit sur la même carte. Les monuments de Rome toujours à portée.",
     'b4t': "Antifraude by design", 'b4d': "Chaque commerçant est vérifié avec un vrai numéro de TVA. Le double QR physique rend la fraude impossible.",
     'vip1-t': "L’utilisateur est toujours VIP", 'vip1-d': "Ne paie jamais s’il ne reçoit pas le produit ou le service. Les fonds restent sous Garantie Bancaire. En cas de problème, vous ne perdez rien.",
