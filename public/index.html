@@ -697,6 +697,7 @@ var I18N = {
 function applyLang(lang) {
   var ok = ['it','en','zh','es','fr'];
   if (!ok.includes(lang)) lang = 'it';
+  localStorage.setItem('it_lang', lang);
   var L = I18N[lang] || I18N.it;
   Object.keys(L).forEach(function(id) {
     var el = document.getElementById(id);
@@ -716,8 +717,7 @@ function applyLang(lang) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  localStorage.clear();
-  applyLang('it');
+  applyLang(localStorage.getItem('it_lang') || 'it');
 });
 
 // CATEGORIE
