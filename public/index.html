@@ -529,7 +529,38 @@ footer a:hover{color:var(--ocra-l);}
 
 // MODAL
 function apriServizi()   { document.getElementById('modal-servizi').classList.add('open');   document.body.style.overflow='hidden'; }
-function apriOccasioni() { document.getElementById('modal-occasioni').classList.add('open'); document.body.style.overflow='hidden'; caricaCounts(); mostraPref(); }
+function apriOccasioni() { document.getElementById('modal-occasioni').classList.add('open'); document.body.style.overflow='hidden'; 
+// --- COUNT_LABELS (i18n contatori) ---
+var COUNT_LABELS = {
+  it: { single: 'offerta', plural: 'offerte' },
+  en: { single: 'offer',   plural: 'offers' },
+  zh: { single: '\u4f18\u60e0', plural: '\u4f18\u60e0' },
+  es: { single: 'oferta',  plural: 'ofertas' },
+  fr: { single: 'offre',   plural: 'offres' }
+};
+function applyCountTexts() {
+  var lang = localStorage.getItem('it_lang') || 'it';
+  var labels = COUNT_LABELS[lang] || COUNT_LABELS.it;
+  var counts = {};
+  try { counts = JSON.parse(localStorage.getItem('it_cat_counts')||'{}'); } catch(e) {}
+  ['CIBO','MODA','TECH','VIAGGI','DIVERTIMENTO','ALTRO'].forEach(function(c){
+    var el = document.getElementById('ccnt-'+c);
+    if (!el) return;
+    if (counts[c] === undefined || counts[c] === null) {
+      el.textContent = '\u2014 ' + labels.plural;
+    } else {
+      var n = counts[c];
+      el.textContent = n + ' ' + (n === 1 ? labels.single : labels.plural);
+    }
+  });
+}
+if (typeof applyLang === 'function') {
+  var __origApplyLang_cnt = applyLang;
+  window.applyLang = function(lang) { __origApplyLang_cnt(lang); applyCountTexts(); };
+}
+applyCountTexts();
+
+caricaCounts(); mostraPref(); }
 function chiudi(id)      { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
 function chiudiSeOverlay(e,id) { if(e.target===e.currentTarget) chiudi(id); }
 document.addEventListener('keydown', function(e) { if(e.key==='Escape'){ chiudi('modal-servizi'); chiudi('modal-occasioni'); } });
@@ -788,17 +819,11 @@ async function caricaCounts() {
       if (!CATS.includes(cat)) cat = inferisciCat(desc);
       counts[cat]++;
     });
-    CATS.forEach(function(c) {
-      var el = document.getElementById('ccnt-'+c);
-      if (el) el.textContent = counts[c]+(counts[c]===1?' offerta':' offerte');
-    });
+    applyCountTexts();
     localStorage.setItem('it_cat_counts', JSON.stringify(counts));
   } catch(e) {
     var counts = JSON.parse(localStorage.getItem('it_cat_counts')||'{}');
-    CATS.forEach(function(c) {
-      var el = document.getElementById('ccnt-'+c);
-      if (el && counts[c]!==undefined) el.textContent = counts[c]+' offerte';
-    });
+    applyCountTexts();
   }
 }
 
