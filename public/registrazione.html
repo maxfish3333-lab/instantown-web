@@ -82,25 +82,25 @@ input.invalid{border-color:var(--rosso-l) !important;}
 
 <div class="card">
   <div class="card-logo"><img src="Nuovo_logo_3_diss.png" alt="Logo InstantTown"></div>
-  <h1 class="card-title">Registrazione</h1>
-  <p class="card-sub">Scegli il tuo profilo per iniziare</p>
+  <h1 class="card-title" data-i18n="rg_title">Registrazione</h1>
+  <p class="card-sub" data-i18n="rg_sub">Scegli il tuo profilo per iniziare</p>
 
   <div class="tipo-row">
     <button class="tipo-btn" id="btn-privato" onclick="setTipo('privato')">
       <span class="tipo-icon">👤</span>
-      <span class="tipo-label">Utente Privato</span>
-      <span class="tipo-sub">Cittadino o turista</span>
+      <span class="tipo-label" data-i18n="rg_privato_label">Utente Privato</span>
+      <span class="tipo-sub" data-i18n="rg_privato_sub">Cittadino o turista</span>
     </button>
     <button class="tipo-btn" id="btn-impresa" onclick="setTipo('impresa')">
       <span class="tipo-icon">🏪</span>
-      <span class="tipo-label">Impresa / Esercente</span>
-      <span class="tipo-sub">Negozio o attività</span>
+      <span class="tipo-label" data-i18n="rg_impresa_label">Impresa / Esercente</span>
+      <span class="tipo-sub" data-i18n="rg_impresa_sub">Negozio o attività</span>
     </button>
   </div>
 
   <!-- ══ PANEL PRIVATO ══ -->
   <div class="panel" id="panel-privato">
-    <div class="info-box info-cielo">
+    <div class="info-box info-cielo" data-i18n="rg_info_priv">
       Registrazione rapida — ti basta la <strong>email</strong>.<br>
       Gli altri dati li raccogliamo in modo sicuro dalla carta di pagamento al momento del primo acquisto.
     </div>
@@ -109,27 +109,27 @@ input.invalid{border-color:var(--rosso-l) !important;}
       <input type="hidden" name="_cc" value="info@instantown.it">
       <input type="hidden" name="_subject" value="[InstantTown] Nuova registrazione — Utente Privato">
       <div class="field">
-        <label>La tua email</label>
-        <input type="email" name="_replyto" placeholder="tua@email.com" required>
+        <label data-i18n="rg_label_email_priv">La tua email</label>
+        <input type="email" name="_replyto" placeholder="tua@email.com" data-i18n-placeholder="rg_ph_email_priv" required>
       </div>
       <div class="check-row">
         <input type="checkbox" name="termini" required>
-        <span>Accetto i termini del servizio e il sistema di pagamento in Escrow garantito</span>
+        <span data-i18n="rg_terms_priv">Accetto i termini del servizio e il sistema di pagamento in Escrow garantito</span>
       </div>
-      <button type="submit" class="btn-submit btn-cielo-full">Invia — ricevi il link di conferma</button>
-      <p class="note">Riceverai una email con il link per attivare il tuo account.</p>
+      <button type="submit" class="btn-submit btn-cielo-full" data-i18n="rg_btn_priv">Invia — ricevi il link di conferma</button>
+      <p class="note" data-i18n="rg_note_priv">Riceverai una email con il link per attivare il tuo account.</p>
     </form>
   </div>
 
   <!-- ══ PANEL IMPRESA ══ -->
   <div class="panel" id="panel-impresa">
-    <div class="promo">🎁 <strong>Promozione lancio:</strong> commissione ZERO per i primi 6 mesi</div>
-    <div class="info-box info-rosso">
+    <div class="promo" data-i18n="rg_promo">🎁 <strong>Promozione lancio:</strong> commissione ZERO per i primi 6 mesi</div>
+    <div class="info-box info-rosso" data-i18n="rg_info_imp">
       Compila i dati della tua attività. Verificheremo <strong>Codice Fiscale</strong> e <strong>P.IVA</strong> in tempo reale prima dell'invio.
     </div>
     <div id="success-impresa" style="display:none;padding:24px 20px;background:#f0fdf4;border:2px solid #16a34a;border-radius:6px;text-align:center;margin-bottom:16px;">
       <div style="font-size:22px;margin-bottom:10px;">✅ Registrazione completata!</div>
-      <div style="font-size:15px;color:#1C1410;margin-bottom:14px;">Il tuo PIN di accesso è:</div>
+      <div style="font-size:15px;color:#1C1410;margin-bottom:14px;" data-i18n="rg_success_pin">Il tuo PIN di accesso è:</div>
       <div id="pin-display" style="font-size:42px;font-weight:700;letter-spacing:10px;color:#8B1A1A;font-family:'Courier New',monospace;background:#fff;border:2px dashed #8B1A1A;border-radius:6px;padding:14px 24px;display:inline-block;margin-bottom:16px;"></div>
       <div style="font-size:13px;color:#3D2E24;line-height:1.7;background:#fff8f0;border-radius:4px;padding:10px 14px;">
         ⚠️ <strong>Conservalo bene</strong> — ti servirà ogni volta che vuoi pubblicare o gestire le tue offerte.<br>
@@ -143,33 +143,33 @@ input.invalid{border-color:var(--rosso-l) !important;}
       <input type="hidden" name="_subject" value="[InstantTown] Nuova registrazione — Impresa/Esercente">
 
       <div class="field">
-        <label>Nome Insegna</label>
-        <input type="text" name="insegna" placeholder="Es. Panetteria Rossi" required class="focus-rosso">
+        <label data-i18n="rg_label_insegna">Nome Insegna</label>
+        <input type="text" name="insegna" placeholder="Es. Panetteria Rossi" data-i18n-placeholder="rg_ph_insegna" required class="focus-rosso">
       </div>
 
       <div class="field">
-        <label>Denominazione Sociale</label>
-        <input type="text" name="denominazione" placeholder="Es. Rossi Mario S.n.c." required class="focus-rosso">
+        <label data-i18n="rg_label_denom">Denominazione Sociale</label>
+        <input type="text" name="denominazione" placeholder="Es. Rossi Mario S.n.c." data-i18n-placeholder="rg_ph_denom" required class="focus-rosso">
       </div>
 
       <div class="field">
-        <label>Categoria merceologica</label>
+        <label data-i18n="rg_label_cat">Categoria merceologica</label>
         <select name="categoria" required class="focus-rosso" style="border:1px solid rgba(139,26,26,.15);border-radius:3px;padding:11px 14px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--ink);">
-          <option value="">— Seleziona la categoria principale —</option>
-          <option value="CIBO">🍕 Cibo — Alimentari, ristoranti, bar, gastronomia</option>
-          <option value="MODA">👗 Moda — Abbigliamento, scarpe, accessori</option>
-          <option value="TECH">📱 Tech — Elettronica, informatica, telefonia</option>
-          <option value="VIAGGI">✈️ Viaggi — Turismo, esperienze, trasporti</option>
-          <option value="DIVERTIMENTO">🎭 Divertimento — Spettacoli, eventi, sport, cultura</option>
-          <option value="ALTRO">🛍️ Altro — Servizi, artigianato, altre categorie</option>
+          <option value="" data-i18n="rg_opt_default">— Seleziona la categoria principale —</option>
+          <option value="CIBO" data-i18n="rg_opt_cibo">🍕 Cibo — Alimentari, ristoranti, bar, gastronomia</option>
+          <option value="MODA" data-i18n="rg_opt_moda">👗 Moda — Abbigliamento, scarpe, accessori</option>
+          <option value="TECH" data-i18n="rg_opt_tech">📱 Tech — Elettronica, informatica, telefonia</option>
+          <option value="VIAGGI" data-i18n="rg_opt_viaggi">✈️ Viaggi — Turismo, esperienze, trasporti</option>
+          <option value="DIVERTIMENTO" data-i18n="rg_opt_divert">🎭 Divertimento — Spettacoli, eventi, sport, cultura</option>
+          <option value="ALTRO" data-i18n="rg_opt_altro">🛍️ Altro — Servizi, artigianato, altre categorie</option>
         </select>
       </div>
 
-      <div class="divider"><span>Dati fiscali</span></div>
+      <div class="divider"><span data-i18n="rg_div_fiscali">Dati fiscali</span></div>
 
       <div class="field-row col2">
         <div class="field" style="margin-bottom:0">
-          <label>Codice Fiscale</label>
+          <label data-i18n="rg_label_cf">Codice Fiscale</label>
           <div class="field-wrap">
             <input type="text" id="cf" name="codice_fiscale" placeholder="RSSMRA80A01H501U"
               maxlength="16" required class="focus-rosso"
@@ -178,7 +178,7 @@ input.invalid{border-color:var(--rosso-l) !important;}
           <div class="val-msg" id="cf-msg"></div>
         </div>
         <div class="field" style="margin-bottom:0">
-          <label>Partita IVA</label>
+          <label data-i18n="rg_label_piva">Partita IVA</label>
           <div class="field-wrap">
             <input type="text" id="piva" name="partita_iva" placeholder="12345678901"
               maxlength="11" required class="focus-rosso"
@@ -188,42 +188,42 @@ input.invalid{border-color:var(--rosso-l) !important;}
         </div>
       </div>
 
-      <div class="divider"><span>Sede</span></div>
+      <div class="divider"><span data-i18n="rg_div_sede">Sede</span></div>
 
       <div class="field-row col3">
         <div>
-          <label>Via / Piazza</label>
-          <input type="text" name="via" placeholder="Via Roma" required class="focus-rosso">
+          <label data-i18n="rg_label_via">Via / Piazza</label>
+          <input type="text" name="via" placeholder="Via Roma" data-i18n-placeholder="rg_ph_via" required class="focus-rosso">
         </div>
         <div>
-          <label>N°</label>
-          <input type="text" name="civico" placeholder="12" required class="focus-rosso">
+          <label data-i18n="rg_label_civico">N°</label>
+          <input type="text" name="civico" placeholder="12" data-i18n-placeholder="rg_ph_civico" required class="focus-rosso">
         </div>
         <div>
-          <label>Città</label>
-          <input type="text" name="citta" placeholder="Roma" required class="focus-rosso">
+          <label data-i18n="rg_label_citta">Città</label>
+          <input type="text" name="citta" placeholder="Roma" data-i18n-placeholder="rg_ph_citta" required class="focus-rosso">
         </div>
       </div>
 
-      <div class="divider"><span>Contatti</span></div>
+      <div class="divider"><span data-i18n="rg_div_contatti">Contatti</span></div>
 
       <div class="field-row col2">
         <div>
-          <label>Email</label>
-          <input type="email" name="_replyto" placeholder="info@attivita.it" required class="focus-rosso">
+          <label data-i18n="rg_label_email_imp">Email</label>
+          <input type="email" name="_replyto" placeholder="info@attivita.it" data-i18n-placeholder="rg_ph_email_imp" required class="focus-rosso">
         </div>
         <div>
-          <label>Telefono</label>
-          <input type="tel" name="telefono" placeholder="+39 06 123456" required class="focus-rosso">
+          <label data-i18n="rg_label_tel">Telefono</label>
+          <input type="tel" name="telefono" placeholder="+39 06 123456" data-i18n-placeholder="rg_ph_tel" required class="focus-rosso">
         </div>
       </div>
 
       <div class="check-row rosso">
         <input type="checkbox" name="termini_impresa" required>
-        <span>Dichiaro che i dati inseriti sono veritieri e accetto i termini del servizio InstantTown</span>
+        <span data-i18n="rg_terms_imp">Dichiaro che i dati inseriti sono veritieri e accetto i termini del servizio InstantTown</span>
       </div>
-      <button type="submit" id="btn-invia" class="btn-submit btn-rosso-full">Invia richiesta di attivazione</button>
-      <p class="note" id="nota-attivazione">Il tuo pannello esercente verrà attivato entro 24 ore dalla verifica dei dati fiscali.</p>
+      <button type="submit" id="btn-invia" class="btn-submit btn-rosso-full" data-i18n="rg_btn_imp">Invia richiesta di attivazione</button>
+      <p class="note" id="nota-attivazione" data-i18n="rg_nota_att">Il tuo pannello esercente verrà attivato entro 24 ore dalla verifica dei dati fiscali.</p>
     </form>
   </div>
 
