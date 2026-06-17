@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>InstantTown — Registrazione</title>
+<title data-i18n-title="rg_title">InstantTown — Registrazione</title>
+<script src="i18n.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -81,30 +82,36 @@ input.invalid{border-color:var(--rosso-l) !important;}
 <div class="stripe"></div>
 
 <div class="card">
+  <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+    <select id="lang-sel" onchange="applyLang(this.value)" style="padding:4px 8px;border:1px solid var(--rule);border-radius:3px;background:#fff;font-family:inherit;font-size:12px;color:var(--ink-mu);cursor:pointer;">
+      <option value="it">🇮🇹 IT</option>
+      <option value="en">🇬🇧 EN</option>
+      <option value="zh">🇨🇳 中文</option>
+      <option value="es">🇪🇸 ES</option>
+      <option value="fr">🇫🇷 FR</option>
+    </select>
+  </div>
   <div class="card-logo"><img src="Nuovo_logo_3_diss.png" alt="Logo InstantTown"></div>
-  <h1 class="card-title" data-i18n="rg_title">Registrazione</h1>
+  <h1 class="card-title" data-i18n="rg_h1">Registrazione</h1>
   <p class="card-sub" data-i18n="rg_sub">Scegli il tuo profilo per iniziare</p>
 
   <div class="tipo-row">
     <button class="tipo-btn" id="btn-privato" onclick="setTipo('privato')">
       <span class="tipo-icon">👤</span>
-      <span class="tipo-label" data-i18n="rg_privato_label">Utente Privato</span>
-      <span class="tipo-sub" data-i18n="rg_privato_sub">Cittadino o turista</span>
+      <span class="tipo-label" data-i18n="rg_btn_priv_label">Utente Privato</span>
+      <span class="tipo-sub" data-i18n="rg_btn_priv_sub">Cittadino o turista</span>
     </button>
     <button class="tipo-btn" id="btn-impresa" onclick="setTipo('impresa')">
       <span class="tipo-icon">🏪</span>
-      <span class="tipo-label" data-i18n="rg_impresa_label">Impresa / Esercente</span>
-      <span class="tipo-sub" data-i18n="rg_impresa_sub">Negozio o attività</span>
+      <span class="tipo-label" data-i18n="rg_btn_imp_label">Impresa / Esercente</span>
+      <span class="tipo-sub" data-i18n="rg_btn_imp_sub">Negozio o attività</span>
     </button>
   </div>
 
   <!-- ══ PANEL PRIVATO ══ -->
   <div class="panel" id="panel-privato">
-    <div class="info-box info-cielo" data-i18n="rg_info_priv">
-      Registrazione rapida — ti basta la <strong>email</strong>.<br>
-      Gli altri dati li raccogliamo in modo sicuro dalla carta di pagamento al momento del primo acquisto.
-    </div>
-    <form action="https://formspree.io/f/xbjnvpzw" data-email="info@instantown.it" method="POST">
+    <div class="info-box info-cielo" data-i18n="rg_info_priv">Registrazione rapida — ti basta la <strong>email</strong>.<br>Gli altri dati li raccogliamo in modo sicuro dalla carta di pagamento al momento del primo acquisto.</div>
+    <form action="https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec" data-email="info@instantown.it" method="POST">
       <input type="hidden" name="tipo_profilo" value="Utente Privato">
       <input type="hidden" name="_cc" value="info@instantown.it">
       <input type="hidden" name="_subject" value="[InstantTown] Nuova registrazione — Utente Privato">
@@ -114,26 +121,23 @@ input.invalid{border-color:var(--rosso-l) !important;}
       </div>
       <div class="check-row">
         <input type="checkbox" name="termini" required>
-        <span data-i18n="rg_terms_priv">Accetto i termini del servizio e il sistema di pagamento in Escrow garantito</span>
+        <span data-i18n="rg_check_priv">Accetto i termini del servizio e il sistema di pagamento con Garanzia Bancaria</span>
       </div>
-      <button type="submit" class="btn-submit btn-cielo-full" data-i18n="rg_btn_priv">Invia — ricevi il link di conferma</button>
+      <button type="submit" class="btn-submit btn-cielo-full" data-i18n="rg_btn_send_priv">Invia — ricevi il link di conferma</button>
       <p class="note" data-i18n="rg_note_priv">Riceverai una email con il link per attivare il tuo account.</p>
     </form>
   </div>
 
   <!-- ══ PANEL IMPRESA ══ -->
   <div class="panel" id="panel-impresa">
-    <div class="promo" data-i18n="rg_promo">🎁 <strong>Promozione lancio:</strong> commissione ZERO per i primi 6 mesi</div>
-    <div class="info-box info-rosso" data-i18n="rg_info_imp">
-      Compila i dati della tua attività. Verificheremo <strong>Codice Fiscale</strong> e <strong>P.IVA</strong> in tempo reale prima dell'invio.
-    </div>
-    <div id="success-impresa" style="display:none;padding:24px 20px;background:#f0fdf4;border:2px solid #16a34a;border-radius:6px;text-align:center;margin-bottom:16px;">
-      <div style="font-size:22px;margin-bottom:10px;">✅ Registrazione completata!</div>
-      <div style="font-size:15px;color:#1C1410;margin-bottom:14px;" data-i18n="rg_success_pin">Il tuo PIN di accesso è:</div>
-      <div id="pin-display" style="font-size:42px;font-weight:700;letter-spacing:10px;color:#8B1A1A;font-family:'Courier New',monospace;background:#fff;border:2px dashed #8B1A1A;border-radius:6px;padding:14px 24px;display:inline-block;margin-bottom:16px;"></div>
-      <div style="font-size:13px;color:#3D2E24;line-height:1.7;background:#fff8f0;border-radius:4px;padding:10px 14px;">
-        ⚠️ <strong>Conservalo bene</strong> — ti servirà ogni volta che vuoi pubblicare o gestire le tue offerte.<br>
-        Riceverai anche una conferma via email.
+
+    <div class="info-box info-rosso" data-i18n="rg_info_imp">Compila i dati della tua attività. Verificheremo <strong>Codice Fiscale</strong> e <strong>P.IVA</strong> in tempo reale prima dell'invio.</div>
+    <div id="success-impresa" style="display:none;padding:28px 20px;background:#f0fdf4;border:2px solid #16a34a;border-radius:6px;text-align:center;margin-bottom:16px;">
+      <div style="font-size:32px;margin-bottom:10px;">&#x2705;</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:#1C1410;margin-bottom:12px;" data-i18n="rg_success_title">Registrazione completata!</div>
+      <div style="font-size:14px;color:#3D2E24;line-height:1.8;background:#fff;border-radius:6px;padding:14px 18px;border:1px solid #16a34a;">
+        &#x1F4E7; <strong>Controlla la tua email</strong> — riceverai il tuo <strong>PIN personale</strong> da <em>info@instantown.it</em> entro pochi minuti.<br>
+        <span style="font-size:12px;color:#6B5A4E;">Il PIN ti servirà per pubblicare offerte e accedere all'area esercente.</span>
       </div>
     </div>
 
@@ -165,7 +169,7 @@ input.invalid{border-color:var(--rosso-l) !important;}
         </select>
       </div>
 
-      <div class="divider"><span data-i18n="rg_div_fiscali">Dati fiscali</span></div>
+      <div class="divider"><span data-i18n="rg_div_fiscale">Dati fiscali</span></div>
 
       <div class="field-row col2">
         <div class="field" style="margin-bottom:0">
@@ -197,7 +201,7 @@ input.invalid{border-color:var(--rosso-l) !important;}
         </div>
         <div>
           <label data-i18n="rg_label_civico">N°</label>
-          <input type="text" name="civico" placeholder="12" data-i18n-placeholder="rg_ph_civico" required class="focus-rosso">
+          <input type="text" name="civico" placeholder="12" required class="focus-rosso">
         </div>
         <div>
           <label data-i18n="rg_label_citta">Città</label>
@@ -220,10 +224,10 @@ input.invalid{border-color:var(--rosso-l) !important;}
 
       <div class="check-row rosso">
         <input type="checkbox" name="termini_impresa" required>
-        <span data-i18n="rg_terms_imp">Dichiaro che i dati inseriti sono veritieri e accetto i termini del servizio InstantTown</span>
+        <span data-i18n="rg_check_imp">Dichiaro che i dati inseriti sono veritieri e accetto i termini del servizio InstantTown</span>
       </div>
-      <button type="submit" id="btn-invia" class="btn-submit btn-rosso-full" data-i18n="rg_btn_imp">Invia richiesta di attivazione</button>
-      <p class="note" id="nota-attivazione" data-i18n="rg_nota_att">Il tuo pannello esercente verrà attivato entro 24 ore dalla verifica dei dati fiscali.</p>
+      <button type="submit" id="btn-invia" class="btn-submit btn-rosso-full" data-i18n="rg_btn_send_imp">Invia richiesta di attivazione</button>
+      <p class="note" id="nota-attivazione" data-i18n="rg_note_attivazione">Il tuo pannello esercente verrà attivato entro 24 ore dalla verifica dei dati fiscali.</p>
     </form>
   </div>
 
@@ -259,10 +263,17 @@ function validaCF() {
 
   if(val.length === 0) return true;
 
+  // Società: CF numerico a 11 cifre (coincide con P.IVA)
+  if(/^[0-9]{11}$/.test(val)) {
+    input.classList.remove('invalid'); input.classList.add('valid');
+    msg.textContent = i18n('rg_msg_cf_corp'); msg.classList.add('ok');
+    return true;
+  }
+
   const regex = /^[A-Z]{6}[0-9LMNPQRSTUV]{2}[ABCDEHLMPRST]{1}[0-9LMNPQRSTUV]{2}[A-Z]{1}[0-9LMNPQRSTUV]{3}[A-Z]{1}$/;
   if(!regex.test(val)) {
     input.classList.remove('valid'); input.classList.add('invalid');
-    msg.textContent = '✗ Formato non valido — controlla il codice fiscale'; msg.classList.add('err');
+    msg.textContent = i18n('rg_msg_cf_fmt'); msg.classList.add('err');
     return false;
   }
 
@@ -278,12 +289,12 @@ function validaCF() {
   const expected = String.fromCharCode(65 + (s % 26));
   if(val[15] !== expected) {
     input.classList.remove('valid'); input.classList.add('invalid');
-    msg.textContent = '✗ Codice fiscale non valido (cifra di controllo errata)'; msg.classList.add('err');
+    msg.textContent = i18n('rg_msg_cf_check'); msg.classList.add('err');
     return false;
   }
 
   input.classList.remove('invalid'); input.classList.add('valid');
-  msg.textContent = '✓ Codice fiscale formalmente valido'; msg.classList.add('ok');
+  msg.textContent = i18n('rg_msg_cf_ok'); msg.classList.add('ok');
   return true;
 }
 
@@ -301,7 +312,7 @@ function validaPIVA() {
 
   if(!/^\d{11}$/.test(val)) {
     input.classList.remove('valid'); input.classList.add('invalid');
-    msg.textContent = '✗ La P.IVA deve essere composta da 11 cifre'; msg.classList.add('err');
+    msg.textContent = i18n('rg_msg_piva_len'); msg.classList.add('err');
     return false;
   }
 
@@ -323,7 +334,7 @@ function validaPIVA() {
 
   if(check !== parseInt(val[10])) {
     input.classList.remove('valid'); input.classList.add('invalid');
-    msg.textContent = '✗ P.IVA non valida (cifra di controllo errata)'; msg.classList.add('err');
+    msg.textContent = i18n('rg_msg_piva_check'); msg.classList.add('err');
     return false;
   }
 
@@ -331,12 +342,12 @@ function validaPIVA() {
   const ufficio = parseInt(val.substring(7, 10));
   if(ufficio < 0 || ufficio > 999) {
     input.classList.remove('valid'); input.classList.add('invalid');
-    msg.textContent = '✗ Codice ufficio IVA non valido'; msg.classList.add('err');
+    msg.textContent = i18n('rg_msg_piva_ufficio'); msg.classList.add('err');
     return false;
   }
 
   input.classList.remove('invalid'); input.classList.add('valid');
-  msg.textContent = '✓ Partita IVA formalmente valida'; msg.classList.add('ok');
+  msg.textContent = i18n('rg_msg_piva_ok'); msg.classList.add('ok');
   return true;
 }
 
@@ -345,7 +356,7 @@ function validaForm() {
   const cfOk   = validaCF();
   const pivaOk = validaPIVA();
   if(!cfOk || !pivaOk) {
-    alert('Correggi i dati fiscali evidenziati prima di procedere.');
+    alert(i18n('rg_alert_form'));
     return false;
   }
   return true;
@@ -358,7 +369,7 @@ async function inviaRegistrazione(e) {
 
   const btn = document.getElementById('btn-invia');
   btn.disabled = true;
-  btn.textContent = 'Invio in corso…';
+  btn.textContent = i18n('rg_invio');
 
   // Genera PIN a 6 cifre e lo salva
   const pin = String(Math.floor(100000 + Math.random() * 900000));
@@ -383,18 +394,18 @@ async function inviaRegistrazione(e) {
 
       // Mostra riquadro successo con PIN
       const box = document.getElementById('success-impresa');
-      document.getElementById('pin-display').textContent = pin;
+      var pinEl = document.getElementById('pin-display'); if (pinEl) pinEl.textContent = '••••••';
       box.style.display = 'block';
       box.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } else {
       btn.disabled = false;
-      btn.textContent = 'Invia richiesta di attivazione';
-      alert('Errore nell\'invio. Riprova tra qualche secondo.');
+      btn.textContent = i18n('rg_btn_send_imp');
+      alert(i18n('rg_alert_invio_err'));
     }
   } catch(err) {
     btn.disabled = false;
-    btn.textContent = 'Invia richiesta di attivazione';
-    alert('Errore di rete. Controlla la connessione e riprova.');
+    btn.textContent = i18n('rg_btn_send_imp');
+    alert(i18n('rg_alert_net_err'));
   }
   return false;
 }
