@@ -3,114 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Instantown - Secure Checkout</title>
-    <script src="i18n.js"></script>
+    <title>INSTANTOWN — Garanzia Bancaria</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        :root { --green: #22c55e; --black: #050505; --grey: #1a1a1a; }
-        body { margin: 0; background: var(--black); color: white; font-family: sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; box-sizing: border-box; }
-        
-        .checkout-box { background: var(--grey); width: 100%; max-width: 400px; padding: 25px; border-radius: 25px; border: 1px solid #333; box-sizing: border-box; margin-top: 20px; }
-        
-        label { display: block; font-size: 11px; color: #666; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
-        input { width: 100%; padding: 16px; background: #000; border: 1px solid #333; color: white; border-radius: 12px; margin-bottom: 20px; box-sizing: border-box; font-size: 16px; font-family: monospace; transition: 0.2s; }
-        input:focus { border-color: var(--green); outline: none; background: #080808; }
-
-        .card-extra { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        
-        .summary { background: #000; padding: 20px; border-radius: 18px; margin-bottom: 25px; border: 1px dashed #333; }
-        .btn-pay { width: 100%; padding: 20px; background: var(--green); border: none; border-radius: 15px; font-weight: 900; font-size: 16px; cursor: pointer; color: black; text-transform: uppercase; letter-spacing: 1px; }
-        .btn-pay:disabled { opacity: 0.5; cursor: not-allowed; }
-        
-        .secure-badge { font-size: 10px; color: #444; text-align: center; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        :root { --green:#22c55e; --black:#050505; --grey:#1a1a1a; --gold:#C8860A; --gold-l:#E8A020; }
+        *{ box-sizing:border-box; margin:0; padding:0; }
+        body{ background:var(--black); color:white; font-family:sans-serif; padding:20px; display:flex; flex-direction:column; align-items:center; min-height:100vh; }
+        .demo-banner{ width:100%; max-width:420px; background:#3a2e05; border:1px solid #6b5414; color:#f5c542; font-size:13px; font-weight:700; text-align:center; padding:10px 14px; border-radius:10px; margin-bottom:14px; }
+        .top-bar{ width:100%; max-width:420px; display:flex; align-items:center; gap:12px; margin-bottom:20px; padding-top:8px; }
+        .back-btn{ color:#555; text-decoration:none; font-size:13px; }
+        .page-title{ font-size:22px; font-weight:700; }
+        .page-sub{ font-size:12px; color:#555; margin-top:2px; }
+        .summary{ width:100%; max-width:420px; background:#0a0a0a; border:1px dashed #2a2a2a; border-radius:16px; padding:20px; margin-bottom:16px; }
+        .summary-label{ font-size:10px; color:#555; text-transform:uppercase; letter-spacing:.1em; }
+        .summary-amount{ font-size:36px; font-weight:900; color:var(--green); margin:6px 0 4px; }
+        .summary-desc{ font-size:15px; color:#fff; font-weight:600; margin-bottom:4px; }
+        .summary-negozio{ font-size:12px; color:#aaa; margin-bottom:2px; }
+        .summary-addr{ font-size:12px; color:var(--gold-l); text-decoration:none; display:flex; align-items:center; gap:4px; margin-bottom:4px; }
+        .summary-orario{ font-size:11px; color:#555; margin-bottom:6px; }
+        .summary-tx{ font-size:10px; color:#333; font-family:monospace; margin-top:6px; }
+        .garanzia-badge{ font-size:11px; color:var(--gold-l); background:rgba(200,134,10,.08); border:1px solid rgba(200,134,10,.2); border-radius:6px; padding:8px 12px; margin-top:10px; }
+        .info-box{ width:100%; max-width:420px; background:#0d0d0d; border:1px solid #1a1a1a; border-radius:16px; padding:20px; margin-bottom:16px; font-size:13px; color:#888; line-height:1.7; }
+        .info-box strong{ color:var(--gold-l); }
+        .btn-attiva{ width:100%; max-width:420px; padding:18px; background:var(--green); border:none; border-radius:12px; font-weight:900; font-size:16px; cursor:pointer; color:black; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; }
+        .btn-back{ width:100%; max-width:420px; padding:14px; background:none; border:1px solid #333; color:#666; border-radius:12px; font-size:14px; cursor:pointer; }
+        .secure-badge{ font-size:10px; color:#333; text-align:center; margin-top:14px; display:flex; align-items:center; justify-content:center; gap:5px; }
+        #processing{ display:none; position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:999; flex-direction:column; align-items:center; justify-content:center; gap:20px; }
+        #processing.show{ display:flex; }
+        .proc-spinner{ width:48px; height:48px; border:4px solid #222; border-top-color:var(--green); border-radius:50%; animation:spin .7s linear infinite; }
+        .proc-text{ font-size:14px; color:#888; }
+        @keyframes spin{ to{ transform:rotate(360deg); } }
+        #success-screen{ display:none; width:100%; max-width:420px; text-align:center; }
+        .success-header{ background:linear-gradient(135deg,#0a2a0a,#0d3b1a); border:1px solid rgba(34,197,94,.3); border-radius:20px; padding:28px 24px; margin-bottom:16px; }
+        .success-icon{ font-size:44px; margin-bottom:10px; }
+        .success-title{ font-size:22px; font-weight:800; color:var(--green); margin-bottom:4px; }
+        .success-sub{ font-size:13px; color:#6b9; }
+        .qr-box{ background:#fff; border-radius:16px; padding:20px; margin:20px auto; display:inline-block; position:relative; }
+        .qr-badge{ position:absolute; top:-10px; right:-10px; background:var(--green); color:#000; font-size:10px; font-weight:800; padding:4px 8px; border-radius:20px; }
+        .qr-label{ font-size:11px; color:#000; text-align:center; margin-top:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+        .det-box{ background:#000; border:1px solid #2a2a2a; border-radius:12px; padding:16px; margin-bottom:16px; text-align:left; }
+        .det-row{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; gap:10px; }
+        .det-label{ font-size:11px; color:#555; flex-shrink:0; }
+        .det-value{ font-size:12px; font-weight:600; text-align:right; }
+        .det-value.green{ color:var(--green); }
+        .det-value.gold{ color:var(--gold-l); font-family:monospace; font-size:10px; }
+        .det-value a{ color:var(--gold-l); text-decoration:none; font-size:11px; }
+        .istruzioni{ background:rgba(200,134,10,.06); border:1px solid rgba(200,134,10,.2); border-radius:12px; padding:16px; text-align:left; font-size:12px; color:#aaa; line-height:1.7; margin-bottom:16px; }
+        .istruzioni strong{ color:var(--gold-l); }
+        .btn-done{ width:100%; padding:16px; background:none; border:1px solid #333; color:#666; border-radius:12px; font-size:14px; cursor:pointer; }
     </style>
 </head>
 <body>
-
-    <div style="width: 100%; max-width: 400px;">
-        <a href="map.html" data-i18n="ck_back_map" style="color: #666; text-decoration: none; font-size: 13px;">← Torna alla mappa</a>
-        <h2 data-i18n="ck_titolo" style="margin: 20px 0 10px 0;">Pagamento con Garanzia Bancaria</h2>
-        <p data-i18n="ck_fondi_info" style="color: #666; font-size: 14px; margin-bottom: 30px;">I fondi verranno trattenuti e rilasciati solo all'incontro fisico.</p>
-    </div>
-
-    <div class="checkout-box">
-        <div class="summary">
-            <div data-i18n="ck_totale_label" style="font-size: 11px; color: #666; text-transform: uppercase;">Totale da bloccare</div>
-            <div style="font-size: 28px; font-weight: 900; color: var(--green); margin: 5px 0;">€ 4.00</div>
-            <div data-i18n="ck_oggetto" style="font-size: 12px; color: #aaa;">Oggetto: 5kg Farina 00</div>
-        </div>
-
-        <label data-i18n="ck_label_carta">Numero della Carta</label>
-        <input type="text" placeholder="0000 0000 0000 0000" id="card-num" maxlength="19" inputmode="numeric">
-
-        <div class="card-extra">
-            <div>
-                <label data-i18n="ck_label_scadenza">Scadenza</label>
-                <input type="text" placeholder="MM/AA" maxlength="5" id="card-exp">
-            </div>
-            <div>
-                <label data-i18n="ck_label_cvv">CVV</label>
-                <input type="password" placeholder="***" maxlength="3" id="card-cvv">
-            </div>
-        </div>
-
-        <button class="btn-pay" id="pay-button" data-i18n="ck_btn_paga" onclick="processPayment()">AUTORIZZA E BLOCCA</button>
-
-        <div class="secure-badge">
-            <span style="font-size: 14px;">🔒</span>
-            <span data-i18n="ck_secure_badge">CRITTOGRAFIA SSL ATTIVA - INSTANTOWN PAY</span>
+<div id="processing">
+    <div class="proc-spinner"></div>
+    <div class="proc-text" id="proc-text">ATTIVAZIONE IN CORSO...</div>
+</div>
+<div id="checkout-flow" style="width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;">
+    <div class="demo-banner">⚠ Modalità demo — pagamento reale non attivo</div>
+    <div class="top-bar">
+        <a href="offerte.html" class="back-btn">← Offerte</a>
+        <div>
+            <div class="page-title">Garanzia Bancaria</div>
+            <div class="page-sub">Fondi bloccati fino all'incontro fisico</div>
         </div>
     </div>
-
-    <script>
-        function processPayment() {
-            const btn = document.getElementById('pay-button');
-            const cardNum = document.getElementById('card-num').value;
-
-            if(cardNum.length < 16) {
-                alert("Inserisci un numero di carta valido per il test.");
-                return;
-            }
-
-            btn.innerText = "VERIFICA BANCA...";
-            btn.disabled = true;
-
-            // Simuliamo il delay della transazione (2.5 secondi)
-            setTimeout(() => {
-                btn.innerText = "FONDI BLOCCATI!";
-                btn.style.background = "#fff";
-                
-                setTimeout(() => {
-                    window.location.href = "transaction.html";
-                }, 1000);
-            }, 2500);
-        }
-
-        // Formattazione automatica numero carta (aggiunge spazi ogni 4 cifre)
-        document.getElementById('card-num').oninput = function (e) {
-            let v = this.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-            let matches = v.match(/\d{4,16}/g);
-            let match = matches && matches[0] || '';
-            let parts = [];
-            for (let i = 0, len = match.length; i < len; i += 4) {
-                parts.push(match.substring(i, i + 4));
-            }
-            if (parts.length) {
-                this.value = parts.join(' ');
-            } else {
-                this.value = v;
-            }
-        };
-
-        // Formattazione automatica data MM/AA
-        document.getElementById('card-exp').oninput = function (e) {
-            this.value = this.value.replace(/[^\d]/g, '').replace(/(.{2})/, '$1/').trim();
-        };
-    </script>
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const lang = localStorage.getItem('it_lang') || 'it';
-      if (typeof applyLang === 'function') applyLang(lang);
+    <div class="summary">
+        <div class="summary-label">Totale in garanzia</div>
+        <div class="summary-amount" id="sum-amount">€ —</div>
+        <div class="summary-desc" id="sum-desc">—</div>
+        <div class="summary-negozio" id="sum-negozio"></div>
+        <a class="summary-addr" id="sum-addr" href="#" target="_blank"></a>
+        <div class="summary-orario" id="sum-orario"></div>
+        <div class="summary-tx" id="sum-tx"></div>
+        <div class="garanzia-badge">🔐 I fondi restano bloccati finché non mostri il QR-B all'esercente</div>
+    </div>
+    <div class="info-box">
+        <strong>Come funziona la Garanzia Bancaria INSTANTOWN:</strong><br>
+        I fondi vengono bloccati al momento della prenotazione e rilasciati all'esercente solo quando presenti fisicamente il QR-B. In caso di mancato incontro, i fondi ti vengono rimborsati automaticamente.
+    </div>
+    <button class="btn-attiva" onclick="attivaGaranzia()">🔐 ATTIVA GARANZIA BANCARIA</button>
+    <button class="btn-back" onclick="window.location.href='offerte.html'">← Torna alle offerte</button>
+    <div class="secure-badge">DEMO — Integrazione Stripe in arrivo</div>
+</div>
+<div id="success-screen">
+    <div class="success-header">
+        <div class="success-icon">✅</div>
+        <div class="success-title">GARANZIA ATTIVA</div>
+        <div class="success-sub">€ <span id="qr-amount"></span> bloccati · Mostra il QR-B all'esercente</div>
+    </div>
+    <div style="text-align:center;">
+        <div class="qr-box">
+            <div class="qr-badge">QR-B</div>
+            <div id="qrcode"></div>
+            <div class="qr-label">QR-B CLIENTE · INSTANTOWN</div>
+        </div>
+    </div>
+    <div class="det-box">
+        <div class="det-row"><span class="det-label">Prodotto</span><span class="det-value" id="qr-desc"></span></div>
+        <div class="det-row"><span class="det-label">Insegna</span><span class="det-value" id="qr-negozio"></span></div>
+        <div class="det-row"><span class="det-label">Indirizzo</span><span class="det-value"><a id="qr-maps" href="#" target="_blank">📍 Apri Maps →</a></span></div>
+        <div class="det-row"><span class="det-label">Orario</span><span class="det-value" id="qr-orario"></span></div>
+        <div class="det-row"><span class="det-label">Importo</span><span class="det-value green">€ <span id="qr-amount2"></span></span></div>
+        <div class="det-row"><span class="det-label">ID Transazione</span><span class="det-value gold" id="qr-tx"></span></div>
+        <div class="det-row"><span class="det-label">Stato</span><span class="det-value green">🔐 GARANZIA ATTIVA</span></div>
+    </div>
+    <div class="istruzioni">
+        <strong>Cosa fare adesso:</strong><br>
+        1. Vai dall'esercente fisicamente<br>
+        2. Mostra questo QR-B all'esercente<br>
+        3. L'esercente scansiona con il suo QR-A<br>
+        4. I fondi vengono rilasciati automaticamente<br><br>
+        <strong>I fondi restano bloccati</strong> finché la coppia QR-A + QR-B non viene verificata.
+    </div>
+    <button class="btn-done" onclick="window.location.href='offerte.html'">← Torna alle offerte</button>
+</div>
+<script>
+const p = new URLSearchParams(location.search);
+const txId     = p.get('tx')        || 'TX-' + Date.now();
+const amount   = parseFloat(p.get('amount')) || 0;
+const desc     = p.get('desc')      || 'Offerta flash';
+const negozio  = p.get('negozio')   || '';
+const indirizzo= p.get('indirizzo') || '';
+const lat      = p.get('lat')       || '';
+const lon      = p.get('lon')       || '';
+const inizio   = p.get('inizio')    || '';
+const fine     = p.get('fine')      || '';
+const mapsUrl = lat && lon
+    ? `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`
+    : indirizzo ? `https://www.google.com/maps/search/${encodeURIComponent(indirizzo)}` : '#';
+document.getElementById('sum-amount').textContent = '€ ' + (amount>0 ? amount.toFixed(2) : '—');
+document.getElementById('sum-desc').textContent = desc;
+if(negozio){ document.getElementById('sum-negozio').textContent = '🏪 ' + negozio; }
+if(indirizzo){ const a=document.getElementById('sum-addr'); a.textContent='📍 '+indirizzo+' →'; a.href=mapsUrl; }
+if(inizio&&fine){ document.getElementById('sum-orario').textContent='⏱ '+inizio+' → '+fine; }
+document.getElementById('sum-tx').textContent = txId;
+function attivaGaranzia() {
+    document.getElementById('proc-text').textContent = 'VERIFICA IN CORSO...';
+    document.getElementById('processing').classList.add('show');
+    setTimeout(()=>{
+        document.getElementById('proc-text').textContent = 'ATTIVAZIONE GARANZIA...';
+        setTimeout(()=>{
+            document.getElementById('proc-text').textContent = 'GENERAZIONE QR-B...';
+            setTimeout(()=>{
+                document.getElementById('processing').classList.remove('show');
+                mostraSuccesso();
+            }, 800);
+        }, 1000);
+    }, 1200);
+}
+function mostraSuccesso() {
+    document.getElementById('checkout-flow').style.display='none';
+    document.getElementById('success-screen').style.display='block';
+    document.getElementById('qr-amount').textContent  = amount>0?amount.toFixed(2):'—';
+    document.getElementById('qr-amount2').textContent = amount>0?amount.toFixed(2):'—';
+    document.getElementById('qr-desc').textContent    = desc;
+    document.getElementById('qr-negozio').textContent = negozio||'—';
+    document.getElementById('qr-orario').textContent  = (inizio&&fine)?inizio+' → '+fine:'—';
+    document.getElementById('qr-tx').textContent      = txId;
+    const ml=document.getElementById('qr-maps'); ml.href=mapsUrl; ml.textContent='📍 '+(indirizzo||'Apri Maps')+' →';
+    new QRCode(document.getElementById('qrcode'),{
+        text: JSON.stringify({type:'INSTANTOWN_QR_B',tx:txId,amount,desc,negozio,indirizzo,lat,lon,inizio,fine,ts:new Date().toISOString(),status:'GARANZIA_ATTIVA'}),
+        width:200,height:200,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H
     });
-    </script>
+}
+</script>
 </body>
 </html>

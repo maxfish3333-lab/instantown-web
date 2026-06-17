@@ -9,6 +9,20 @@
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#8B1A1A">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="full-screen" content="yes">
+<style>
+/* Splash screen */
+#splash{position:fixed;inset:0;background:#1C1410;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .5s ease;}
+#splash.hidden{opacity:0;pointer-events:none;}
+#splash img{width:100px;height:100px;border-radius:22px;}
+#splash-title{font-family:'Cormorant Garamond',serif;font-size:28px;color:#fff;letter-spacing:.02em;}
+#splash-sub{font-size:12px;color:rgba(200,134,10,.7);letter-spacing:.15em;text-transform:uppercase;}
+#splash-bar{width:120px;height:3px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;margin-top:8px;}
+#splash-progress{height:100%;background:var(--ocra,#C8860A);border-radius:2px;animation:load 1.8s ease forwards;}
+@keyframes load{from{width:0}to{width:100%}}
+</style>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="INSTANTOWN">
 <link rel="apple-touch-icon" href="/icon-192.png">
@@ -230,7 +244,19 @@ footer a:hover{color:var(--ocra-l);}
 .i18n-grid{display:none;}
 .i18n-grid.active{display:grid;}
 
-
+/* ── PWA INSTALL BANNER ── */
+#pwa-banner{display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:9999;background:var(--ink);border:1px solid rgba(200,134,10,.4);border-radius:14px;padding:16px 20px;box-shadow:0 8px 40px rgba(0,0,0,.5);max-width:360px;width:calc(100% - 40px);animation:slideUpBanner .3s ease;}
+@keyframes slideUpBanner{from{transform:translateX(-50%) translateY(20px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
+#pwa-banner-inner{display:flex;align-items:center;gap:14px;}
+#pwa-banner img{width:48px;height:48px;border-radius:10px;flex-shrink:0;}
+#pwa-banner-text{flex:1;}
+#pwa-banner-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:#fff;margin-bottom:2px;}
+#pwa-banner-sub{font-size:11px;color:rgba(255,255,255,.5);line-height:1.4;}
+#pwa-banner-btns{display:flex;gap:8px;margin-top:10px;}
+#pwa-btn-install{background:var(--ocra);color:#1C1410;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s;}
+#pwa-btn-install:hover{background:var(--ocra-l);}
+#pwa-btn-dismiss{background:none;color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:8px 12px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+#pwa-btn-dismiss:hover{color:rgba(255,255,255,.7);}
 
 
 /* ── NAV CTA pulsante registrazione ── */
@@ -240,6 +266,13 @@ footer a:hover{color:var(--ocra-l);}
 </style>
 </head>
 <body>
+<!-- SPLASH SCREEN -->
+<div id="splash">
+  <img src="Nuovo_logo_3_diss.png" onerror="this.src='icon-192.png'" alt="INSTANTOWN">
+  <div id="splash-title">INSTANTOWN</div>
+  <div id="splash-sub">Il mondo ai tuoi piedi</div>
+  <div id="splash-bar"><div id="splash-progress"></div></div>
+</div>
 
 <!-- LANGUAGE BAR -->
 <div id="lang-bar" style="position:fixed;top:0;left:0;right:0;z-index:1000;background:#1C1410;border-bottom:1px solid rgba(200,134,10,.2);padding:7px 32px;display:flex;align-items:center;gap:6px;">
@@ -265,6 +298,23 @@ footer a:hover{color:var(--ocra-l);}
 </div>
 
 <div class="stripe"></div>
+
+<!-- I 2 PULSANTI PRINCIPALI -->
+<div class="cta-main">
+  <a class="btn-main btn-servizi" href="servizi.html">
+    <div class="btn-main-icon">&#x1F5FA;&#xFE0F;</div>
+    <div class="btn-main-label" id="btn1-label">Servizi essenziali</div>
+    <div class="btn-main-sub" id="btn1-sub">Fontanelle · Bagni · Wi-Fi<br>Luoghi iconici di Roma</div>
+    <div class="btn-main-arrow">↗</div>
+  </a>
+  <button class="btn-main btn-occasioni" onclick="apriOccasioni()">
+    <div class="btn-main-icon">&#x26A1;</div>
+    <div class="btn-main-label" id="btn2-label">Occasioni flash</div>
+    <div class="btn-main-sub" id="btn2-sub">Cibo · Moda · Tech · Viaggi<br>Divertimento · Altro</div>
+    <div class="btn-main-arrow">↗</div>
+  </button>
+</div>
+
 
 <nav>
   <div class="nav-logo">
@@ -320,7 +370,7 @@ footer a:hover{color:var(--ocra-l);}
 <!-- BOX ESPLICATIVI -->
 <div class="boxes">
   <div class="box accent-rosso"><div class="box-icon">&#x1F4CD;</div><div class="box-title" id="b1t">Prossimità reale, non pubblicità</div><div class="box-text" id="b1d">Il GPS calcola cosa c’è attorno a te. Solo esercenti fisici raggiungibili a piedi.</div></div>
-  <div class="box accent-ocra"><div class="box-icon">&#x1F510;</div><div class="box-title" id="b2t">Pagamento con Garanzia Bancaria, prezzo bloccato</div><div class="box-text" id="b2d">Il denaro rimane congelato fino all’incontro fisico. Il prezzo che vedi è il prezzo che paghi.</div></div>
+  <div class="box accent-ocra"><div class="box-icon">&#x1F510;</div><div class="box-title" id="b2t">Pagamento in escrow, prezzo bloccato</div><div class="box-text" id="b2d">Il denaro rimane congelato fino all’incontro fisico. Il prezzo che vedi è il prezzo che paghi.</div></div>
   <div class="box accent-cielo"><div class="box-icon">&#x1F5FA;&#xFE0F;</div><div class="box-title" id="b3t">Servizi pubblici integrati</div><div class="box-text" id="b3d">Fontanelle, bagni pubblici, Wi-Fi gratuito sulla stessa mappa. Roma a portata di tap.</div></div>
   <div class="box accent-verde"><div class="box-icon">&#x1F6E1;&#xFE0F;</div><div class="box-title" id="b4t">Anti-frode by design</div><div class="box-text" id="b4d">Ogni esercente verificato con P.IVA reale. Il doppio QR fisico rende impossibile frodare.</div></div>
 </div>
@@ -332,7 +382,7 @@ footer a:hover{color:var(--ocra-l);}
       <div style="background:rgba(200,134,10,.06);border:1px solid rgba(200,134,10,.2);border-top:3px solid var(--ocra);border-radius:8px;padding:28px 24px;">
         <div style="font-size:36px;margin-bottom:12px;">&#x1F451;</div>
         <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--ocra-l);margin-bottom:10px;" id="vip1-t">L’utente è sempre VIP</div>
-        <p style="font-size:13px;color:rgba(255,255,255,.55);line-height:1.8;margin:0;" id="vip1-d">Non paga mai se non riceve il prodotto o il servizio. I fondi restano in Garanzia Bancaria fino all’incontro fisico. Se qualcosa va storto, non perdi nulla.</p>
+        <p style="font-size:13px;color:rgba(255,255,255,.55);line-height:1.8;margin:0;" id="vip1-d">Non paga mai se non riceve il prodotto o il servizio. I fondi restano bloccati in escrow fino all’incontro fisico. Se qualcosa va storto, non perdi nulla.</p>
       </div>
       <div style="background:rgba(26,122,58,.06);border:1px solid rgba(26,122,58,.2);border-top:3px solid var(--verde-l);border-radius:8px;padding:28px 24px;">
         <div style="font-size:36px;margin-bottom:12px;">&#x1F3EA;</div>
@@ -350,22 +400,6 @@ footer a:hover{color:var(--ocra-l);}
     </div>
   </div>
 </section>
-
-<!-- I 2 PULSANTI PRINCIPALI -->
-<div class="cta-main">
-  <a class="btn-main btn-servizi" href="servizi.html">
-    <div class="btn-main-icon">&#x1F5FA;&#xFE0F;</div>
-    <div class="btn-main-label" id="btn1-label">Servizi essenziali</div>
-    <div class="btn-main-sub" id="btn1-sub">Fontanelle · Bagni · Wi-Fi<br>Luoghi iconici di Roma</div>
-    <div class="btn-main-arrow">↗</div>
-  </a>
-  <button class="btn-main btn-occasioni" onclick="apriOccasioni()">
-    <div class="btn-main-icon">&#x26A1;</div>
-    <div class="btn-main-label" id="btn2-label">Occasioni flash</div>
-    <div class="btn-main-sub" id="btn2-sub">Cibo · Moda · Tech · Viaggi<br>Divertimento · Altro</div>
-    <div class="btn-main-arrow">↗</div>
-  </button>
-</div>
 
 <!-- MODAL SERVIZI -->
 <div class="modal-overlay" id="modal-servizi" onclick="chiudiSeOverlay(event,'modal-servizi')">
@@ -391,17 +425,17 @@ footer a:hover{color:var(--ocra-l);}
 <div class="modal-overlay" id="modal-occasioni" onclick="chiudiSeOverlay(event,'modal-occasioni')">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-header"><span class="modal-title" id="mod-occasioni-title">&#x26A1; Occasioni flash</span><button class="modal-close" onclick="chiudi('modal-occasioni')">&#x2715;</button></div>
+    <div class="modal-header"><span class="modal-title">&#x26A1; Occasioni flash</span><button class="modal-close" onclick="chiudi('modal-occasioni')">&#x2715;</button></div>
     <div id="pref-bar-occasioni" style="display:none" class="cat-pref-bar"><span>&#x2B50;</span><span id="pref-bar-text"></span><a href="#" onclick="chiudi('modal-occasioni')" style="margin-left:auto;color:var(--cielo);font-size:11px;text-decoration:none;">modifica</a></div>
     <div class="cat-grid-modal" id="cat-grid-modal">
-      <a class="cat-card-modal" href="offerte.html?cat=CIBO" id="cat-CIBO"><div class="cat-emoji">&#x1F355;</div><div class="cat-name-modal" id="mod-cibo">Cibo</div><div class="cat-count-modal" id="ccnt-CIBO">— offerte</div></a>
-      <a class="cat-card-modal" href="offerte.html?cat=MODA" id="cat-MODA"><div class="cat-emoji">&#x1F457;</div><div class="cat-name-modal" id="mod-moda">Moda</div><div class="cat-count-modal" id="ccnt-MODA">— offerte</div></a>
-      <a class="cat-card-modal" href="offerte.html?cat=TECH" id="cat-TECH"><div class="cat-emoji">&#x1F4F1;</div><div class="cat-name-modal" id="mod-tech">Tech</div><div class="cat-count-modal" id="ccnt-TECH">— offerte</div></a>
-      <a class="cat-card-modal" href="offerte.html?cat=VIAGGI" id="cat-VIAGGI"><div class="cat-emoji">&#x2708;&#xFE0F;</div><div class="cat-name-modal" id="mod-viaggi">Viaggi</div><div class="cat-count-modal" id="ccnt-VIAGGI">— offerte</div></a>
-      <a class="cat-card-modal" href="offerte.html?cat=DIVERTIMENTO" id="cat-DIVERTIMENTO"><div class="cat-emoji">&#x1F3AD;</div><div class="cat-name-modal" id="mod-divert">Divertimento</div><div class="cat-count-modal" id="ccnt-DIVERTIMENTO">— offerte</div></a>
-      <a class="cat-card-modal" href="offerte.html?cat=ALTRO" id="cat-ALTRO"><div class="cat-emoji">&#x1F6CD;&#xFE0F;</div><div class="cat-name-modal" id="mod-altro">Altro</div><div class="cat-count-modal" id="ccnt-ALTRO">— offerte</div></a>
+      <a class="cat-card-modal" href="offerte.html?cat=CIBO" id="cat-CIBO"><div class="cat-emoji">&#x1F355;</div><div class="cat-name-modal">Cibo</div><div class="cat-count-modal" id="ccnt-CIBO">— offerte</div></a>
+      <a class="cat-card-modal" href="offerte.html?cat=MODA" id="cat-MODA"><div class="cat-emoji">&#x1F457;</div><div class="cat-name-modal">Moda</div><div class="cat-count-modal" id="ccnt-MODA">— offerte</div></a>
+      <a class="cat-card-modal" href="offerte.html?cat=TECH" id="cat-TECH"><div class="cat-emoji">&#x1F4F1;</div><div class="cat-name-modal">Tech</div><div class="cat-count-modal" id="ccnt-TECH">— offerte</div></a>
+      <a class="cat-card-modal" href="offerte.html?cat=VIAGGI" id="cat-VIAGGI"><div class="cat-emoji">&#x2708;&#xFE0F;</div><div class="cat-name-modal">Viaggi</div><div class="cat-count-modal" id="ccnt-VIAGGI">— offerte</div></a>
+      <a class="cat-card-modal" href="offerte.html?cat=DIVERTIMENTO" id="cat-DIVERTIMENTO"><div class="cat-emoji">&#x1F3AD;</div><div class="cat-name-modal">Divertimento</div><div class="cat-count-modal" id="ccnt-DIVERTIMENTO">— offerte</div></a>
+      <a class="cat-card-modal" href="offerte.html?cat=ALTRO" id="cat-ALTRO"><div class="cat-emoji">&#x1F6CD;&#xFE0F;</div><div class="cat-name-modal">Altro</div><div class="cat-count-modal" id="ccnt-ALTRO">— offerte</div></a>
     </div>
-    <div style="padding:4px 20px 8px;"><a href="offerte.html" style="display:block;text-align:center;background:var(--rosso);color:#fff;padding:13px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:500;" onmouseover="this.style.background='var(--rosso-l)'" onmouseout="this.style.background='var(--rosso)'" id="mod-vedi-tutte">Vedi tutte le offerte →</a></div>
+    <div style="padding:4px 20px 8px;"><a href="offerte.html" style="display:block;text-align:center;background:var(--rosso);color:#fff;padding:13px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:500;" onmouseover="this.style.background='var(--rosso-l)'" onmouseout="this.style.background='var(--rosso)'">Vedi tutte le offerte →</a></div>
   </div>
 </div>
 
@@ -416,7 +450,7 @@ footer a:hover{color:var(--ocra-l);}
     <p id="finder-desc" style="font-size:15px;color:rgba(255,255,255,.55);line-height:1.85;max-width:700px;margin-bottom:40px;">Ci sono migliaia di imprese in Italia che producono eccellenza — vini, formaggi, ceramiche, lavorazioni meccaniche, tessuti, conserve — ma che non hanno mai avuto accesso ai mercati nazionali e internazionali. Non per mancanza di qualità. Per mancanza di ribalta.</p>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:40px;">
       <div style="background:rgba(255,255,255,.04);border:1px solid rgba(200,134,10,.15);border-radius:8px;padding:24px 20px;border-top:3px solid var(--ocra);"><div style="font-size:28px;margin-bottom:12px;">&#x1F3D8;&#xFE0F;</div><div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--ocra-l);margin-bottom:8px;" id="f1t">Il piccolo paese trova il grande mercato</div><p style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.7;" id="f1d">Un produttore di nduja in Calabria, un oleificio nel Molise, un artigiano della ceramica in Basilicata. Con FINDER entrano nel catalogo nazionale e vengono trovati da chi li cerca — senza fiere, senza agenti, senza intermediari costosi.</p></div>
-      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(200,134,10,.15);border-radius:8px;padding:24px 20px;border-top:3px solid var(--cielo);"><div style="font-size:28px;margin-bottom:12px;">&#x1F91D;</div><div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--cielo-l);margin-bottom:8px;" id="f2t">L’intermediario ha già il cliente</div><p style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.7;" id="f2d">Il Finder è chi ha già un acquirente interessato e cerca il fornitore migliore nel catalogo ATECO 2025. Compra e rivende con il suo margine libero. Il pagamento con Garanzia Bancaria tutela entrambe le parti fino alla consegna.</p></div>
+      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(200,134,10,.15);border-radius:8px;padding:24px 20px;border-top:3px solid var(--cielo);"><div style="font-size:28px;margin-bottom:12px;">&#x1F91D;</div><div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--cielo-l);margin-bottom:8px;" id="f2t">L’intermediario ha già il cliente</div><p style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.7;" id="f2d">Il Finder è chi ha già un acquirente interessato e cerca il fornitore migliore nel catalogo ATECO 2025. Compra e rivende con il suo margine libero. Il pagamento in escrow tutela entrambe le parti fino alla consegna.</p></div>
       <div style="background:rgba(255,255,255,.04);border:1px solid rgba(200,134,10,.15);border-radius:8px;padding:24px 20px;border-top:3px solid var(--verde-l);"><div style="font-size:28px;margin-bottom:12px;">&#x2696;&#xFE0F;</div><div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:#6BCF8A;margin-bottom:8px;" id="f3t">Fiscalmente trasparente</div><p style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.7;" id="f3d">Sotto 5.000€/anno: reddito occasionale art. 67 TUIR, zero burocrazia. Sopra la soglia: INSTANTOWN monitora e notifica in tempo reale l’obbligo di apertura P.IVA.</p></div>
     </div>
     <div style="background:rgba(200,134,10,.08);border:1px solid rgba(200,134,10,.2);border-radius:8px;padding:20px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
@@ -435,7 +469,7 @@ footer a:hover{color:var(--ocra-l);}
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0;background:#fff;border:1px solid var(--rule);border-radius:8px;overflow:hidden;box-shadow:0 2px 20px rgba(28,20,16,.06);">
       <div style="padding:28px 24px;border-right:1px solid var(--rule);position:relative;"><div style="font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:600;color:var(--rosso);opacity:.15;position:absolute;top:16px;right:20px;">01</div><div style="font-size:32px;margin-bottom:14px;">&#x1F4CD;</div><div id="s1t" style="font-size:15px;font-weight:500;color:var(--ink);margin-bottom:6px;">Apri il radar</div><p id="s1d" style="font-size:13px;color:var(--ink-mu);line-height:1.65;margin:0;">Il GPS trova le offerte flash degli esercenti entro 200 metri da te — in questo momento, in questa strada.</p></div>
-      <div style="padding:28px 24px;border-right:1px solid var(--rule);position:relative;background:var(--rosso-p);"><div style="font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:600;color:var(--rosso);opacity:.15;position:absolute;top:16px;right:20px;">02</div><div style="font-size:32px;margin-bottom:14px;">&#x1F510;</div><div id="s2t" style="font-size:15px;font-weight:500;color:var(--ink);margin-bottom:6px;">Prenota e paga con Garanzia Bancaria</div><p id="s2d" style="font-size:13px;color:var(--ink-mu);line-height:1.65;margin:0;">Il prezzo si blocca al momento della prenotazione. Il pagamento va in Garanzia Bancaria — nessuno lo tocca finché non incontri l’esercente.</p></div>
+      <div style="padding:28px 24px;border-right:1px solid var(--rule);position:relative;background:var(--rosso-p);"><div style="font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:600;color:var(--rosso);opacity:.15;position:absolute;top:16px;right:20px;">02</div><div style="font-size:32px;margin-bottom:14px;">&#x1F510;</div><div id="s2t" style="font-size:15px;font-weight:500;color:var(--ink);margin-bottom:6px;">Prenota e paga in escrow</div><p id="s2d" style="font-size:13px;color:var(--ink-mu);line-height:1.65;margin:0;">Il prezzo si blocca al momento della prenotazione. Il pagamento va in escrow — nessuno lo tocca finché non incontri l’esercente.</p></div>
       <div style="padding:28px 24px;position:relative;"><div style="font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:600;color:var(--rosso);opacity:.15;position:absolute;top:16px;right:20px;">03</div><div style="font-size:32px;margin-bottom:14px;">&#x2705;</div><div id="s3t" style="font-size:15px;font-weight:500;color:var(--ink);margin-bottom:6px;">QR match — fondi sbloccati</div><p id="s3d" style="font-size:13px;color:var(--ink-mu);line-height:1.65;margin:0;">L’esercente mostra QR-A, tu scansioni QR-B. Solo la coppia fisica sblocca i fondi. Impossibile frodare.</p></div>
     </div>
     <div style="text-align:center;margin-top:24px;"><a id="radar-btn" href="map.html" style="display:inline-block;background:var(--rosso);color:#fff;padding:13px 32px;border-radius:4px;text-decoration:none;font-size:14px;font-weight:500;letter-spacing:.04em;" onmouseover="this.style.background='var(--rosso-l)'" onmouseout="this.style.background='var(--rosso)'">Apri il Radar GPS →</a></div>
@@ -449,25 +483,30 @@ footer a:hover{color:var(--ocra-l);}
       <div style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ocra-l);margin-bottom:10px;">COME FUNZIONA · HOW IT WORKS · 如何运作 · CÓMO FUNCIONA</div>
       <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(26px,3.5vw,40px);font-weight:600;color:#fff;">INSTANTOWN in 4 scene</h2>
     </div>
-    <div class="comic-panel" data-langs="it">
-      <img src="fumettto_italiano.png" alt="INSTANTOWN — Come funziona" style="width:100%;border-radius:12px;box-shadow:0 4px 32px rgba(0,0,0,.4);display:block;">
-    </div>
-    <div class="comic-panel" data-langs="en" style="display:none;">
-      <img src="fumettto_inglese.png" alt="INSTANTOWN — How it works" style="width:100%;border-radius:12px;box-shadow:0 4px 32px rgba(0,0,0,.4);display:block;">
+    <div class="comic-panel" data-langs="it,en,fr">
+      <img src="Fumetto_inglese.png" alt="INSTANTOWN — Come funziona" style="width:100%;border-radius:12px;box-shadow:0 4px 32px rgba(0,0,0,.4);display:block;">
     </div>
     <div class="comic-panel" data-langs="zh" style="display:none;">
-      <img src="fumettto_cinese.png" alt="INSTANTOWN — 瞬城" style="width:100%;border-radius:12px;box-shadow:0 4px 32px rgba(0,0,0,.4);display:block;">
+      <img src="Fumetto_Cinese.png" alt="INSTANTOWN — 瞬城" style="width:100%;border-radius:12px;box-shadow:0 4px 32px rgba(0,0,0,.4);display:block;">
     </div>
     <div class="comic-panel" data-langs="es" style="display:none;">
-      <img src="fumettto_spagnolo.png" alt="INSTANTOWN — Cómo funciona" style="width:100%;border-radius:12px;box-shadow:0 4px 32px rgba(0,0,0,.4);display:block;">
-    </div>
-    <div class="comic-panel" data-langs="fr" style="display:none;">
-      <img src="fumettto_francese.png" alt="INSTANTOWN — Comment ça marche" style="width:100%;border-radius:12px;box-shadow:0 4px 32px rgba(0,0,0,.4);display:block;">
+      <img src="Fumetto_Spagnolo.png" alt="INSTANTOWN — Cómo funciona" style="width:100%;border-radius:12px;box-shadow:0 4px 32px rgba(0,0,0,.4);display:block;">
     </div>
   </div>
 </section>
 
-          </div>
+<!-- PWA INSTALL BANNER -->
+<div id="pwa-banner">
+  <div id="pwa-banner-inner">
+    <img src="Nuovo_logo_3_diss.png" onerror="this.src='icon-192.png'" alt="INSTANTOWN">
+    <div id="pwa-banner-text">
+      <div id="pwa-banner-title">Aggiungi INSTANTOWN</div>
+      <div id="pwa-banner-sub">Accedi subito dalla schermata home</div>
+      <div id="pwa-banner-btns">
+        <button id="pwa-btn-install">&#x2B; Aggiungi</button>
+        <button id="pwa-btn-dismiss">Non ora</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -479,28 +518,28 @@ footer a:hover{color:var(--ocra-l);}
       <h2 style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:#fff;">Sei un esercente?</h2>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
-      <a href="registrazione.html" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(200,134,10,.2);border-left:4px solid rgba(255,255,255,.3);border-radius:10px;padding:16px 18px;text-decoration:none;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background='rgba(255,255,255,.05)'">
-        <span style="font-size:28px;">&#x1F4CB;</span>
-        <div><div style="font-size:15px;font-weight:600;color:#fff;">Registrati</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;">Nuovo esercente INSTANTOWN</div></div>
-      </a>
       <a href="nuova-offerta.html" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(200,134,10,.2);border-left:4px solid var(--ocra,#C8860A);border-radius:10px;padding:16px 18px;text-decoration:none;transition:background .2s;" onmouseover="this.style.background='rgba(200,134,10,.1)'" onmouseout="this.style.background='rgba(255,255,255,.05)'">
-        <span style="font-size:28px;">&#x26A1;</span>
+        <span style="font-size:28px;">⚡</span>
         <div><div style="font-size:15px;font-weight:600;color:#fff;">Pubblica offerta</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;">Crea nuova offerta flash</div></div>
       </a>
       <a href="vendor-wallet.html" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(200,134,10,.2);border-left:4px solid var(--verde-l,#22A050);border-radius:10px;padding:16px 18px;text-decoration:none;transition:background .2s;" onmouseover="this.style.background='rgba(34,160,80,.1)'" onmouseout="this.style.background='rgba(255,255,255,.05)'">
-        <span style="font-size:28px;">&#x1F4B0;</span>
+        <span style="font-size:28px;">💰</span>
         <div><div style="font-size:15px;font-weight:600;color:#fff;">Portafoglio</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;">Saldo e transazioni</div></div>
       </a>
       <a href="chat-esercente.html" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(200,134,10,.2);border-left:4px solid var(--cielo,#4A90C4);border-radius:10px;padding:16px 18px;text-decoration:none;transition:background .2s;" onmouseover="this.style.background='rgba(74,144,196,.1)'" onmouseout="this.style.background='rgba(255,255,255,.05)'">
-        <span style="font-size:28px;">&#x1F4AC;</span>
+        <span style="font-size:28px;">💬</span>
         <div><div style="font-size:15px;font-weight:600;color:#fff;">Messaggi clienti</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;">Dashboard chat</div></div>
       </a>
       <a href="esercente-scan.html" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(200,134,10,.2);border-left:4px solid var(--rosso-l,#C0392B);border-radius:10px;padding:16px 18px;text-decoration:none;transition:background .2s;" onmouseover="this.style.background='rgba(192,57,43,.1)'" onmouseout="this.style.background='rgba(255,255,255,.05)'">
-        <span style="font-size:28px;">&#x1F4F7;</span>
+        <span style="font-size:28px;">📷</span>
         <div><div style="font-size:15px;font-weight:600;color:#fff;">Scansiona QR</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;">Sblocca fondi cliente</div></div>
       </a>
+      <a href="registrazione.html" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(200,134,10,.2);border-left:4px solid rgba(255,255,255,.3);border-radius:10px;padding:16px 18px;text-decoration:none;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background='rgba(255,255,255,.05)'">
+        <span style="font-size:28px;">📋</span>
+        <div><div style="font-size:15px;font-weight:600;color:#fff;">Registrati</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;">Nuovo esercente INSTANTOWN</div></div>
+      </a>
       <a href="instantown_presentation.html" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(200,134,10,.2);border-left:4px solid rgba(200,134,10,.5);border-radius:10px;padding:16px 18px;text-decoration:none;transition:background .2s;" onmouseover="this.style.background='rgba(200,134,10,.08)'" onmouseout="this.style.background='rgba(255,255,255,.05)'">
-        <span style="font-size:28px;">&#x1F4CA;</span>
+        <span style="font-size:28px;">📊</span>
         <div><div style="font-size:15px;font-weight:600;color:#fff;">Presentazione</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;">Istituzionale INSTANTOWN</div></div>
       </a>
     </div>
@@ -529,38 +568,7 @@ footer a:hover{color:var(--ocra-l);}
 
 // MODAL
 function apriServizi()   { document.getElementById('modal-servizi').classList.add('open');   document.body.style.overflow='hidden'; }
-function apriOccasioni() { document.getElementById('modal-occasioni').classList.add('open'); document.body.style.overflow='hidden'; 
-// --- COUNT_LABELS (i18n contatori) ---
-var COUNT_LABELS = {
-  it: { single: 'offerta', plural: 'offerte' },
-  en: { single: 'offer',   plural: 'offers' },
-  zh: { single: '\u4f18\u60e0', plural: '\u4f18\u60e0' },
-  es: { single: 'oferta',  plural: 'ofertas' },
-  fr: { single: 'offre',   plural: 'offres' }
-};
-function applyCountTexts() {
-  var lang = localStorage.getItem('it_lang') || 'it';
-  var labels = COUNT_LABELS[lang] || COUNT_LABELS.it;
-  var counts = {};
-  try { counts = JSON.parse(localStorage.getItem('it_cat_counts')||'{}'); } catch(e) {}
-  ['CIBO','MODA','TECH','VIAGGI','DIVERTIMENTO','ALTRO'].forEach(function(c){
-    var el = document.getElementById('ccnt-'+c);
-    if (!el) return;
-    if (counts[c] === undefined || counts[c] === null) {
-      el.textContent = '\u2014 ' + labels.plural;
-    } else {
-      var n = counts[c];
-      el.textContent = n + ' ' + (n === 1 ? labels.single : labels.plural);
-    }
-  });
-}
-if (typeof applyLang === 'function') {
-  var __origApplyLang_cnt = applyLang;
-  window.applyLang = function(lang) { __origApplyLang_cnt(lang); applyCountTexts(); };
-}
-applyCountTexts();
-
-caricaCounts(); mostraPref(); }
+function apriOccasioni() { document.getElementById('modal-occasioni').classList.add('open'); document.body.style.overflow='hidden'; caricaCounts(); mostraPref(); }
 function chiudi(id)      { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
 function chiudiSeOverlay(e,id) { if(e.target===e.currentTarget) chiudi(id); }
 document.addEventListener('keydown', function(e) { if(e.key==='Escape'){ chiudi('modal-servizi'); chiudi('modal-occasioni'); } });
@@ -576,10 +584,10 @@ var I18N = {
     'hero-title': "Il mondo<br><em>ai tuoi piedi.</em>",
     'hero-desc': "Offerte flash a 200 metri, servizi pubblici sulla mappa, pagamenti garantiti. INSTANTOWN connette cittadini, turisti ed esercenti in tempo reale.",
     'b1t': "Prossimità reale, non pubblicità", 'b1d': "Il GPS calcola cosa c’è attorno a te. Solo esercenti fisici raggiungibili a piedi.",
-    'b2t': "Pagamento con Garanzia Bancaria, prezzo bloccato", 'mod-occasioni-title': "⚡ Occasioni flash", 'mod-cibo': "Cibo", 'mod-moda': "Moda", 'mod-tech': "Tech", 'mod-viaggi': "Viaggi", 'mod-divert': "Divertimento", 'mod-altro': "Altro", 'mod-vedi-tutte': "Vedi tutte le offerte →", 'b2d': "Il denaro rimane congelato fino all’incontro fisico. Il prezzo che vedi è il prezzo che paghi.",
+    'b2t': "Pagamento in escrow, prezzo bloccato", 'b2d': "Il denaro rimane congelato fino all’incontro fisico. Il prezzo che vedi è il prezzo che paghi.",
     'b3t': "Servizi pubblici integrati", 'b3d': "Fontanelle, bagni pubblici, Wi-Fi gratuito sulla stessa mappa. Roma a portata di tap.",
     'b4t': "Anti-frode by design", 'b4d': "Ogni esercente verificato con P.IVA reale. Il doppio QR fisico rende impossibile frodare.",
-    'vip1-t': "L’utente è sempre VIP", 'vip1-d': "Non paga mai se non riceve il prodotto o il servizio. I fondi restano in Garanzia Bancaria fino all’incontro fisico. Se qualcosa va storto, non perdi nulla.",
+    'vip1-t': "L’utente è sempre VIP", 'vip1-d': "Non paga mai se non riceve il prodotto o il servizio. I fondi restano bloccati in escrow fino all’incontro fisico. Se qualcosa va storto, non perdi nulla.",
     'vip2-t': "L’esercente non anticipa nulla", 'vip2-d': "Zero abbonamenti. Zero canoni. Zero setup. Commissione solo sul transato reale — 1,75% quando incassi, 0% per i primi 6 mesi.",
     'vip3-t': "INSTANTOWN guadagna solo se guadagnate voi", 'vip3-d': "Tutti i costi tecnologici, legali e operativi sono a carico di INSTANTOWN. Il rischio è nostro. Il guadagno è vostro.",
     'vip-quote': "“Nessuno paga nulla in anticipo.<br><span style=\"color:var(--ocra-l)\">INSTANTOWN guadagna solo quando guadagnate voi.</span>”",
@@ -589,12 +597,12 @@ var I18N = {
     'finder-sub': "Il mercato nazionale che non ti ha mai visto.",
     'finder-desc': "Ci sono migliaia di imprese in Italia che producono eccellenza — vini, formaggi, ceramiche, lavorazioni meccaniche, tessuti, conserve — ma che non hanno mai avuto accesso ai mercati nazionali e internazionali. Non per mancanza di qualità. Per mancanza di ribalta.",
     'f1t': "Il piccolo paese trova il grande mercato", 'f1d': "Un produttore di nduja in Calabria, un oleificio nel Molise, un artigiano della ceramica in Basilicata. Con FINDER entrano nel catalogo nazionale e vengono trovati da chi li cerca — senza fiere, senza agenti, senza intermediari costosi.",
-    'f2t': "L’intermediario ha già il cliente", 'f2d': "Il Finder è chi ha già un acquirente interessato e cerca il fornitore migliore nel catalogo ATECO 2025. Compra e rivende con il suo margine libero. Il pagamento con Garanzia Bancaria tutela entrambe le parti fino alla consegna.",
+    'f2t': "L’intermediario ha già il cliente", 'f2d': "Il Finder è chi ha già un acquirente interessato e cerca il fornitore migliore nel catalogo ATECO 2025. Compra e rivende con il suo margine libero. Il pagamento in escrow tutela entrambe le parti fino alla consegna.",
     'f3t': "Fiscalmente trasparente", 'f3d': "Sotto 5.000€/anno: reddito occasionale art. 67 TUIR, zero burocrazia. Sopra la soglia: INSTANTOWN monitora e notifica in tempo reale l’obbligo di apertura P.IVA.",
     'finder-south-t': "Sud Italia — priorità di lancio", 'finder-south-d': "Campania, Calabria, Sicilia, Puglia, Basilicata, Molise, Abruzzo — le regioni con la maggiore concentrazione di eccellenze produttive senza accesso ai mercati saranno le prime ad essere integrate nel catalogo FINDER.",
     'how-badge': "PROX — Come funziona", 'how-title': "Tre passi. Niente di più.",
     's1t': "Apri il radar", 's1d': "Il GPS trova le offerte flash degli esercenti entro 200 metri da te — in questo momento, in questa strada.",
-    's2t': "Prenota e paga con Garanzia Bancaria", 's2d': "Il prezzo si blocca al momento della prenotazione. Il pagamento va in Garanzia Bancaria — nessuno lo tocca finché non incontri l’esercente.",
+    's2t': "Prenota e paga in escrow", 's2d': "Il prezzo si blocca al momento della prenotazione. Il pagamento va in escrow — nessuno lo tocca finché non incontri l’esercente.",
     's3t': "QR match — fondi sbloccati", 's3d': "L’esercente mostra QR-A, tu scansioni QR-B. Solo la coppia fisica sblocca i fondi. Impossibile frodare.",
     'radar-btn': "Apri il Radar GPS →",
     'ft-offerte': "Offerte", 'ft-servizi': "Servizi", 'ft-reg': "Registrati", 'ft-pubblica': "Pubblica offerta", 'ft-finder': "FINDER — prossimamente"
@@ -607,10 +615,10 @@ var I18N = {
     'hero-title': "The world<br><em>at your feet.</em>",
     'hero-desc': "Flash offers within 200 metres, public services on the map, guaranteed payments. INSTANTOWN connects citizens, tourists and merchants in real time.",
     'b1t': "Real proximity, not advertising", 'b1d': "GPS calculates what is around you within 200 metres. Only physical merchants reachable on foot.",
-    'b2t': "Bank Guarantee payment, locked price", 'mod-occasioni-title': "⚡ Flash deals", 'mod-cibo': "Food", 'mod-moda': "Fashion", 'mod-tech': "Tech", 'mod-viaggi': "Travel", 'mod-divert': "Entertainment", 'mod-altro': "Other", 'mod-vedi-tutte': "See all offers →", 'b2d': "Money stays frozen until the physical QR match. The price you see is the price you pay.",
+    'b2t': "Escrow payment, locked price", 'b2d': "Money stays frozen until the physical QR match. The price you see is the price you pay.",
     'b3t': "Integrated public services", 'b3d': "Drinking fountains, public toilets, free Wi-Fi on the same map. Rome landmarks always one tap away.",
     'b4t': "Anti-fraud by design", 'b4d': "Every merchant is verified with a real VAT number. The physical dual QR makes fraud impossible.",
-    'vip1-t': "The user is always VIP", 'vip1-d': "Never pays if the product or service is not received. Funds remain under Bank Guarantee until the physical meeting. If something goes wrong, you lose nothing.",
+    'vip1-t': "The user is always VIP", 'vip1-d': "Never pays if the product or service is not received. Funds remain locked in escrow until the physical meeting. If something goes wrong, you lose nothing.",
     'vip2-t': "The merchant advances nothing", 'vip2-d': "No subscriptions. No fees. No setup. Commission only on actual transactions — 1.75% when you collect, 0% for the first 6 months.",
     'vip3-t': "INSTANTOWN earns only when you earn", 'vip3-d': "All technological, legal and operational costs are borne by INSTANTOWN. The risk is ours. The profit is yours.",
     'vip-quote': "“No one pays anything upfront.<br><span style=\"color:var(--ocra-l)\">INSTANTOWN earns only when you earn.</span>”",
@@ -620,12 +628,12 @@ var I18N = {
     'finder-sub': "The national market that has never seen you.",
     'finder-desc': "There are thousands of businesses in Italy producing excellence — wines, cheeses, ceramics, mechanical work, fabrics, preserves — that have never had access to national and international markets. Not for lack of quality. For lack of a stage.",
     'f1t': "The small town finds the big market", 'f1d': "An nduja producer in Calabria, an olive mill in Molise, a ceramics craftsman in Basilicata. With FINDER they enter the national catalogue and are found by those who seek them.",
-    'f2t': "The intermediary already has the client", 'f2d': "The Finder is someone who already has an interested buyer and searches for the best supplier in the ATECO 2025 catalogue. Bank Guarantee protects both parties until delivery.",
+    'f2t': "The intermediary already has the client", 'f2d': "The Finder is someone who already has an interested buyer and searches for the best supplier in the ATECO 2025 catalogue. Escrow payment protects both parties until delivery.",
     'f3t': "Fiscally transparent", 'f3d': "Under €5,000/year: occasional income, zero bureaucracy. Above the threshold: INSTANTOWN monitors and notifies in real time the obligation to open a VAT number.",
     'finder-south-t': "Southern Italy — launch priority", 'finder-south-d': "Campania, Calabria, Sicily, Puglia, Basilicata, Molise, Abruzzo — the regions with the highest concentration of productive excellence without market access will be the first integrated into the FINDER catalogue.",
     'how-badge': "PROX — How it works", 'how-title': "Three steps. Nothing more.",
     's1t': "Open the radar", 's1d': "GPS finds flash offers from merchants within 200 metres of you — right now, on this street.",
-    's2t': "Book and pay with Bank Guarantee", 's2d': "The price locks at the time of booking. Payment is held under Bank Guarantee — no one touches it until you meet the merchant.",
+    's2t': "Book and pay in escrow", 's2d': "The price locks at the time of booking. Payment goes into escrow — no one touches it until you meet the merchant.",
     's3t': "QR match — funds released", 's3d': "The merchant shows QR-A, you scan QR-B. Only the physical pair releases the funds. Impossible to defraud.",
     'radar-btn': "Open GPS Radar →",
     'ft-offerte': "Offers", 'ft-servizi': "Services", 'ft-reg': "Register", 'ft-pubblica': "Post an offer", 'ft-finder': "FINDER — coming soon"
@@ -638,7 +646,7 @@ var I18N = {
     'hero-title': "世界<br><em>在您脚下。</em>",
     'hero-desc': "200米内的闪购优惠，地图上的公共服务，有保障的付款。INSTANTOWN实时连接市民、游客和商家。",
     'b1t': "真实近邻，非广告", 'b1d': "GPS实时计算您周围200米内的商家。只显示可步行到达的实体商家。",
-    'b2t': "银行担保，价格锁定", 'mod-occasioni-title': "⚡ 闪购优惠", 'mod-cibo': "餐饮", 'mod-moda': "时尚", 'mod-tech': "科技", 'mod-viaggi': "旅行", 'mod-divert': "娱乐", 'mod-altro': "其他", 'mod-vedi-tutte': "查看所有优惠 →", 'b2d': "资金冻结至线下双码核验完成。您看到的价格即您支付的价格。",
+    'b2t': "资金托管，价格锁定", 'b2d': "资金冻结至线下双码核验完成。您看到的价格即您支付的价格。",
     'b3t': "公共服务整合", 'b3d': "饮水点、公共卫生间、免费Wi-Fi在同一地图上。罗马地标随时触手可及。",
     'b4t': "防欺诈设计", 'b4d': "每位商家均通过增值税号实名验证。实体双重QR码使欺诈成为不可能。",
     'vip1-t': "用户始终是VIP", 'vip1-d': "未收到产品或服务则无需付款。资金冻结至线下交汇完成。若出现问题，您不会损失任何费用。",
@@ -651,12 +659,12 @@ var I18N = {
     'finder-sub': "从未发现您的全国市场。",
     'finder-desc': "意大利有数千家企业生产优质产品—葡萄酒、奶酪、陶瓷、机械加工、织物、食品—但从未获得进入国内外市场的机会。不是因为缺少质量，而是缺少展示的舞台。",
     'f1t': "小地方找到大市场", 'f1d': "卡拉布里亚的品种优质产品、莫尔季的榄榄油厂、巴西利卡塔的陶瓷工匠。通过FINDER被有需要的人找到。",
-    'f2t': "中间商已有客户", 'f2d': "Finder是已有有意购买者并在ATECO 2025目录中寻找最佳供应商的人。银行担保保护双方直到交付。",
+    'f2t': "中间商已有客户", 'f2d': "Finder是已有有意购买者并在ATECO 2025目录中寻找最佳供应商的人。资金托管保护双方直到交付。",
     'f3t': "财务透明", 'f3d': "每年收入5000欧元以下：偶然收入，零手续。超过阈値：INSTANTOWN实时监测并通知开设增值税号的义务。",
     'finder-south-t': "南意大利—首先推出", 'finder-south-d': "卡拉布里亚、卡拉拉布里亚、西西里、普卢尼亚、巴西利卡塔、莫尔季、阿布鲁佐—将首先被纳入FINDER目录。",
     'how-badge': "PROX — 如何使用", 'how-title': "三个步骤。仅此而已。",
     's1t': "打开雷达", 's1d': "GPS在您周围200米内搜索商家的闪购优惠。",
-    's2t': "预订并通过银行担保支付", 's2d': "预订时价格锁定。付款由银行担保—在与商家会面之前无人可动。",
+    's2t': "预订并托管付款", 's2d': "预订时价格锁定。付款进入托管—在与商家会面之前无人可动。",
     's3t': "QR匹配—资金释放", 's3d': "商家出示QR-A，您扫QR-B。只有实体双码匹配才能释放资金。",
     'radar-btn': "打开GPS雷达 →",
     'ft-offerte': "优惠", 'ft-servizi': "服务", 'ft-reg': "注册", 'ft-pubblica': "发布优惠", 'ft-finder': "FINDER — 即将推出"
@@ -669,10 +677,10 @@ var I18N = {
     'hero-title': "El mundo<br><em>a tus pies.</em>",
     'hero-desc': "Ofertas flash a 200 metros, servicios públicos en el mapa, pagos garantizados. INSTANTOWN conecta ciudadanos, turistas y comerciantes en tiempo real.",
     'b1t': "Proximidad real, no publicidad", 'b1d': "El GPS calcula lo que hay a tu alrededor. Solo ves ofertas de comerciantes físicos accesibles a pie.",
-    'b2t': "Pago con Garantía Bancaria, precio bloqueado", 'mod-occasioni-title': "⚡ Ofertas flash", 'mod-cibo': "Comida", 'mod-moda': "Moda", 'mod-tech': "Tech", 'mod-viaggi': "Viajes", 'mod-divert': "Entretenimiento", 'mod-altro': "Otros", 'mod-vedi-tutte': "Ver todas las ofertas →", 'b2d': "El dinero queda congelado hasta el encuentro físico QR-A y QR-B. El precio que ves es el precio que pagas.",
+    'b2t': "Pago en depósito, precio bloqueado", 'b2d': "El dinero queda congelado hasta el encuentro físico QR-A y QR-B. El precio que ves es el precio que pagas.",
     'b3t': "Servicios públicos integrados", 'b3d': "Fuentes, aseos públicos, Wi-Fi gratuito en el mismo mapa. Monumentos de Roma siempre a un toque.",
     'b4t': "Antifraude by design", 'b4d': "Cada comerciante se verifica con NIF real. El doble QR físico hace imposible el fraude.",
-    'vip1-t': "El usuario siempre es VIP", 'vip1-d': "Nunca paga si no recibe el producto o servicio. Los fondos quedan bajo Garantía Bancaria. Si algo sale mal, no pierdes nada.",
+    'vip1-t': "El usuario siempre es VIP", 'vip1-d': "Nunca paga si no recibe el producto o servicio. Los fondos quedan bloqueados en depósito. Si algo sale mal, no pierdes nada.",
     'vip2-t': "El comerciante no adelanta nada", 'vip2-d': "Cero suscripciones. Cero cuotas. Cero configuración. Comisión solo sobre transacciones reales — 1,75% al cobrar, 0% los primeros 6 meses.",
     'vip3-t': "INSTANTOWN gana solo si ganaéis vosotros", 'vip3-d': "Todos los costes tecnológicos, legales y operativos corren a cargo de INSTANTOWN. El riesgo es nuestro. El beneficio es vuestro.",
     'vip-quote': "“Nadie paga nada por adelantado.<br><span style=\"color:var(--ocra-l)\">INSTANTOWN gana solo cuando ganaéis vosotros.</span>”",
@@ -682,12 +690,12 @@ var I18N = {
     'finder-sub': "El mercado nacional que nunca te ha visto.",
     'finder-desc': "Hay miles de empresas en Italia que producen excelencia — vinos, quesos, cerámicas, tejidos, conservas — que nunca han tenido acceso a los mercados. No por falta de calidad. Por falta de escaparate.",
     'f1t': "El pequeño pueblo encuentra el gran mercado", 'f1d': "Productores locales de Italia entran en el catálogo nacional y son encontrados por quienes los buscan — sin ferias ni intermediarios costosos.",
-    'f2t': "El intermediario ya tiene el cliente", 'f2d': "El Finder ya tiene un comprador interesado y busca el mejor proveedor en el catálogo ATECO 2025. El pago con Garantía Bancaria protege a ambas partes.",
+    'f2t': "El intermediario ya tiene el cliente", 'f2d': "El Finder ya tiene un comprador interesado y busca el mejor proveedor en el catálogo ATECO 2025. El pago en depósito protege a ambas partes.",
     'f3t': "Fiscalmente transparente", 'f3d': "Menos de 5.000€/año: renta ocasional, cero burocracia. Por encima del umbral: INSTANTOWN notifica en tiempo real.",
     'finder-south-t': "Sur de Italia — prioridad de lanzamiento", 'finder-south-d': "Campania, Calabria, Sicilia, Puglia, Basilicata, Molise, Abruzzo — las primeras regiones en integrarse al catálogo FINDER.",
     'how-badge': "PROX — Cómo funciona", 'how-title': "Tres pasos. Nada más.",
     's1t': "Abre el radar", 's1d': "El GPS encuentra ofertas flash de comerciantes a 200 metros de ti ahora mismo.",
-    's2t': "Reserva y paga con Garantía Bancaria", 's2d': "El precio se fija al reservar. El pago queda bajo Garantía Bancaria — nadie lo toca hasta el encuentro.",
+    's2t': "Reserva y paga en depósito", 's2d': "El precio se fija al reservar. El pago va al depósito — nadie lo toca hasta el encuentro.",
     's3t': "QR match — fondos desbloqueados", 's3d': "El comerciante muestra QR-A, tú escaneas QR-B. Solo el par físico libera los fondos.",
     'radar-btn': "Abrir Radar GPS →",
     'ft-offerte': "Ofertas", 'ft-servizi': "Servicios", 'ft-reg': "Registrarse", 'ft-pubblica': "Publicar oferta", 'ft-finder': "FINDER — próximamente"
@@ -700,10 +708,10 @@ var I18N = {
     'hero-title': "Le monde<br><em>à vos pieds.</em>",
     'hero-desc': "Offres flash à 200 mètres, services publics sur la carte, paiements garantis. INSTANTOWN connecte citoyens, touristes et commerçants en temps réel.",
     'b1t': "Proximité réelle, pas de publicité", 'b1d': "Le GPS calcule ce qui vous entoure à 200 mètres. Vous ne voyez que les offres de commerçants physiques accessibles à pied.",
-    'b2t': "Paiement avec Garantie Bancaire, prix bloqué", 'mod-occasioni-title': "⚡ Offres flash", 'mod-cibo': "Nourriture", 'mod-moda': "Mode", 'mod-tech': "Tech", 'mod-viaggi': "Voyages", 'mod-divert': "Divertissement", 'mod-altro': "Autre", 'mod-vedi-tutte': "Voir toutes les offres →", 'b2d': "L’argent reste gelé jusqu’à la correspondance physique QR-A et QR-B. Le prix affiché est le prix payé.",
+    'b2t': "Paiement séquestre, prix bloqué", 'b2d': "L’argent reste gelé jusqu’à la correspondance physique QR-A et QR-B. Le prix affiché est le prix payé.",
     'b3t': "Services publics intégrés", 'b3d': "Fontaines, toilettes publiques, Wi-Fi gratuit sur la même carte. Les monuments de Rome toujours à portée.",
     'b4t': "Antifraude by design", 'b4d': "Chaque commerçant est vérifié avec un vrai numéro de TVA. Le double QR physique rend la fraude impossible.",
-    'vip1-t': "L’utilisateur est toujours VIP", 'vip1-d': "Ne paie jamais s’il ne reçoit pas le produit ou le service. Les fonds restent sous Garantie Bancaire. En cas de problème, vous ne perdez rien.",
+    'vip1-t': "L’utilisateur est toujours VIP", 'vip1-d': "Ne paie jamais s’il ne reçoit pas le produit ou le service. Les fonds restent bloqués en séquestre. En cas de problème, vous ne perdez rien.",
     'vip2-t': "Le commerçant n’avance rien", 'vip2-d': "Zéro abonnements. Zéro frais. Zéro configuration. Commission uniquement sur les transactions réelles — 1,75%, 0% les 6 premiers mois.",
     'vip3-t': "INSTANTOWN ne gagne que quand vous gagnez", 'vip3-d': "Tous les coûts sont à la charge d’INSTANTOWN. Le risque est le nôtre. Le gain est le vôtre.",
     'vip-quote': "“Personne ne paie quoi que ce soit à l’avance.<br><span style=\"color:var(--ocra-l)\">INSTANTOWN ne gagne que quand vous gagnez.</span>”",
@@ -713,12 +721,12 @@ var I18N = {
     'finder-sub': "Le marché national qui ne vous a jamais vu.",
     'finder-desc': "Il existe des milliers d’entreprises en Italie qui produisent l’excellence mais n’ont jamais eu accès aux marchés. Non par manque de qualité. Par manque de vitrine.",
     'f1t': "Le petit village trouve le grand marché", 'f1d': "Des producteurs locaux italiens entrent dans le catalogue national et sont trouvés par ceux qui les cherchent — sans foires ni intermédiaires coûteux.",
-    'f2t': "L’intermédiaire a déjà le client", 'f2d': "Le Finder a déjà un acheteur intéressé et cherche le meilleur fournisseur. Le paiement avec Garantie Bancaire protège les deux parties.",
+    'f2t': "L’intermédiaire a déjà le client", 'f2d': "Le Finder a déjà un acheteur intéressé et cherche le meilleur fournisseur. Le paiement séquestre protège les deux parties.",
     'f3t': "Fiscalement transparent", 'f3d': "Moins de 5 000€/an: revenu occasionnel, zéro bureaucratie. Au-delà: INSTANTOWN notifie en temps réel.",
     'finder-south-t': "Sud de l’Italie — priorité de lancement", 'finder-south-d': "Campanie, Calabre, Sicile, Pouilles, Basilicate, Molise, Abruzzes — les premières régions intégrées dans le catalogue FINDER.",
     'how-badge': "PROX — Comment ça marche", 'how-title': "Trois étapes. Rien de plus.",
     's1t': "Ouvrez le radar", 's1d': "Le GPS trouve les offres flash des commerçants à 200 mètres de vous en ce moment même.",
-    's2t': "Réservez et payez avec Garantie Bancaire", 's2d': "Le prix est bloqué à la réservation. Le paiement est sous Garantie Bancaire jusqu’à la rencontre.",
+    's2t': "Réservez et payez en séquestre", 's2d': "Le prix est bloqué à la réservation. Le paiement va en séquestre jusqu’à la rencontre.",
     's3t': "QR match — fonds débloqués", 's3d': "Le commerçant montre QR-A, vous scannez QR-B. Seul le couple physique libère les fonds.",
     'radar-btn': "Ouvrir le Radar GPS →",
     'ft-offerte': "Offres", 'ft-servizi': "Services", 'ft-reg': "S’inscrire", 'ft-pubblica': "Publier une offre", 'ft-finder': "FINDER — prochainement"
@@ -728,7 +736,6 @@ var I18N = {
 function applyLang(lang) {
   var ok = ['it','en','zh','es','fr'];
   if (!ok.includes(lang)) lang = 'it';
-  localStorage.setItem('it_lang', lang);
   var L = I18N[lang] || I18N.it;
   Object.keys(L).forEach(function(id) {
     var el = document.getElementById(id);
@@ -748,7 +755,8 @@ function applyLang(lang) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  applyLang(localStorage.getItem('it_lang') || 'it');
+  localStorage.clear();
+  applyLang('it');
 });
 
 // CATEGORIE
@@ -819,16 +827,114 @@ async function caricaCounts() {
       if (!CATS.includes(cat)) cat = inferisciCat(desc);
       counts[cat]++;
     });
-    applyCountTexts();
+    CATS.forEach(function(c) {
+      var el = document.getElementById('ccnt-'+c);
+      if (el) el.textContent = counts[c]+(counts[c]===1?' offerta':' offerte');
+    });
     localStorage.setItem('it_cat_counts', JSON.stringify(counts));
   } catch(e) {
     var counts = JSON.parse(localStorage.getItem('it_cat_counts')||'{}');
-    applyCountTexts();
+    CATS.forEach(function(c) {
+      var el = document.getElementById('ccnt-'+c);
+      if (el && counts[c]!==undefined) el.textContent = counts[c]+' offerte';
+    });
   }
 }
 
 caricaCounts();
+// ══════════════════════════════════════
+// PWA INSTALL PROMPT
+// ══════════════════════════════════════
+var deferredPrompt = null;
+var pwaTexts = {
+  it: { title: 'Aggiungi INSTANTOWN', sub: 'Accedi subito dalla schermata home', btn: '+ Aggiungi', dismiss: 'Non ora' },
+  en: { title: 'Add INSTANTOWN', sub: 'Quick access from your home screen', btn: '+ Add', dismiss: 'Not now' },
+  zh: { title: '添加INSTANTOWN', sub: '即可从主屏幕访问', btn: '+ 添加', dismiss: '暫不添加' },
+  es: { title: 'Añadir INSTANTOWN', sub: 'Acceso rápido desde tu pantalla de inicio', btn: '+ Añadir', dismiss: 'Ahora no' },
+  fr: { title: 'Ajouter INSTANTOWN', sub: 'Accès rapide depuis votre écran d’accueil', btn: '+ Ajouter', dismiss: 'Pas maintenant' }
+};
 
+function updatePwaBannerLang(lang) {
+  var t = pwaTexts[lang] || pwaTexts.it;
+  var el = document.getElementById('pwa-banner-title');
+  var es = document.getElementById('pwa-banner-sub');
+  var eb = document.getElementById('pwa-btn-install');
+  var ed = document.getElementById('pwa-btn-dismiss');
+  if (el) el.textContent = t.title;
+  if (es) es.textContent = t.sub;
+  if (eb) eb.textContent = t.btn;
+  if (ed) ed.textContent = t.dismiss;
+}
+
+// Intercetta il prompt del browser
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  deferredPrompt = e;
+  // Mostra il banner dopo 3 secondi
+  setTimeout(function() {
+    var banner = document.getElementById('pwa-banner');
+    if (banner) banner.style.display = 'block';
+  }, 3000);
+});
+
+document.getElementById('pwa-btn-install').addEventListener('click', function() {
+  var banner = document.getElementById('pwa-banner');
+  if (banner) banner.style.display = 'none';
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(result) {
+      deferredPrompt = null;
+    });
+  }
+});
+
+document.getElementById('pwa-btn-dismiss').addEventListener('click', function() {
+  var banner = document.getElementById('pwa-banner');
+  if (banner) banner.style.display = 'none';
+  // Non mostrare più per 7 giorni
+  localStorage.setItem('pwa_dismissed', Date.now());
+});
+
+// iOS: mostra istruzioni manuali
+var isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+var isInStandaloneMode = window.navigator.standalone;
+if (isIos && !isInStandaloneMode) {
+  setTimeout(function() {
+    var dismissed = localStorage.getItem('pwa_dismissed');
+    if (dismissed && Date.now() - dismissed < 7 * 24 * 60 * 60 * 1000) return;
+    var banner = document.getElementById('pwa-banner');
+    var sub = document.getElementById('pwa-banner-sub');
+    if (sub) sub.textContent = 'Tocca ― poi "Aggiungi a schermata Home"';
+    if (banner) banner.style.display = 'block';
+  }, 3000);
+}
+
+// Aggiungi updatePwaBannerLang alla funzione applyLang esistente
+var _origApplyLang = applyLang;
+applyLang = function(lang) {
+  _origApplyLang(lang);
+  updatePwaBannerLang(lang);
+};
+
+// Registra Service Worker per PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js')
+      .then(function(reg) { console.log('SW registrato:', reg.scope); })
+      .catch(function(err) { console.log('SW errore:', err); });
+  });
+}
+
+// Nascondi splash screen dopo caricamento
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    var splash = document.getElementById('splash');
+    if (splash) {
+      splash.classList.add('hidden');
+      setTimeout(function(){ splash.remove(); }, 600);
+    }
+  }, 1800);
+});
 
 </script>
 </body>
