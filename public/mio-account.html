@@ -105,25 +105,25 @@ main{max-width:600px;margin:0 auto;padding:28px 20px 80px;}
 <nav>
   <a href="index.html">←</a>
   <span class="nav-brand">INSTANT<span>TOWN</span></span>
-  <a href="map.html">Radar →</a>
+  <a href="map.html" data-i18n="ma_nav_radar">Radar →</a>
 </nav>
 
 <main>
 
   <!-- PIN UTENTE -->
   <div class="pin-card">
-    <div class="pin-label">Il tuo PIN personale INSTANTOWN</div>
+    <div class="pin-label" data-i18n="ma_pin_label">Il tuo PIN personale INSTANTOWN</div>
     <div class="pin-value" id="pin-display">——</div>
-    <div class="pin-note">
+    <div class="pin-note" data-i18n="ma_pin_note">
       Questo PIN identifica il tuo account. Comunicalo all'esercente insieme al QR-B
       per completare il matching e sbloccare i fondi in Garanzia Bancaria.
     </div>
-    <button class="pin-copy" onclick="copiaPIN()">📋 Copia PIN</button>
+    <button class="pin-copy" onclick="copiaPIN()" data-i18n="ma_pin_copy">📋 Copia PIN</button>
   </div>
 
   <!-- QR SALVATI -->
   <div class="section-title">
-    I miei QR-B
+    <span data-i18n="ma_section_title">I miei QR-B</span>
     <span class="badge-count" id="qr-count">0</span>
   </div>
 
@@ -134,20 +134,31 @@ main{max-width:600px;margin:0 auto;padding:28px 20px 80px;}
 <!-- MODAL QR GRANDE -->
 <div class="modal-overlay" id="modal-qr">
   <div class="modal-box">
-    <div class="modal-title">QR-B — Mostra all'esercente</div>
+    <div class="modal-title" data-i18n="ma_modal_title">QR-B — Mostra all'esercente</div>
     <div class="modal-sub" id="modal-negozio-desc"></div>
     <div id="modal-qr-img"></div>
     <div class="modal-id" id="modal-booking-id"></div>
-    <div class="modal-pin">Il tuo PIN: <strong id="modal-pin-val"></strong></div>
-    <div class="modal-istr">
+    <div class="modal-pin"><span data-i18n="ma_modal_pin">Il tuo PIN:</span> <strong id="modal-pin-val"></strong></div>
+    <div class="modal-istr" data-i18n="ma_modal_istr">
       ✓ L'esercente mostrerà QR-A — fai scansionare al suo terminale.<br>
       Solo la coppia QR-A + QR-B sblocca i fondi.
     </div>
-    <button class="btn-modal-close" onclick="chiudiModal()">Chiudi</button>
+    <button class="btn-modal-close" onclick="chiudiModal()" data-i18n="ma_modal_close">Chiudi</button>
   </div>
 </div>
 
 <script>
+// Helper locale per leggere chiavi i18n correnti (fallback IT)
+function i18nGet(key, fallback) {
+  try {
+    const lang = localStorage.getItem('it_lang') || 'it';
+    if (typeof IT18N !== 'undefined' && IT18N[lang] && IT18N[lang][key]) {
+      return IT18N[lang][key];
+    }
+  } catch(e) {}
+  return fallback;
+}
+
 // ══════════════════════════════════
 // PIN — generato una volta e salvato
 // ══════════════════════════════════
@@ -187,14 +198,14 @@ function caricaQR() {
     lista.innerHTML = `
       <div class="empty-state">
         <div class="empty-icon">🎫</div>
-        <div class="empty-text">
+        <div class="empty-text" data-i18n="ma_empty_text">
           Non hai ancora QR-B salvati.<br>
           Prenota un'offerta dal Radar per generare il tuo primo QR.
         </div>
         <a href="map.html" style="display:inline-block;margin-top:16px;
           background:var(--rosso);color:#fff;padding:10px 24px;border-radius:4px;
           text-decoration:none;font-size:14px;font-weight:500;">
-          Apri il Radar →
+          <span data-i18n="ma_empty_cta">Apri il Radar →</span>
         </a>
       </div>`;
     return;
@@ -206,8 +217,8 @@ function caricaQR() {
       {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
     const statoClass = p.stato==='USATO' ? 'stato-usato' :
                        p.stato==='SCADUTO' ? 'stato-scaduto' : 'stato-attesa';
-    const statoLabel = p.stato==='USATO' ? '✓ Completato' :
-                       p.stato==='SCADUTO' ? 'Scaduto' : '⏳ In attesa';
+    const statoLabel = p.stato==='USATO' ? i18nGet('ma_stato_completato','✓ Completato') :
+                       p.stato==='SCADUTO' ? i18nGet('ma_stato_scaduto','Scaduto') : i18nGet('ma_stato_attesa','⏳ In attesa');
     return `
     <div class="qr-card" id="card-${idx}">
       <div class="qr-card-header">
@@ -226,8 +237,8 @@ function caricaQR() {
         </div>
       </div>
       <div class="qr-card-footer">
-        <button class="btn-mostra" onclick="mostraQR(${idx})">🔍 Mostra QR grande</button>
-        <button class="btn-elimina" onclick="eliminaQR(${idx})">Elimina</button>
+        <button class="btn-mostra" onclick="mostraQR(${idx})" data-i18n="ma_btn_mostra">🔍 Mostra QR grande</button>
+        <button class="btn-elimina" onclick="eliminaQR(${idx})" data-i18n="ma_btn_elimina">Elimina</button>
       </div>
     </div>`;
   }).join('');
@@ -294,7 +305,7 @@ function chiudiModal() {
 // ELIMINA QR
 // ══════════════════════════════════
 function eliminaQR(idx) {
-  if(!confirm('Eliminare questo QR-B? Non potrai più usarlo per il matching.')) return;
+  if(!confirm(i18nGet('ma_confirm_elimina','Eliminare questo QR-B? Non potrai più usarlo per il matching.'))) return;
   const prenotazioni = JSON.parse(localStorage.getItem('it_prenotazioni') || '[]');
   prenotazioni.splice(idx, 1);
   localStorage.setItem('it_prenotazioni', JSON.stringify(prenotazioni));
