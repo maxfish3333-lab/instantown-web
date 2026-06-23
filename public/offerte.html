@@ -175,6 +175,7 @@ const I18N = {
     datiLocali:     'dati locali (Sheet non raggiungibile)',
     aggiornato:     'aggiornato: ',
     ciRipenso:'Ci ripenso',ovIndirizzo:'Indirizzo',ovOrario:'Orario',ovCategoria:'Categoria',ovRaggio:'Raggio',ovPrezzoFlash:'Prezzo Flash',ovPrezzoStd:'Prezzo standard',ovConferma:'Conferma e prenota →',
+    statoAttiva: "ATTIVA", statoScaduta: "SCADUTA", btnAttivaGaranzia: "🔐 Attiva Garanzia Bancaria →",
   },
   en: {
     offerteTitle:   'Flash Deals',
@@ -210,6 +211,7 @@ const I18N = {
     datiLocali:     'local data (Sheet unreachable)',
     aggiornato:     'updated: ',
     ciRipenso:'Never mind',ovIndirizzo:'Address',ovOrario:'Time',ovCategoria:'Category',ovRaggio:'Radius',ovPrezzoFlash:'Flash Price',ovPrezzoStd:'Standard price',ovConferma:'Confirm & book →',
+    statoAttiva: "ACTIVE", statoScaduta: "EXPIRED", btnAttivaGaranzia: "🔐 Activate Bank Guarantee →",
   },
   zh: {
     offerteTitle:   '闪购优惠',
@@ -245,6 +247,7 @@ const I18N = {
     datiLocali:     '本地数据（无法连接工作表）',
     aggiornato:     '已更新：',
     ciRipenso:'我再想想',ovIndirizzo:'地址',ovOrario:'时间',ovCategoria:'分类',ovRaggio:'范围',ovPrezzoFlash:'闪购价',ovPrezzoStd:'原价',ovConferma:'确认预订 →',
+    statoAttiva: "进行中", statoScaduta: "已过期", btnAttivaGaranzia: "🔐 启用银行担保 →",
   },
   es: {
     offerteTitle:   'Ofertas Flash',
@@ -280,6 +283,7 @@ const I18N = {
     datiLocali:     'datos locales (Hoja no disponible)',
     aggiornato:     'actualizado: ',
     ciRipenso:'Lo reconsidero',ovIndirizzo:'Dirección',ovOrario:'Horario',ovCategoria:'Categoría',ovRaggio:'Radio',ovPrezzoFlash:'Precio Flash',ovPrezzoStd:'Precio estándar',ovConferma:'Confirmar y reservar →',
+    statoAttiva: "ACTIVA", statoScaduta: "CADUCADA", btnAttivaGaranzia: "🔐 Activar Garantía Bancaria →",
   },
   fr: {
     offerteTitle:   'Offres Flash',
@@ -315,6 +319,7 @@ const I18N = {
     datiLocali:     'données locales (Feuille inaccessible)',
     aggiornato:     'mis à jour : ',
     ciRipenso:"J'hésite",ovIndirizzo:'Adresse',ovOrario:'Horaire',ovCategoria:'Catégorie',ovRaggio:'Rayon',ovPrezzoFlash:'Prix Flash',ovPrezzoStd:'Prix standard',ovConferma:'Confirmer et réserver →',
+    statoAttiva: "ACTIVE", statoScaduta: "EXPIRÉE", btnAttivaGaranzia: "🔐 Activer la Garantie Bancaire →",
   }
 };
 
@@ -629,7 +634,7 @@ function renderCard(o) {
   <div class="offerta-card ${anom?'anomalia':''}" style="${isPref?'border-color:var(--cielo);':''}">
     <div class="card-top">
       <div class="card-row1">
-        <span class="pill-stato ${o.stato==='ATTIVA'?'pill-attiva':'pill-scaduta'}">${o.stato}</span>
+        <span class="pill-stato ${o.stato==='ATTIVA'?'pill-attiva':'pill-scaduta'}">${o.stato==='ATTIVA' ? t('statoAttiva') : t('statoScaduta')}</span>
         <span class="pill-cat">${emoji[o.categoria]||''} ${o.categoria}</span>
         <span class="pill-raggio">${o.raggio}m</span>
       </div>
@@ -746,7 +751,7 @@ function apriOverlay(o) {
   document.getElementById('ov-back-btn').textContent = '← ' + t('ciRipenso');
   document.getElementById('ov-body').innerHTML = `
     <div class="ov-cat-row">
-      <span class="pill-stato ${o.stato==='ATTIVA'?'pill-attiva':'pill-scaduta'}">${o.stato}</span>
+      <span class="pill-stato ${o.stato==='ATTIVA'?'pill-attiva':'pill-scaduta'}">${o.stato==='ATTIVA' ? t('statoAttiva') : t('statoScaduta')}</span>
       <span class="pill-cat">${emoji[o.categoria]||''} ${o.categoria}</span>
       <span class="pill-raggio">${o.raggio}m</span>
     </div>
@@ -764,7 +769,7 @@ function apriOverlay(o) {
       ${sc>0&&!anom?`<span class="ov-sconto">-${sc}%</span>`:''}
     </div>
     <div class="ov-actions">
-      <a href="${checkoutUrl}" class="btn-conferma">🔐 Attiva Garanzia Bancaria →</a>
+      <a href="${checkoutUrl}" class="btn-conferma">${t('btnAttivaGaranzia')}</a>
       <button class="btn-ci-ripenso" onclick="chiudiOverlay()">← ${t('ciRipenso')}</button>
     </div>
     ${o.idtx?`<div class="ov-tx">${o.idtx}</div>`:''}
