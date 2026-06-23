@@ -770,7 +770,7 @@ function apriOverlay(o) {
     <div class="ov-info-grid">
       <div class="ov-info-item"><div class="ov-info-label">📍 ${t('ovIndirizzo')}</div><div class="ov-info-value">${o.indirizzo||'—'}</div></div>
       <div class="ov-info-item"><div class="ov-info-label">⏱ ${t('ovOrario')}</div><div class="ov-info-value">${orario}</div></div>
-      <div class="ov-info-item"><div class="ov-info-label">🏷️ ${t('ovCategoria')}</div><div class="ov-info-value">${emoji[o.categoria]||''} ${o.categoria}</div></div>
+      <div class="ov-info-item"><div class="ov-info-label">🏷️ ${t('ovCategoria')}</div><div class="ov-info-value">${emoji[o.categoria]||''} ${traduciCategoria(o.categoria)}</div></div>
       <div class="ov-info-item"><div class="ov-info-label">📡 ${t('ovRaggio')}</div><div class="ov-info-value">${o.raggio} m</div></div>
     </div>
     <div class="ov-prezzi-block">
