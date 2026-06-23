@@ -150,7 +150,18 @@ const IT18N = {
     ma_modal_pin: "Il tuo PIN:",
     ma_modal_istr: "✓ L'esercente mostrerà QR-A — fai scansionare al suo terminale.<br>Solo la coppia QR-A + QR-B sblocca i fondi.",
     ma_modal_close: "Chiudi",
-    ma_confirm_elimina: "Eliminare questo QR-B? Non potrai più usarlo per il matching."
+    ma_confirm_elimina: "Eliminare questo QR-B? Non potrai più usarlo per il matching.",
+    sv_title: "Servizi Essenziali",
+    sv_gps_loading: "Acquisizione posizione GPS...",
+    sv_gps_dots: "GPS...",
+    sv_gps_attivo: "GPS attivo",
+    sv_gps_nd: "GPS non disponibile",
+    sv_gps_default: "Roma (default)",
+    sv_filtro_tutti: "🗂 Tutti",
+    sv_filtro_pubblico: "💧 Servizi pubblici",
+    sv_filtro_iconico: "🛍 Luoghi iconici",
+    sv_btn_portami: "PORTAMI QUI",
+    sv_dist_da_te: "da te"
   },
 
   en: {
@@ -295,7 +306,18 @@ const IT18N = {
     ma_modal_pin: "Your PIN:",
     ma_modal_istr: "✓ The merchant will show QR-A — have it scanned at their terminal.<br>Only the QR-A + QR-B pair releases the funds.",
     ma_modal_close: "Close",
-    ma_confirm_elimina: "Delete this QR-B? You will no longer be able to use it for matching."
+    ma_confirm_elimina: "Delete this QR-B? You will no longer be able to use it for matching.",
+    sv_title: "Essential Services",
+    sv_gps_loading: "Getting GPS position...",
+    sv_gps_dots: "GPS...",
+    sv_gps_attivo: "GPS active",
+    sv_gps_nd: "GPS unavailable",
+    sv_gps_default: "Rome (default)",
+    sv_filtro_tutti: "🗂 All",
+    sv_filtro_pubblico: "💧 Public services",
+    sv_filtro_iconico: "🛍 Iconic places",
+    sv_btn_portami: "TAKE ME THERE",
+    sv_dist_da_te: "from you"
   },
 
   zh: {
@@ -440,7 +462,18 @@ const IT18N = {
     ma_modal_pin: "您的PIN码：",
     ma_modal_istr: "✓ 商家将展示QR-A——请在其终端扫描。<br>只有QR-A + QR-B配对才能解锁资金。",
     ma_modal_close: "关闭",
-    ma_confirm_elimina: "删除此QR-B？您将无法再使用它进行匹配。"
+    ma_confirm_elimina: "删除此QR-B？您将无法再使用它进行匹配。",
+    sv_title: "基本服务",
+    sv_gps_loading: "正在获取GPS位置...",
+    sv_gps_dots: "GPS...",
+    sv_gps_attivo: "GPS已激活",
+    sv_gps_nd: "GPS不可用",
+    sv_gps_default: "罗马（默认）",
+    sv_filtro_tutti: "🗂 全部",
+    sv_filtro_pubblico: "💧 公共服务",
+    sv_filtro_iconico: "🛍 标志性景点",
+    sv_btn_portami: "带我去那里",
+    sv_dist_da_te: "距您"
   },
 
   es: {
@@ -585,7 +618,18 @@ const IT18N = {
     ma_modal_pin: "Tu PIN:",
     ma_modal_istr: "✓ El comerciante mostrará el QR-A — hazlo escanear en su terminal.<br>Solo el par QR-A + QR-B libera los fondos.",
     ma_modal_close: "Cerrar",
-    ma_confirm_elimina: "¿Eliminar este QR-B? Ya no podrás usarlo para el emparejamiento."
+    ma_confirm_elimina: "¿Eliminar este QR-B? Ya no podrás usarlo para el emparejamiento.",
+    sv_title: "Servicios Esenciales",
+    sv_gps_loading: "Obteniendo posición GPS...",
+    sv_gps_dots: "GPS...",
+    sv_gps_attivo: "GPS activo",
+    sv_gps_nd: "GPS no disponible",
+    sv_gps_default: "Roma (por defecto)",
+    sv_filtro_tutti: "🗂 Todos",
+    sv_filtro_pubblico: "💧 Servicios públicos",
+    sv_filtro_iconico: "🛍 Lugares icónicos",
+    sv_btn_portami: "LLÉVAME AQUÍ",
+    sv_dist_da_te: "de ti"
   },
 
   fr: {
@@ -730,7 +774,18 @@ const IT18N = {
     ma_modal_pin: "Votre PIN :",
     ma_modal_istr: "✓ Le commerçant affichera le QR-A — faites-le scanner sur son terminal.<br>Seule la paire QR-A + QR-B débloque les fonds.",
     ma_modal_close: "Fermer",
-    ma_confirm_elimina: "Supprimer ce QR-B ? Vous ne pourrez plus l'utiliser pour la correspondance."
+    ma_confirm_elimina: "Supprimer ce QR-B ? Vous ne pourrez plus l'utiliser pour la correspondance.",
+    sv_title: "Services Essentiels",
+    sv_gps_loading: "Acquisition de la position GPS...",
+    sv_gps_dots: "GPS...",
+    sv_gps_attivo: "GPS actif",
+    sv_gps_nd: "GPS indisponible",
+    sv_gps_default: "Rome (par défaut)",
+    sv_filtro_tutti: "🗂 Tous",
+    sv_filtro_pubblico: "💧 Services publics",
+    sv_filtro_iconico: "🛍 Lieux emblématiques",
+    sv_btn_portami: "EMMÈNE-MOI ICI",
+    sv_dist_da_te: "de vous"
   },
 };
 
