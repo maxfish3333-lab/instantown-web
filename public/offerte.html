@@ -328,6 +328,16 @@ function t(key) {
   return (I18N[lang] && I18N[lang][key]) || (I18N['it'][key]) || key;
 }
 
+function traduciCategoria(cat) {
+  var map = {
+    TUTTE: 'catTutte', CIBO: 'catCibo', MODA: 'catModa', TECH: 'catTech',
+    VIAGGI: 'catViaggi', DIVERTIMENTO: 'catDivert', ALTRO: 'catAltro'
+  };
+  var key = map[cat];
+  return key ? t(key) : cat;
+}
+
+
 function applyI18nDOM() {
   var lang = localStorage.getItem('it_lang') || 'it';
   // Elementi con data-i18n
@@ -635,7 +645,7 @@ function renderCard(o) {
     <div class="card-top">
       <div class="card-row1">
         <span class="pill-stato ${o.stato==='ATTIVA'?'pill-attiva':'pill-scaduta'}">${o.stato==='ATTIVA' ? t('statoAttiva') : t('statoScaduta')}</span>
-        <span class="pill-cat">${emoji[o.categoria]||''} ${o.categoria}</span>
+        <span class="pill-cat">${emoji[o.categoria]||''} ${traduciCategoria(o.categoria)}</span>
         <span class="pill-raggio">${o.raggio}m</span>
       </div>
       <div class="card-desc">${desc}${anom?`<span class="anomalia-tag">${t('anomTag')}</span>`:''}</div>
@@ -752,7 +762,7 @@ function apriOverlay(o) {
   document.getElementById('ov-body').innerHTML = `
     <div class="ov-cat-row">
       <span class="pill-stato ${o.stato==='ATTIVA'?'pill-attiva':'pill-scaduta'}">${o.stato==='ATTIVA' ? t('statoAttiva') : t('statoScaduta')}</span>
-      <span class="pill-cat">${emoji[o.categoria]||''} ${o.categoria}</span>
+      <span class="pill-cat">${emoji[o.categoria]||''} ${traduciCategoria(o.categoria)}</span>
       <span class="pill-raggio">${o.raggio}m</span>
     </div>
     <div class="ov-title">${descFmt}${anom?` <span class="anomalia-tag">${t('anomTag')}</span>`:''}</div>
