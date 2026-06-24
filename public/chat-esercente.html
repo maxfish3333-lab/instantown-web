@@ -229,6 +229,73 @@ function caricaChats(negozio) {
   });
 }
 
+
+// ══════════════════════════════════
+// LETTURA TRADOTTA FRASI RAPIDE (lato esercente)
+// ══════════════════════════════════
+const QUICK_PHRASES = {
+  "arriving": {
+    "it": "🚶 Sto arrivando",
+    "en": "🚶 I'm on my way",
+    "zh": "🚶 我正在路上",
+    "es": "🚶 Ya voy",
+    "fr": "🚶 J'arrive",
+    "de": "🚶 Ich bin auf dem Weg"
+  },
+  "late5": {
+    "it": "⏱️ 5 minuti di ritardo",
+    "en": "⏱️ 5 minutes late",
+    "zh": "⏱️ 晚到5分钟",
+    "es": "⏱️ 5 minutos de retraso",
+    "fr": "⏱️ 5 minutes de retard",
+    "de": "⏱️ 5 Minuten Verspätung"
+  },
+  "arrived": {
+    "it": "✅ Sono arrivato/a",
+    "en": "✅ I have arrived",
+    "zh": "✅ 我已到达",
+    "es": "✅ Ya llegué",
+    "fr": "✅ Je suis arrivé(e)",
+    "de": "✅ Ich bin angekommen"
+  },
+  "whereExactly": {
+    "it": "❓ Dove vi trovo esattamente?",
+    "en": "❓ Where exactly can I find you?",
+    "zh": "❓ 具体在哪里能找到您？",
+    "es": "❓ ¿Dónde os encuentro exactamente?",
+    "fr": "❓ Où puis-je vous trouver exactement ?",
+    "de": "❓ Wo genau finde ich Sie?"
+  },
+  "thanksLater": {
+    "it": "🙏 Grazie, a dopo",
+    "en": "🙏 Thanks, see you soon",
+    "zh": "🙏 谢谢，待会见",
+    "es": "🙏 Gracias, hasta luego",
+    "fr": "🙏 Merci, à bientôt",
+    "de": "🙏 Danke, bis gleich"
+  },
+  "problem": {
+    "it": "⚠️ C'è un problema",
+    "en": "⚠️ There is a problem",
+    "zh": "⚠️ 出现了问题",
+    "es": "⚠️ Hay un problema",
+    "fr": "⚠️ Il y a un problème",
+    "de": "⚠️ Es gibt ein Problem"
+  }
+};
+
+function getCurrentLang() {
+  return localStorage.getItem('it_lang') || 'it';
+}
+
+function testoVisualizzato(d) {
+  if (d.quickPhrase && QUICK_PHRASES[d.quickPhrase]) {
+    const lang = getCurrentLang();
+    return QUICK_PHRASES[d.quickPhrase][lang] || QUICK_PHRASES[d.quickPhrase].it;
+  }
+  return d.testo;
+}
+
 window.apriChat = function(tx) {
   currentTX = tx;
   document.getElementById('chat-area-empty').style.display = 'none';
@@ -249,7 +316,7 @@ window.apriChat = function(tx) {
       const div = document.createElement('div');
       div.className = 'msg msg-' + (msg.da === 'esercente' ? 'esercente' : msg.da === 'sistema' ? 'sistema' : 'cliente');
       const ora = msg.ts ? new Date(msg.ts.seconds * 1000).toLocaleTimeString('it-IT', {hour:'2-digit',minute:'2-digit'}) : '';
-      div.innerHTML = `<div>${msg.testo}</div>${ora ? `<div class="msg-time">${ora}</div>` : ''}`;
+      div.innerHTML = `<div>${testoVisualizzato(msg)}</div>${msg.quickPhrase ? `<div style="font-size:9px;opacity:.5;margin-top:2px;font-style:italic;">⚡ frase rapida</div>` : ''}${ora ? `<div class="msg-time">${ora}</div>` : ''}`;
       container.appendChild(div);
     });
     container.scrollTop = container.scrollHeight;
