@@ -928,7 +928,18 @@ const IT18N = {
     ma_modal_pin: "Deine PIN:",
     ma_modal_istr: "✓ Das Geschäft zeigt QR-A — lass es an seinem Terminal scannen.<br>Nur das Paar QR-A + QR-B gibt die Gelder frei.",
     ma_modal_close: "Schließen",
-    ma_confirm_elimina: "Diesen QR-B löschen? Du kannst ihn nicht mehr für den Abgleich verwenden."
+    ma_confirm_elimina: "Diesen QR-B löschen? Du kannst ihn nicht mehr für den Abgleich verwenden.",
+    sv_title: "Wesentliche Dienste",
+    sv_gps_loading: "GPS-Position wird ermittelt...",
+    sv_gps_dots: "GPS...",
+    sv_gps_attivo: "GPS aktiv",
+    sv_gps_nd: "GPS nicht verfügbar",
+    sv_gps_default: "Rom (Standard)",
+    sv_filtro_tutti: "🗂 Alle",
+    sv_filtro_pubblico: "💧 Öffentliche Dienste",
+    sv_filtro_iconico: "🛍 Ikonische Orte",
+    sv_btn_portami: "BRING MICH HIN",
+    sv_dist_da_te: "von dir"
   },
 };
 
