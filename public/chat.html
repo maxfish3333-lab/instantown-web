@@ -63,6 +63,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:#fff;min-heigh
 /* LOADING */
 .loading{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:var(--ocra-l);border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
+
+/* QUICK PHRASES */
+.quick-phrases{display:flex;gap:6px;padding:10px 16px 0;overflow-x:auto;scrollbar-width:none;}
+.quick-phrases::-webkit-scrollbar{display:none;}
+.quick-phrase-btn{flex-shrink:0;background:rgba(200,134,10,.1);border:1px solid rgba(200,134,10,.3);color:var(--ocra-l);font-size:12px;padding:7px 12px;border-radius:16px;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;transition:background .2s;}
+.quick-phrase-btn:hover{background:rgba(200,134,10,.2);}
+.msg-translated-note{font-size:9px;opacity:.5;margin-top:2px;font-style:italic;}
 </style>
 </head>
 <body>
@@ -99,7 +106,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:#fff;min-heigh
       <div>Nessun messaggio ancora.<br>Scrivi all'esercente qui sotto.</div>
     </div>
   </div>
-  <div class="chat-input-bar">
+    <div class="quick-phrases" id="quick-phrases"></div>
+<div class="chat-input-bar">
     <textarea class="chat-input" id="msg-input" placeholder="Scrivi un messaggio..." rows="1"></textarea>
     <button class="send-btn" id="send-btn" onclick="inviaMsgCliente()">➤</button>
   </div>
@@ -124,6 +132,104 @@ const db = getFirestore(app);
 
 let currentTX = null;
 let unsubscribe = null;
+
+// ══════════════════════════════════
+// FRASI RAPIDE MULTILINGUA
+// ══════════════════════════════════
+const QUICK_PHRASES = {
+  "arriving": {
+    "it": "🚶 Sto arrivando",
+    "en": "🚶 I'm on my way",
+    "zh": "🚶 我正在路上",
+    "es": "🚶 Ya voy",
+    "fr": "🚶 J'arrive",
+    "de": "🚶 Ich bin auf dem Weg"
+  },
+  "late5": {
+    "it": "⏱️ 5 minuti di ritardo",
+    "en": "⏱️ 5 minutes late",
+    "zh": "⏱️ 晚到5分钟",
+    "es": "⏱️ 5 minutos de retraso",
+    "fr": "⏱️ 5 minutes de retard",
+    "de": "⏱️ 5 Minuten Verspätung"
+  },
+  "arrived": {
+    "it": "✅ Sono arrivato/a",
+    "en": "✅ I have arrived",
+    "zh": "✅ 我已到达",
+    "es": "✅ Ya llegué",
+    "fr": "✅ Je suis arrivé(e)",
+    "de": "✅ Ich bin angekommen"
+  },
+  "whereExactly": {
+    "it": "❓ Dove vi trovo esattamente?",
+    "en": "❓ Where exactly can I find you?",
+    "zh": "❓ 具体在哪里能找到您？",
+    "es": "❓ ¿Dónde os encuentro exactamente?",
+    "fr": "❓ Où puis-je vous trouver exactement ?",
+    "de": "❓ Wo genau finde ich Sie?"
+  },
+  "thanksLater": {
+    "it": "🙏 Grazie, a dopo",
+    "en": "🙏 Thanks, see you soon",
+    "zh": "🙏 谢谢，待会见",
+    "es": "🙏 Gracias, hasta luego",
+    "fr": "🙏 Merci, à bientôt",
+    "de": "🙏 Danke, bis gleich"
+  },
+  "problem": {
+    "it": "⚠️ C'è un problema",
+    "en": "⚠️ There is a problem",
+    "zh": "⚠️ 出现了问题",
+    "es": "⚠️ Hay un problema",
+    "fr": "⚠️ Il y a un problème",
+    "de": "⚠️ Es gibt ein Problem"
+  }
+};
+
+function getCurrentLang() {
+  return localStorage.getItem('it_lang') || 'it';
+}
+
+function renderQuickPhrases() {
+  const lang = getCurrentLang();
+  const container = document.getElementById('quick-phrases');
+  if (!container) return;
+  container.innerHTML = Object.entries(QUICK_PHRASES).map(([key, translations]) => {
+    const label = translations[lang] || translations.it;
+    return `<button class="quick-phrase-btn" onclick="inviaFraseRapida('${key}')">${label}</button>`;
+  }).join('');
+}
+
+window.inviaFraseRapida = async function(key) {
+  if (!currentTX) return;
+  const lang = getCurrentLang();
+  const testo = QUICK_PHRASES[key][lang] || QUICK_PHRASES[key].it;
+  try {
+    await addDoc(collection(db, 'chats', currentTX, 'messages'), {
+      testo, da: 'cliente', quickPhrase: key, ts: serverTimestamp()
+    });
+    const { setDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    await setDoc(doc(db, 'chats', currentTX), {
+      negozio: document.getElementById('info-negozio').textContent,
+      ultimoMsg: testo,
+      ultimoTs: serverTimestamp(),
+      daLeggere: true
+    }, { merge: true });
+  } catch(e) {
+    console.error(e);
+  }
+};
+
+// Traduce un messaggio per la visualizzazione, se ha una quickPhrase key
+// e l'utente corrente legge in una lingua diversa da quella in cui è stato scritto.
+function testoVisualizzato(d) {
+  if (d.quickPhrase && QUICK_PHRASES[d.quickPhrase]) {
+    const lang = getCurrentLang();
+    return QUICK_PHRASES[d.quickPhrase][lang] || QUICK_PHRASES[d.quickPhrase].it;
+  }
+  return d.testo;
+}
 
 window.accediChat = async function() {
   const tx = document.getElementById('tx-input').value.trim().toUpperCase();
@@ -171,6 +277,7 @@ window.accediChat = async function() {
     document.getElementById('header-sub').textContent = trovato.negozio;
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('chat-screen').style.display = 'flex';
+    renderQuickPhrases();
 
     // Ascolta messaggi in realtime
     ascoltaMessaggi(tx);
@@ -206,7 +313,7 @@ function ascoltaMessaggi(tx) {
       const div = document.createElement('div');
       div.className = 'msg msg-' + (d.da === 'cliente' ? 'cliente' : d.da === 'sistema' ? 'sistema' : 'esercente');
       const ora = d.ts ? new Date(d.ts.seconds * 1000).toLocaleTimeString('it-IT', {hour:'2-digit',minute:'2-digit'}) : '';
-      div.innerHTML = `<div>${d.testo}</div>${ora ? `<div class="msg-time">${ora}</div>` : ''}`;
+      div.innerHTML = `<div>${testoVisualizzato(d)}</div>${d.quickPhrase ? `<div class="msg-translated-note">⚡ frase rapida</div>` : ''}${ora ? `<div class="msg-time">${ora}</div>` : ''}`;
       container.appendChild(div);
     });
     container.scrollTop = container.scrollHeight;
