@@ -158,7 +158,7 @@ window.accediDashboard = async function() {
   try {
     // Verifica PIN nel Google Sheet tab anagrafica
     const SHEET_ID = '1m5ovESlhcbVwafN3EOpuYpWUGm1tbH6CtNPTBNZZrOI';
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=anagrafica%20negozi`;
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=anagrafica_negozi`;
     const res = await fetch(url);
     const text = await res.text();
     const json = JSON.parse(text.substring(47).slice(0,-2));
