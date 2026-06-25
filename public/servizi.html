@@ -247,6 +247,351 @@ function applyI18nDOMServizi() {
 // ═══════════════════════════════════════════════
 // DATI POI
 // ═══════════════════════════════════════════════
+const POI_I18N = {
+  "nasoni": {
+    "it": {
+      "nome": "Fontanelle pubbliche (Nasoni)",
+      "cat": "Servizi pubblici",
+      "desc": "Oltre 2.500 nasoni con acqua potabile gratuita in tutta Roma. Il simbolo idrico della città.",
+      "badges": [
+        "Gratuito",
+        "H24",
+        "Acqua potabile"
+      ]
+    },
+    "en": {
+      "nome": "Public drinking fountains (\"Nasoni\")",
+      "cat": "Public services",
+      "desc": "Over 2,500 free drinking water fountains across Rome. The city's iconic water symbol.",
+      "badges": [
+        "Free",
+        "24/7",
+        "Drinking water"
+      ]
+    },
+    "zh": {
+      "nome": "公共饮水点（\"大鼻子\"）",
+      "cat": "公共服务",
+      "desc": "罗马全城超过2500个免费饮用水点，是这座城市的标志性水利符号。",
+      "badges": [
+        "免费",
+        "全天开放",
+        "饮用水"
+      ]
+    },
+    "es": {
+      "nome": "Fuentes públicas (\"Nasoni\")",
+      "cat": "Servicios públicos",
+      "desc": "Más de 2.500 fuentes de agua potable gratuita en toda Roma. El símbolo hídrico de la ciudad.",
+      "badges": [
+        "Gratis",
+        "24 h",
+        "Agua potable"
+      ]
+    },
+    "fr": {
+      "nome": "Fontaines publiques (\"Nasoni\")",
+      "cat": "Services publics",
+      "desc": "Plus de 2 500 fontaines d'eau potable gratuite dans tout Rome. Le symbole hydrique de la ville.",
+      "badges": [
+        "Gratuit",
+        "24h/24",
+        "Eau potable"
+      ]
+    },
+    "de": {
+      "nome": "Öffentliche Trinkbrunnen (\"Nasoni\")",
+      "cat": "Öffentliche Dienste",
+      "desc": "Über 2.500 kostenlose Trinkwasserbrunnen in ganz Rom. Das Wassersymbol der Stadt.",
+      "badges": [
+        "Kostenlos",
+        "24/7",
+        "Trinkwasser"
+      ]
+    }
+  },
+  "bagni": {
+    "it": {
+      "nome": "Bagni pubblici comunali",
+      "cat": "Servizi pubblici",
+      "desc": "Servizi igienici pubblici con indicazione di accessibilità, orari di apertura e disponibilità.",
+      "badges": [
+        "Comune di Roma",
+        "Accessibile"
+      ]
+    },
+    "en": {
+      "nome": "Public municipal toilets",
+      "cat": "Public services",
+      "desc": "Public toilets with accessibility information, opening hours and availability.",
+      "badges": [
+        "City of Rome",
+        "Accessible"
+      ]
+    },
+    "zh": {
+      "nome": "市政公共厕所",
+      "cat": "公共服务",
+      "desc": "公共卫生设施，提供无障碍信息、开放时间和可用情况。",
+      "badges": [
+        "罗马市政府",
+        "无障碍"
+      ]
+    },
+    "es": {
+      "nome": "Aseos públicos municipales",
+      "cat": "Servicios públicos",
+      "desc": "Aseos públicos con información de accesibilidad, horarios de apertura y disponibilidad.",
+      "badges": [
+        "Ayuntamiento de Roma",
+        "Accesible"
+      ]
+    },
+    "fr": {
+      "nome": "Toilettes publiques municipales",
+      "cat": "Services publics",
+      "desc": "Toilettes publiques avec indication d'accessibilité, horaires d'ouverture et disponibilité.",
+      "badges": [
+        "Ville de Rome",
+        "Accessible"
+      ]
+    },
+    "de": {
+      "nome": "Öffentliche städtische Toiletten",
+      "cat": "Öffentliche Dienste",
+      "desc": "Öffentliche Toiletten mit Angaben zu Barrierefreiheit, Öffnungszeiten und Verfügbarkeit.",
+      "badges": [
+        "Stadt Rom",
+        "Barrierefrei"
+      ]
+    }
+  },
+  "wifi": {
+    "it": {
+      "nome": "Wi-Fi pubblico gratuito",
+      "cat": "Connettività",
+      "desc": "Reti Wi-Fi comunali gratuite nelle piazze principali, parchi e siti culturali di Roma.",
+      "badges": [
+        "Gratuito",
+        "No registrazione"
+      ]
+    },
+    "en": {
+      "nome": "Free public Wi-Fi",
+      "cat": "Connectivity",
+      "desc": "Free municipal Wi-Fi networks in Rome's main squares, parks and cultural sites.",
+      "badges": [
+        "Free",
+        "No registration"
+      ]
+    },
+    "zh": {
+      "nome": "免费公共Wi-Fi",
+      "cat": "网络连接",
+      "desc": "罗马主要广场、公园和文化场所提供的免费市政Wi-Fi网络。",
+      "badges": [
+        "免费",
+        "无需注册"
+      ]
+    },
+    "es": {
+      "nome": "Wi-Fi público gratuito",
+      "cat": "Conectividad",
+      "desc": "Redes Wi-Fi municipales gratuitas en las principales plazas, parques y sitios culturales de Roma.",
+      "badges": [
+        "Gratis",
+        "Sin registro"
+      ]
+    },
+    "fr": {
+      "nome": "Wi-Fi public gratuit",
+      "cat": "Connectivité",
+      "desc": "Réseaux Wi-Fi municipaux gratuits dans les principales places, parcs et sites culturels de Rome.",
+      "badges": [
+        "Gratuit",
+        "Sans inscription"
+      ]
+    },
+    "de": {
+      "nome": "Kostenloses öffentliches Wi-Fi",
+      "cat": "Konnektivität",
+      "desc": "Kostenlose städtische WLAN-Netze auf den wichtigsten Plätzen, in Parks und Kulturstätten Roms.",
+      "badges": [
+        "Kostenlos",
+        "Keine Registrierung"
+      ]
+    }
+  },
+  "papa": {
+    "it": {
+      "nome": "Tomba di Papa Francesco",
+      "cat": "Pellegrinaggio",
+      "desc": "Basilica di Santa Maria Maggiore — tomba di Papa Francesco, accessibile liberamente ai fedeli e ai visitatori.",
+      "badges": [
+        "Ingresso libero",
+        "Basilica Papale"
+      ]
+    },
+    "en": {
+      "nome": "Tomb of Pope Francis",
+      "cat": "Pilgrimage",
+      "desc": "Basilica of Santa Maria Maggiore — tomb of Pope Francis, freely accessible to worshippers and visitors.",
+      "badges": [
+        "Free entry",
+        "Papal Basilica"
+      ]
+    },
+    "zh": {
+      "nome": "方济各教宗陵墓",
+      "cat": "朝圣",
+      "desc": "圣母大殿——方济各教宗的陵墓，信徒和游客可自由参观。",
+      "badges": [
+        "免费入场",
+        "教宗大殿"
+      ]
+    },
+    "es": {
+      "nome": "Tumba del Papa Francisco",
+      "cat": "Peregrinación",
+      "desc": "Basílica de Santa María la Mayor — tumba del Papa Francisco, accesible libremente a fieles y visitantes.",
+      "badges": [
+        "Entrada libre",
+        "Basílica Papal"
+      ]
+    },
+    "fr": {
+      "nome": "Tombeau du Pape François",
+      "cat": "Pèlerinage",
+      "desc": "Basilique Sainte-Marie-Majeure — tombeau du Pape François, librement accessible aux fidèles et aux visiteurs.",
+      "badges": [
+        "Entrée libre",
+        "Basilique Papale"
+      ]
+    },
+    "de": {
+      "nome": "Grab von Papst Franziskus",
+      "cat": "Pilgerfahrt",
+      "desc": "Basilika Santa Maria Maggiore — Grab von Papst Franziskus, frei zugänglich für Gläubige und Besucher.",
+      "badges": [
+        "Freier Eintritt",
+        "Päpstliche Basilika"
+      ]
+    }
+  },
+  "vaticano": {
+    "it": {
+      "nome": "Città del Vaticano",
+      "cat": "Patrimonio UNESCO",
+      "desc": "Piazza San Pietro, Basilica di San Pietro, Musei Vaticani e Cappella Sistina. Il cuore della Cristianità.",
+      "badges": [
+        "UNESCO",
+        "Patrimonio mondiale"
+      ]
+    },
+    "en": {
+      "nome": "Vatican City",
+      "cat": "UNESCO Heritage",
+      "desc": "St. Peter's Square, St. Peter's Basilica, Vatican Museums and the Sistine Chapel. The heart of Christianity.",
+      "badges": [
+        "UNESCO",
+        "World Heritage"
+      ]
+    },
+    "zh": {
+      "nome": "梵蒂冈城",
+      "cat": "联合国教科文组织遗产",
+      "desc": "圣彼得广场、圣彼得大教堂、梵蒂冈博物馆和西斯廷教堂。基督教的中心。",
+      "badges": [
+        "联合国教科文组织",
+        "世界遗产"
+      ]
+    },
+    "es": {
+      "nome": "Ciudad del Vaticano",
+      "cat": "Patrimonio UNESCO",
+      "desc": "Plaza de San Pedro, Basílica de San Pedro, Museos Vaticanos y Capilla Sixtina. El corazón de la Cristiandad.",
+      "badges": [
+        "UNESCO",
+        "Patrimonio mundial"
+      ]
+    },
+    "fr": {
+      "nome": "Cité du Vatican",
+      "cat": "Patrimoine UNESCO",
+      "desc": "Place Saint-Pierre, Basilique Saint-Pierre, Musées du Vatican et Chapelle Sixtine. Le cœur de la Chrétienté.",
+      "badges": [
+        "UNESCO",
+        "Patrimoine mondial"
+      ]
+    },
+    "de": {
+      "nome": "Vatikanstadt",
+      "cat": "UNESCO-Welterbe",
+      "desc": "Petersplatz, Petersbasilika, Vatikanische Museen und Sixtinische Kapelle. Das Herz der Christenheit.",
+      "badges": [
+        "UNESCO",
+        "Weltkulturerbe"
+      ]
+    }
+  },
+  "spagna": {
+    "it": {
+      "nome": "Piazza di Spagna",
+      "cat": "Icona di Roma",
+      "desc": "La Scalinata di Trinità dei Monti e la Fontana della Barcaccia. Uno dei luoghi più fotografati al mondo.",
+      "badges": [
+        "Monumento",
+        "Centro storico"
+      ]
+    },
+    "en": {
+      "nome": "Piazza di Spagna",
+      "cat": "Icon of Rome",
+      "desc": "The Spanish Steps and the Barcaccia Fountain. One of the most photographed places in the world.",
+      "badges": [
+        "Monument",
+        "Historic center"
+      ]
+    },
+    "zh": {
+      "nome": "西班牙广场",
+      "cat": "罗马标志",
+      "desc": "三一阶梯和破船喷泉。世界上被拍照最多的地方之一。",
+      "badges": [
+        "古迹",
+        "历史中心"
+      ]
+    },
+    "es": {
+      "nome": "Plaza de España",
+      "cat": "Icono de Roma",
+      "desc": "La Escalinata de la Trinità dei Monti y la Fuente de la Barcaccia. Uno de los lugares más fotografiados del mundo.",
+      "badges": [
+        "Monumento",
+        "Centro histórico"
+      ]
+    },
+    "fr": {
+      "nome": "Place d'Espagne",
+      "cat": "Icône de Rome",
+      "desc": "L'escalier de la Trinité-des-Monts et la fontaine de la Barcaccia. L'un des lieux les plus photographiés au monde.",
+      "badges": [
+        "Monument",
+        "Centre historique"
+      ]
+    },
+    "de": {
+      "nome": "Piazza di Spagna",
+      "cat": "Ikone Roms",
+      "desc": "Die Spanische Treppe und der Barcaccia-Brunnen. Einer der meistfotografierten Orte der Welt.",
+      "badges": [
+        "Denkmal",
+        "Historisches Zentrum"
+      ]
+    }
+  }
+};
+
 const POIS = [
   // ── SERVIZI PUBBLICI ──
   {
@@ -417,6 +762,17 @@ const POIS = [
   },
 ];
 
+function getPoiTradotto(poi) {
+  var lang = localStorage.getItem('it_lang') || 'it';
+  var t = (POI_I18N[poi.id] && POI_I18N[poi.id][lang]) || (POI_I18N[poi.id] && POI_I18N[poi.id].it);
+  if (!t) return poi; // fallback: POI senza traduzione (taxi/metro/agenzie - Fase 3)
+  return Object.assign({}, poi, {
+    nome: t.nome, cat: t.cat, desc: t.desc,
+    badges: poi.badges.map(function(b, i) { return { t: t.badges[i] || b.t, c: b.c }; })
+  });
+}
+
+
 // ═══════════════════════════════════════════════
 // STATO
 // ═══════════════════════════════════════════════
@@ -529,8 +885,9 @@ function formatDist(m){
   return (m/1000).toFixed(1).replace('.',',')+'km';
 }
 
-function apriSheet(poi) {
-  poiSelezionato = poi;
+function apriSheet(poiOriginale) {
+  var poi = getPoiTradotto(poiOriginale);
+  poiSelezionato = poiOriginale;
   document.getElementById('s-emoji').textContent = poi.emoji;
   document.getElementById('s-cat').textContent   = poi.cat;
   document.getElementById('s-name').textContent  = poi.nome;
