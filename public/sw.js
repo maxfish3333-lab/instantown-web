@@ -26,7 +26,27 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
+  // Non intercettare richieste verso domini esterni (Google Sheets, API, ecc.)
+  // - lasciale passare direttamente alla rete, senza cache.
+  const url = new URL(e.request.url);
+  if (url.origin !== self.location.origin) {
+    return; // lascia che il browser gestisca la richiesta normalmente
+  }
+
   e.respondWith(
-    fetch(e.request).catch(() => caches.match(e.request))
+    fetch(e.request)
+      .catch(() => caches.match(e.request))
+      .then(response => {
+        // Se né la rete né la cache hanno una risposta valida,
+        // restituisci una risposta di fallback invece di undefined
+        // (evita l'errore "Failed to convert value to 'Response'"
+        // e il conseguente loop infinito).
+        if (response) return response;
+        return new Response('Risorsa non disponibile offline.', {
+          status: 503,
+          statusText: 'Service Unavailable',
+          headers: { 'Content-Type': 'text/plain' }
+        });
+      })
   );
 });
