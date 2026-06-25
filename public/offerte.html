@@ -847,7 +847,7 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') chiudiOve
 
 init();
 function applyLang(lang) {
-  var ok = ['it','en','zh','es','fr'];
+  var ok = ['it','en','zh','es','fr','de'];
   if (!ok.includes(lang)) lang = 'it';
   localStorage.setItem('it_lang', lang);
   document.querySelectorAll('.lbtn').forEach(function(b) {
