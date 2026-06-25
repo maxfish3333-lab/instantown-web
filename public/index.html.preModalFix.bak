@@ -426,15 +426,15 @@ footer a:hover{color:var(--ocra-l);}
 <div class="modal-overlay" id="modal-occasioni" onclick="chiudiSeOverlay(event,'modal-occasioni')">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-header"><span class="modal-title" id="modal-occ-title">⚡ Occasioni flash</span><button class="modal-close" onclick="chiudi('modal-occasioni')">&#x2715;</button></div>
+    <div class="modal-header"><span class="modal-title">&#x26A1; Occasioni flash</span><button class="modal-close" onclick="chiudi('modal-occasioni')">&#x2715;</button></div>
     <div id="pref-bar-occasioni" style="display:none" class="cat-pref-bar"><span>&#x2B50;</span><span id="pref-bar-text"></span><a href="#" onclick="chiudi('modal-occasioni')" style="margin-left:auto;color:var(--cielo);font-size:11px;text-decoration:none;">modifica</a></div>
     <div class="cat-grid-modal" id="cat-grid-modal">
-      <a class="cat-card-modal" href="offerte.html?cat=CIBO" id="cat-CIBO"><div class="cat-emoji">&#x1F355;</div><div class="cat-name-modal" id="cat-name-cibo">Cibo</div><div class="cat-count-modal" id="ccnt-CIBO">— offerte</div></a>
-      <a class="cat-card-modal" href="offerte.html?cat=MODA" id="cat-MODA"><div class="cat-emoji">&#x1F457;</div><div class="cat-name-modal" id="cat-name-moda">Moda</div><div class="cat-count-modal" id="ccnt-MODA">— offerte</div></a>
-      <a class="cat-card-modal" href="offerte.html?cat=TECH" id="cat-TECH"><div class="cat-emoji">&#x1F4F1;</div><div class="cat-name-modal" id="cat-name-tech">Tech</div><div class="cat-count-modal" id="ccnt-TECH">— offerte</div></a>
-      <a class="cat-card-modal" href="offerte.html?cat=VIAGGI" id="cat-VIAGGI"><div class="cat-emoji">&#x2708;&#xFE0F;</div><div class="cat-name-modal" id="cat-name-viaggi">Viaggi</div><div class="cat-count-modal" id="ccnt-VIAGGI">— offerte</div></a>
-      <a class="cat-card-modal" href="offerte.html?cat=DIVERTIMENTO" id="cat-DIVERTIMENTO"><div class="cat-emoji">&#x1F3AD;</div><div class="cat-name-modal" id="cat-name-divertimento">Divertimento</div><div class="cat-count-modal" id="ccnt-DIVERTIMENTO">— offerte</div></a>
-      <a class="cat-card-modal" href="offerte.html?cat=ALTRO" id="cat-ALTRO"><div class="cat-emoji">&#x1F6CD;&#xFE0F;</div><div class="cat-name-modal" id="cat-name-altro">Altro</div><div class="cat-count-modal" id="ccnt-ALTRO">— offerte</div></a>
+      <a class="cat-card-modal" href="offerte.html?cat=CIBO" id="cat-CIBO"><div class="cat-emoji">&#x1F355;</div><div class="cat-name-modal">Cibo</div><div class="cat-count-modal" id="ccnt-CIBO">— offerte</div></a>
+      <a class="cat-card-modal" href="offerte.html?cat=MODA" id="cat-MODA"><div class="cat-emoji">&#x1F457;</div><div class="cat-name-modal">Moda</div><div class="cat-count-modal" id="ccnt-MODA">— offerte</div></a>
+      <a class="cat-card-modal" href="offerte.html?cat=TECH" id="cat-TECH"><div class="cat-emoji">&#x1F4F1;</div><div class="cat-name-modal">Tech</div><div class="cat-count-modal" id="ccnt-TECH">— offerte</div></a>
+      <a class="cat-card-modal" href="offerte.html?cat=VIAGGI" id="cat-VIAGGI"><div class="cat-emoji">&#x2708;&#xFE0F;</div><div class="cat-name-modal">Viaggi</div><div class="cat-count-modal" id="ccnt-VIAGGI">— offerte</div></a>
+      <a class="cat-card-modal" href="offerte.html?cat=DIVERTIMENTO" id="cat-DIVERTIMENTO"><div class="cat-emoji">&#x1F3AD;</div><div class="cat-name-modal">Divertimento</div><div class="cat-count-modal" id="ccnt-DIVERTIMENTO">— offerte</div></a>
+      <a class="cat-card-modal" href="offerte.html?cat=ALTRO" id="cat-ALTRO"><div class="cat-emoji">&#x1F6CD;&#xFE0F;</div><div class="cat-name-modal">Altro</div><div class="cat-count-modal" id="ccnt-ALTRO">— offerte</div></a>
     </div>
     <div style="padding:4px 20px 8px;"><a href="offerte.html" style="display:block;text-align:center;background:var(--rosso);color:#fff;padding:13px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:500;" onmouseover="this.style.background='var(--rosso-l)'" onmouseout="this.style.background='var(--rosso)'">Vedi tutte le offerte →</a></div>
   </div>
@@ -563,7 +563,7 @@ footer a:hover{color:var(--ocra-l);}
 // RESET localStorage corrotto
 (function() {
   var saved = localStorage.getItem('it_lang');
-  var ok = ['it','en','zh','es','fr','de'];
+  var ok = ['it','en','zh','es','fr'];
   if (saved && !ok.includes(saved)) localStorage.removeItem('it_lang');
 })();
 
@@ -606,17 +606,7 @@ var I18N = {
     's2t': "Prenota e paga in escrow", 's2d': "Il prezzo si blocca al momento della prenotazione. Il pagamento va in escrow — nessuno lo tocca finché non incontri l’esercente.",
     's3t': "QR match — fondi sbloccati", 's3d': "L’esercente mostra QR-A, tu scansioni QR-B. Solo la coppia fisica sblocca i fondi. Impossibile frodare.",
     'radar-btn': "Apri il Radar GPS →",
-    'ft-offerte': "Offerte", 'ft-servizi': "Servizi", 'ft-reg': "Registrati", 'ft-pubblica': "Pubblica offerta", 'ft-finder': "FINDER — prossimamente",
-    'modal-occ-title': "⚡ Occasioni flash",
-    'cat-name-cibo': "Cibo",
-    'cat-name-moda': "Moda",
-    'cat-name-tech': "Tech",
-    'cat-name-viaggi': "Viaggi",
-    'cat-name-divertimento': "Divertimento",
-    'cat-name-altro': "Altro",
-    'modal-vedi-tutte': "Vedi tutte le offerte →",
-    'modal-pref-prefix': "Preferenze:",
-    'modal-pref-modifica': "modifica"
+    'ft-offerte': "Offerte", 'ft-servizi': "Servizi", 'ft-reg': "Registrati", 'ft-pubblica': "Pubblica offerta", 'ft-finder': "FINDER — prossimamente"
   },
   en: {
     'vip-title': "The user is always VIP",
@@ -647,17 +637,7 @@ var I18N = {
     's2t': "Book and pay in escrow", 's2d': "The price locks at the time of booking. Payment goes into escrow — no one touches it until you meet the merchant.",
     's3t': "QR match — funds released", 's3d': "The merchant shows QR-A, you scan QR-B. Only the physical pair releases the funds. Impossible to defraud.",
     'radar-btn': "Open GPS Radar →",
-    'ft-offerte': "Offers", 'ft-servizi': "Services", 'ft-reg': "Register", 'ft-pubblica': "Post an offer", 'ft-finder': "FINDER — coming soon",
-    'modal-occ-title': "⚡ Flash deals",
-    'cat-name-cibo': "Food",
-    'cat-name-moda': "Fashion",
-    'cat-name-tech': "Tech",
-    'cat-name-viaggi': "Travel",
-    'cat-name-divertimento': "Entertainment",
-    'cat-name-altro': "Other",
-    'modal-vedi-tutte': "See all offers →",
-    'modal-pref-prefix': "Preferences:",
-    'modal-pref-modifica': "edit"
+    'ft-offerte': "Offers", 'ft-servizi': "Services", 'ft-reg': "Register", 'ft-pubblica': "Post an offer", 'ft-finder': "FINDER — coming soon"
   },
   zh: {
     'vip-title': "用户始终是VIP",
@@ -688,17 +668,7 @@ var I18N = {
     's2t': "预订并托管付款", 's2d': "预订时价格锁定。付款进入托管—在与商家会面之前无人可动。",
     's3t': "QR匹配—资金释放", 's3d': "商家出示QR-A，您扫QR-B。只有实体双码匹配才能释放资金。",
     'radar-btn': "打开GPS雷达 →",
-    'ft-offerte': "优惠", 'ft-servizi': "服务", 'ft-reg': "注册", 'ft-pubblica': "发布优惠", 'ft-finder': "FINDER — 即将推出",
-    'modal-occ-title': "⚡ 闪购优惠",
-    'cat-name-cibo': "美食",
-    'cat-name-moda': "时尚",
-    'cat-name-tech': "科技",
-    'cat-name-viaggi': "旅游",
-    'cat-name-divertimento': "娱乐",
-    'cat-name-altro': "其他",
-    'modal-vedi-tutte': "查看所有优惠 →",
-    'modal-pref-prefix': "偏好：",
-    'modal-pref-modifica': "修改"
+    'ft-offerte': "优惠", 'ft-servizi': "服务", 'ft-reg': "注册", 'ft-pubblica': "发布优惠", 'ft-finder': "FINDER — 即将推出"
   },
   es: {
     'vip-title': "El usuario siempre es VIP",
@@ -729,17 +699,7 @@ var I18N = {
     's2t': "Reserva y paga en depósito", 's2d': "El precio se fija al reservar. El pago va al depósito — nadie lo toca hasta el encuentro.",
     's3t': "QR match — fondos desbloqueados", 's3d': "El comerciante muestra QR-A, tú escaneas QR-B. Solo el par físico libera los fondos.",
     'radar-btn': "Abrir Radar GPS →",
-    'ft-offerte': "Ofertas", 'ft-servizi': "Servicios", 'ft-reg': "Registrarse", 'ft-pubblica': "Publicar oferta", 'ft-finder': "FINDER — próximamente",
-    'modal-occ-title': "⚡ Ofertas flash",
-    'cat-name-cibo': "Comida",
-    'cat-name-moda': "Moda",
-    'cat-name-tech': "Tech",
-    'cat-name-viaggi': "Viajes",
-    'cat-name-divertimento': "Entretenimiento",
-    'cat-name-altro': "Otro",
-    'modal-vedi-tutte': "Ver todas las ofertas →",
-    'modal-pref-prefix': "Preferencias:",
-    'modal-pref-modifica': "editar"
+    'ft-offerte': "Ofertas", 'ft-servizi': "Servicios", 'ft-reg': "Registrarse", 'ft-pubblica': "Publicar oferta", 'ft-finder': "FINDER — próximamente"
   },
   fr: {
     'vip-title': "L’utilisateur est toujours VIP",
@@ -770,17 +730,7 @@ var I18N = {
     's2t': "Réservez et payez en séquestre", 's2d': "Le prix est bloqué à la réservation. Le paiement va en séquestre jusqu’à la rencontre.",
     's3t': "QR match — fonds débloqués", 's3d': "Le commerçant montre QR-A, vous scannez QR-B. Seul le couple physique libère les fonds.",
     'radar-btn': "Ouvrir le Radar GPS →",
-    'ft-offerte': "Offres", 'ft-servizi': "Services", 'ft-reg': "S’inscrire", 'ft-pubblica': "Publier une offre", 'ft-finder': "FINDER — prochainement",
-    'modal-occ-title': "⚡ Offres flash",
-    'cat-name-cibo': "Nourriture",
-    'cat-name-moda': "Mode",
-    'cat-name-tech': "Tech",
-    'cat-name-viaggi': "Voyages",
-    'cat-name-divertimento': "Divertissement",
-    'cat-name-altro': "Autre",
-    'modal-vedi-tutte': "Voir toutes les offres →",
-    'modal-pref-prefix': "Préférences :",
-    'modal-pref-modifica': "modifier"
+    'ft-offerte': "Offres", 'ft-servizi': "Services", 'ft-reg': "S’inscrire", 'ft-pubblica': "Publier une offre", 'ft-finder': "FINDER — prochainement"
   },
   de: {
     'vip-title': "Der Nutzer ist immer VIP",
@@ -832,17 +782,7 @@ var I18N = {
     'ft-servizi': "Dienste",
     'ft-reg': "Registrieren",
     'ft-pubblica': "Angebot veröffentlichen",
-    'ft-finder': "FINDER — demnächst",
-    'modal-occ-title': "⚡ Blitzangebote",
-    'cat-name-cibo': "Essen",
-    'cat-name-moda': "Mode",
-    'cat-name-tech': "Tech",
-    'cat-name-viaggi': "Reisen",
-    'cat-name-divertimento': "Unterhaltung",
-    'cat-name-altro': "Sonstiges",
-    'modal-vedi-tutte': "Alle Angebote ansehen →",
-    'modal-pref-prefix': "Präferenzen:",
-    'modal-pref-modifica': "bearbeiten"
+    'ft-finder': "FINDER — demnächst"
   },
 };
 
@@ -965,8 +905,7 @@ var pwaTexts = {
   en: { title: 'Add INSTANTOWN', sub: 'Quick access from your home screen', btn: '+ Add', dismiss: 'Not now' },
   zh: { title: '添加INSTANTOWN', sub: '即可从主屏幕访问', btn: '+ 添加', dismiss: '暫不添加' },
   es: { title: 'Añadir INSTANTOWN', sub: 'Acceso rápido desde tu pantalla de inicio', btn: '+ Añadir', dismiss: 'Ahora no' },
-  fr: { title: 'Ajouter INSTANTOWN', sub: 'Accès rapide depuis votre écran d’accueil', btn: '+ Ajouter', dismiss: 'Pas maintenant' },
-  de: { title: 'INSTANTOWN hinzufügen', sub: 'Schneller Zugriff vom Startbildschirm', btn: '+ Hinzufügen', dismiss: 'Nicht jetzt' }
+  fr: { title: 'Ajouter INSTANTOWN', sub: 'Accès rapide depuis votre écran d’accueil', btn: '+ Ajouter', dismiss: 'Pas maintenant' }
 };
 
 function updatePwaBannerLang(lang) {

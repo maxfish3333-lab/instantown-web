@@ -49,6 +49,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:#fff;min-heigh
 .chat-item-time{font-size:10px;color:rgba(255,255,255,.25);margin-top:4px;}
 .badge-new{display:inline-block;background:var(--rosso-l);color:#fff;font-size:10px;padding:2px 6px;border-radius:10px;margin-left:6px;}
 .no-chats{padding:40px 20px;text-align:center;color:rgba(255,255,255,.25);font-size:13px;}
+.richiesta-card{padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.04);background:rgba(200,134,10,.05);}
+.richiesta-card-budget{font-size:14px;font-weight:600;color:var(--ocra-l);margin-bottom:2px;}
+.richiesta-card-dist{font-size:11px;color:rgba(255,255,255,.4);margin-bottom:6px;}
+.richiesta-card-note{font-size:12px;color:rgba(255,255,255,.5);margin-bottom:8px;}
+.richiesta-propose-row{display:flex;gap:6px;}
+.richiesta-input{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(200,134,10,.3);border-radius:6px;padding:7px 9px;font-size:13px;color:#fff;font-family:'DM Sans',sans-serif;outline:none;}
+.richiesta-propose-btn{background:var(--ocra);color:#1C1410;border:none;border-radius:6px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;}
+.richiesta-inviata{font-size:11px;color:#4caf50;font-weight:600;}
 
 /* AREA CHAT */
 .chat-area{flex:1;display:flex;flex-direction:column;min-width:0;}
@@ -71,6 +79,29 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:#fff;min-heigh
 .send-btn:hover{background:var(--ocra-l);}
 .loading{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:var(--ocra-l);border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
+
+/* TRATTATIVA */
+.msg-proposta{max-width:80%;border-radius:12px;padding:12px 16px;font-size:14px;}
+.msg-proposta.da-esercente{align-self:flex-end;background:rgba(200,134,10,.18);border:1px solid rgba(200,134,10,.4);border-bottom-right-radius:4px;}
+.msg-proposta.da-cliente{align-self:flex-start;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-bottom-left-radius:4px;}
+.msg-proposta-label{font-size:10px;text-transform:uppercase;letter-spacing:.05em;opacity:.6;margin-bottom:4px;}
+.msg-proposta-amount{font-size:20px;font-weight:600;color:var(--ocra-l);}
+.msg-proposta-actions{display:flex;gap:8px;margin-top:10px;}
+.msg-proposta-actions button{flex:1;border:none;border-radius:6px;padding:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.btn-pr-accetta{background:#2e7d32;color:#fff;}
+.btn-pr-rifiuta{background:rgba(139,26,26,.5);color:#fff;}
+.btn-pr-rilancia{background:rgba(255,255,255,.15);color:#fff;}
+.msg-proposta-scaduta{opacity:.4;}
+.msg-proposta-stato{font-size:11px;margin-top:6px;font-weight:600;}
+.msg-proposta-stato.accettata{color:#4caf50;}
+.msg-proposta-stato.rifiutata{color:#ff6b6b;}
+.msg-proposta-stato.scaduta{color:rgba(255,255,255,.4);}
+.msg-proposta-countdown{font-size:10px;color:rgba(255,255,255,.4);margin-top:4px;}
+.rilancia-panel{background:rgba(255,255,255,.06);border:1px solid rgba(200,134,10,.3);border-radius:8px;padding:10px;margin-top:8px;display:none;}
+.rilancia-panel.open{display:block;}
+.rilancia-input-row{display:flex;gap:6px;}
+.rilancia-input{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(200,134,10,.3);border-radius:6px;padding:8px 10px;font-size:14px;color:#fff;font-family:'DM Sans',sans-serif;outline:none;}
+.rilancia-send{background:var(--ocra);color:#1C1410;border:none;border-radius:6px;padding:8px 12px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;}
 
 @media(max-width:600px){
   #dashboard{flex-direction:column;}
@@ -104,6 +135,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:#fff;min-heigh
 <!-- DASHBOARD -->
 <div id="dashboard">
   <div class="chat-list" id="chat-list">
+    <div class="chat-list-header" id="richieste-reverse-header" style="display:none;">🏨 Richieste alloggio vicine</div>
+    <div id="richieste-reverse-list"></div>
     <div class="chat-list-header">Conversazioni</div>
     <div class="no-chats" id="no-chats">Nessun messaggio ancora.</div>
   </div>
@@ -143,9 +176,12 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 let negozioCorrente = null;
+let negozioLat = null;
+let negozioLon = null;
 let currentTX = null;
 let unsubMessages = null;
 let unsubChats = null;
+let unsubRichiesteReverse = null;
 
 window.accediDashboard = async function() {
   const pin = document.getElementById('pin-input').value.trim();
@@ -165,13 +201,19 @@ window.accediDashboard = async function() {
     const cols = json.table.cols.map(c => c.label.toLowerCase().trim());
     const pinIdx = cols.findIndex(c => c.includes('pin'));
     const nomeIdx = cols.findIndex(c => c.includes('nome'));
+    const latIdx = cols.findIndex(c => c.includes('lat'));
+    const lonIdx = cols.findIndex(c => c.includes('lon'));
 
     let trovato = null;
     for (const row of json.table.rows) {
       if (!row.c[pinIdx]) continue;
       const val = (row.c[pinIdx].v || '').toString().trim();
       if (val === pin) {
-        trovato = { nome: row.c[nomeIdx] ? row.c[nomeIdx].v : 'Negozio' };
+        trovato = {
+          nome: row.c[nomeIdx] ? row.c[nomeIdx].v : 'Negozio',
+          lat: latIdx >= 0 && row.c[latIdx] ? parseFloat(row.c[latIdx].v) : null,
+          lon: lonIdx >= 0 && row.c[lonIdx] ? parseFloat(row.c[lonIdx].v) : null
+        };
         break;
       }
     }
@@ -184,11 +226,14 @@ window.accediDashboard = async function() {
     }
 
     negozioCorrente = trovato.nome;
+    negozioLat = trovato.lat;
+    negozioLon = trovato.lon;
     document.getElementById('header-negozio').textContent = trovato.nome;
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('dashboard').style.display = 'flex';
 
     caricaChats(trovato.nome);
+    if (negozioLat && negozioLon) caricaRichiesteReverseCompatibili();
 
   } catch(e) {
     console.error(e);
@@ -228,6 +273,60 @@ function caricaChats(negozio) {
     if (count === 0) noChats.style.display = 'block';
   });
 }
+
+function haversine(lat1, lon1, lat2, lon2) {
+  const R = 6371000;
+  const toRad = d => d * Math.PI / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function caricaRichiesteReverseCompatibili() {
+  if (unsubRichiesteReverse) unsubRichiesteReverse();
+  unsubRichiesteReverse = onSnapshot(collection(db, 'richieste-reverse'), (snap) => {
+    const list = document.getElementById('richieste-reverse-list');
+    const header = document.getElementById('richieste-reverse-header');
+    list.innerHTML = '';
+    let count = 0;
+    snap.forEach(richDoc => {
+      const r = richDoc.data();
+      if (r.stato !== 'aperta') return;
+      if (typeof r.lat !== 'number' || typeof r.lon !== 'number') return;
+      const dist = haversine(negozioLat, negozioLon, r.lat, r.lon);
+      if (dist > r.raggio) return;
+      count++;
+      const card = document.createElement('div');
+      card.className = 'richiesta-card';
+      card.innerHTML = `
+        <div class="richiesta-card-budget">Budget max € ${r.budgetMax.toFixed(2)}</div>
+        <div class="richiesta-card-dist">~${Math.round(dist)}m di distanza</div>
+        ${r.note ? `<div class="richiesta-card-note">${r.note}</div>` : ''}
+        <div class="richiesta-propose-row" id="rev-form-${richDoc.id}">
+          <input type="number" class="richiesta-input" id="rev-prezzo-${richDoc.id}" placeholder="0.00" step="1">
+          <button class="richiesta-propose-btn" onclick="inviaPropostaHotel('${richDoc.id}')">Proponi</button>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+    header.style.display = count > 0 ? 'block' : 'none';
+  });
+}
+
+window.inviaPropostaHotel = async function(richiestaId) {
+  const input = document.getElementById('rev-prezzo-' + richiestaId);
+  const prezzo = parseFloat(input.value);
+  if (!prezzo || prezzo <= 0 || !negozioCorrente) return;
+  try {
+    await addDoc(collection(db, 'richieste-reverse', richiestaId, 'proposte'), {
+      hotelNome: negozioCorrente, prezzo, stato: 'in_attesa', ts: serverTimestamp()
+    });
+    const formRow = document.getElementById('rev-form-' + richiestaId);
+    if (formRow) formRow.innerHTML = `<span class="richiesta-inviata">✓ Proposta di € ${prezzo.toFixed(2)} inviata</span>`;
+  } catch(e) { console.error(e); }
+};
+
 
 
 // ══════════════════════════════════
@@ -284,6 +383,97 @@ const QUICK_PHRASES = {
   }
 };
 
+const TRADING_LABELS = {
+  laTuaProposta:   { it:'La tua controproposta', en:'Your counter-offer', zh:'你的还价', es:'Tu contraoferta', fr:'Votre contre-proposition', de:'Dein Gegenangebot' },
+  controproposta:  { it:'Proposta cliente', en:'Customer offer', zh:'客户提议', es:'Propuesta del cliente', fr:'Proposition du client', de:'Angebot des Kunden' },
+  accetta:         { it:'Accetta', en:'Accept', zh:'接受', es:'Aceptar', fr:'Accepter', de:'Annehmen' },
+  rifiuta:         { it:'Rifiuta', en:'Decline', zh:'拒绝', es:'Rechazar', fr:'Refuser', de:'Ablehnen' },
+  rilancia:        { it:'Rilancia', en:'Counter', zh:'还价', es:'Contraofertar', fr:'Contre-offre', de:'Gegenangebot' },
+  invia:           { it:'Invia', en:'Send', zh:'发送', es:'Enviar', fr:'Envoyer', de:'Senden' },
+  accordoRaggiunto:{ it:'Accordo raggiunto a', en:'Agreement reached at', zh:'已达成协议，价格为', es:'Acuerdo alcanzado en', fr:'Accord conclu à', de:'Einigung erzielt bei' },
+  propostaRifiutata:{ it:'Proposta rifiutata', en:'Offer declined', zh:'提议已被拒绝', es:'Propuesta rechazada', fr:'Proposition refusée', de:'Angebot abgelehnt' },
+  propostaScaduta: { it:'Proposta scaduta', en:'Offer expired', zh:'提议已过期', es:'Propuesta caducada', fr:'Proposition expirée', de:'Angebot abgelaufen' },
+  scadeIn:         { it:'scade in', en:'expires in', zh:'剩余', es:'caduca en', fr:'expire dans', de:'läuft ab in' }
+};
+
+function tt(key) {
+  const lang = getCurrentLang();
+  return (TRADING_LABELS[key] && (TRADING_LABELS[key][lang] || TRADING_LABELS[key].it)) || key;
+}
+
+window.rispondiProposta = async function(msgId, azione) {
+  if (!currentTX) return;
+  try {
+    await updateDoc(doc(db, 'chats', currentTX, 'messages', msgId), {
+      stato: azione === 'accetta' ? 'accettata' : 'rifiutata'
+    });
+  } catch(e) { console.error(e); }
+};
+
+window.toggleRilanciaPanel = function(msgId) {
+  const panel = document.getElementById('rilancia-' + msgId);
+  if (panel) panel.classList.toggle('open');
+};
+
+window.inviaRilancio = async function(msgId, offertaOriginale) {
+  if (!currentTX) return;
+  const input = document.getElementById('rilancia-input-' + msgId);
+  const valore = parseFloat(input.value);
+  if (!valore || valore <= 0) return;
+  try {
+    await updateDoc(doc(db, 'chats', currentTX, 'messages', msgId), { stato: 'rifiutata' });
+    const scadenza = new Date(Date.now() + 12 * 60 * 1000);
+    await addDoc(collection(db, 'chats', currentTX, 'messages'), {
+      tipo: 'proposta', prezzoProposto: valore, daChi: 'esercente',
+      stato: 'in_attesa', scadenza: scadenza.toISOString(),
+      offertaOriginale: offertaOriginale, ts: serverTimestamp()
+    });
+    await updateDoc(doc(db, 'chats', currentTX), {
+      ultimoMsg: '🔄 Controproposta: € ' + valore.toFixed(2), ultimoTs: serverTimestamp(), daLeggere: false
+    });
+  } catch(e) { console.error(e); }
+};
+
+function renderProposta(d, docId, isUltima) {
+  const scaduta = d.stato === 'in_attesa' && d.scadenza && new Date(d.scadenza) < new Date();
+  const statoEffettivo = scaduta ? 'scaduta' : d.stato;
+  const daEsercente = d.daChi === 'esercente';
+  const div = document.createElement('div');
+  div.className = 'msg-proposta ' + (daEsercente ? 'da-esercente' : 'da-cliente') + (statoEffettivo !== 'in_attesa' ? ' msg-proposta-scaduta' : '');
+
+  let azioniHtml = '';
+  if (statoEffettivo === 'in_attesa' && isUltima && !daEsercente) {
+    azioniHtml = `<div class="msg-proposta-actions">
+      <button class="btn-pr-rifiuta" onclick="rispondiProposta('${docId}','rifiuta')">${tt('rifiuta')}</button>
+      <button class="btn-pr-rilancia" onclick="toggleRilanciaPanel('${docId}')">${tt('rilancia')}</button>
+      <button class="btn-pr-accetta" onclick="rispondiProposta('${docId}','accetta')">${tt('accetta')}</button>
+    </div>
+    <div class="rilancia-panel" id="rilancia-${docId}">
+      <div class="rilancia-input-row">
+        <input type="number" class="rilancia-input" id="rilancia-input-${docId}" placeholder="0.00" step="0.50">
+        <button class="rilancia-send" onclick="inviaRilancio('${docId}', ${d.offertaOriginale || d.prezzoProposto})">${tt('invia')}</button>
+      </div>
+    </div>`;
+  }
+
+  let statoHtml = '';
+  if (statoEffettivo === 'accettata') {
+    statoHtml = `<div class="msg-proposta-stato accettata">✅ ${tt('accordoRaggiunto')} € ${d.prezzoProposto.toFixed(2)}</div>`;
+  } else if (statoEffettivo === 'rifiutata') {
+    statoHtml = `<div class="msg-proposta-stato rifiutata">✕ ${tt('propostaRifiutata')}</div>`;
+  } else if (statoEffettivo === 'scaduta') {
+    statoHtml = `<div class="msg-proposta-stato scaduta">⏱ ${tt('propostaScaduta')}</div>`;
+  } else if (d.scadenza) {
+    const msRimanenti = new Date(d.scadenza) - new Date();
+    const minRimanenti = Math.max(0, Math.ceil(msRimanenti / 60000));
+    statoHtml = `<div class="msg-proposta-countdown">${tt('scadeIn')} ${minRimanenti} min</div>`;
+  }
+
+  const label = daEsercente ? tt('laTuaProposta') : tt('controproposta');
+  div.innerHTML = `<div class="msg-proposta-label">${label}</div><div class="msg-proposta-amount">€ ${d.prezzoProposto.toFixed(2)}</div>${azioniHtml}${statoHtml}`;
+  return div;
+}
+
 function getCurrentLang() {
   return localStorage.getItem('it_lang') || 'it';
 }
@@ -311,13 +501,21 @@ window.apriChat = function(tx) {
   unsubMessages = onSnapshot(q, (snap) => {
     const container = document.getElementById('messages');
     container.innerHTML = '';
-    snap.forEach(d => {
-      const msg = d.data();
-      const div = document.createElement('div');
-      div.className = 'msg msg-' + (msg.da === 'esercente' ? 'esercente' : msg.da === 'sistema' ? 'sistema' : 'cliente');
-      const ora = msg.ts ? new Date(msg.ts.seconds * 1000).toLocaleTimeString('it-IT', {hour:'2-digit',minute:'2-digit'}) : '';
-      div.innerHTML = `<div>${testoVisualizzato(msg)}</div>${msg.quickPhrase ? `<div style="font-size:9px;opacity:.5;margin-top:2px;font-style:italic;">⚡ frase rapida</div>` : ''}${ora ? `<div class="msg-time">${ora}</div>` : ''}`;
-      container.appendChild(div);
+    const docs = [];
+    snap.forEach(d => docs.push({ id: d.id, data: d.data() }));
+    const ultimaPropostaIdx = docs.map(x => x.data.tipo === 'proposta').lastIndexOf(true);
+    docs.forEach((item, idx) => {
+      const msg = item.data;
+      if (msg.tipo === 'proposta') {
+        const div = renderProposta(msg, item.id, idx === ultimaPropostaIdx);
+        container.appendChild(div);
+      } else {
+        const div = document.createElement('div');
+        div.className = 'msg msg-' + (msg.da === 'esercente' ? 'esercente' : msg.da === 'sistema' ? 'sistema' : 'cliente');
+        const ora = msg.ts ? new Date(msg.ts.seconds * 1000).toLocaleTimeString('it-IT', {hour:'2-digit',minute:'2-digit'}) : '';
+        div.innerHTML = `<div>${testoVisualizzato(msg)}</div>${msg.quickPhrase ? `<div style="font-size:9px;opacity:.5;margin-top:2px;font-style:italic;">⚡ frase rapida</div>` : ''}${ora ? `<div class="msg-time">${ora}</div>` : ''}`;
+        container.appendChild(div);
+      }
     });
     container.scrollTop = container.scrollHeight;
   });

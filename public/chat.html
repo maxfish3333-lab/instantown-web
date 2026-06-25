@@ -70,6 +70,39 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:#fff;min-heigh
 .quick-phrase-btn{flex-shrink:0;background:rgba(200,134,10,.1);border:1px solid rgba(200,134,10,.3);color:var(--ocra-l);font-size:12px;padding:7px 12px;border-radius:16px;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;transition:background .2s;}
 .quick-phrase-btn:hover{background:rgba(200,134,10,.2);}
 .msg-translated-note{font-size:9px;opacity:.5;margin-top:2px;font-style:italic;}
+
+/* TRATTATIVA */
+.offerta-banner{background:rgba(200,134,10,.08);border-bottom:1px solid rgba(200,134,10,.15);padding:10px 20px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:rgba(255,255,255,.6);}
+.offerta-banner strong{color:var(--ocra-l);font-size:15px;}
+.offerta-banner-min{font-size:10px;color:rgba(255,255,255,.35);}
+.trading-toggle-btn{background:rgba(200,134,10,.12);border:1px solid var(--ocra);color:var(--ocra-l);font-size:12px;padding:8px 14px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;margin:10px 16px 0;text-align:center;}
+.trading-toggle-btn:hover{background:rgba(200,134,10,.2);}
+.trading-panel{background:rgba(255,255,255,.04);border:1px solid rgba(200,134,10,.25);border-radius:12px;margin:10px 16px 0;padding:14px;display:none;}
+.trading-panel.open{display:block;}
+.trading-panel-label{font-size:11px;color:rgba(255,255,255,.5);margin-bottom:8px;}
+.trading-input-row{display:flex;gap:8px;align-items:center;}
+.trading-input{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(200,134,10,.3);border-radius:8px;padding:10px 12px;font-size:16px;color:#fff;font-family:'DM Sans',sans-serif;outline:none;}
+.trading-input:focus{border-color:var(--ocra-l);}
+.trading-send-btn{background:var(--ocra);color:#1C1410;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;}
+.trading-send-btn:disabled{background:rgba(200,134,10,.3);cursor:not-allowed;}
+.trading-error{color:#ff6b6b;font-size:11px;margin-top:6px;display:none;}
+
+.msg-proposta{max-width:80%;border-radius:12px;padding:12px 16px;font-size:14px;}
+.msg-proposta.da-cliente{align-self:flex-end;background:rgba(200,134,10,.18);border:1px solid rgba(200,134,10,.4);border-bottom-right-radius:4px;}
+.msg-proposta.da-esercente{align-self:flex-start;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-bottom-left-radius:4px;}
+.msg-proposta-label{font-size:10px;text-transform:uppercase;letter-spacing:.05em;opacity:.6;margin-bottom:4px;}
+.msg-proposta-amount{font-size:20px;font-weight:600;color:var(--ocra-l);}
+.msg-proposta-actions{display:flex;gap:8px;margin-top:10px;}
+.msg-proposta-actions button{flex:1;border:none;border-radius:6px;padding:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.btn-pr-accetta{background:#2e7d32;color:#fff;}
+.btn-pr-rifiuta{background:rgba(139,26,26,.5);color:#fff;}
+.msg-proposta-scaduta{opacity:.4;}
+.msg-proposta-stato{font-size:11px;margin-top:6px;font-weight:600;}
+.msg-proposta-stato.accettata{color:#4caf50;}
+.msg-proposta-stato.rifiutata{color:#ff6b6b;}
+.msg-proposta-stato.scaduta{color:rgba(255,255,255,.4);}
+.msg-proposta-countdown{font-size:10px;color:rgba(255,255,255,.4);margin-top:4px;}
+.btn-procedi-pagamento{display:block;width:calc(100% - 32px);margin:10px 16px 0;background:#2e7d32;color:#fff;border:none;border-radius:10px;padding:14px;font-size:14px;font-weight:600;text-align:center;text-decoration:none;font-family:'DM Sans',sans-serif;}
 </style>
 </head>
 <body>
@@ -99,6 +132,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:#fff;min-heigh
 <div id="chat-screen">
   <div class="chat-info-bar">
     Prenotazione <strong id="info-tx"></strong> · Negozio: <strong id="info-negozio"></strong>
+  </div>
+  <div class="offerta-banner" id="offerta-banner" style="display:none;">
+    <div>Prezzo offerta: <strong id="offerta-amount"></strong></div>
+    <div class="offerta-banner-min">min. proponibile <span id="offerta-min"></span></div>
+  </div>
+  <button class="trading-toggle-btn" id="trading-toggle-btn" style="display:none;" onclick="toggleTradingPanel()">🔄 Proponi un prezzo</button>
+  <div class="trading-panel" id="trading-panel">
+    <div class="trading-panel-label">Quanto vuoi proporre?</div>
+    <div class="trading-input-row">
+      <input type="number" class="trading-input" id="trading-input" placeholder="0.00" step="0.50">
+      <button class="trading-send-btn" id="trading-send-btn" onclick="inviaProposta()">Invia proposta</button>
+    </div>
+    <div class="trading-error" id="trading-error"></div>
   </div>
   <div class="messages" id="messages">
     <div class="empty-chat" id="empty-msg">
@@ -132,6 +178,11 @@ const db = getFirestore(app);
 
 let currentTX = null;
 let unsubscribe = null;
+let offertaAmount = 0;
+let offertaDesc = '';
+let offertaNegozio = '';
+const TRADING_MIN_RATIO = 0.5;
+const TRADING_TIMEOUT_MIN = 12;
 
 // ══════════════════════════════════
 // FRASI RAPIDE MULTILINGUA
@@ -186,6 +237,142 @@ const QUICK_PHRASES = {
     "de": "⚠️ Es gibt ein Problem"
   }
 };
+
+const TRADING_LABELS = {
+  prezzoOfferta:   { it:'Prezzo offerta:', en:'Offer price:', zh:'优惠价格：', es:'Precio de la oferta:', fr:'Prix de l\'offre :', de:'Angebotspreis:' },
+  minProponibile:  { it:'min. proponibile', en:'min. offer', zh:'最低出价', es:'mín. a proponer', fr:'min. proposable', de:'Mindestangebot' },
+  proponiPrezzo:   { it:'🔄 Proponi un prezzo', en:'🔄 Propose a price', zh:'🔄 提出价格', es:'🔄 Proponer un precio', fr:'🔄 Proposer un prix', de:'🔄 Preis vorschlagen' },
+  quantoProponi:   { it:'Quanto vuoi proporre?', en:'How much do you want to offer?', zh:'你想出多少价格？', es:'¿Cuánto quieres proponer?', fr:'Combien voulez-vous proposer ?', de:'Wie viel möchtest du anbieten?' },
+  inviaProposta:   { it:'Invia proposta', en:'Send offer', zh:'发送提议', es:'Enviar propuesta', fr:'Envoyer la proposition', de:'Angebot senden' },
+  erroreMinimo:    { it:'Il prezzo minimo proponibile è', en:'The minimum offer price is', zh:'最低出价为', es:'El precio mínimo a proponer es', fr:'Le prix minimum proposable est', de:'Der Mindestangebotspreis beträgt' },
+  laTuaProposta:   { it:'La tua proposta', en:'Your offer', zh:'你的提议', es:'Tu propuesta', fr:'Votre proposition', de:'Dein Angebot' },
+  controproposta:  { it:'Controproposta esercente', en:'Merchant counter-offer', zh:'商家还价', es:'Contraoferta del comercio', fr:'Contre-proposition du commerce', de:'Gegenangebot des Geschäfts' },
+  accetta:         { it:'Accetta', en:'Accept', zh:'接受', es:'Aceptar', fr:'Accepter', de:'Annehmen' },
+  rifiuta:         { it:'Rifiuta', en:'Decline', zh:'拒绝', es:'Rechazar', fr:'Refuser', de:'Ablehnen' },
+  accordoRaggiunto:{ it:'Accordo raggiunto a', en:'Agreement reached at', zh:'已达成协议，价格为', es:'Acuerdo alcanzado en', fr:'Accord conclu à', de:'Einigung erzielt bei' },
+  propostaRifiutata:{ it:'Proposta rifiutata', en:'Offer declined', zh:'提议已被拒绝', es:'Propuesta rechazada', fr:'Proposition refusée', de:'Angebot abgelehnt' },
+  propostaScaduta: { it:'Proposta scaduta', en:'Offer expired', zh:'提议已过期', es:'Propuesta caducada', fr:'Proposition expirée', de:'Angebot abgelaufen' },
+  procediPagamento:{ it:'Procedi al pagamento →', en:'Proceed to payment →', zh:'前往付款 →', es:'Proceder al pago →', fr:'Procéder au paiement →', de:'Weiter zur Zahlung →' },
+  scadeIn:         { it:'scade in', en:'expires in', zh:'剩余', es:'caduca en', fr:'expire dans', de:'läuft ab in' }
+};
+
+function tt(key) {
+  const lang = getCurrentLang();
+  return (TRADING_LABELS[key] && (TRADING_LABELS[key][lang] || TRADING_LABELS[key].it)) || key;
+}
+
+function initTrading() {
+  const params = new URLSearchParams(window.location.search);
+  offertaAmount = parseFloat(params.get('amount')) || 0;
+  offertaDesc = params.get('desc') || '';
+  offertaNegozio = params.get('negozio') || '';
+  const mode = params.get('mode');
+
+  if (offertaAmount > 0) {
+    const minProponibile = (offertaAmount * TRADING_MIN_RATIO).toFixed(2);
+    document.getElementById('offerta-amount').textContent = '€ ' + offertaAmount.toFixed(2);
+    document.getElementById('offerta-min').textContent = '€ ' + minProponibile;
+    document.getElementById('offerta-banner').style.display = 'flex';
+    document.getElementById('trading-toggle-btn').style.display = 'block';
+    document.getElementById('trading-input').min = minProponibile;
+    document.getElementById('trading-input').max = offertaAmount.toFixed(2);
+    if (mode === 'trading') {
+      document.getElementById('trading-panel').classList.add('open');
+    }
+  }
+}
+
+window.toggleTradingPanel = function() {
+  document.getElementById('trading-panel').classList.toggle('open');
+};
+
+window.inviaProposta = async function() {
+  const input = document.getElementById('trading-input');
+  const errorEl = document.getElementById('trading-error');
+  const valore = parseFloat(input.value);
+  errorEl.style.display = 'none';
+
+  const minProponibile = offertaAmount * TRADING_MIN_RATIO;
+  if (!valore || valore <= 0) {
+    errorEl.textContent = tt('quantoProponi');
+    errorEl.style.display = 'block';
+    return;
+  }
+  if (valore < minProponibile) {
+    errorEl.textContent = tt('erroreMinimo') + ' € ' + minProponibile.toFixed(2);
+    errorEl.style.display = 'block';
+    return;
+  }
+  if (!currentTX) return;
+
+  const btn = document.getElementById('trading-send-btn');
+  btn.disabled = true;
+  try {
+    const scadenza = new Date(Date.now() + TRADING_TIMEOUT_MIN * 60 * 1000);
+    await addDoc(collection(db, 'chats', currentTX, 'messages'), {
+      tipo: 'proposta', prezzoProposto: valore, daChi: 'cliente',
+      stato: 'in_attesa', scadenza: scadenza.toISOString(),
+      offertaOriginale: offertaAmount, ts: serverTimestamp()
+    });
+    const { setDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    await setDoc(doc(db, 'chats', currentTX), {
+      negozio: offertaNegozio || document.getElementById('info-negozio').textContent,
+      ultimoMsg: '🔄 Proposta: € ' + valore.toFixed(2),
+      ultimoTs: serverTimestamp(),
+      daLeggere: true
+    }, { merge: true });
+    input.value = '';
+    document.getElementById('trading-panel').classList.remove('open');
+  } catch(e) {
+    console.error(e);
+  }
+  btn.disabled = false;
+};
+
+window.rispondiProposta = async function(msgId, azione) {
+  if (!currentTX) return;
+  try {
+    const { doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    await updateDoc(doc(db, 'chats', currentTX, 'messages', msgId), {
+      stato: azione === 'accetta' ? 'accettata' : 'rifiutata'
+    });
+  } catch(e) {
+    console.error(e);
+  }
+};
+
+function renderProposta(d, docId, isUltima) {
+  const scaduta = d.stato === 'in_attesa' && d.scadenza && new Date(d.scadenza) < new Date();
+  const statoEffettivo = scaduta ? 'scaduta' : d.stato;
+  const daCliente = d.daChi === 'cliente';
+  const div = document.createElement('div');
+  div.className = 'msg-proposta ' + (daCliente ? 'da-cliente' : 'da-esercente') + (statoEffettivo !== 'in_attesa' ? ' msg-proposta-scaduta' : '');
+
+  let azioniHtml = '';
+  if (statoEffettivo === 'in_attesa' && isUltima && !daCliente) {
+    azioniHtml = `<div class="msg-proposta-actions">
+      <button class="btn-pr-rifiuta" onclick="rispondiProposta('${docId}','rifiuta')">${tt('rifiuta')}</button>
+      <button class="btn-pr-accetta" onclick="rispondiProposta('${docId}','accetta')">${tt('accetta')}</button>
+    </div>`;
+  }
+
+  let statoHtml = '';
+  if (statoEffettivo === 'accettata') {
+    statoHtml = `<div class="msg-proposta-stato accettata">✅ ${tt('accordoRaggiunto')} € ${d.prezzoProposto.toFixed(2)}</div>`;
+  } else if (statoEffettivo === 'rifiutata') {
+    statoHtml = `<div class="msg-proposta-stato rifiutata">✕ ${tt('propostaRifiutata')}</div>`;
+  } else if (statoEffettivo === 'scaduta') {
+    statoHtml = `<div class="msg-proposta-stato scaduta">⏱ ${tt('propostaScaduta')}</div>`;
+  } else if (d.scadenza) {
+    const msRimanenti = new Date(d.scadenza) - new Date();
+    const minRimanenti = Math.max(0, Math.ceil(msRimanenti / 60000));
+    statoHtml = `<div class="msg-proposta-countdown">${tt('scadeIn')} ${minRimanenti} min</div>`;
+  }
+
+  const label = daCliente ? tt('laTuaProposta') : tt('controproposta');
+  div.innerHTML = `<div class="msg-proposta-label">${label}</div><div class="msg-proposta-amount">€ ${d.prezzoProposto.toFixed(2)}</div>${azioniHtml}${statoHtml}`;
+  return div;
+}
 
 function getCurrentLang() {
   return localStorage.getItem('it_lang') || 'it';
@@ -302,20 +489,48 @@ function ascoltaMessaggi(tx) {
     const empty = document.getElementById('empty-msg');
     if (snap.empty) {
       empty.style.display = 'flex';
+      container.querySelectorAll('.msg, .msg-proposta').forEach(e => e.remove());
+      const oldBtn = document.getElementById('btn-procedi-pagamento');
+      if (oldBtn) oldBtn.remove();
       return;
     }
     empty.style.display = 'none';
-    // Ricostruisci messaggi
-    const existing = container.querySelectorAll('.msg');
-    existing.forEach(e => e.remove());
-    snap.forEach(doc => {
-      const d = doc.data();
-      const div = document.createElement('div');
-      div.className = 'msg msg-' + (d.da === 'cliente' ? 'cliente' : d.da === 'sistema' ? 'sistema' : 'esercente');
-      const ora = d.ts ? new Date(d.ts.seconds * 1000).toLocaleTimeString('it-IT', {hour:'2-digit',minute:'2-digit'}) : '';
-      div.innerHTML = `<div>${testoVisualizzato(d)}</div>${d.quickPhrase ? `<div class="msg-translated-note">⚡ frase rapida</div>` : ''}${ora ? `<div class="msg-time">${ora}</div>` : ''}`;
-      container.appendChild(div);
+    container.querySelectorAll('.msg, .msg-proposta').forEach(e => e.remove());
+
+    const docs = [];
+    snap.forEach(doc => docs.push({ id: doc.id, data: doc.data() }));
+    const ultimaPropostaIdx = docs.map(x => x.data.tipo === 'proposta').lastIndexOf(true);
+    let accordoFinale = null;
+
+    docs.forEach((item, idx) => {
+      const d = item.data;
+      if (d.tipo === 'proposta') {
+        const div = renderProposta(d, item.id, idx === ultimaPropostaIdx);
+        container.appendChild(div);
+        if (d.stato === 'accettata') accordoFinale = d.prezzoProposto;
+      } else {
+        const div = document.createElement('div');
+        div.className = 'msg msg-' + (d.da === 'cliente' ? 'cliente' : d.da === 'sistema' ? 'sistema' : 'esercente');
+        const ora = d.ts ? new Date(d.ts.seconds * 1000).toLocaleTimeString('it-IT', {hour:'2-digit',minute:'2-digit'}) : '';
+        div.innerHTML = `<div>${testoVisualizzato(d)}</div>${d.quickPhrase ? `<div class="msg-translated-note">⚡ frase rapida</div>` : ''}${ora ? `<div class="msg-time">${ora}</div>` : ''}`;
+        container.appendChild(div);
+      }
     });
+
+    const oldBtn = document.getElementById('btn-procedi-pagamento');
+    if (oldBtn) oldBtn.remove();
+    if (accordoFinale) {
+      const checkoutParams = new URLSearchParams({
+        tx: currentTX, amount: accordoFinale.toFixed(2), desc: offertaDesc, negozio: offertaNegozio
+      }).toString();
+      const a = document.createElement('a');
+      a.id = 'btn-procedi-pagamento';
+      a.className = 'btn-procedi-pagamento';
+      a.href = 'checkout.html?' + checkoutParams;
+      a.textContent = tt('procediPagamento');
+      document.getElementById('chat-screen').insertBefore(a, document.getElementById('quick-phrases'));
+    }
+
     container.scrollTop = container.scrollHeight;
   });
 }
@@ -362,6 +577,7 @@ document.getElementById('msg-input').addEventListener('input', function() {
 
 // Auto-login se TX passato via URL
 document.addEventListener('DOMContentLoaded', function() {
+  initTrading();
   const params = new URLSearchParams(window.location.search);
   const tx = params.get('tx');
   if (tx) {

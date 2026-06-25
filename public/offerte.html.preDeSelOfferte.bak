@@ -103,21 +103,6 @@ footer strong{color:var(--ocra-l);}
 
 /* ── FULL PAGE OVERLAY ── */
 .offer-overlay{display:none;position:fixed;inset:0;z-index:999;background:var(--bianco);overflow-y:auto;}
-.btn-cerca-alloggio{display:block;width:calc(100% - 32px);max-width:600px;margin:14px auto 0;background:var(--cielo);color:#fff;border:none;border-radius:10px;padding:14px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
-.reverse-overlay{display:none;position:fixed;inset:0;z-index:999;background:var(--bianco);overflow-y:auto;}
-.reverse-overlay.open{display:block;}
-.reverse-body{max-width:600px;margin:0 auto;padding:20px;}
-.reverse-field{margin-bottom:16px;}
-.reverse-field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-mu);margin-bottom:6px;}
-.reverse-field input,.reverse-field select{width:100%;padding:12px 14px;border:1px solid var(--rule);border-radius:8px;font-size:15px;font-family:'DM Sans',sans-serif;color:var(--ink);}
-.reverse-gps-status{font-size:12px;color:var(--ink-mu);margin-top:6px;}
-.btn-pubblica-richiesta{width:100%;background:var(--cielo);color:#fff;border:none;border-radius:10px;padding:16px;font-size:15px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:10px;}
-.btn-pubblica-richiesta:disabled{background:rgba(74,144,196,.4);cursor:not-allowed;}
-.proposta-hotel-card{background:#fff;border:1px solid var(--rule);border-radius:12px;padding:16px;margin-bottom:12px;}
-.proposta-hotel-nome{font-weight:600;font-size:15px;margin-bottom:4px;}
-.proposta-hotel-prezzo{font-size:22px;font-weight:700;color:var(--rosso);margin-bottom:10px;}
-.btn-accetta-hotel{width:100%;background:#2e7d32;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;}
-.richiesta-stato-banner{background:var(--cielo-p,rgba(74,144,196,.08));border:1px solid rgba(74,144,196,.25);border-radius:10px;padding:14px;margin-bottom:16px;font-size:13px;color:var(--ink-m);}
 .offer-overlay.open{display:block;}
 .ov-stripe{height:5px;background:linear-gradient(90deg,var(--rosso-l) 33.3%,#fff 33.3%,#fff 66.6%,var(--cielo) 66.6%);}
 .ov-header{background:var(--ink);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
@@ -151,8 +136,6 @@ footer strong{color:var(--ocra-l);}
 
 .card-actions{display:flex;gap:8px;align-items:center;}
 .btn-messaggia{display:inline-flex;align-items:center;gap:5px;background:none;border:1px solid var(--cielo);color:var(--cielo);border-radius:4px;padding:7px 12px;font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;transition:all .2s;font-family:'DM Sans',sans-serif;}
-.btn-trading{display:inline-flex;align-items:center;gap:5px;background:none;border:1px solid var(--ocra);color:var(--ocra);border-radius:4px;padding:7px 12px;font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;transition:all .2s;font-family:'DM Sans',sans-serif;}
-.btn-trading:hover{background:var(--ocra-p);}
 .btn-messaggia:hover{background:var(--cielo);color:#fff;}
 </style>
 <script>
@@ -181,7 +164,6 @@ const I18N = {
     statAnomalie:   'Da verificare',
     btnPrenota:     'Prenota →',
     btnMessageggia: '💬 Messaggia',
-    btnTrading:     '🔄 Trading',
     orarioNd:       'Orario n.d.',
     prefLabel:      'Le tue preferenze:',
     prefModifica:   'Modifica',
@@ -218,7 +200,6 @@ const I18N = {
     statAnomalie:   'To review',
     btnPrenota:     'Book →',
     btnMessageggia: '💬 Message',
-    btnTrading:     '🔄 Trading',
     orarioNd:       'Time n/a',
     prefLabel:      'Your preferences:',
     prefModifica:   'Edit',
@@ -255,7 +236,6 @@ const I18N = {
     statAnomalie:   '待审核',
     btnPrenota:     '预订 →',
     btnMessageggia: '💬 消息',
-    btnTrading:     '🔄 议价',
     orarioNd:       '时间未知',
     prefLabel:      '您的偏好：',
     prefModifica:   '修改',
@@ -292,7 +272,6 @@ const I18N = {
     statAnomalie:   'Por revisar',
     btnPrenota:     'Reservar →',
     btnMessageggia: '💬 Mensaje',
-    btnTrading:     '🔄 Negociar',
     orarioNd:       'Horario n/d',
     prefLabel:      'Tus preferencias:',
     prefModifica:   'Editar',
@@ -329,7 +308,6 @@ const I18N = {
     statAnomalie:   'À vérifier',
     btnPrenota:     'Réserver →',
     btnMessageggia: '💬 Message',
-    btnTrading:     '🔄 Négocier',
     orarioNd:       'Horaire n/d',
     prefLabel:      'Vos préférences :',
     prefModifica:   'Modifier',
@@ -342,53 +320,7 @@ const I18N = {
     aggiornato:     'mis à jour : ',
     ciRipenso:"J'hésite",ovIndirizzo:'Adresse',ovOrario:'Horaire',ovCategoria:'Catégorie',ovRaggio:'Rayon',ovPrezzoFlash:'Prix Flash',ovPrezzoStd:'Prix standard',ovConferma:'Confirmer et réserver →',
     statoAttiva: "ACTIVE", statoScaduta: "EXPIRÉE", btnAttivaGaranzia: "🔐 Activer la Garantie Bancaire →",
-  },
-  de: {
-    offerteTitle: "Blitzangebote",
-    liveUpdate: "Live-Aktualisierung",
-    loading: "Angebote werden geladen...",
-    noOffers: "Keine Angebote für diese Auswahl.",
-    catTutte: "Alle",
-    catCibo: "Essen",
-    catModa: "Mode",
-    catTech: "Tech",
-    catViaggi: "Reisen",
-    catDivert: "Unterhaltung",
-    catAltro: "Sonstiges",
-    subTutte: "Alle",
-    subAttive: "Nur aktive",
-    subScadute: "Abgelaufen",
-    raggioLabel: "Radius:",
-    raggioTutti: "Alle",
-    statTotali: "Angebote insgesamt",
-    statAttive: "Jetzt aktiv",
-    statRisparmio: "Durchschn. Ersparnis",
-    statAnomalie: "Zu prüfen",
-    btnPrenota: "Buchen →",
-    btnMessageggia: "💬 Nachricht",
-    btnTrading: "🔄 Verhandeln",
-    orarioNd: "Uhrzeit n/a",
-    prefLabel: "Deine Präferenzen:",
-    prefModifica: "Bearbeiten",
-    anomTag: "⚠ prüfen",
-    adminReview: "Admin-Prüfung",
-    navBack: "← Startseite",
-    langLabel: "Sprache",
-    footerText: "Tabelle: Angebote · Rom, 2025",
-    datiLocali: "lokale Daten (Tabelle nicht erreichbar)",
-    aggiornato: "aktualisiert: ",
-    ciRipenso: "Ich überlege es mir",
-    ovIndirizzo: "Adresse",
-    ovOrario: "Uhrzeit",
-    ovCategoria: "Kategorie",
-    ovRaggio: "Radius",
-    ovPrezzoFlash: "Blitzpreis",
-    ovPrezzoStd: "Standardpreis",
-    ovConferma: "Bestätigen und buchen →",
-    statoAttiva: "AKTIV",
-    statoScaduta: "ABGELAUFEN",
-    btnAttivaGaranzia: "🔐 Bankgarantie aktivieren →"
-  },
+  }
 };
 
 function t(key) {
@@ -480,9 +412,6 @@ function applyI18nDOM() {
   <button onclick="applyLang('fr')" class="lbtn" data-lang="fr"
     style="background:none;border:1px solid rgba(200,134,10,.25);color:rgba(255,255,255,.5);
     font-size:11px;padding:4px 10px;border-radius:3px;cursor:pointer;">🇫🇷 FR</button>
-    <button onclick="applyLang('de')" class="lbtn" data-lang="de"
-    style="background:none;border:1px solid rgba(200,134,10,.25);color:rgba(255,255,255,.5);
-    font-size:11px;padding:4px 10px;border-radius:3px;cursor:pointer;">🇩🇪 DE</button>
 </div>
 
 <div class="page-header">
@@ -524,8 +453,6 @@ function applyI18nDOM() {
   </div>
 </div>
 
-<button class="btn-cerca-alloggio" id="btn-cerca-alloggio" style="display:none;" onclick="apriRichiestaReverse()">🏨 Cerca alloggio last minute</button>
-
 <!-- BANNER PREFERENZE -->
 <div class="pref-banner" id="pref-banner" style="display:none">
   <div class="pref-inner" id="pref-inner"></div>
@@ -551,16 +478,6 @@ function applyI18nDOM() {
     <button class="ov-back" onclick="chiudiOverlay()" id="ov-back-btn">← Ci ripenso</button>
   </div>
   <div class="ov-body" id="ov-body"></div>
-</div>
-
-<!-- FULL PAGE REVERSE REQUEST OVERLAY -->
-<div class="reverse-overlay" id="reverse-overlay">
-  <div class="ov-stripe"></div>
-  <div class="ov-header">
-    <span class="ov-brand">INSTANTOWN</span>
-    <button class="ov-back" onclick="chiudiReverseOverlay()">← Chiudi</button>
-  </div>
-  <div class="reverse-body" id="reverse-body"></div>
 </div>
 
 <div class="stripe"></div>
@@ -704,7 +621,7 @@ function mostraPref() {
   banner.style.display = '';
   const emoji = {CIBO:'🍕',MODA:'👗',TECH:'📱',VIAGGI:'✈️',DIVERTIMENTO:'🎭',ALTRO:'🛍️'};
   inner.innerHTML = `<span style="font-size:12px;font-weight:500;">${t('prefLabel')}</span> `
-    + prefCats.map(c=>`<span class="pref-tag">${emoji[c]||''} ${traduciCategoria(c)}</span>`).join('')
+    + prefCats.map(c=>`<span class="pref-tag">${emoji[c]||''} ${c}</span>`).join('')
     + ` <a href="index.html" style="color:var(--cielo);font-size:11px;margin-left:8px;">${t('prefModifica')}</a>`;
 }
 
@@ -744,12 +661,7 @@ function renderCard(o) {
         <div class="card-orario">⏱ <span>${orario}</span></div>
         ${o.idtx?`<div class="card-tx">${o.idtx}</div>`:''}
       </div>
-      ${!anom?`<div class="card-actions"><button class="btn-prenota" data-offer='${JSON.stringify(o).replace(/'/g,"&#39;")}' onclick="apriOverlayBtn(this)">${t('btnPrenota')}</button>${o.idtx?(()=>{
-        const chatParams = new URLSearchParams({
-          tx: o.idtx, amount: o.prezzoFlash.toFixed(2), desc: getDesc(o), negozio: o.negozio||''
-        }).toString();
-        return `<a href="chat.html?${chatParams}" class="btn-messaggia">${t('btnMessageggia')}</a><a href="chat.html?${chatParams}&mode=trading" class="btn-trading">${t('btnTrading')}</a>`;
-      })():''}</div>`:`<span style="font-size:11px;color:#92400e;">${t('adminReview')}</span>`}
+      ${!anom?`<div class="card-actions"><button class="btn-prenota" data-offer='${JSON.stringify(o).replace(/'/g,"&#39;")}' onclick="apriOverlayBtn(this)">${t('btnPrenota')}</button>${o.idtx?`<a href="chat.html?tx=${o.idtx}" class="btn-messaggia">${t('btnMessageggia')}</a>`:''}</div>`:`<span style="font-size:11px;color:#92400e;">${t('adminReview')}</span>`}
     </div>
   </div>`;
 }
@@ -887,7 +799,7 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') chiudiOve
 
 init();
 function applyLang(lang) {
-  var ok = ['it','en','zh','es','fr','de'];
+  var ok = ['it','en','zh','es','fr'];
   if (!ok.includes(lang)) lang = 'it';
   localStorage.setItem('it_lang', lang);
   document.querySelectorAll('.lbtn').forEach(function(b) {
@@ -905,175 +817,6 @@ function applyLang(lang) {
 document.addEventListener('DOMContentLoaded', () => {
   const lang = localStorage.getItem('it_lang') || 'it';
   applyLang(lang);
-});
-</script>
-<script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, collection, addDoc, doc, updateDoc, onSnapshot, query, where, orderBy, serverTimestamp, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBez4L85HA1__NPKOzagfmKeoGLniIQeAc",
-  authDomain: "instantown-app.firebaseapp.com",
-  projectId: "instantown-app",
-  storageBucket: "instantown-app.firebasestorage.app",
-  messagingSenderId: "469598782572",
-  appId: "1:469598782572:web:7fc20afb17a3c3c6d68449",
-  measurementId: "G-D45LJHDDXX"
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-function haversine(lat1, lon1, lat2, lon2) {
-  const R = 6371000;
-  const toRad = d => d * Math.PI / 180;
-  const dLat = toRad(lat2 - lat1);
-  const dLon = toRad(lon2 - lon1);
-  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-}
-
-const REVERSE_LABELS = {
-  titolo:        { it:'Cerca alloggio last minute', en:'Find last-minute lodging', zh:'寻找临时住宿', es:'Buscar alojamiento de última hora', fr:'Chercher un hébergement de dernière minute', de:'Last-Minute-Unterkunft suchen' },
-  budgetMax:     { it:'Budget massimo (€)', en:'Maximum budget (€)', zh:'最高预算（欧元）', es:'Presupuesto máximo (€)', fr:'Budget maximum (€)', de:'Maximalbudget (€)' },
-  raggio:        { it:'Raggio di ricerca', en:'Search radius', zh:'搜索范围', es:'Radio de búsqueda', fr:'Rayon de recherche', de:'Suchradius' },
-  note:          { it:'Note (opzionale)', en:'Notes (optional)', zh:'备注（可选）', es:'Notas (opcional)', fr:'Notes (facultatif)', de:'Notizen (optional)' },
-  gpsRichiesta:  { it:'Acquisizione posizione GPS...', en:'Getting GPS position...', zh:'正在获取GPS位置...', es:'Obteniendo posición GPS...', fr:'Acquisition de la position GPS...', de:'GPS-Position wird ermittelt...' },
-  gpsOk:         { it:'Posizione acquisita', en:'Position acquired', zh:'位置已获取', es:'Posición adquirida', fr:'Position acquise', de:'Position erfasst' },
-  gpsErrore:     { it:'GPS non disponibile. Attiva la localizzazione.', en:'GPS unavailable. Enable location.', zh:'GPS不可用，请启用定位。', es:'GPS no disponible. Activa la ubicación.', fr:'GPS indisponible. Activez la localisation.', de:'GPS nicht verfügbar. Standort aktivieren.' },
-  pubblica:      { it:'Pubblica richiesta →', en:'Publish request →', zh:'发布请求 →', es:'Publicar solicitud →', fr:'Publier la demande →', de:'Anfrage veröffentlichen →' },
-  inAttesa:      { it:'Richiesta pubblicata. In attesa di proposte dagli hotel...', en:'Request published. Waiting for hotel offers...', zh:'请求已发布，等待酒店报价...', es:'Solicitud publicada. Esperando ofertas de hoteles...', fr:'Demande publiée. En attente d\'offres des hôtels...', de:'Anfrage veröffentlicht. Warten auf Hotelangebote...' },
-  nessunaProposta:{ it:'Nessuna proposta ricevuta ancora.', en:'No offers received yet.', zh:'尚未收到报价。', es:'Aún no se han recibido ofertas.', fr:'Aucune offre reçue pour le moment.', de:'Noch keine Angebote erhalten.' },
-  accettaProposta:{ it:'Accetta questa proposta', en:'Accept this offer', zh:'接受此报价', es:'Aceptar esta oferta', fr:'Accepter cette offre', de:'Dieses Angebot annehmen' },
-  richiestaChiusa:{ it:'Richiesta conclusa', en:'Request closed', zh:'请求已结束', es:'Solicitud cerrada', fr:'Demande clôturée', de:'Anfrage abgeschlossen' }
-};
-
-function rt(key) {
-  const lang = localStorage.getItem('it_lang') || 'it';
-  return (REVERSE_LABELS[key] && (REVERSE_LABELS[key][lang] || REVERSE_LABELS[key].it)) || key;
-}
-
-let reverseUserLat = null, reverseUserLon = null;
-let currentRichiestaId = null;
-let unsubRichiesta = null;
-
-window.apriRichiestaReverse = function() {
-  document.getElementById('reverse-overlay').classList.add('open');
-  document.getElementById('reverse-body').innerHTML = `
-    <div class="reverse-field">
-      <label>${rt('budgetMax')}</label>
-      <input type="number" id="rev-budget" placeholder="80" step="5" min="1">
-    </div>
-    <div class="reverse-field">
-      <label>${rt('raggio')}</label>
-      <select id="rev-raggio">
-        <option value="200">200 m</option>
-        <option value="300" selected>300 m</option>
-        <option value="500">500 m</option>
-      </select>
-    </div>
-    <div class="reverse-field">
-      <label>${rt('note')}</label>
-      <input type="text" id="rev-note" placeholder="es. camera doppia, stanotte">
-    </div>
-    <div class="reverse-gps-status" id="rev-gps-status">${rt('gpsRichiesta')}</div>
-    <button class="btn-pubblica-richiesta" id="rev-pubblica-btn" onclick="pubblicaRichiestaReverse()" disabled>${rt('pubblica')}</button>
-  `;
-  acquisisciGpsTurista();
-};
-
-function acquisisciGpsTurista() {
-  if (!navigator.geolocation) {
-    document.getElementById('rev-gps-status').textContent = rt('gpsErrore');
-    return;
-  }
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      reverseUserLat = pos.coords.latitude;
-      reverseUserLon = pos.coords.longitude;
-      document.getElementById('rev-gps-status').textContent = '✓ ' + rt('gpsOk');
-      document.getElementById('rev-pubblica-btn').disabled = false;
-    },
-    () => { document.getElementById('rev-gps-status').textContent = rt('gpsErrore'); },
-    { enableHighAccuracy: true, timeout: 10000 }
-  );
-}
-
-window.chiudiReverseOverlay = function() {
-  document.getElementById('reverse-overlay').classList.remove('open');
-  if (unsubRichiesta) { unsubRichiesta(); unsubRichiesta = null; }
-};
-
-window.pubblicaRichiestaReverse = async function() {
-  const budget = parseFloat(document.getElementById('rev-budget').value);
-  const raggio = parseInt(document.getElementById('rev-raggio').value);
-  const note = document.getElementById('rev-note').value.trim();
-  if (!budget || budget <= 0 || !reverseUserLat) return;
-
-  const btn = document.getElementById('rev-pubblica-btn');
-  btn.disabled = true;
-  try {
-    const docRef = await addDoc(collection(db, 'richieste-reverse'), {
-      lat: reverseUserLat, lon: reverseUserLon, raggio, budgetMax: budget,
-      note, stato: 'aperta', ts: serverTimestamp()
-    });
-    currentRichiestaId = docRef.id;
-    mostraAttesaProposte(docRef.id);
-  } catch(e) {
-    console.error(e);
-    btn.disabled = false;
-  }
-};
-
-function mostraAttesaProposte(richiestaId) {
-  document.getElementById('reverse-body').innerHTML = `
-    <div class="richiesta-stato-banner">${rt('inAttesa')}</div>
-    <div id="rev-proposte-list"></div>
-  `;
-  const q = query(collection(db, 'richieste-reverse', richiestaId, 'proposte'), orderBy('ts'));
-  unsubRichiesta = onSnapshot(q, (snap) => {
-    const list = document.getElementById('rev-proposte-list');
-    if (!list) return;
-    if (snap.empty) {
-      list.innerHTML = `<p style="color:var(--ink-mu);font-size:13px;">${rt('nessunaProposta')}</p>`;
-      return;
-    }
-    let html = '';
-    snap.forEach(d => {
-      const p = d.data();
-      if (p.stato === 'rifiutata') return;
-      html += `<div class="proposta-hotel-card">
-        <div class="proposta-hotel-nome">${p.hotelNome || 'Hotel'}</div>
-        <div class="proposta-hotel-prezzo">€ ${p.prezzo.toFixed(2)}</div>
-        ${p.stato === 'accettata'
-          ? `<div style="color:#2e7d32;font-weight:600;font-size:13px;">✅ ${rt('richiestaChiusa')}</div>`
-          : `<button class="btn-accetta-hotel" onclick="accettaPropostaHotel('${richiestaId}','${d.id}')">${rt('accettaProposta')}</button>`}
-      </div>`;
-    });
-    list.innerHTML = html || `<p style="color:var(--ink-mu);font-size:13px;">${rt('nessunaProposta')}</p>`;
-  });
-}
-
-window.accettaPropostaHotel = async function(richiestaId, propostaId) {
-  try {
-    const snap = await getDocs(collection(db, 'richieste-reverse', richiestaId, 'proposte'));
-    const updates = [];
-    snap.forEach(d => {
-      const stato = d.id === propostaId ? 'accettata' : 'rifiutata';
-      updates.push(updateDoc(doc(db, 'richieste-reverse', richiestaId, 'proposte', d.id), { stato }));
-    });
-    await Promise.all(updates);
-    await updateDoc(doc(db, 'richieste-reverse', richiestaId), { stato: 'chiusa' });
-  } catch(e) { console.error(e); }
-};
-
-document.addEventListener('DOMContentLoaded', () => {
-  const observer = new MutationObserver(() => {
-    const activeCat = document.querySelector('.cat-tab.active');
-    const btn = document.getElementById('btn-cerca-alloggio');
-    if (btn) btn.style.display = (activeCat && activeCat.dataset.cat === 'VIAGGI') ? 'block' : 'none';
-  });
-  const catTabs = document.getElementById('cat-tabs');
-  if (catTabs) observer.observe(catTabs, { attributes: true, subtree: true, attributeFilter: ['class'] });
 });
 </script>
 </body>

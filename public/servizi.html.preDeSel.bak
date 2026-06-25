@@ -46,34 +46,6 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
 .gps-dot.active{background:var(--verde-l);animation:blink 1.4s infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* ── LANG SWITCHER (custom, no native <select> per fix bandiere emoji su WebKit) ── */
-.lang-switch{position:relative;flex-shrink:0;}
-.lang-switch-btn{
-  display:flex;align-items:center;gap:5px;
-  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);
-  color:#fff;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;
-  padding:4px 8px;border-radius:4px;cursor:pointer;user-select:none;
-}
-.lang-switch-btn:hover{background:rgba(255,255,255,.18);}
-.lang-switch-flag{font-size:13px;line-height:1;}
-.lang-switch-caret{font-size:9px;opacity:.7;margin-left:1px;}
-.lang-switch-list{
-  position:absolute;top:calc(100% + 4px);left:0;z-index:1000;
-  background:#2A1F18;border:1px solid rgba(255,255,255,.18);border-radius:6px;
-  box-shadow:0 6px 20px rgba(0,0,0,.4);
-  min-width:96px;padding:4px;display:none;
-}
-.lang-switch-list.open{display:block;}
-.lang-switch-opt{
-  display:flex;align-items:center;gap:7px;
-  padding:7px 9px;border-radius:4px;cursor:pointer;
-  font-family:'DM Sans',sans-serif;font-size:12px;color:#fff;
-  white-space:nowrap;
-}
-.lang-switch-opt:hover{background:rgba(255,255,255,.12);}
-.lang-switch-opt.active{background:rgba(34,160,80,.25);}
-.lang-switch-opt .lang-switch-flag{font-size:14px;}
-
 /* ── MAPPA ── */
 #map{
   position:absolute;top:0;left:0;right:0;bottom:0;z-index:1;
@@ -162,15 +134,12 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
 }
 .marker-wrap:hover{transform:scale(1.08);}
 .marker-pubblico{background:#1A7A3A;color:#fff;}
-.marker-acqua{background:#1A6FA8;color:#fff;border:2px solid #4A9FD8;}
 .marker-taxi{background:#C8860A;color:#fff;border:2px solid #E8A020;}
-.marker-metro{background:#5B4B9E;color:#fff;border:2px solid #8273C4;}
+.marker-metro{background:#1A7A3A;color:#fff;border:2px solid #22A050;}
 .marker-agenzia{background:#4A90C4;color:#fff;border:2px solid #6AAFD8;}
-.marker-iconico{background:#9C3E5E;color:#fff;border:2px solid #C25A7E;}
-.marker-papa{background:#FEE100;color:#3D2E0A;border:2px solid #FFF066;}
-.marker-bagni{background:#E03050;color:#fff;border:2px solid #FF6080;}
+.marker-iconico{background:#C8860A;color:#fff;}
+.marker-bagni{background:#1A4A8A;color:#fff;}
 .marker-wrap .m-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.8);flex-shrink:0;}
-.marker-papa .m-dot{background:rgba(61,46,10,.6);}
 
 /* ── LOADING ── */
 .gps-loading{
@@ -193,29 +162,13 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
 <div class="topbar">
   <a href="index.html" class="topbar-back">&#8592;</a>
   <img src="data:image/png;base64,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" alt="INSTANTOWN" style="width:38px;height:38px;border-radius:8px;flex-shrink:0;display:block;">
-  <select id="lang-sel" onchange="applyLang(this.value)" style="display:none;">
+  <select id="lang-sel" onchange="applyLang(this.value)" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:11px;padding:4px 8px;border-radius:4px;cursor:pointer;flex-shrink:0;">
     <option value="it">🇮🇹 IT</option>
     <option value="en">🇬🇧 EN</option>
     <option value="zh">🇨🇳 中文</option>
     <option value="es">🇪🇸 ES</option>
     <option value="fr">🇫🇷 FR</option>
-    <option value="de">🇩🇪 DE</option>
   </select>
-  <div class="lang-switch" id="lang-switch">
-    <div class="lang-switch-btn" id="lang-switch-btn" onclick="toggleLangSwitch(event)">
-      <span class="lang-switch-flag" id="lang-switch-flag">🇮🇹</span>
-      <span id="lang-switch-label">IT</span>
-      <span class="lang-switch-caret">▾</span>
-    </div>
-    <div class="lang-switch-list" id="lang-switch-list">
-      <div class="lang-switch-opt" data-lang="it" onclick="selectLang('it')"><span class="lang-switch-flag">🇮🇹</span><span>IT</span></div>
-      <div class="lang-switch-opt" data-lang="en" onclick="selectLang('en')"><span class="lang-switch-flag">🇬🇧</span><span>EN</span></div>
-      <div class="lang-switch-opt" data-lang="zh" onclick="selectLang('zh')"><span class="lang-switch-flag">🇨🇳</span><span>中文</span></div>
-      <div class="lang-switch-opt" data-lang="es" onclick="selectLang('es')"><span class="lang-switch-flag">🇪🇸</span><span>ES</span></div>
-      <div class="lang-switch-opt" data-lang="fr" onclick="selectLang('fr')"><span class="lang-switch-flag">🇫🇷</span><span>FR</span></div>
-      <div class="lang-switch-opt" data-lang="de" onclick="selectLang('de')"><span class="lang-switch-flag">🇩🇪</span><span>DE</span></div>
-    </div>
-  </div>
   <div class="topbar-title">🗺️ <span data-i18n="sv_title">Servizi Essenziali</span></div>
   <div class="gps-pill">
     <div class="gps-dot" id="gps-dot"></div>
@@ -291,406 +244,8 @@ function applyI18nDOMServizi() {
 }
 
 // ═══════════════════════════════════════════════
-// LANG SWITCHER CUSTOM (dropdown non nativo)
-// Sostituisce il <select> nativo per evitare il bug
-// delle bandiere emoji renderizzate in bianco/outline
-// dentro <option> su WebKit/Safari finché non in hover.
-// ═══════════════════════════════════════════════
-const LANG_SWITCH_DATA = {
-  it: { flag: '🇮🇹', label: 'IT' },
-  en: { flag: '🇬🇧', label: 'EN' },
-  zh: { flag: '🇨🇳', label: '中文' },
-  es: { flag: '🇪🇸', label: 'ES' },
-  fr: { flag: '🇫🇷', label: 'FR' },
-  de: { flag: '🇩🇪', label: 'DE' }
-};
-
-function toggleLangSwitch(e) {
-  if (e) e.stopPropagation();
-  document.getElementById('lang-switch-list').classList.toggle('open');
-}
-
-function selectLang(lang) {
-  document.getElementById('lang-switch-list').classList.remove('open');
-  var hiddenSel = document.getElementById('lang-sel');
-  if (hiddenSel) hiddenSel.value = lang;
-  applyLang(lang);
-  syncLangSwitchDisplay(lang);
-}
-
-function syncLangSwitchDisplay(lang) {
-  var data = LANG_SWITCH_DATA[lang] || LANG_SWITCH_DATA.it;
-  var flagEl = document.getElementById('lang-switch-flag');
-  var labelEl = document.getElementById('lang-switch-label');
-  if (flagEl) flagEl.textContent = data.flag;
-  if (labelEl) labelEl.textContent = data.label;
-  document.querySelectorAll('.lang-switch-opt').forEach(function(opt) {
-    opt.classList.toggle('active', opt.getAttribute('data-lang') === lang);
-  });
-}
-
-// Chiudi il dropdown cliccando altrove
-document.addEventListener('click', function(e) {
-  var sw = document.getElementById('lang-switch');
-  if (sw && !sw.contains(e.target)) {
-    document.getElementById('lang-switch-list').classList.remove('open');
-  }
-});
-
-// Sincronizza il display al caricamento con la lingua salvata
-(function initLangSwitch() {
-  var savedLang = localStorage.getItem('it_lang') || 'it';
-  syncLangSwitchDisplay(savedLang);
-})();
-
-// ═══════════════════════════════════════════════
 // DATI POI
 // ═══════════════════════════════════════════════
-const POI_I18N = {
-  "nasoni": {
-    "it": {
-      "nome": "Fontanelle pubbliche (Nasoni)",
-      "cat": "Servizi pubblici",
-      "desc": "Oltre 2.500 nasoni con acqua potabile gratuita in tutta Roma. Il simbolo idrico della città.",
-      "badges": [
-        "Gratuito",
-        "H24",
-        "Acqua potabile"
-      ]
-    },
-    "en": {
-      "nome": "Public drinking fountains (\"Nasoni\")",
-      "cat": "Public services",
-      "desc": "Over 2,500 free drinking water fountains across Rome. The city's iconic water symbol.",
-      "badges": [
-        "Free",
-        "24/7",
-        "Drinking water"
-      ]
-    },
-    "zh": {
-      "nome": "公共饮水点（\"大鼻子\"）",
-      "cat": "公共服务",
-      "desc": "罗马全城超过2500个免费饮用水点，是这座城市的标志性水利符号。",
-      "badges": [
-        "免费",
-        "全天开放",
-        "饮用水"
-      ]
-    },
-    "es": {
-      "nome": "Fuentes públicas (\"Nasoni\")",
-      "cat": "Servicios públicos",
-      "desc": "Más de 2.500 fuentes de agua potable gratuita en toda Roma. El símbolo hídrico de la ciudad.",
-      "badges": [
-        "Gratis",
-        "24 h",
-        "Agua potable"
-      ]
-    },
-    "fr": {
-      "nome": "Fontaines publiques (\"Nasoni\")",
-      "cat": "Services publics",
-      "desc": "Plus de 2 500 fontaines d'eau potable gratuite dans tout Rome. Le symbole hydrique de la ville.",
-      "badges": [
-        "Gratuit",
-        "24h/24",
-        "Eau potable"
-      ]
-    },
-    "de": {
-      "nome": "Öffentliche Trinkbrunnen (\"Nasoni\")",
-      "cat": "Öffentliche Dienste",
-      "desc": "Über 2.500 kostenlose Trinkwasserbrunnen in ganz Rom. Das Wassersymbol der Stadt.",
-      "badges": [
-        "Kostenlos",
-        "24/7",
-        "Trinkwasser"
-      ]
-    }
-  },
-  "bagni": {
-    "it": {
-      "nome": "Bagni pubblici comunali",
-      "cat": "Servizi pubblici",
-      "desc": "Servizi igienici pubblici con indicazione di accessibilità, orari di apertura e disponibilità.",
-      "badges": [
-        "Comune di Roma",
-        "Accessibile"
-      ]
-    },
-    "en": {
-      "nome": "Public municipal toilets",
-      "cat": "Public services",
-      "desc": "Public toilets with accessibility information, opening hours and availability.",
-      "badges": [
-        "City of Rome",
-        "Accessible"
-      ]
-    },
-    "zh": {
-      "nome": "市政公共厕所",
-      "cat": "公共服务",
-      "desc": "公共卫生设施，提供无障碍信息、开放时间和可用情况。",
-      "badges": [
-        "罗马市政府",
-        "无障碍"
-      ]
-    },
-    "es": {
-      "nome": "Aseos públicos municipales",
-      "cat": "Servicios públicos",
-      "desc": "Aseos públicos con información de accesibilidad, horarios de apertura y disponibilidad.",
-      "badges": [
-        "Ayuntamiento de Roma",
-        "Accesible"
-      ]
-    },
-    "fr": {
-      "nome": "Toilettes publiques municipales",
-      "cat": "Services publics",
-      "desc": "Toilettes publiques avec indication d'accessibilité, horaires d'ouverture et disponibilité.",
-      "badges": [
-        "Ville de Rome",
-        "Accessible"
-      ]
-    },
-    "de": {
-      "nome": "Öffentliche städtische Toiletten",
-      "cat": "Öffentliche Dienste",
-      "desc": "Öffentliche Toiletten mit Angaben zu Barrierefreiheit, Öffnungszeiten und Verfügbarkeit.",
-      "badges": [
-        "Stadt Rom",
-        "Barrierefrei"
-      ]
-    }
-  },
-  "wifi": {
-    "it": {
-      "nome": "Wi-Fi pubblico gratuito",
-      "cat": "Connettività",
-      "desc": "Reti Wi-Fi comunali gratuite nelle piazze principali, parchi e siti culturali di Roma.",
-      "badges": [
-        "Gratuito",
-        "No registrazione"
-      ]
-    },
-    "en": {
-      "nome": "Free public Wi-Fi",
-      "cat": "Connectivity",
-      "desc": "Free municipal Wi-Fi networks in Rome's main squares, parks and cultural sites.",
-      "badges": [
-        "Free",
-        "No registration"
-      ]
-    },
-    "zh": {
-      "nome": "免费公共Wi-Fi",
-      "cat": "网络连接",
-      "desc": "罗马主要广场、公园和文化场所提供的免费市政Wi-Fi网络。",
-      "badges": [
-        "免费",
-        "无需注册"
-      ]
-    },
-    "es": {
-      "nome": "Wi-Fi público gratuito",
-      "cat": "Conectividad",
-      "desc": "Redes Wi-Fi municipales gratuitas en las principales plazas, parques y sitios culturales de Roma.",
-      "badges": [
-        "Gratis",
-        "Sin registro"
-      ]
-    },
-    "fr": {
-      "nome": "Wi-Fi public gratuit",
-      "cat": "Connectivité",
-      "desc": "Réseaux Wi-Fi municipaux gratuits dans les principales places, parcs et sites culturels de Rome.",
-      "badges": [
-        "Gratuit",
-        "Sans inscription"
-      ]
-    },
-    "de": {
-      "nome": "Kostenloses öffentliches Wi-Fi",
-      "cat": "Konnektivität",
-      "desc": "Kostenlose städtische WLAN-Netze auf den wichtigsten Plätzen, in Parks und Kulturstätten Roms.",
-      "badges": [
-        "Kostenlos",
-        "Keine Registrierung"
-      ]
-    }
-  },
-  "papa": {
-    "it": {
-      "nome": "Tomba di Papa Francesco",
-      "cat": "Pellegrinaggio",
-      "desc": "Basilica di Santa Maria Maggiore — tomba di Papa Francesco, accessibile liberamente ai fedeli e ai visitatori.",
-      "badges": [
-        "Ingresso libero",
-        "Basilica Papale"
-      ]
-    },
-    "en": {
-      "nome": "Tomb of Pope Francis",
-      "cat": "Pilgrimage",
-      "desc": "Basilica of Santa Maria Maggiore — tomb of Pope Francis, freely accessible to worshippers and visitors.",
-      "badges": [
-        "Free entry",
-        "Papal Basilica"
-      ]
-    },
-    "zh": {
-      "nome": "方济各教宗陵墓",
-      "cat": "朝圣",
-      "desc": "圣母大殿——方济各教宗的陵墓，信徒和游客可自由参观。",
-      "badges": [
-        "免费入场",
-        "教宗大殿"
-      ]
-    },
-    "es": {
-      "nome": "Tumba del Papa Francisco",
-      "cat": "Peregrinación",
-      "desc": "Basílica de Santa María la Mayor — tumba del Papa Francisco, accesible libremente a fieles y visitantes.",
-      "badges": [
-        "Entrada libre",
-        "Basílica Papal"
-      ]
-    },
-    "fr": {
-      "nome": "Tombeau du Pape François",
-      "cat": "Pèlerinage",
-      "desc": "Basilique Sainte-Marie-Majeure — tombeau du Pape François, librement accessible aux fidèles et aux visiteurs.",
-      "badges": [
-        "Entrée libre",
-        "Basilique Papale"
-      ]
-    },
-    "de": {
-      "nome": "Grab von Papst Franziskus",
-      "cat": "Pilgerfahrt",
-      "desc": "Basilika Santa Maria Maggiore — Grab von Papst Franziskus, frei zugänglich für Gläubige und Besucher.",
-      "badges": [
-        "Freier Eintritt",
-        "Päpstliche Basilika"
-      ]
-    }
-  },
-  "vaticano": {
-    "it": {
-      "nome": "Città del Vaticano",
-      "cat": "Patrimonio UNESCO",
-      "desc": "Piazza San Pietro, Basilica di San Pietro, Musei Vaticani e Cappella Sistina. Il cuore della Cristianità.",
-      "badges": [
-        "UNESCO",
-        "Patrimonio mondiale"
-      ]
-    },
-    "en": {
-      "nome": "Vatican City",
-      "cat": "UNESCO Heritage",
-      "desc": "St. Peter's Square, St. Peter's Basilica, Vatican Museums and the Sistine Chapel. The heart of Christianity.",
-      "badges": [
-        "UNESCO",
-        "World Heritage"
-      ]
-    },
-    "zh": {
-      "nome": "梵蒂冈城",
-      "cat": "联合国教科文组织遗产",
-      "desc": "圣彼得广场、圣彼得大教堂、梵蒂冈博物馆和西斯廷教堂。基督教的中心。",
-      "badges": [
-        "联合国教科文组织",
-        "世界遗产"
-      ]
-    },
-    "es": {
-      "nome": "Ciudad del Vaticano",
-      "cat": "Patrimonio UNESCO",
-      "desc": "Plaza de San Pedro, Basílica de San Pedro, Museos Vaticanos y Capilla Sixtina. El corazón de la Cristiandad.",
-      "badges": [
-        "UNESCO",
-        "Patrimonio mundial"
-      ]
-    },
-    "fr": {
-      "nome": "Cité du Vatican",
-      "cat": "Patrimoine UNESCO",
-      "desc": "Place Saint-Pierre, Basilique Saint-Pierre, Musées du Vatican et Chapelle Sixtine. Le cœur de la Chrétienté.",
-      "badges": [
-        "UNESCO",
-        "Patrimoine mondial"
-      ]
-    },
-    "de": {
-      "nome": "Vatikanstadt",
-      "cat": "UNESCO-Welterbe",
-      "desc": "Petersplatz, Petersbasilika, Vatikanische Museen und Sixtinische Kapelle. Das Herz der Christenheit.",
-      "badges": [
-        "UNESCO",
-        "Weltkulturerbe"
-      ]
-    }
-  },
-  "spagna": {
-    "it": {
-      "nome": "Piazza di Spagna",
-      "cat": "Icona di Roma",
-      "desc": "La Scalinata di Trinità dei Monti e la Fontana della Barcaccia. Uno dei luoghi più fotografati al mondo.",
-      "badges": [
-        "Monumento",
-        "Centro storico"
-      ]
-    },
-    "en": {
-      "nome": "Piazza di Spagna",
-      "cat": "Icon of Rome",
-      "desc": "The Spanish Steps and the Barcaccia Fountain. One of the most photographed places in the world.",
-      "badges": [
-        "Monument",
-        "Historic center"
-      ]
-    },
-    "zh": {
-      "nome": "西班牙广场",
-      "cat": "罗马标志",
-      "desc": "三一阶梯和破船喷泉。世界上被拍照最多的地方之一。",
-      "badges": [
-        "古迹",
-        "历史中心"
-      ]
-    },
-    "es": {
-      "nome": "Plaza de España",
-      "cat": "Icono de Roma",
-      "desc": "La Escalinata de la Trinità dei Monti y la Fuente de la Barcaccia. Uno de los lugares más fotografiados del mundo.",
-      "badges": [
-        "Monumento",
-        "Centro histórico"
-      ]
-    },
-    "fr": {
-      "nome": "Place d'Espagne",
-      "cat": "Icône de Rome",
-      "desc": "L'escalier de la Trinité-des-Monts et la fontaine de la Barcaccia. L'un des lieux les plus photographiés au monde.",
-      "badges": [
-        "Monument",
-        "Centre historique"
-      ]
-    },
-    "de": {
-      "nome": "Piazza di Spagna",
-      "cat": "Ikone Roms",
-      "desc": "Die Spanische Treppe und der Barcaccia-Brunnen. Einer der meistfotografierten Orte der Welt.",
-      "badges": [
-        "Denkmal",
-        "Historisches Zentrum"
-      ]
-    }
-  }
-};
-
 const POIS = [
   // ── SERVIZI PUBBLICI ──
   {
@@ -861,17 +416,6 @@ const POIS = [
   },
 ];
 
-function getPoiTradotto(poi) {
-  var lang = localStorage.getItem('it_lang') || 'it';
-  var t = (POI_I18N[poi.id] && POI_I18N[poi.id][lang]) || (POI_I18N[poi.id] && POI_I18N[poi.id].it);
-  if (!t) return poi; // fallback: POI senza traduzione (taxi/metro/agenzie - Fase 3)
-  return Object.assign({}, poi, {
-    nome: t.nome, cat: t.cat, desc: t.desc,
-    badges: poi.badges.map(function(b, i) { return { t: t.badges[i] || b.t, c: b.c }; })
-  });
-}
-
-
 // ═══════════════════════════════════════════════
 // STATO
 // ═══════════════════════════════════════════════
@@ -935,178 +479,37 @@ function initMappa(lat, lon) {
   });
   // Salva tutti i POI per uso futuro nei filtri
   window._tuttiPOI = POIS;
-
-  // Ricalcola anti-collisione marker su zoom/pan, e al primo render
-  map.on('zoomend moveend', risolviCollisioniMarker);
-  setTimeout(risolviCollisioniMarker, 50);
 }
 
 // ═══════════════════════════════════════════════
 // MARKER POI
 // ═══════════════════════════════════════════════
 // Etichette brevi per i marker
-// Etichette brevi per i marker sulla mappa, multilingua.
-// Diverse dal "nome" completo di POI_I18N (usato nel bottom-sheet):
-// qui servono versioni corte che stanno bene nella pillola del marker.
-const MARKER_LABEL_SHORT = {
-  nasoni:      { it:'Acqua gratis',      en:'Free water',     zh:'饮水点',       es:'Agua gratis',     fr:'Eau gratuite',    de:'Kostenloses Wasser' },
-  bagni:       { it:'Bagni',             en:'Toilets',        zh:'厕所',         es:'Aseos',           fr:'Toilettes',       de:'Toiletten' },
-  wifi:        { it:'Wi-Fi',             en:'Wi-Fi',          zh:'Wi-Fi',        es:'Wi-Fi',           fr:'Wi-Fi',           de:'Wi-Fi' },
-  papa:        { it:'Papa Francesco',    en:'Pope Francis',   zh:'方济各教宗',    es:'Papa Francisco',  fr:'Pape François',  de:'Papst Franziskus' },
-  vaticano:    { it:'Vaticano',          en:'Vatican',        zh:'梵蒂冈',       es:'Vaticano',        fr:'Vatican',         de:'Vatikan' },
-  spagna:      { it:'P.za di Spagna',    en:'Piazza di Spagna', zh:'西班牙广场',  es:'Plaza de España', fr:"Place d'Espagne", de:'Piazza di Spagna' },
-  'taxi-termini':  { it:'Taxi Termini',    en:'Taxi Termini',   zh:'出租车 特米尼',  es:'Taxi Termini',    fr:'Taxi Termini',    de:'Taxi Termini' },
-  'taxi-venezia':  { it:'Taxi Venezia',    en:'Taxi Venezia',   zh:'出租车 威尼斯',  es:'Taxi Venecia',    fr:'Taxi Venise',     de:'Taxi Venezia' },
-  'taxi-navona':   { it:'Taxi Navona',     en:'Taxi Navona',    zh:'出租车 纳沃纳',  es:'Taxi Navona',     fr:'Taxi Navone',     de:'Taxi Navona' },
-  'taxi-trevi':    { it:'Taxi Trevi',      en:'Taxi Trevi',     zh:'出租车 特莱维',  es:'Taxi Trevi',       fr:'Taxi Trevi',      de:'Taxi Trevi' },
-  'metro-a-spagna':      { it:'Metro Spagna',      en:'Metro Spagna',      zh:'地铁 西班牙',  es:'Metro Spagna',      fr:'Métro Spagna',      de:'Metro Spagna' },
-  'metro-a-barberini':   { it:'Metro Barberini',   en:'Metro Barberini',   zh:'地铁 巴贝里尼', es:'Metro Barberini',   fr:'Métro Barberini',   de:'Metro Barberini' },
-  'metro-a-repubblica':  { it:'Metro Repubblica',  en:'Metro Repubblica',  zh:'地铁 共和国',  es:'Metro Repubblica',  fr:'Métro Repubblica',  de:'Metro Repubblica' },
-  'metro-b-colosseo':    { it:'Metro Colosseo',    en:'Metro Colosseo',    zh:'地铁 斗兽场',  es:'Metro Colosseo',    fr:'Métro Colisée',     de:'Metro Kolosseum' },
-  'metro-b-termini':     { it:'Metro Termini',     en:'Metro Termini',     zh:'地铁 特米尼',  es:'Metro Termini',     fr:'Métro Termini',     de:'Metro Termini' },
-  'metro-c-san-giovanni':{ it:'Metro S.Giovanni',  en:'Metro S.Giovanni',  zh:'地铁 圣若望',  es:'Metro S.Giovanni',  fr:'Métro S.Giovanni',  de:'Metro S.Giovanni' },
-  'agenzia-1': { it:'Agenzie Centro',    en:'Agencies Center', zh:'旅行社 中心',  es:'Agencias Centro',  fr:'Agences Centre',   de:'Reisebüros Zentrum' },
-  'agenzia-2': { it:'Agenzie Termini',   en:'Agencies Termini', zh:'旅行社 特米尼', es:'Agencias Termini', fr:'Agences Termini',  de:'Reisebüros Termini' }
+const MARKER_LABEL = {
+  nasoni:'💧 Nasoni', bagni:'🚻 Bagni', wifi:'📶 Wi-Fi',
+  papa:'✝ Papa Francesco', vaticano:'🕍 Vaticano', spagna:'🌸 P.za di Spagna',
+  'taxi-termini':'🚕 Taxi Termini', 'taxi-venezia':'🚕 Taxi Venezia',
+  'taxi-navona':'🚕 Taxi Navona', 'taxi-trevi':'🚕 Taxi Trevi',
+  'metro-a-spagna':'🚇 Metro Spagna', 'metro-a-barberini':'🚇 Metro Barberini',
+  'metro-a-repubblica':'🚇 Metro Repubblica', 'metro-b-colosseo':'🚇 Metro Colosseo',
+  'metro-b-termini':'🚇 Metro Termini', 'metro-c-san-giovanni':'🚇 Metro S.Giovanni',
+  'agenzia-1':'✈️ Agenzie Centro', 'agenzia-2':'✈️ Agenzie Termini'
 };
 
-function getMarkerLabel(poi) {
-  var lang = localStorage.getItem('it_lang') || 'it';
-  var entry = MARKER_LABEL_SHORT[poi.id];
-  var testo = (entry && (entry[lang] || entry.it)) || poi.nome.substring(0,14);
-  return poi.emoji + ' ' + testo;
-}
-
-// Stima la larghezza in px della pillola del marker dato il testo.
-// I caratteri CJK (cinese/giapponese/coreano) sono visivamente larghi
-// quasi il doppio di una lettera latina nello stesso font-size, quindi
-// una stima uniforme "n_caratteri * px_per_carattere" sottostimava la
-// larghezza reale per il cinese e il testo debordava dalla pillola.
-// Qui contiamo i due gruppi di caratteri separatamente e pesiamo
-// ciascuno con il proprio coefficiente medio (font 13px bold).
-function calcolaLarghezzaMarker(label) {
-  const cjkRegex = /[\u4E00-\u9FFF\u3400-\u4DBF\uF900-\uFAFF]/g;
-  const cjkChars = (label.match(cjkRegex) || []).length;
-  const altriChars = label.length - cjkChars;
-  const px = cjkChars * 15 + altriChars * 7.5 + 24;
-  return Math.max(60, px);
-}
-
 function addMarker(poi) {
-  const colClass = poi.id === 'nasoni' ? 'marker-acqua' :
-    poi.id === 'papa' ? 'marker-papa' :
-    poi.tipo === 'pubblico' ? 'marker-pubblico' : 
+  const colClass = poi.tipo === 'pubblico' ? 'marker-pubblico' : 
     poi.tipo === 'bagni' ? 'marker-bagni' : 
     poi.tipo === 'taxi' ? 'marker-taxi' :
     poi.tipo === 'metro' ? 'marker-metro' :
     poi.tipo === 'agenzia' ? 'marker-agenzia' : 'marker-iconico';
-  const label = getMarkerLabel(poi);
-  // FIX overlap marker su mobile: iconSize:[null,36] lasciava a Leaflet
-  // un calcolo di centratura basato su una larghezza sconosciuta a runtime
-  // (comportamento documentato come inconsistente tra browser/dispositivi:
-  // github.com/Leaflet/Leaflet/issues/1390). Usiamo una larghezza FISSA
-  // e nota (stimata sul testo più lungo, +padding), con anchor centrato
-  // matematicamente: risultato deterministico su ogni piattaforma.
-  // Il CSS .marker-wrap ha comunque white-space:nowrap, quindi la pillola
-  // resta della sua larghezza naturale; impostiamo solo il "punto di presa"
-  // di Leaflet, non la larghezza visiva reale del div.
-  const estWidth = calcolaLarghezzaMarker(label);
+  const label = MARKER_LABEL[poi.id] || poi.nome.substring(0,14);
   const icon = L.divIcon({
     html:`<div class="marker-wrap ${colClass}"><span class="m-dot"></span>${label}</div>`,
-    iconSize:[estWidth, 36], iconAnchor:[estWidth/2, 36], className:''
+    iconSize:[null,36], iconAnchor:[0,18], className:''
   });
   const m = L.marker([poi.lat, poi.lon], {icon}).addTo(map);
   m.on('click', () => apriSheet(poi));
   markers[poi.id] = {marker:m, poi};
-}
-
-// Ri-renderizza solo le ICONE dei marker già presenti sulla mappa
-// (stesso oggetto marker Leaflet, stessa posizione e click-handler),
-// usata quando cambia la lingua per aggiornare le etichette senza
-// dover ricostruire/ri-filtrare l'intera mappa.
-function refreshMarkerLabels() {
-  Object.values(markers).forEach(function(entry) {
-    const poi = entry.poi;
-    const colClass = poi.id === 'nasoni' ? 'marker-acqua' :
-      poi.id === 'papa' ? 'marker-papa' :
-      poi.tipo === 'pubblico' ? 'marker-pubblico' :
-      poi.tipo === 'bagni' ? 'marker-bagni' :
-      poi.tipo === 'taxi' ? 'marker-taxi' :
-      poi.tipo === 'metro' ? 'marker-metro' :
-      poi.tipo === 'agenzia' ? 'marker-agenzia' : 'marker-iconico';
-    const label = getMarkerLabel(poi);
-    const estWidth = calcolaLarghezzaMarker(label);
-    const icon = L.divIcon({
-      html:`<div class="marker-wrap ${colClass}"><span class="m-dot"></span>${label}</div>`,
-      iconSize:[estWidth, 36], iconAnchor:[estWidth/2, 36], className:''
-    });
-    entry.marker.setIcon(icon);
-  });
-  setTimeout(risolviCollisioniMarker, 50);
-}
-
-// ═══════════════════════════════════════════════
-// ANTI-COLLISIONE MARKER (no cluster: pillole sempre leggibili)
-// Quando due POI sono fisicamente vicini (es. nasoni/wifi a 134m),
-// a certi livelli di zoom le loro pillole si sovrappongono in pixel
-// e una copre i click sull'altra. Qui calcoliamo la posizione reale
-// a SCHERMO di ogni marker e, se due bounding box si toccano,
-// applichiamo un piccolo offset verticale via CSS transform al div
-// dell'icona — solo visivo: le coordinate geografiche del marker
-// Leaflet restano quelle vere (click, linea di collegamento e
-// centratura mappa continuano a puntare al punto corretto).
-// Si ricalcola su ogni cambio di zoom/pan, quindi resta valido
-// indipendentemente da quanto si è vicini/lontani.
-function risolviCollisioniMarker() {
-  if (!map) return;
-  const entries = Object.values(markers);
-  if (entries.length < 2) return;
-
-  const boxes = entries.map(function(entry) {
-    const poi = entry.poi;
-    const label = getMarkerLabel(poi);
-    const w = calcolaLarghezzaMarker(label);
-    const h = 36;
-    const pt = map.latLngToContainerPoint([poi.lat, poi.lon]);
-    // Il marker è ancorato al centro (iconAnchor:[w/2,36]) quindi il
-    // punto pt corrisponde al centro-basso della pillola.
-    return {
-      entry: entry,
-      w: w, h: h,
-      cx: pt.x, cy: pt.y - h/2,
-      offsetY: 0
-    };
-  });
-
-  // Reset offset precedenti prima di ricalcolare
-  boxes.forEach(function(b) {
-    const el = b.entry.marker.getElement();
-    if (el) {
-      const inner = el.querySelector('.marker-wrap');
-      if (inner) inner.style.transform = '';
-    }
-  });
-
-  // Confronto a coppie: se sovrapposte, spostiamo la seconda verso il basso
-  for (let i = 0; i < boxes.length; i++) {
-    for (let j = i + 1; j < boxes.length; j++) {
-      const a = boxes[i], b = boxes[j];
-      const overlapX = Math.abs(a.cx - b.cx) < (a.w + b.w) / 2 - 8;
-      const overlapY = Math.abs((a.cy + a.offsetY) - (b.cy + b.offsetY)) < a.h;
-      if (overlapX && overlapY) {
-        b.offsetY += a.h + 6;
-      }
-    }
-  }
-
-  boxes.forEach(function(b) {
-    if (b.offsetY !== 0) {
-      const el = b.entry.marker.getElement();
-      if (el) {
-        const inner = el.querySelector('.marker-wrap');
-        if (inner) inner.style.transform = 'translateY(' + b.offsetY + 'px)';
-      }
-    }
-  });
 }
 
 // ═══════════════════════════════════════════════
@@ -1125,9 +528,8 @@ function formatDist(m){
   return (m/1000).toFixed(1).replace('.',',')+'km';
 }
 
-function apriSheet(poiOriginale) {
-  var poi = getPoiTradotto(poiOriginale);
-  poiSelezionato = poiOriginale;
+function apriSheet(poi) {
+  poiSelezionato = poi;
   document.getElementById('s-emoji').textContent = poi.emoji;
   document.getElementById('s-cat').textContent   = poi.cat;
   document.getElementById('s-name').textContent  = poi.nome;
@@ -1238,7 +640,6 @@ function filtra(tipo, btn) {
     allPOI.filter(p => p.tipo === tipo).forEach(addMarker);
   }
 
-  setTimeout(risolviCollisioniMarker, 50);
   chiudiSheet();
 }
 
@@ -1287,14 +688,10 @@ document.getElementById('poi-sheet').addEventListener('touchend', e => {
 
 startGPS();
 applyI18nDOMServizi();
-window.addEventListener('storage', function() {
-  applyI18nDOMServizi();
-  syncLangSwitchDisplay(localStorage.getItem('it_lang') || 'it');
-  refreshMarkerLabels();
-});
+window.addEventListener('storage', applyI18nDOMServizi);
 const _origApplyLangSv = window.applyLang;
 if (typeof _origApplyLangSv === 'function') {
-  window.applyLang = function(lang) { _origApplyLangSv(lang); applyI18nDOMServizi(); syncLangSwitchDisplay(lang); refreshMarkerLabels(); };
+  window.applyLang = function(lang) { _origApplyLangSv(lang); applyI18nDOMServizi(); };
 }
 </script>
 </body>
