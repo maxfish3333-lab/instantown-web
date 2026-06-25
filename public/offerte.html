@@ -82,7 +82,10 @@ main{max-width:1000px;margin:0 auto;padding:24px 32px 80px;}
 .prezzo-flash{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--rosso);}
 .prezzo-std{font-size:12px;color:var(--ink-mu);text-decoration:line-through;}
 .sconto-badge{background:var(--ocra-p);color:var(--ocra);font-size:10px;font-weight:500;padding:2px 7px;border-radius:3px;margin-left:auto;}
-.card-bottom{padding:10px 16px;background:var(--bianco);display:flex;align-items:center;justify-content:space-between;}
+.card-bottom-wrap{padding:10px 16px;background:var(--bianco);display:flex;flex-direction:column;gap:8px;}
+.card-bottom{display:flex;align-items:center;justify-content:space-between;}
+.card-actions-row2{display:flex;gap:8px;}
+.card-actions-row2 .btn-messaggia,.card-actions-row2 .btn-trading{flex:1;justify-content:center;}
 .card-orario{font-size:11px;color:var(--ink-mu);}
 .card-orario span{color:var(--ink);font-weight:500;}
 .card-tx{font-size:9px;color:rgba(139,26,26,.35);font-family:monospace;}
@@ -149,7 +152,6 @@ footer strong{color:var(--ocra-l);}
   .offerte-grid{grid-template-columns:1fr;}
 }
 
-.card-actions{display:flex;gap:8px;align-items:center;}
 .btn-messaggia{display:inline-flex;align-items:center;gap:5px;background:none;border:1px solid var(--cielo);color:var(--cielo);border-radius:4px;padding:7px 12px;font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;transition:all .2s;font-family:'DM Sans',sans-serif;}
 .btn-trading{display:inline-flex;align-items:center;gap:5px;background:none;border:1px solid var(--ocra);color:var(--ocra);border-radius:4px;padding:7px 12px;font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;transition:all .2s;font-family:'DM Sans',sans-serif;}
 .btn-trading:hover{background:var(--ocra-p);}
@@ -704,7 +706,7 @@ function mostraPref() {
   banner.style.display = '';
   const emoji = {CIBO:'🍕',MODA:'👗',TECH:'📱',VIAGGI:'✈️',DIVERTIMENTO:'🎭',ALTRO:'🛍️'};
   inner.innerHTML = `<span style="font-size:12px;font-weight:500;">${t('prefLabel')}</span> `
-    + prefCats.map(c=>`<span class="pref-tag">${emoji[c]||''} ${traduciCategoria(c)}</span>`).join('')
+    + prefCats.map(c=>`<span class="pref-tag">${emoji[c]||''} ${c}</span>`).join('')
     + ` <a href="index.html" style="color:var(--cielo);font-size:11px;margin-left:8px;">${t('prefModifica')}</a>`;
 }
 
@@ -739,17 +741,20 @@ function renderCard(o) {
         ${sc>0&&!anom?`<span class="sconto-badge">-${sc}%</span>`:''}
       </div>
     </div>
-    <div class="card-bottom">
-      <div>
-        <div class="card-orario">⏱ <span>${orario}</span></div>
-        ${o.idtx?`<div class="card-tx">${o.idtx}</div>`:''}
+    <div class="card-bottom-wrap">
+      <div class="card-bottom">
+        <div>
+          <div class="card-orario">⏱ <span>${orario}</span></div>
+          ${o.idtx?`<div class="card-tx">${o.idtx}</div>`:''}
+        </div>
+        ${!anom?`<button class="btn-prenota" data-offer='${JSON.stringify(o).replace(/'/g,"&#39;")}' onclick="apriOverlayBtn(this)">${t('btnPrenota')}</button>`:`<span style="font-size:11px;color:#92400e;">${t('adminReview')}</span>`}
       </div>
-      ${!anom?`<div class="card-actions"><button class="btn-prenota" data-offer='${JSON.stringify(o).replace(/'/g,"&#39;")}' onclick="apriOverlayBtn(this)">${t('btnPrenota')}</button>${o.idtx?(()=>{
+      ${!anom && o.idtx?(()=>{
         const chatParams = new URLSearchParams({
           tx: o.idtx, amount: o.prezzoFlash.toFixed(2), desc: getDesc(o), negozio: o.negozio||''
         }).toString();
-        return `<a href="chat.html?${chatParams}" class="btn-messaggia">${t('btnMessageggia')}</a><a href="chat.html?${chatParams}&mode=trading" class="btn-trading">${t('btnTrading')}</a>`;
-      })():''}</div>`:`<span style="font-size:11px;color:#92400e;">${t('adminReview')}</span>`}
+        return `<div class="card-actions-row2"><a href="chat.html?${chatParams}" class="btn-messaggia">${t('btnMessageggia')}</a><a href="chat.html?${chatParams}&mode=trading" class="btn-trading">${t('btnTrading')}</a></div>`;
+      })():''}
     </div>
   </div>`;
 }

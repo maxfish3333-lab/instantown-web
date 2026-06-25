@@ -83,6 +83,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:#fff;min-heigh
 .trading-input-row{display:flex;gap:8px;align-items:center;}
 .trading-input{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(200,134,10,.3);border-radius:8px;padding:10px 12px;font-size:16px;color:#fff;font-family:'DM Sans',sans-serif;outline:none;}
 .trading-input:focus{border-color:var(--ocra-l);}
+.trading-nota-input{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(200,134,10,.2);border-radius:8px;padding:9px 12px;font-size:13px;color:#fff;font-family:'DM Sans',sans-serif;outline:none;margin-top:8px;}
+.trading-nota-input:focus{border-color:var(--ocra-l);}
+.trading-nota-input::placeholder{color:rgba(255,255,255,.3);}
 .trading-send-btn{background:var(--ocra);color:#1C1410;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;}
 .trading-send-btn:disabled{background:rgba(200,134,10,.3);cursor:not-allowed;}
 .trading-error{color:#ff6b6b;font-size:11px;margin-top:6px;display:none;}
@@ -92,6 +95,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:#fff;min-heigh
 .msg-proposta.da-esercente{align-self:flex-start;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-bottom-left-radius:4px;}
 .msg-proposta-label{font-size:10px;text-transform:uppercase;letter-spacing:.05em;opacity:.6;margin-bottom:4px;}
 .msg-proposta-amount{font-size:20px;font-weight:600;color:var(--ocra-l);}
+.msg-proposta-nota{font-size:12px;color:rgba(255,255,255,.6);font-style:italic;margin-top:6px;}
 .msg-proposta-actions{display:flex;gap:8px;margin-top:10px;}
 .msg-proposta-actions button{flex:1;border:none;border-radius:6px;padding:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
 .btn-pr-accetta{background:#2e7d32;color:#fff;}
@@ -144,6 +148,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:#fff;min-heigh
       <input type="number" class="trading-input" id="trading-input" placeholder="0.00" step="0.50">
       <button class="trading-send-btn" id="trading-send-btn" onclick="inviaProposta()">Invia proposta</button>
     </div>
+    <input type="text" class="trading-nota-input" id="trading-nota-input" placeholder="Aggiungi una nota (es. siamo in 6 persone)" maxlength="140">
     <div class="trading-error" id="trading-error"></div>
   </div>
   <div class="messages" id="messages">
@@ -288,8 +293,10 @@ window.toggleTradingPanel = function() {
 
 window.inviaProposta = async function() {
   const input = document.getElementById('trading-input');
+  const notaInput = document.getElementById('trading-nota-input');
   const errorEl = document.getElementById('trading-error');
   const valore = parseFloat(input.value);
+  const nota = notaInput.value.trim();
   errorEl.style.display = 'none';
 
   const minProponibile = offertaAmount * TRADING_MIN_RATIO;
@@ -312,7 +319,7 @@ window.inviaProposta = async function() {
     await addDoc(collection(db, 'chats', currentTX, 'messages'), {
       tipo: 'proposta', prezzoProposto: valore, daChi: 'cliente',
       stato: 'in_attesa', scadenza: scadenza.toISOString(),
-      offertaOriginale: offertaAmount, ts: serverTimestamp()
+      offertaOriginale: offertaAmount, nota: nota || null, ts: serverTimestamp()
     });
     const { setDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
     await setDoc(doc(db, 'chats', currentTX), {
@@ -322,6 +329,7 @@ window.inviaProposta = async function() {
       daLeggere: true
     }, { merge: true });
     input.value = '';
+    notaInput.value = '';
     document.getElementById('trading-panel').classList.remove('open');
   } catch(e) {
     console.error(e);
@@ -340,6 +348,12 @@ window.rispondiProposta = async function(msgId, azione) {
     console.error(e);
   }
 };
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
 
 function renderProposta(d, docId, isUltima) {
   const scaduta = d.stato === 'in_attesa' && d.scadenza && new Date(d.scadenza) < new Date();
@@ -369,8 +383,9 @@ function renderProposta(d, docId, isUltima) {
     statoHtml = `<div class="msg-proposta-countdown">${tt('scadeIn')} ${minRimanenti} min</div>`;
   }
 
+  const notaHtml = d.nota ? `<div class="msg-proposta-nota">"${escapeHtml(d.nota)}"</div>` : '';
   const label = daCliente ? tt('laTuaProposta') : tt('controproposta');
-  div.innerHTML = `<div class="msg-proposta-label">${label}</div><div class="msg-proposta-amount">€ ${d.prezzoProposto.toFixed(2)}</div>${azioniHtml}${statoHtml}`;
+  div.innerHTML = `<div class="msg-proposta-label">${label}</div><div class="msg-proposta-amount">€ ${d.prezzoProposto.toFixed(2)}</div>${notaHtml}${azioniHtml}${statoHtml}`;
   return div;
 }
 

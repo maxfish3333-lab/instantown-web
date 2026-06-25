@@ -86,6 +86,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:#fff;min-heigh
 .msg-proposta.da-cliente{align-self:flex-start;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-bottom-left-radius:4px;}
 .msg-proposta-label{font-size:10px;text-transform:uppercase;letter-spacing:.05em;opacity:.6;margin-bottom:4px;}
 .msg-proposta-amount{font-size:20px;font-weight:600;color:var(--ocra-l);}
+.msg-proposta-nota{font-size:12px;color:rgba(255,255,255,.6);font-style:italic;margin-top:6px;}
 .msg-proposta-actions{display:flex;gap:8px;margin-top:10px;}
 .msg-proposta-actions button{flex:1;border:none;border-radius:6px;padding:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
 .btn-pr-accetta{background:#2e7d32;color:#fff;}
@@ -100,6 +101,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--ink);color:#fff;min-heigh
 .rilancia-panel{background:rgba(255,255,255,.06);border:1px solid rgba(200,134,10,.3);border-radius:8px;padding:10px;margin-top:8px;display:none;}
 .rilancia-panel.open{display:block;}
 .rilancia-input-row{display:flex;gap:6px;}
+.rilancia-nota-input{width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(200,134,10,.3);border-radius:6px;padding:7px 9px;font-size:12px;color:#fff;font-family:'DM Sans',sans-serif;outline:none;margin-top:6px;}
 .rilancia-input{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(200,134,10,.3);border-radius:6px;padding:8px 10px;font-size:14px;color:#fff;font-family:'DM Sans',sans-serif;outline:none;}
 .rilancia-send{background:var(--ocra);color:#1C1410;border:none;border-radius:6px;padding:8px 12px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;}
 
@@ -418,7 +420,9 @@ window.toggleRilanciaPanel = function(msgId) {
 window.inviaRilancio = async function(msgId, offertaOriginale) {
   if (!currentTX) return;
   const input = document.getElementById('rilancia-input-' + msgId);
+  const notaInput = document.getElementById('rilancia-nota-' + msgId);
   const valore = parseFloat(input.value);
+  const nota = notaInput ? notaInput.value.trim() : '';
   if (!valore || valore <= 0) return;
   try {
     await updateDoc(doc(db, 'chats', currentTX, 'messages', msgId), { stato: 'rifiutata' });
@@ -426,7 +430,7 @@ window.inviaRilancio = async function(msgId, offertaOriginale) {
     await addDoc(collection(db, 'chats', currentTX, 'messages'), {
       tipo: 'proposta', prezzoProposto: valore, daChi: 'esercente',
       stato: 'in_attesa', scadenza: scadenza.toISOString(),
-      offertaOriginale: offertaOriginale, ts: serverTimestamp()
+      offertaOriginale: offertaOriginale, nota: nota || null, ts: serverTimestamp()
     });
     await updateDoc(doc(db, 'chats', currentTX), {
       ultimoMsg: '🔄 Controproposta: € ' + valore.toFixed(2), ultimoTs: serverTimestamp(), daLeggere: false
@@ -453,6 +457,7 @@ function renderProposta(d, docId, isUltima) {
         <input type="number" class="rilancia-input" id="rilancia-input-${docId}" placeholder="0.00" step="0.50">
         <button class="rilancia-send" onclick="inviaRilancio('${docId}', ${d.offertaOriginale || d.prezzoProposto})">${tt('invia')}</button>
       </div>
+      <input type="text" class="rilancia-nota-input" id="rilancia-nota-${docId}" placeholder="Nota (opzionale)" maxlength="140">
     </div>`;
   }
 
@@ -469,9 +474,16 @@ function renderProposta(d, docId, isUltima) {
     statoHtml = `<div class="msg-proposta-countdown">${tt('scadeIn')} ${minRimanenti} min</div>`;
   }
 
+  const notaHtml = d.nota ? `<div class="msg-proposta-nota">"${escapeHtml(d.nota)}"</div>` : '';
   const label = daEsercente ? tt('laTuaProposta') : tt('controproposta');
-  div.innerHTML = `<div class="msg-proposta-label">${label}</div><div class="msg-proposta-amount">€ ${d.prezzoProposto.toFixed(2)}</div>${azioniHtml}${statoHtml}`;
+  div.innerHTML = `<div class="msg-proposta-label">${label}</div><div class="msg-proposta-amount">€ ${d.prezzoProposto.toFixed(2)}</div>${notaHtml}${azioniHtml}${statoHtml}`;
   return div;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
 }
 
 function getCurrentLang() {

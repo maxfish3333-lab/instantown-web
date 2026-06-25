@@ -819,7 +819,7 @@ async function verificaPin() {
   btn.disabled = true;
 
   try {
-    const url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:json&sheet=anagrafica%20negozi';
+    const url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:json&sheet=anagrafica_negozi';
     const res = await fetch(url);
     const text = await res.text();
     const json = JSON.parse(text.substring(47).slice(0,-2));
@@ -876,7 +876,7 @@ function confermaAccesso() {
   if (!datiNegozio) return;
   // Nascondi gate e mostra form
   document.getElementById('pin-gate').style.display = 'none';
-  document.querySelector('.page-wrap, main, .form-wrap, form').style.display = 'block';
+  document.getElementById('form-offerta').style.display = 'block';
   // Precompila campi nascosti nel form
   precompilaForm(datiNegozio);
 }
