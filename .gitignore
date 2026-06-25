@@ -67,3 +67,12 @@ node_modules/
 
 # dataconnect generated files
 .dataconnect
+
+# File locali di lavoro - non versionare
+*.bak
+backup_fumetti_old/
+add-*.js
+fix-*.js
+patch-*.js
+insert-*.js
+check_syntax.js
