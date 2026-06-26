@@ -110,26 +110,56 @@ main{max-width:600px;margin:0 auto;padding:28px 20px 80px;}
 
 <main>
 
-  <!-- PIN UTENTE -->
-  <div class="pin-card">
-    <div class="pin-label" data-i18n="ma_pin_label">Il tuo PIN personale INSTANTOWN</div>
-    <div class="pin-value" id="pin-display">——</div>
-    <div class="pin-note" data-i18n="ma_pin_note">
-      Questo PIN identifica il tuo account. Comunicalo all'esercente insieme al QR-B
-      per completare il matching e sbloccare i fondi in Garanzia Bancaria.
+  <!-- STATO: VERIFICA TOKEN IN CORSO -->
+  <div id="verifica-in-corso" style="display:none;text-align:center;padding:60px 20px;">
+    <div style="font-size:40px;margin-bottom:16px;">⏳</div>
+    <div style="font-size:14px;color:var(--ink-mu);">Verifica del tuo account in corso...</div>
+  </div>
+
+  <!-- STATO: NESSUNA SESSIONE — FORM EMAIL -->
+  <div id="login-email-form" style="display:none;">
+    <div class="pin-card">
+      <div class="pin-label">Accedi al tuo account INSTANTOWN</div>
+      <p style="font-size:13px;color:var(--ink-mu);line-height:1.6;margin:8px 0 16px;">
+        Inserisci la tua email. Ti basta questa, nessuna password: ti manderemo
+        un link per confermare e accedere ai tuoi QR-B.
+      </p>
+      <input type="email" id="login-email-input" placeholder="tua@email.com"
+        style="width:100%;padding:14px 16px;font-size:15px;border:1px solid var(--rule);
+        border-radius:8px;font-family:'DM Sans',sans-serif;margin-bottom:12px;outline:none;">
+      <button class="pin-copy" style="width:100%;text-align:center;" onclick="inviaEmailAccesso()" id="login-submit-btn">
+        Continua →
+      </button>
+      <p id="login-email-status" style="font-size:13px;margin-top:14px;line-height:1.6;"></p>
     </div>
-    <button class="pin-copy" onclick="copiaPIN()" data-i18n="ma_pin_copy">📋 Copia PIN</button>
   </div>
 
-  <!-- QR SALVATI -->
-  <div class="section-title">
-    <span data-i18n="ma_section_title">I miei QR-B</span>
-    <span class="badge-count" id="qr-count">0</span>
-  </div>
+  <!-- STATO: ACCOUNT ATTIVO -->
+  <div id="account-content" style="display:none;">
 
-  <div id="qr-lista"></div>
+    <!-- PIN UTENTE -->
+    <div class="pin-card">
+      <div class="pin-label" data-i18n="ma_pin_label">Il tuo PIN personale INSTANTOWN</div>
+      <div class="pin-value" id="pin-display">——</div>
+      <div class="pin-note" data-i18n="ma_pin_note">
+        Questo PIN identifica il tuo account. Comunicalo all'esercente insieme al QR-B
+        per completare il matching e sbloccare i fondi in Garanzia Bancaria.
+      </div>
+      <button class="pin-copy" onclick="copiaPIN()" data-i18n="ma_pin_copy">📋 Copia PIN</button>
+    </div>
+
+    <!-- QR SALVATI -->
+    <div class="section-title">
+      <span data-i18n="ma_section_title">I miei QR-B</span>
+      <span class="badge-count" id="qr-count">0</span>
+    </div>
+
+    <div id="qr-lista"></div>
+
+  </div>
 
 </main>
+
 
 <!-- MODAL QR GRANDE -->
 <div class="modal-overlay" id="modal-qr">
@@ -160,30 +190,125 @@ function i18nGet(key, fallback) {
 }
 
 // ══════════════════════════════════
-// PIN — generato una volta e salvato
+// SISTEMA ACCOUNT — email-only, no password
 // ══════════════════════════════════
-function generaPIN() {
-  // PIN 6 cifre alfanumerico maiuscolo
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let pin = '';
-  for(let i=0; i<6; i++) pin += chars[Math.floor(Math.random()*chars.length)];
-  return pin;
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
+let mioPin = null;
+
+function mostraStato(stato) {
+  document.getElementById('verifica-in-corso').style.display = stato === 'verifica' ? 'block' : 'none';
+  document.getElementById('login-email-form').style.display = stato === 'login' ? 'block' : 'none';
+  document.getElementById('account-content').style.display = stato === 'attivo' ? 'block' : 'none';
 }
 
-let mioPin = localStorage.getItem('it_pin');
-if(!mioPin) {
-  mioPin = generaPIN();
-  localStorage.setItem('it_pin', mioPin);
+async function inviaEmailAccesso() {
+  const input = document.getElementById('login-email-input');
+  const statusEl = document.getElementById('login-email-status');
+  const btn = document.getElementById('login-submit-btn');
+  const email = (input.value || '').trim().toLowerCase();
+
+  if (!email || !email.includes('@')) {
+    statusEl.style.color = 'var(--rosso)';
+    statusEl.textContent = 'Inserisci un indirizzo email valido.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Invio in corso...';
+  statusEl.textContent = '';
+
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ tipo: 'registrazione_cliente', email: email })
+    });
+    const json = await res.json();
+
+    if (json.stato === 'ok' && json.verificato) {
+      // Account già verificato in passato: salvo subito il PIN, niente email da aspettare
+      mioPin = json.pin;
+      localStorage.setItem('it_pin', mioPin);
+      localStorage.setItem('it_email', email);
+      document.getElementById('pin-display').textContent = mioPin;
+      mostraStato('attivo');
+      caricaQR();
+    } else if (json.stato === 'ok') {
+      statusEl.style.color = 'var(--verde)';
+      statusEl.innerHTML = '✓ Controlla la tua casella email: ti abbiamo mandato un link per confermare l\'accesso.';
+      btn.style.display = 'none';
+      input.disabled = true;
+    } else {
+      statusEl.style.color = 'var(--rosso)';
+      statusEl.textContent = json.messaggio || 'Si è verificato un errore. Riprova.';
+      btn.disabled = false;
+      btn.textContent = 'Continua →';
+    }
+  } catch (e) {
+    statusEl.style.color = 'var(--rosso)';
+    statusEl.textContent = 'Errore di connessione. Riprova.';
+    btn.disabled = false;
+    btn.textContent = 'Continua →';
+  }
 }
-document.getElementById('pin-display').textContent = mioPin;
+
+async function verificaTokenDaUrl(token) {
+  mostraStato('verifica');
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?azione=verificaCliente&token=' + encodeURIComponent(token));
+    const json = await res.json();
+
+    if (json.stato === 'ok' && json.pin) {
+      mioPin = json.pin;
+      localStorage.setItem('it_pin', mioPin);
+      document.getElementById('pin-display').textContent = mioPin;
+      // Rimuovo il parametro dall'URL per evitare riverifiche su refresh
+      const url = new URL(window.location);
+      url.searchParams.delete('verifica');
+      window.history.replaceState({}, '', url);
+      mostraStato('attivo');
+      caricaQR();
+    } else {
+      mostraStato('login');
+      document.getElementById('login-email-status').style.color = 'var(--rosso)';
+      document.getElementById('login-email-status').textContent =
+        json.messaggio || 'Link non valido o già usato. Inserisci di nuovo la tua email.';
+    }
+  } catch (e) {
+    mostraStato('login');
+  }
+}
 
 function copiaPIN() {
+  if (!mioPin) return;
   navigator.clipboard.writeText(mioPin).then(()=>{
-    const btn = document.querySelector('.pin-copy');
+    const btn = document.querySelector('#account-content .pin-copy');
     btn.textContent = '✓ Copiato!';
     setTimeout(()=>btn.textContent='📋 Copia PIN', 2000);
   });
 }
+
+// ══════════════════════════════════
+// INIZIALIZZAZIONE: decido quale stato mostrare
+// ══════════════════════════════════
+(function initAccount() {
+  const params = new URLSearchParams(window.location.search);
+  const tokenUrl = params.get('verifica');
+
+  if (tokenUrl) {
+    verificaTokenDaUrl(tokenUrl);
+    return;
+  }
+
+  const pinSalvato = localStorage.getItem('it_pin');
+  if (pinSalvato) {
+    mioPin = pinSalvato;
+    document.getElementById('pin-display').textContent = mioPin;
+    mostraStato('attivo');
+    caricaQR();
+  } else {
+    mostraStato('login');
+  }
+})();
 
 // ══════════════════════════════════
 // CARICA QR SALVATI
@@ -316,8 +441,6 @@ function eliminaQR(idx) {
 document.getElementById('modal-qr').addEventListener('click', e => {
   if(e.target === e.currentTarget) chiudiModal();
 });
-
-caricaQR();
 </script>
 </body>
 </html>
