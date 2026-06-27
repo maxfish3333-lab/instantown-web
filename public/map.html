@@ -32,6 +32,25 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
   color:#fff;font-family:'DM Sans',sans-serif;font-size:11px;padding:5px 10px;border-radius:20px;cursor:pointer;}
 .lang-sel{background:rgba(200,134,10,.15);border:1px solid rgba(200,134,10,.3);
   color:var(--ocra-l);font-family:'DM Sans',sans-serif;font-size:11px;padding:5px 10px;border-radius:20px;cursor:pointer;}
+
+/* LANG SWITCHER custom — sostituisce il <select> nativo per evitare
+   il bug delle opzioni poco leggibili (basso contrasto su WebKit
+   quando non in focus), stesso fix già fatto in servizi.html */
+.lang-switch{position:relative;flex-shrink:0;}
+.lang-switch-btn{display:flex;align-items:center;gap:5px;
+  background:rgba(200,134,10,.15);border:1px solid rgba(200,134,10,.3);
+  color:var(--ocra-l);font-family:'DM Sans',sans-serif;font-size:11px;
+  padding:5px 10px;border-radius:20px;cursor:pointer;user-select:none;white-space:nowrap;}
+.lang-switch-caret{font-size:8px;opacity:.7;margin-left:1px;}
+.lang-switch-list{position:absolute;top:calc(100% + 4px);left:0;z-index:1000;
+  background:#1C1410;border:1px solid rgba(200,134,10,.3);border-radius:8px;
+  box-shadow:0 6px 20px rgba(0,0,0,.4);min-width:90px;padding:4px;display:none;}
+.lang-switch-list.open{display:block;}
+.lang-switch-opt{display:flex;align-items:center;gap:7px;padding:7px 9px;
+  border-radius:6px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;
+  color:#fff;white-space:nowrap;}
+.lang-switch-opt:hover{background:rgba(255,255,255,.1);}
+.lang-switch-opt.active{background:rgba(200,134,10,.25);color:var(--ocra-l);}
 .gps-pill{display:flex;align-items:center;gap:5px;
   background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
   border-radius:20px;padding:5px 10px;font-size:11px;color:rgba(255,255,255,.6);flex-shrink:0;}
@@ -153,7 +172,7 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
     <option value="500">500 m</option>
     <option value="9999">Tutte</option>
   </select>
-  <select class="lang-sel" id="lang-sel" onchange="setLang(this.value)">
+  <select class="lang-sel" id="lang-sel" onchange="setLang(this.value)" style="display:none;">
     <option value="it">🇮🇹 IT</option>
     <option value="en">🇬🇧 EN</option>
     <option value="zh">🇨🇳 中文</option>
@@ -161,6 +180,19 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
     <option value="fr">🇫🇷 FR</option>
     <option value="de">🇩🇪 DE</option>
   </select>
+  <div class="lang-switch" id="lang-switch">
+    <div class="lang-switch-btn" id="lang-switch-btn" onclick="toggleLangSwitch(event)">
+      <span id="lang-switch-flag">🇮🇹</span><span id="lang-switch-label">IT</span><span class="lang-switch-caret">▾</span>
+    </div>
+    <div class="lang-switch-list" id="lang-switch-list">
+      <div class="lang-switch-opt" data-lang="it" onclick="selectLangMap('it')"><span>🇮🇹</span><span>IT</span></div>
+      <div class="lang-switch-opt" data-lang="en" onclick="selectLangMap('en')"><span>🇬🇧</span><span>EN</span></div>
+      <div class="lang-switch-opt" data-lang="zh" onclick="selectLangMap('zh')"><span>🇨🇳</span><span>中文</span></div>
+      <div class="lang-switch-opt" data-lang="es" onclick="selectLangMap('es')"><span>🇪🇸</span><span>ES</span></div>
+      <div class="lang-switch-opt" data-lang="fr" onclick="selectLangMap('fr')"><span>🇫🇷</span><span>FR</span></div>
+      <div class="lang-switch-opt" data-lang="de" onclick="selectLangMap('de')"><span>🇩🇪</span><span>DE</span></div>
+    </div>
+  </div>
   <div class="gps-pill">
     <div class="gps-dot" id="gps-dot"></div>
     <span id="gps-label">GPS...</span>
@@ -180,7 +212,7 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
   <button class="cat-fil active" data-cat="TUTTE" onclick="filtraCat('TUTTE',this)">🗂 <span data-t="all">Tutte</span></button>
   <button class="cat-fil" data-cat="CIBO" onclick="filtraCat('CIBO',this)">🍕 <span data-t="food">Cibo</span></button>
   <button class="cat-fil" data-cat="MODA" onclick="filtraCat('MODA',this)">👗 <span data-t="fashion">Moda</span></button>
-  <button class="cat-fil" data-cat="TECH" onclick="filtraCat('TECH',this)">📱 Tech</button>
+  <button class="cat-fil" data-cat="TECH" onclick="filtraCat('TECH',this)">📱 <span data-t="tech">Tech</span></button>
   <button class="cat-fil" data-cat="VIAGGI" onclick="filtraCat('VIAGGI',this)">✈️ <span data-t="travel">Viaggi</span></button>
   <button class="cat-fil" data-cat="DIVERTIMENTO" onclick="filtraCat('DIVERTIMENTO',this)">🎭 <span data-t="fun">Diverti.</span></button>
   <button class="cat-fil" data-cat="ALTRO" onclick="filtraCat('ALTRO',this)">🛍️ <span data-t="other">Altro</span></button>
@@ -238,6 +270,19 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
+// Dizionario per i filtri categoria (bottoni con data-t).
+// Mancava: la funzione t() sotto faceva riferimento a T senza che fosse
+// mai definito da nessuna parte, causando un ReferenceError ogni volta
+// che si cambiava lingua — il che interrompeva silenziosamente il resto
+// di setLang(), motivo per cui il Radar restava sempre in italiano.
+const T = {
+  it: { all:'Tutte', food:'Cibo', fashion:'Moda', tech:'Tech', travel:'Viaggi', fun:'Diverti.', other:'Altro' },
+  en: { all:'All', food:'Food', fashion:'Fashion', tech:'Tech', travel:'Travel', fun:'Fun', other:'Other' },
+  zh: { all:'全部', food:'美食', fashion:'时尚', tech:'科技', travel:'旅游', fun:'娱乐', other:'其他' },
+  es: { all:'Todas', food:'Comida', fashion:'Moda', tech:'Tech', travel:'Viajes', fun:'Diversión', other:'Otro' },
+  fr: { all:'Toutes', food:'Cuisine', fashion:'Mode', tech:'Tech', travel:'Voyages', fun:'Loisirs', other:'Autre' },
+  de: { all:'Alle', food:'Essen', fashion:'Mode', tech:'Tech', travel:'Reisen', fun:'Freizeit', other:'Sonstiges' }
+};
 let lang = localStorage.getItem('it_lang') || 'it';
 function t(k){ return (T[lang]||T.it)[k] || k; }
 
@@ -245,6 +290,7 @@ function setLang(l){ applyLang(l);
   lang=l;
   localStorage.setItem('it_lang',l);
   document.getElementById('lang-sel').value=l;
+  syncLangSwitchDisplay(l);
   // Aggiorna testi UI
   document.getElementById('gps-loading-txt').textContent=i18n('loading');
   document.getElementById('escrow-note').textContent=i18n('escrow');
@@ -259,8 +305,37 @@ function setLang(l){ applyLang(l);
   if(offertaCorrente) apriScheda(offertaCorrente);
 }
 
+// LANG SWITCHER custom (vedi commento CSS sopra per il motivo del fix)
+const LANG_SWITCH_DATA_MAP = {
+  it:{flag:'🇮🇹',label:'IT'}, en:{flag:'🇬🇧',label:'EN'}, zh:{flag:'🇨🇳',label:'中文'},
+  es:{flag:'🇪🇸',label:'ES'}, fr:{flag:'🇫🇷',label:'FR'}, de:{flag:'🇩🇪',label:'DE'}
+};
+function toggleLangSwitch(e){
+  if(e) e.stopPropagation();
+  document.getElementById('lang-switch-list').classList.toggle('open');
+}
+function selectLangMap(l){
+  document.getElementById('lang-switch-list').classList.remove('open');
+  setLang(l);
+}
+function syncLangSwitchDisplay(l){
+  const d = LANG_SWITCH_DATA_MAP[l] || LANG_SWITCH_DATA_MAP.it;
+  const flagEl = document.getElementById('lang-switch-flag');
+  const labelEl = document.getElementById('lang-switch-label');
+  if(flagEl) flagEl.textContent = d.flag;
+  if(labelEl) labelEl.textContent = d.label;
+  document.querySelectorAll('.lang-switch-opt').forEach(opt=>{
+    opt.classList.toggle('active', opt.getAttribute('data-lang') === l);
+  });
+}
+document.addEventListener('click', e=>{
+  const sw = document.getElementById('lang-switch');
+  if(sw && !sw.contains(e.target)) document.getElementById('lang-switch-list').classList.remove('open');
+});
+
 // Sync con lingua homepage
 document.getElementById('lang-sel').value = localStorage.getItem('it_lang')||'it';
+syncLangSwitchDisplay(localStorage.getItem('it_lang')||'it');
 
 // ═══════════════════════
 // CONFIG
