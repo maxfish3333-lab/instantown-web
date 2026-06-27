@@ -26,6 +26,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--ink);
 
 /* LOGIN */
 #login-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;}
+#email-login-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;}
 .login-box{background:rgba(28,20,16,.04);border:1px solid rgba(200,134,10,.2);border-radius:16px;padding:36px 32px;max-width:400px;width:100%;text-align:center;}
 .login-icon{font-size:48px;margin-bottom:16px;}
 .login-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--ink);margin-bottom:8px;}
@@ -130,8 +131,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--ink);
   <a href="index.html" class="chat-header-back">← Home</a>
 </div>
 
+<!-- LOGIN EMAIL (account cliente, obbligatorio prima di accedere alla chat) -->
+<div id="email-login-screen">
+  <div class="login-box">
+    <div class="login-icon">📧</div>
+    <div class="login-title">Accedi con la tua email</div>
+    <div class="login-desc">Ti basta questa, nessuna password: la useremo per inviarti il QR-B quando l'accordo è confermato.</div>
+    <input class="login-input" id="email-login-input" type="email" placeholder="tua@email.com" autocomplete="off">
+    <button class="login-btn" id="email-login-btn" onclick="accediConEmail()">Continua →</button>
+    <div class="login-error" id="email-login-error" style="display:none;"></div>
+  </div>
+</div>
+
 <!-- LOGIN -->
-<div id="login-screen">
+<div id="login-screen" style="display:none;">
   <div class="login-box">
     <div class="login-icon">💬</div>
     <div class="login-title">Chat prenotazione</div>
@@ -159,7 +172,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--ink);
       <button class="trading-send-btn" id="trading-send-btn" onclick="inviaProposta()">Invia proposta</button>
     </div>
     <input type="text" class="trading-nota-input" id="trading-nota-input" placeholder="Aggiungi una nota (es. siamo in 6 persone)" maxlength="140">
-    <input type="email" class="trading-nota-input" id="trading-email-input" placeholder="La tua email (per ricevere il QR-B)" style="margin-top:6px;">
     <div class="trading-error" id="trading-error"></div>
   </div>
   <div class="messages" id="messages">
@@ -298,14 +310,6 @@ function initTrading() {
       document.getElementById('trading-panel').classList.add('open');
     }
   }
-
-  // Se l'email è già nota da una sessione precedente (account verificato
-  // su mio-account.html), non serve richiederla di nuovo nel pannello.
-  const emailEsistente = localStorage.getItem('it_email');
-  const emailInput = document.getElementById('trading-email-input');
-  if (emailEsistente && emailInput) {
-    emailInput.style.display = 'none';
-  }
 }
 
 window.toggleTradingPanel = function() {
@@ -315,7 +319,6 @@ window.toggleTradingPanel = function() {
 window.inviaProposta = async function() {
   const input = document.getElementById('trading-input');
   const notaInput = document.getElementById('trading-nota-input');
-  const emailInput = document.getElementById('trading-email-input');
   const errorEl = document.getElementById('trading-error');
   const valore = parseFloat(input.value);
   const nota = notaInput.value.trim();
@@ -333,18 +336,11 @@ window.inviaProposta = async function() {
     return;
   }
 
-  // Email: uso quella già nota da una sessione precedente (account verificato),
-  // altrimenti quella appena digitata nel pannello. Senza email non si procede:
-  // serve per poter inviare il QR-B più avanti, quando l'esercente genera il QR-A.
-  const emailSalvata = localStorage.getItem('it_email');
-  const emailNuova = emailInput ? emailInput.value.trim().toLowerCase() : '';
-  const emailCliente = emailSalvata || emailNuova;
-
-  if (!emailCliente || !emailCliente.includes('@')) {
-    errorEl.textContent = tt('emailRichiesta');
-    errorEl.style.display = 'block';
-    return;
-  }
+  // L'email è sempre garantita qui: chat.html richiede il login email
+  // (vedi email-login-screen) prima di mostrare qualsiasi altro contenuto,
+  // quindi a questo punto localStorage.it_email esiste sempre.
+  const emailCliente = localStorage.getItem('it_email');
+  if (!emailCliente) return; // non dovrebbe mai accadere, per sicurezza
   if (!currentTX) return;
 
   const btn = document.getElementById('trading-send-btn');
@@ -365,36 +361,14 @@ window.inviaProposta = async function() {
       daLeggere: true
     }, { merge: true });
 
-    // Se l'email è nuova (non già verificata in una sessione precedente),
-    // avvio la registrazione account in background. Non blocco l'invio
-    // della proposta in attesa di questo: se l'email non era già verificata,
-    // il cliente riceverà comunque il link di conferma e potrà vedere il
-    // suo QR-B più avanti su mio-account.html con la stessa email.
-    if (!emailSalvata && emailNuova) {
-      registraEmailInBackground(emailNuova);
-    }
-
     input.value = '';
     notaInput.value = '';
-    if (emailInput) emailInput.value = '';
     document.getElementById('trading-panel').classList.remove('open');
   } catch(e) {
     console.error(e);
   }
   btn.disabled = false;
 };
-
-// Avvia la registrazione account (stesso meccanismo di mio-account.html)
-// in background: se l'email è nuova, il cliente riceverà l'email di
-// verifica e potrà vedere i suoi QR-B più avanti. Non blocchiamo né
-// mostriamo errori qui: l'invio della proposta resta indipendente da
-// questo, l'email serve comunque già salvata nella proposta stessa.
-function registraEmailInBackground(email) {
-  fetch(APPS_SCRIPT_URL, {
-    method: 'POST',
-    body: JSON.stringify({ tipo: 'registrazione_cliente', email: email })
-  }).catch(e => console.error('Registrazione email in background fallita:', e));
-}
 
 window.rispondiProposta = async function(msgId, azione) {
   if (!currentTX) return;
@@ -540,6 +514,18 @@ window.accediChat = async function() {
     document.getElementById('chat-screen').style.display = 'flex';
     renderQuickPhrases();
 
+    // Registro/aggiorno l'associazione TX-email su Firestore: utile per
+    // chiunque (es. esercente, o lo stesso cliente da un altro dispositivo)
+    // debba in futuro sapere a quale account appartiene questa specifica
+    // conversazione, senza dover ripassare per il pannello Trading.
+    const emailCorrente = localStorage.getItem('it_email');
+    if (emailCorrente) {
+      const { setDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      setDoc(doc(db, 'chat_owners', tx), {
+        email: emailCorrente, ts: serverTimestamp()
+      }, { merge: true }).catch(e => console.error('Salvataggio chat_owners fallito:', e));
+    }
+
     // Ascolta messaggi in realtime
     ascoltaMessaggi(tx);
 
@@ -645,21 +631,88 @@ document.getElementById('msg-input').addEventListener('keydown', function(e) {
   }
 });
 
+// Login email obbligatorio prima di accedere alla chat. Stesso
+// meccanismo di mio-account.html: email-only, nessuna password.
+window.accediConEmail = async function() {
+  const input = document.getElementById('email-login-input');
+  const errorEl = document.getElementById('email-login-error');
+  const btn = document.getElementById('email-login-btn');
+  const email = (input.value || '').trim().toLowerCase();
+
+  errorEl.style.display = 'none';
+  if (!email || !email.includes('@')) {
+    errorEl.textContent = 'Inserisci un indirizzo email valido.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Verifica in corso...';
+
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ tipo: 'registrazione_cliente', email: email })
+    });
+    const json = await res.json();
+
+    if (json.stato === 'ok' && json.verificato) {
+      // Account già attivo: accesso immediato, niente attesa email.
+      localStorage.setItem('it_email', email);
+      document.getElementById('email-login-screen').style.display = 'none';
+      mostraLoginTxOAutoEntra();
+    } else if (json.stato === 'ok') {
+      errorEl.style.color = 'var(--ocra-l)';
+      errorEl.innerHTML = '✓ Controlla la tua casella email: ti abbiamo mandato un link per confermare l\'accesso, poi torna su questa pagina.';
+      errorEl.style.display = 'block';
+      btn.style.display = 'none';
+      input.disabled = true;
+    } else {
+      errorEl.style.color = '';
+      errorEl.textContent = json.messaggio || 'Si è verificato un errore. Riprova.';
+      errorEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Continua →';
+    }
+  } catch (e) {
+    errorEl.textContent = 'Errore di connessione. Riprova.';
+    errorEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Continua →';
+  }
+};
+
+// Dopo il login email, procedo come il flusso originale: se il TX è
+// già nell'URL (link da offerte.html), entro direttamente; altrimenti
+// mostro lo schermo per digitarlo a mano.
+function mostraLoginTxOAutoEntra() {
+  const params = new URLSearchParams(window.location.search);
+  const tx = params.get('tx');
+  if (tx) {
+    document.getElementById('tx-input').value = tx;
+    window.accediChat();
+  } else {
+    document.getElementById('login-screen').style.display = 'flex';
+  }
+}
+
 // Auto-resize textarea
 document.getElementById('msg-input').addEventListener('input', function() {
   this.style.height = 'auto';
   this.style.height = Math.min(this.scrollHeight, 120) + 'px';
 });
 
-// Auto-login se TX passato via URL
 document.addEventListener('DOMContentLoaded', function() {
   initTrading();
-  const params = new URLSearchParams(window.location.search);
-  const tx = params.get('tx');
-  if (tx) {
-    document.getElementById('tx-input').value = tx;
-    window.accediChat();
+  const emailNota = localStorage.getItem('it_email');
+  if (emailNota) {
+    // Email già garantita da una sessione precedente: si salta dritti
+    // al login TX / auto-login, come prima di questa modifica.
+    mostraLoginTxOAutoEntra();
   }
+  // Se l'email non è nota, email-login-screen resta visibile (è lo
+  // stato di default nell'HTML) e blocca l'accesso al resto: il cliente
+  // deve completare accediConEmail() prima di proseguire.
 });
 
 </script>
