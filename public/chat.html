@@ -159,6 +159,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--ink);
       <button class="trading-send-btn" id="trading-send-btn" onclick="inviaProposta()">Invia proposta</button>
     </div>
     <input type="text" class="trading-nota-input" id="trading-nota-input" placeholder="Aggiungi una nota (es. siamo in 6 persone)" maxlength="140">
+    <input type="email" class="trading-nota-input" id="trading-email-input" placeholder="La tua email (per ricevere il QR-B)" style="margin-top:6px;">
     <div class="trading-error" id="trading-error"></div>
   </div>
   <div class="messages" id="messages">
@@ -198,6 +199,7 @@ let offertaDesc = '';
 let offertaNegozio = '';
 const TRADING_MIN_RATIO = 0.5;
 const TRADING_TIMEOUT_MIN = 12;
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
 
 // ══════════════════════════════════
 // FRASI RAPIDE MULTILINGUA
@@ -268,7 +270,8 @@ const TRADING_LABELS = {
   propostaRifiutata:{ it:'Proposta rifiutata', en:'Offer declined', zh:'提议已被拒绝', es:'Propuesta rechazada', fr:'Proposition refusée', de:'Angebot abgelehnt' },
   propostaScaduta: { it:'Proposta scaduta', en:'Offer expired', zh:'提议已过期', es:'Propuesta caducada', fr:'Proposition expirée', de:'Angebot abgelaufen' },
   procediPagamento:{ it:'Procedi al pagamento →', en:'Proceed to payment →', zh:'前往付款 →', es:'Proceder al pago →', fr:'Procéder au paiement →', de:'Weiter zur Zahlung →' },
-  scadeIn:         { it:'scade in', en:'expires in', zh:'剩余', es:'caduca en', fr:'expire dans', de:'läuft ab in' }
+  scadeIn:         { it:'scade in', en:'expires in', zh:'剩余', es:'caduca en', fr:'expire dans', de:'läuft ab in' },
+  emailRichiesta:  { it:'Inserisci la tua email per ricevere il QR-B', en:'Enter your email to receive the QR-B', zh:'请输入您的电子邮箱以接收QR-B', es:'Introduce tu email para recibir el QR-B', fr:'Indiquez votre email pour recevoir le QR-B', de:'Gib deine E-Mail ein, um den QR-B zu erhalten' }
 };
 
 function tt(key) {
@@ -295,6 +298,14 @@ function initTrading() {
       document.getElementById('trading-panel').classList.add('open');
     }
   }
+
+  // Se l'email è già nota da una sessione precedente (account verificato
+  // su mio-account.html), non serve richiederla di nuovo nel pannello.
+  const emailEsistente = localStorage.getItem('it_email');
+  const emailInput = document.getElementById('trading-email-input');
+  if (emailEsistente && emailInput) {
+    emailInput.style.display = 'none';
+  }
 }
 
 window.toggleTradingPanel = function() {
@@ -304,6 +315,7 @@ window.toggleTradingPanel = function() {
 window.inviaProposta = async function() {
   const input = document.getElementById('trading-input');
   const notaInput = document.getElementById('trading-nota-input');
+  const emailInput = document.getElementById('trading-email-input');
   const errorEl = document.getElementById('trading-error');
   const valore = parseFloat(input.value);
   const nota = notaInput.value.trim();
@@ -320,6 +332,19 @@ window.inviaProposta = async function() {
     errorEl.style.display = 'block';
     return;
   }
+
+  // Email: uso quella già nota da una sessione precedente (account verificato),
+  // altrimenti quella appena digitata nel pannello. Senza email non si procede:
+  // serve per poter inviare il QR-B più avanti, quando l'esercente genera il QR-A.
+  const emailSalvata = localStorage.getItem('it_email');
+  const emailNuova = emailInput ? emailInput.value.trim().toLowerCase() : '';
+  const emailCliente = emailSalvata || emailNuova;
+
+  if (!emailCliente || !emailCliente.includes('@')) {
+    errorEl.textContent = tt('emailRichiesta');
+    errorEl.style.display = 'block';
+    return;
+  }
   if (!currentTX) return;
 
   const btn = document.getElementById('trading-send-btn');
@@ -329,7 +354,8 @@ window.inviaProposta = async function() {
     await addDoc(collection(db, 'chats', currentTX, 'messages'), {
       tipo: 'proposta', prezzoProposto: valore, daChi: 'cliente',
       stato: 'in_attesa', scadenza: scadenza.toISOString(),
-      offertaOriginale: offertaAmount, nota: nota || null, ts: serverTimestamp()
+      offertaOriginale: offertaAmount, nota: nota || null,
+      emailCliente: emailCliente, ts: serverTimestamp()
     });
     const { setDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
     await setDoc(doc(db, 'chats', currentTX), {
@@ -338,14 +364,37 @@ window.inviaProposta = async function() {
       ultimoTs: serverTimestamp(),
       daLeggere: true
     }, { merge: true });
+
+    // Se l'email è nuova (non già verificata in una sessione precedente),
+    // avvio la registrazione account in background. Non blocco l'invio
+    // della proposta in attesa di questo: se l'email non era già verificata,
+    // il cliente riceverà comunque il link di conferma e potrà vedere il
+    // suo QR-B più avanti su mio-account.html con la stessa email.
+    if (!emailSalvata && emailNuova) {
+      registraEmailInBackground(emailNuova);
+    }
+
     input.value = '';
     notaInput.value = '';
+    if (emailInput) emailInput.value = '';
     document.getElementById('trading-panel').classList.remove('open');
   } catch(e) {
     console.error(e);
   }
   btn.disabled = false;
 };
+
+// Avvia la registrazione account (stesso meccanismo di mio-account.html)
+// in background: se l'email è nuova, il cliente riceverà l'email di
+// verifica e potrà vedere i suoi QR-B più avanti. Non blocchiamo né
+// mostriamo errori qui: l'invio della proposta resta indipendente da
+// questo, l'email serve comunque già salvata nella proposta stessa.
+function registraEmailInBackground(email) {
+  fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify({ tipo: 'registrazione_cliente', email: email })
+  }).catch(e => console.error('Registrazione email in background fallita:', e));
+}
 
 window.rispondiProposta = async function(msgId, azione) {
   if (!currentTX) return;

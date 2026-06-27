@@ -260,6 +260,7 @@ async function verificaTokenDaUrl(token) {
     if (json.stato === 'ok' && json.pin) {
       mioPin = json.pin;
       localStorage.setItem('it_pin', mioPin);
+      if (json.email) localStorage.setItem('it_email', json.email);
       document.getElementById('pin-display').textContent = mioPin;
       // Rimuovo il parametro dall'URL per evitare riverifiche su refresh
       const url = new URL(window.location);
@@ -313,8 +314,35 @@ function copiaPIN() {
 // ══════════════════════════════════
 // CARICA QR SALVATI
 // ══════════════════════════════════
+// QR-B centrali (da Firestore, collection qr_b_emessi) — popolati dal
+// blocco module più sotto, che interroga per email del cliente loggato.
+// Restano un array separato da quelli locali perché arrivano in modo
+// asincrono: appena pronti, richiamano renderListaQR() per unirli.
+let qrCentrali = [];
+
 function caricaQR() {
-  const prenotazioni = JSON.parse(localStorage.getItem('it_prenotazioni') || '[]');
+  renderListaQR();
+  // Definita nel blocco <script type="module"> più sotto. Può non
+  // esistere ancora se questo script gira per primo (poco probabile,
+  // dato l'ordine nel documento, ma per sicurezza non lancio errori).
+  if (typeof caricaQRCentrali === 'function') caricaQRCentrali();
+}
+
+function renderListaQR() {
+  const prenotazioniLocali = JSON.parse(localStorage.getItem('it_prenotazioni') || '[]')
+    .map((p, i) => Object.assign({}, p, { localIdx: i, daFirestore: false }));
+  // Normalizzo i QR centrali nello stesso formato di quelli locali,
+  // così il resto del rendering (già esistente) non deve sapere da dove
+  // arrivano. bookingId/idtx fittizi ma stabili, usano l'id del documento.
+  // localIdx resta null: non esistono in localStorage, eliminaQR() non
+  // si applica a loro (il bottone Elimina viene omesso nel template).
+  const centraliNormalizzati = qrCentrali.map(q => ({
+    negozio: q.negozio, desc: '', prezzo: q.prezzo,
+    bookingId: q.id, idtx: q.tx, ts: q.tsMillis || Date.now(),
+    stato: q.stato === 'usato' ? 'USATO' : 'ATTESA', daFirestore: true, localIdx: null
+  }));
+
+  const prenotazioni = prenotazioniLocali.concat(centraliNormalizzati);
   const lista = document.getElementById('qr-lista');
   const count = document.getElementById('qr-count');
   count.textContent = prenotazioni.length;
@@ -363,7 +391,7 @@ function caricaQR() {
       </div>
       <div class="qr-card-footer">
         <button class="btn-mostra" onclick="mostraQR(${idx})" data-i18n="ma_btn_mostra">🔍 Mostra QR grande</button>
-        <button class="btn-elimina" onclick="eliminaQR(${idx})" data-i18n="ma_btn_elimina">Elimina</button>
+        ${p.daFirestore ? '' : `<button class="btn-elimina" onclick="eliminaQR(${p.localIdx})" data-i18n="ma_btn_elimina">Elimina</button>`}
       </div>
     </div>`;
   }).join('');
@@ -394,7 +422,12 @@ function caricaQR() {
 // MOSTRA QR GRANDE
 // ══════════════════════════════════
 function mostraQR(idx) {
-  const prenotazioni = JSON.parse(localStorage.getItem('it_prenotazioni') || '[]');
+  const prenotazioniLocali = JSON.parse(localStorage.getItem('it_prenotazioni') || '[]');
+  const centraliNormalizzati = qrCentrali.map(q => ({
+    negozio: q.negozio, desc: '', prezzo: q.prezzo,
+    bookingId: q.id, idtx: q.tx, ts: q.tsMillis || Date.now(), daFirestore: true
+  }));
+  const prenotazioni = prenotazioniLocali.concat(centraliNormalizzati);
   const p = prenotazioni[idx];
   if(!p) return;
 
@@ -441,6 +474,56 @@ function eliminaQR(idx) {
 document.getElementById('modal-qr').addEventListener('click', e => {
   if(e.target === e.currentTarget) chiudiModal();
 });
+</script>
+
+<script type="module">
+// Lettura dei QR-B centrali (collection qr_b_emessi su Firestore),
+// scritti da chat-esercente.html quando l'esercente genera il QR-A
+// dopo un accordo Trading/Reverse. A differenza dei QR salvati in
+// localStorage (legati a un singolo browser), questi sono collegati
+// all'email del cliente e quindi visibili da qualsiasi dispositivo.
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBez4L85HA1__NPKOzagfmKeoGLniIQeAc",
+  authDomain: "instantown-app.firebaseapp.com",
+  projectId: "instantown-app",
+  storageBucket: "instantown-app.firebasestorage.app",
+  messagingSenderId: "469598782572",
+  appId: "1:469598782572:web:7fc20afb17a3c3c6d68449",
+  measurementId: "G-D45LJHDDXX"
+};
+const appFs = initializeApp(firebaseConfig);
+const dbFs = getFirestore(appFs);
+
+window.caricaQRCentrali = async function() {
+  const email = localStorage.getItem('it_email');
+  if (!email) return; // nessuna email nota in questa sessione, niente da cercare
+
+  try {
+    const q = query(collection(dbFs, 'qr_b_emessi'), where('email', '==', email));
+    const snap = await getDocs(q);
+    const risultati = [];
+    snap.forEach(docSnap => {
+      const d = docSnap.data();
+      risultati.push({
+        id: docSnap.id,
+        negozio: d.negozio || '',
+        prezzo: d.prezzo || 0,
+        tx: d.tx || '',
+        stato: d.stato || 'attivo',
+        tsMillis: d.ts && d.ts.seconds ? d.ts.seconds * 1000 : Date.now()
+      });
+    });
+    // window.qrCentrali esiste già come variabile globale (script principale);
+    // qui la aggiorniamo e richiamiamo il rendering già pronto a riceverla.
+    qrCentrali = risultati;
+    if (typeof renderListaQR === 'function') renderListaQR();
+  } catch(e) {
+    console.error('Errore caricamento QR centrali:', e);
+  }
+};
 </script>
 </body>
 </html>

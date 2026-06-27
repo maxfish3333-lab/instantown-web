@@ -104,6 +104,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--ink);
 .msg-proposta.da-cliente .msg-proposta-stato.rifiutata{color:#ff6b6b;}
 .msg-proposta.da-esercente .msg-proposta-stato.scaduta{color:rgba(28,20,16,.65);}
 .msg-proposta.da-cliente .msg-proposta-stato.scaduta{color:rgba(28,20,16,.4);}
+.btn-genera-qr{display:block;width:100%;margin-top:8px;background:#2e7d32;color:#fff;border:none;
+  border-radius:6px;padding:9px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.btn-genera-qr:disabled{background:rgba(46,125,50,.4);cursor:not-allowed;}
+.msg-proposta-qr-ok{font-size:12px;color:#2e7d32;font-weight:600;margin-top:6px;}
 .msg-proposta-countdown{font-size:10px;margin-top:4px;}
 .msg-proposta.da-esercente .msg-proposta-countdown{color:rgba(28,20,16,.65);}
 .msg-proposta.da-cliente .msg-proposta-countdown{color:rgba(28,20,16,.45);}
@@ -171,7 +175,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--ink);
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, getDocs, doc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, getDocs, doc, updateDoc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBez4L85HA1__NPKOzagfmKeoGLniIQeAc",
@@ -185,6 +189,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
 
 let negozioCorrente = null;
 let negozioLat = null;
@@ -404,7 +409,9 @@ const TRADING_LABELS = {
   accordoRaggiunto:{ it:'Accordo raggiunto a', en:'Agreement reached at', zh:'已达成协议，价格为', es:'Acuerdo alcanzado en', fr:'Accord conclu à', de:'Einigung erzielt bei' },
   propostaRifiutata:{ it:'Proposta rifiutata', en:'Offer declined', zh:'提议已被拒绝', es:'Propuesta rechazada', fr:'Proposition refusée', de:'Angebot abgelehnt' },
   propostaScaduta: { it:'Proposta scaduta', en:'Offer expired', zh:'提议已过期', es:'Propuesta caducada', fr:'Proposition expirée', de:'Angebot abgelaufen' },
-  scadeIn:         { it:'scade in', en:'expires in', zh:'剩余', es:'caduca en', fr:'expire dans', de:'läuft ab in' }
+  scadeIn:         { it:'scade in', en:'expires in', zh:'剩余', es:'caduca en', fr:'expire dans', de:'läuft ab in' },
+  generaQRInvia:   { it:'Genera QR-A e invia conferma', en:'Generate QR-A and send confirmation', zh:'生成QR-A并发送确认', es:'Generar QR-A y enviar confirmación', fr:'Générer le QR-A et envoyer la confirmation', de:'QR-A erstellen und Bestätigung senden' },
+  qrInviato:       { it:'Conferma inviata al cliente', en:'Confirmation sent to customer', zh:'确认已发送给客户', es:'Confirmación enviada al cliente', fr:'Confirmation envoyée au client', de:'Bestätigung an Kunden gesendet' }
 };
 
 function tt(key) {
@@ -447,6 +454,49 @@ window.inviaRilancio = async function(msgId, offertaOriginale) {
   } catch(e) { console.error(e); }
 };
 
+// Genera il QR-A (lato esercente) e, in un unico passo:
+// 1. salva un documento in 'qr_b_emessi' — questo è il dato centrale che
+//    mio-account.html leggerà per mostrare il QR-B al cliente, da
+//    qualsiasi dispositivo usi (non dipende dal localStorage di un
+//    singolo browser);
+// 2. marca la proposta come 'qrGenerato' per non permettere doppi invii;
+// 3. chiama l'Apps Script per mandare l'email di notifica al cliente,
+//    con un link a mio-account.html dove troverà il QR pronto.
+window.generaQRAEInvia = async function(btn, msgId, prezzo, emailCliente) {
+  if (!currentTX || !emailCliente) {
+    alert('Email del cliente non disponibile per questa proposta.');
+    return;
+  }
+  if (btn) { btn.disabled = true; btn.textContent = '...'; }
+
+  try {
+    const idQr = 'QR-' + Date.now();
+    await setDoc(doc(db, 'qr_b_emessi', idQr), {
+      email: emailCliente,
+      negozio: negozioCorrente || '',
+      prezzo: prezzo,
+      tx: currentTX,
+      stato: 'attivo',
+      ts: serverTimestamp()
+    });
+
+    await updateDoc(doc(db, 'chats', currentTX, 'messages', msgId), { qrGenerato: true });
+
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        tipo: 'notifica_qr_pronto',
+        email: emailCliente,
+        negozio: negozioCorrente || '',
+        prezzo: prezzo
+      })
+    });
+  } catch(e) {
+    console.error('Errore generazione QR:', e);
+    if (btn) { btn.disabled = false; btn.textContent = tt('generaQRInvia'); }
+  }
+};
+
 function renderProposta(d, docId, isUltima) {
   const scaduta = d.stato === 'in_attesa' && d.scadenza && new Date(d.scadenza) < new Date();
   const statoEffettivo = scaduta ? 'scaduta' : d.stato;
@@ -473,6 +523,11 @@ function renderProposta(d, docId, isUltima) {
   let statoHtml = '';
   if (statoEffettivo === 'accettata') {
     statoHtml = `<div class="msg-proposta-stato accettata">✅ ${tt('accordoRaggiunto')} € ${d.prezzoProposto.toFixed(2)}</div>`;
+    if (!d.qrGenerato) {
+      statoHtml += `<button class="btn-genera-qr" onclick="generaQRAEInvia(this, '${docId}', ${d.prezzoProposto}, '${escapeHtml(d.emailCliente || '')}')">📤 ${tt('generaQRInvia')}</button>`;
+    } else {
+      statoHtml += `<div class="msg-proposta-qr-ok">✓ ${tt('qrInviato')}</div>`;
+    }
   } else if (statoEffettivo === 'rifiutata') {
     statoHtml = `<div class="msg-proposta-stato rifiutata">✕ ${tt('propostaRifiutata')}</div>`;
   } else if (statoEffettivo === 'scaduta') {
