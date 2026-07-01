@@ -160,6 +160,9 @@ const IT18N = {
     sv_filtro_tutti: "🗂 Tutti",
     sv_filtro_pubblico: "💧 Servizi pubblici",
     sv_filtro_iconico: "🛍 Luoghi iconici",
+    sv_filtro_bus: "🚌 Bus & Tram",
+    sv_filtro_bancomat: "🏦 Bancomat",
+    sv_filtro_poste: "📮 Uffici postali",
     sv_btn_portami: "PORTAMI QUI",
     sv_dist_da_te: "da te"
   },
@@ -316,6 +319,9 @@ const IT18N = {
     sv_filtro_tutti: "🗂 All",
     sv_filtro_pubblico: "💧 Public services",
     sv_filtro_iconico: "🛍 Iconic places",
+    sv_filtro_bus: "🚌 Bus & Tram",
+    sv_filtro_bancomat: "🏦 ATMs",
+    sv_filtro_poste: "📮 Post offices",
     sv_btn_portami: "TAKE ME THERE",
     sv_dist_da_te: "from you"
   },
@@ -472,6 +478,9 @@ const IT18N = {
     sv_filtro_tutti: "🗂 全部",
     sv_filtro_pubblico: "💧 公共服务",
     sv_filtro_iconico: "🛍 标志性景点",
+    sv_filtro_bus: "🚌 公交与电车",
+    sv_filtro_bancomat: "🏦 自动取款机",
+    sv_filtro_poste: "📮 邮局",
     sv_btn_portami: "带我去那里",
     sv_dist_da_te: "距您"
   },
@@ -628,6 +637,9 @@ const IT18N = {
     sv_filtro_tutti: "🗂 Todos",
     sv_filtro_pubblico: "💧 Servicios públicos",
     sv_filtro_iconico: "🛍 Lugares icónicos",
+    sv_filtro_bus: "🚌 Bus y Tranvía",
+    sv_filtro_bancomat: "🏦 Cajeros automáticos",
+    sv_filtro_poste: "📮 Oficinas de correos",
     sv_btn_portami: "LLÉVAME AQUÍ",
     sv_dist_da_te: "de ti"
   },
@@ -784,6 +796,9 @@ const IT18N = {
     sv_filtro_tutti: "🗂 Tous",
     sv_filtro_pubblico: "💧 Services publics",
     sv_filtro_iconico: "🛍 Lieux emblématiques",
+    sv_filtro_bus: "🚌 Bus & Tram",
+    sv_filtro_bancomat: "🏦 Distributeurs",
+    sv_filtro_poste: "📮 Bureaux de poste",
     sv_btn_portami: "EMMÈNE-MOI ICI",
     sv_dist_da_te: "de vous"
   },
@@ -938,6 +953,9 @@ const IT18N = {
     sv_filtro_tutti: "🗂 Alle",
     sv_filtro_pubblico: "💧 Öffentliche Dienste",
     sv_filtro_iconico: "🛍 Ikonische Orte",
+    sv_filtro_bus: "🚌 Bus & Tram",
+    sv_filtro_bancomat: "🏦 Geldautomaten",
+    sv_filtro_poste: "📮 Postämter",
     sv_btn_portami: "BRING MICH HIN",
     sv_dist_da_te: "von dir"
   },

@@ -517,8 +517,9 @@ footer strong{color:var(--ocra-l);}
       <strong>✓ Promozione lancio: commissione 0%</strong> per i primi 6 mesi.<br>
       L'offerta sarà attiva immediatamente dopo la pubblicazione.
     </div>
-    <button type="submit" class="btn-pubblica" id="btn-pubblica">⚡ Pubblica offerta flash</button>
+    <button type="submit" class="btn-pubblica" id="btn-pubblica" disabled style="opacity:.4;">⚡ Pubblica offerta flash</button>
   </div>
+  <div style="text-align:right;margin-top:8px;font-size:12px;" id="gps-status-indicator">⏳ Acquisizione GPS in corso...</div>
 
   </form>
 
@@ -724,9 +725,34 @@ function setStep(n, done, active) {
   numEl.textContent = done ? '✓' : n;
 }
 
+// ── UPLOAD SINGOLA FOTO SU DRIVE ──
+async function uploadFotoDrive(base64, nomeFile, mimeType) {
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
+  try {
+    const resp = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ tipo:'salva_foto', base64, nomeFile, mimeType: mimeType||'image/jpeg' })
+    });
+    const json = await resp.json();
+    if (json.stato === 'ok') return json.url;
+    console.warn('Upload foto fallito:', json.messaggio);
+    return '';
+  } catch(err) {
+    console.warn('Errore upload foto:', err);
+    return '';
+  }
+}
+
 // ── SUBMIT ──
-function pubblicaOfferta(e) {
+async function pubblicaOfferta(e) {
   e.preventDefault();
+
+  // Controllo GPS — ultima difesa prima dell'invio
+  if (!_gpsLat || !_gpsLon || parseFloat(_gpsLat) === 0 || parseFloat(_gpsLon) === 0) {
+    alert('⚠️ Posizione GPS non ancora acquisita.\n\nAttendi qualche secondo che il GPS si stabilizzi, poi riprova.\nIl bottone "Pubblica" si attiverà automaticamente quando la posizione è pronta.');
+    return;
+  }
 
   // Validazioni
   const cat = document.getElementById('cat-val').value;
@@ -742,9 +768,31 @@ function pubblicaOfferta(e) {
 
   const btn = document.getElementById('btn-pubblica');
   btn.disabled = true;
-  btn.textContent = 'Pubblicazione in corso...';
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
+  const idTx = 'TX-' + Date.now();
 
-  // Raccolta dati dal form
+  // ── STEP 1: UPLOAD FOTO SU DRIVE ──
+  const urlFoto = [];
+  const fotoCandidati = [
+    { prevId:'prev-insegna',  nome:'insegna'  },
+    { prevId:'prev-interni',  nome:'interni'  },
+    { prevId:'prev-prodotti', nome:'prodotti' }
+  ];
+  for (const f of fotoCandidati) {
+    const img = document.getElementById(f.prevId);
+    if (img && img.src && img.src.startsWith('data:')) {
+      btn.textContent = '📸 Carico foto ' + (urlFoto.length + 1) + '/3...';
+      const mimeType = img.src.split(';')[0].replace('data:','') || 'image/jpeg';
+      const estensione = mimeType.includes('png') ? 'png' : 'jpg';
+      const url = await uploadFotoDrive(img.src, idTx + '_' + f.nome + '.' + estensione, mimeType);
+      if (url) urlFoto.push(url);
+    } else if (img && img.src && img.src.startsWith('http')) {
+      urlFoto.push(img.src);
+    }
+  }
+
+  // ── STEP 2: PUBBLICA OFFERTA CON URL FOTO ──
+  btn.textContent = '⚡ Pubblicazione in corso...';
   const formData = {
     timestamp:    new Date().toISOString(),
     insegna:      document.querySelector('[name=insegna]')?.value || '',
@@ -759,17 +807,12 @@ function pubblicaOfferta(e) {
     fine:         document.getElementById('fine-input')?.value || '',
     raggio:       document.querySelector('[name=raggio]')?.value || '200',
     disponibilita:document.querySelector('[name=disponibilita]')?.value || '',
-    foto_insegna: document.getElementById('prev-insegna')?.src?.substring(0,100) || '',
+    foto:         urlFoto.join(','),
     indirizzo:    document.querySelector('[name=indirizzo]')?.value || document.querySelector('[name=address]')?.value || '',
     lat:          _gpsLat,
     lon:          _gpsLon,
     foglio:       'offerte'
   };
-
-  // URL Apps Script doPost — sostituisci con il tuo URL /exec
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
-
-  btn.textContent = 'Pubblicazione in corso...';
 
   fetch(APPS_SCRIPT_URL, {
     method: 'POST',
@@ -779,7 +822,6 @@ function pubblicaOfferta(e) {
   }).then(() => {
     mostraSuccesso();
   }).catch(() => {
-    // Anche in caso di errore CORS mostriamo successo (no-cors non restituisce risposta)
     mostraSuccesso();
   });
 
@@ -795,12 +837,45 @@ function pubblicaOfferta(e) {
 }
 
 // ── GPS ──
-var _gpsLat = null, _gpsLon = null;
-if(navigator.geolocation) {
-  navigator.geolocation.getCurrentPosition(
-    pos => { _gpsLat = pos.coords.latitude.toFixed(6); _gpsLon = pos.coords.longitude.toFixed(6); },
-    () => {}
+// Usa watchPosition per aggiornare continuamente la posizione
+// e blocca il bottone "Pubblica" finché non è acquisita con precisione.
+var _gpsLat = null, _gpsLon = null, _gpsReady = false;
+
+function _aggiornaStatoGPS() {
+  const btn = document.getElementById('btn-pubblica');
+  const ind = document.getElementById('gps-status-indicator');
+  if (!btn) return;
+  if (_gpsReady) {
+    btn.disabled = false;
+    btn.style.opacity = '';
+    if (ind) { ind.textContent = '📍 GPS acquisito'; ind.style.color = 'var(--verde)'; }
+  } else {
+    btn.disabled = true;
+    btn.style.opacity = '0.4';
+    if (ind) { ind.textContent = '⏳ Acquisizione GPS in corso...'; ind.style.color = 'var(--ocra)'; }
+  }
+}
+
+if (navigator.geolocation) {
+  // Blocca subito il bottone in attesa del GPS
+  _aggiornaStatoGPS();
+  navigator.geolocation.watchPosition(
+    pos => {
+      _gpsLat = pos.coords.latitude.toFixed(6);
+      _gpsLon = pos.coords.longitude.toFixed(6);
+      if (!_gpsReady) { _gpsReady = true; _aggiornaStatoGPS(); }
+    },
+    () => {
+      // GPS non disponibile — sblocca comunque con warning
+      const ind = document.getElementById('gps-status-indicator');
+      if (ind) { ind.textContent = '⚠️ GPS non disponibile — posizione non precisa'; ind.style.color = 'var(--rosso)'; }
+      const btn = document.getElementById('btn-pubblica');
+      if (btn) { btn.disabled = false; btn.style.opacity = ''; }
+    },
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
   );
+} else {
+  _gpsReady = true; // GPS non supportato, non bloccare
 }
 
 // Init

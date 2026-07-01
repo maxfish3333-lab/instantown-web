@@ -257,6 +257,22 @@ footer a:hover{color:var(--ocra-l);}
 #pwa-btn-install:hover{background:var(--ocra-l);}
 #pwa-btn-dismiss{background:none;color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:8px 12px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
 #pwa-btn-dismiss:hover{color:rgba(255,255,255,.7);}
+#pwa-store-btns{display:flex;gap:8px;margin-top:8px;}
+.pwa-store-btn{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);
+  border-radius:6px;padding:6px 12px;cursor:pointer;
+  font-family:'DM Sans',sans-serif;color:#fff;transition:all .2s;
+}
+.pwa-store-btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3);}
+.pwa-store-icon{font-size:16px;}
+.pwa-store-txt{display:flex;flex-direction:column;line-height:1.2;text-align:left;}
+.pwa-store-txt small{font-size:9px;color:rgba(255,255,255,.5);}
+.pwa-store-txt strong{font-size:12px;font-weight:600;}
+#pwa-store-soon{
+  margin-top:8px;font-size:11px;color:rgba(255,255,255,.5);
+  line-height:1.4;
+}
 
 
 /* ── NAV CTA pulsante registrazione ── */
@@ -507,6 +523,17 @@ footer a:hover{color:var(--ocra-l);}
         <button id="pwa-btn-install">&#x2B; Aggiungi</button>
         <button id="pwa-btn-dismiss">Non ora</button>
       </div>
+      <div id="pwa-store-btns">
+        <button class="pwa-store-btn" onclick="mostraStorePresto()">
+          <span class="pwa-store-icon"></span>
+          <span class="pwa-store-txt"><small id="pwa-store-label1">Scarica su</small><strong>App Store</strong></span>
+        </button>
+        <button class="pwa-store-btn" onclick="mostraStorePresto()">
+          <span class="pwa-store-icon">▶</span>
+          <span class="pwa-store-txt"><small id="pwa-store-label2">Disponibile su</small><strong>Google Play</strong></span>
+        </button>
+      </div>
+      <div id="pwa-store-soon" style="display:none;">App native in arrivo a breve — nel frattempo usa "+ Aggiungi" qui sopra per un'esperienza identica.</div>
     </div>
   </div>
 </div>
@@ -557,6 +584,8 @@ footer a:hover{color:var(--ocra-l);}
   &nbsp;·&nbsp;
   <span style="color:rgba(200,134,10,.5);" id="ft-finder">FINDER — prossimamente</span>
   &nbsp;·&nbsp; Roma, Italia, 2025
+  <div style="margin-top:6px;font-size:13px;color:#fff;" id="ft-copyright">© 2025–2026 INSTANTOWN PROX. Tutti i diritti riservati. Riproduzione, copia o uso non autorizzato del codice, del design o dei contenuti, anche parziali, sono vietati e perseguibili penalmente.</div>
+  <div style="margin-top:4px;font-size:11px;color:#2EA85A;">CREDITS: Solari&amp;Partners Communication LTD &nbsp;·&nbsp; <a href="mailto:info@instantown.it" style="color:inherit;">info@instantown.it</a></div>
 </footer>
 
 <script>
@@ -607,6 +636,9 @@ var I18N = {
     's3t': "QR match — fondi sbloccati", 's3d': "L’esercente mostra QR-A, tu scansioni QR-B. Solo la coppia fisica sblocca i fondi. Impossibile frodare.",
     'radar-btn': "Apri il Radar GPS →",
     'ft-offerte': "Offerte", 'ft-servizi': "Servizi", 'ft-reg': "Registrati", 'ft-pubblica': "Pubblica offerta", 'ft-finder': "FINDER — prossimamente",
+    'ft-copyright': "© 2025–2026 INSTANTOWN PROX. Tutti i diritti riservati. Riproduzione, copia o uso non autorizzato del codice, del design o dei contenuti, anche parziali, sono vietati e perseguibili penalmente.",
+    'pwa-store-label1': "Scarica su", 'pwa-store-label2': "Disponibile su",
+    'pwa-store-soon': "App native in arrivo a breve — nel frattempo usa \"+ Aggiungi\" qui sopra per un'esperienza identica.",
     'modal-occ-title': "⚡ Occasioni flash",
     'cat-name-cibo': "Cibo",
     'cat-name-moda': "Moda",
@@ -648,6 +680,9 @@ var I18N = {
     's3t': "QR match — funds released", 's3d': "The merchant shows QR-A, you scan QR-B. Only the physical pair releases the funds. Impossible to defraud.",
     'radar-btn': "Open GPS Radar →",
     'ft-offerte': "Offers", 'ft-servizi': "Services", 'ft-reg': "Register", 'ft-pubblica': "Post an offer", 'ft-finder': "FINDER — coming soon",
+    'ft-copyright': "© 2025–2026 INSTANTOWN PROX. All rights reserved. Unauthorized reproduction, copying, or use of the code, design, or content, in whole or in part, is prohibited and subject to criminal prosecution.",
+    'pwa-store-label1': "Download on the", 'pwa-store-label2': "Available on",
+    'pwa-store-soon': "Native apps coming soon — in the meantime use \"+ Add\" above for an identical experience.",
     'modal-occ-title': "⚡ Flash deals",
     'cat-name-cibo': "Food",
     'cat-name-moda': "Fashion",
@@ -689,6 +724,9 @@ var I18N = {
     's3t': "QR匹配—资金释放", 's3d': "商家出示QR-A，您扫QR-B。只有实体双码匹配才能释放资金。",
     'radar-btn': "打开GPS雷达 →",
     'ft-offerte': "优惠", 'ft-servizi': "服务", 'ft-reg': "注册", 'ft-pubblica': "发布优惠", 'ft-finder': "FINDER — 即将推出",
+    'ft-copyright': "© 2025–2026 INSTANTOWN PROX。保留所有权利。未经授权复制、抄袭或使用代码、设计或内容（包括部分内容）均属违法行为，将依法追究刑事责任。",
+    'pwa-store-label1': "下载于", 'pwa-store-label2': "现已上架",
+    'pwa-store-soon': "原生应用即将推出 — 在此之前请使用上方的 \"添加\" 获得相同的体验。",
     'modal-occ-title': "⚡ 闪购优惠",
     'cat-name-cibo': "美食",
     'cat-name-moda': "时尚",
@@ -730,6 +768,9 @@ var I18N = {
     's3t': "QR match — fondos desbloqueados", 's3d': "El comerciante muestra QR-A, tú escaneas QR-B. Solo el par físico libera los fondos.",
     'radar-btn': "Abrir Radar GPS →",
     'ft-offerte': "Ofertas", 'ft-servizi': "Servicios", 'ft-reg': "Registrarse", 'ft-pubblica': "Publicar oferta", 'ft-finder': "FINDER — próximamente",
+    'ft-copyright': "© 2025–2026 INSTANTOWN PROX. Todos los derechos reservados. Está prohibida la reproducción, copia o uso no autorizado del código, diseño o contenido, total o parcial, y será objeto de responsabilidad penal.",
+    'pwa-store-label1': "Descárgalo en", 'pwa-store-label2': "Disponible en",
+    'pwa-store-soon': "Apps nativas próximamente — mientras tanto usa \"+ Añadir\" arriba para una experiencia idéntica.",
     'modal-occ-title': "⚡ Ofertas flash",
     'cat-name-cibo': "Comida",
     'cat-name-moda': "Moda",
@@ -771,6 +812,9 @@ var I18N = {
     's3t': "QR match — fonds débloqués", 's3d': "Le commerçant montre QR-A, vous scannez QR-B. Seul le couple physique libère les fonds.",
     'radar-btn': "Ouvrir le Radar GPS →",
     'ft-offerte': "Offres", 'ft-servizi': "Services", 'ft-reg': "S’inscrire", 'ft-pubblica': "Publier une offre", 'ft-finder': "FINDER — prochainement",
+    'ft-copyright': "© 2025–2026 INSTANTOWN PROX. Tous droits réservés. La reproduction, la copie ou l’utilisation non autorisée du code, du design ou du contenu, même partielle, est interdite et passible de sanctions pénales.",
+    'pwa-store-label1': "Télécharger sur", 'pwa-store-label2': "Disponible sur",
+    'pwa-store-soon': "Applications natives bientôt disponibles — en attendant, utilisez « + Ajouter » ci-dessus pour une expérience identique.",
     'modal-occ-title': "⚡ Offres flash",
     'cat-name-cibo': "Nourriture",
     'cat-name-moda': "Mode",
@@ -833,6 +877,9 @@ var I18N = {
     'ft-reg': "Registrieren",
     'ft-pubblica': "Angebot veröffentlichen",
     'ft-finder': "FINDER — demnächst",
+    'ft-copyright': "© 2025–2026 INSTANTOWN PROX. Alle Rechte vorbehalten. Die unbefugte Vervielfältigung, Kopie oder Nutzung des Codes, Designs oder Inhalts, auch teilweise, ist untersagt und wird strafrechtlich verfolgt.",
+    'pwa-store-label1': "Laden im", 'pwa-store-label2': "Erhältlich bei",
+    'pwa-store-soon': "Native Apps kommen bald — nutze bis dahin \"+ Hinzufügen\" oben für ein identisches Erlebnis.",
     'modal-occ-title': "⚡ Blitzangebote",
     'cat-name-cibo': "Essen",
     'cat-name-moda': "Mode",
@@ -845,6 +892,11 @@ var I18N = {
     'modal-pref-modifica': "bearbeiten"
   },
 };
+
+function mostraStorePresto() {
+  var el = document.getElementById('pwa-store-soon');
+  if (el) el.style.display = 'block';
+}
 
 function applyLang(lang) {
   var ok = ['it','en','zh','es','fr','de'];

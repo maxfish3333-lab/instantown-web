@@ -1,3 +1,8 @@
+<!--
+  © 2025–2026 INSTANTOWN PROX. Tutti i diritti riservati.
+  Questo codice, il design e i contenuti sono proprietà intellettuale di INSTANTOWN PROX.
+  Riproduzione, copia o uso non autorizzato, anche parziali, sono vietati e perseguibili penalmente.
+-->
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -92,23 +97,34 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
 }
 
 /* ── FILTRI CATEGORIA ── */
-.filtri{
+.filtri-wrap{
   position:absolute;bottom:0;left:0;right:0;z-index:800;
-  padding:10px 12px 14px;
-  display:flex;gap:7px;overflow-x:auto;
-  background:linear-gradient(to top,rgba(28,20,16,.7) 0%,transparent 100%);
-  scrollbar-width:none;
 }
-.filtri::-webkit-scrollbar{display:none;}
+.filtri{
+  padding:10px 12px 14px;
+  display:grid;grid-template-columns:repeat(3, 1fr);gap:7px;
+  background:linear-gradient(to top,rgba(28,20,16,.75) 0%,rgba(28,20,16,.4) 70%,transparent 100%);
+}
 .filtro{
-  flex-shrink:0;padding:6px 14px;border-radius:20px;border:1.5px solid rgba(255,255,255,.25);
+  padding:7px 8px;border-radius:14px;border:1.5px solid rgba(255,255,255,.25);
   background:rgba(28,20,16,.6);backdrop-filter:blur(6px);
-  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;
-  color:rgba(255,255,255,.75);cursor:pointer;transition:all .2s;white-space:nowrap;
+  font-family:'DM Sans',sans-serif;font-size:11.5px;font-weight:500;
+  color:rgba(255,255,255,.75);cursor:pointer;transition:all .2s;
+  text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 .filtro:hover{border-color:rgba(255,255,255,.5);}
 .filtro.active{background:var(--verde);border-color:var(--verde-l);color:#fff;}
 .filtro.active-ocra{background:var(--ocra);border-color:var(--ocra-l);color:var(--ink);}
+
+/* Colori distintivi per le 5 categorie principali, sempre visibili */
+.filtro-pubblico{background:#1A7A3A;border-color:#4AB890;}
+.filtro-iconico{background:#9C3E5E;border-color:#C25A7E;}
+.filtro-bus{background:#1F7A5C;border-color:#4AB890;}
+.filtro-bancomat{background:#B8730A;border-color:#E8A020;}
+.filtro-poste{background:#D4AF00;border-color:#9A7D00;color:#1C1410;}
+.filtro-pubblico.active,.filtro-iconico.active,.filtro-bus.active,.filtro-bancomat.active,.filtro-poste.active{
+  color:#fff;border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.3);
+}
 
 /* ── SCHEDA POI (bottom sheet) ── */
 .poi-sheet{
@@ -149,6 +165,52 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
 }
 .sheet-close:hover{background:var(--rule);}
 
+/* ── PANNELLO LISTA CATEGORIA ── */
+.cat-list-panel{
+  position:absolute;bottom:-70%;left:0;right:0;z-index:850;
+  height:70%;background:var(--bianco);border-radius:20px 20px 0 0;
+  box-shadow:0 -4px 32px rgba(0,0,0,.25);
+  transition:bottom .35s cubic-bezier(.32,1,.52,.98);
+  display:flex;flex-direction:column;
+}
+.cat-list-panel.open{bottom:0;}
+.cat-list-header{
+  padding:12px 20px 14px;border-bottom:1px solid var(--rule);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.cat-list-title{
+  font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;
+  color:var(--ink);display:flex;align-items:center;gap:8px;
+}
+.cat-list-count{
+  font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink-mu);
+  background:var(--rule);padding:2px 10px;border-radius:20px;margin-left:6px;
+}
+.cat-list-close{
+  background:none;border:none;font-size:20px;color:var(--ink-mu);
+  cursor:pointer;padding:4px 8px;border-radius:4px;
+}
+.cat-list-close:hover{background:var(--rule);}
+.cat-list-body{flex:1;overflow-y:auto;padding:8px 12px 24px;-webkit-overflow-scrolling:touch;}
+.cat-list-row{
+  display:flex;align-items:center;gap:12px;padding:13px 12px;
+  border-radius:12px;cursor:pointer;transition:background .15s;
+  border-bottom:1px solid var(--rule);
+}
+.cat-list-row:last-child{border-bottom:none;}
+.cat-list-row:hover{background:var(--ocra-p);}
+.cat-list-emoji{font-size:26px;flex-shrink:0;width:36px;text-align:center;}
+.cat-list-info{flex:1;min-width:0;}
+.cat-list-nome{
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
+  color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.cat-list-sub{font-size:11px;color:var(--ink-mu);margin-top:1px;}
+.cat-list-dist{
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;
+  color:var(--ocra);flex-shrink:0;white-space:nowrap;
+}
+
 /* ── MARKER PERSONALIZZATI ── */
 .marker-wrap{
   min-width:52px;height:36px;border-radius:8px;
@@ -163,12 +225,16 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
 .marker-wrap:hover{transform:scale(1.08);}
 .marker-pubblico{background:#1A7A3A;color:#fff;}
 .marker-acqua{background:#1A6FA8;color:#fff;border:2px solid #4A9FD8;}
+.marker-presa{background:#F06595;color:#fff;border:2px solid #FFA8C5;}
 .marker-taxi{background:#C8860A;color:#fff;border:2px solid #E8A020;}
 .marker-metro{background:#5B4B9E;color:#fff;border:2px solid #8273C4;}
 .marker-agenzia{background:#4A90C4;color:#fff;border:2px solid #6AAFD8;}
 .marker-iconico{background:#9C3E5E;color:#fff;border:2px solid #C25A7E;}
 .marker-papa{background:#FEE100;color:#3D2E0A;border:2px solid #FFF066;}
 .marker-bagni{background:#E03050;color:#fff;border:2px solid #FF6080;}
+.marker-bus{background:#2A8A6A;color:#fff;border:2px solid #4AB890;}
+.marker-bancomat{background:#1C1410;color:#fff;border:2px solid #C8860A;}
+.marker-poste{background:#FFD200;color:#1C1410;border:2px solid #B8860B;}
 .marker-wrap .m-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.8);flex-shrink:0;}
 .marker-papa .m-dot{background:rgba(61,46,10,.6);}
 
@@ -183,6 +249,8 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
   animation:spin .8s linear infinite;margin:0 auto 12px;}
 @keyframes spin{to{transform:rotate(360deg)}}
 .gps-loading p{font-size:13px;color:rgba(255,255,255,.6);}
+.dist-badge-icon{background:transparent!important;border:none!important;box-shadow:none!important;overflow:visible!important;}
+
 </style>
 </head>
 <body>
@@ -191,7 +259,7 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
 
 <!-- TOP BAR -->
 <div class="topbar">
-  <a href="index.html" class="topbar-back">&#8592;</a>
+  <a href="#" class="topbar-back" onclick="return gestisciIndietro()">&#8592;</a>
   <img src="data:image/png;base64,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" alt="INSTANTOWN" style="width:38px;height:38px;border-radius:8px;flex-shrink:0;display:block;">
   <select id="lang-sel" onchange="applyLang(this.value)" style="display:none;">
     <option value="it">🇮🇹 IT</option>
@@ -233,10 +301,14 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
 </div>
 
 <!-- FILTRI -->
-<div class="filtri">
-  <button class="filtro active" onclick="filtra('tutti',this)" data-i18n="sv_filtro_tutti">🗂 Tutti</button>
-  <button class="filtro" onclick="filtra('pubblico',this)" data-i18n="sv_filtro_pubblico">💧 Servizi pubblici</button>
-  <button class="filtro" onclick="filtra('iconico',this)" data-i18n="sv_filtro_iconico">🛍 Luoghi iconici</button>
+<div class="filtri-wrap">
+  <div class="filtri">
+    <button class="filtro filtro-pubblico" onclick="filtra('pubblico',this)" data-i18n="sv_filtro_pubblico">💧 Servizi pubblici</button>
+    <button class="filtro filtro-iconico" onclick="filtra('iconico',this)" data-i18n="sv_filtro_iconico">🛍 Luoghi iconici</button>
+    <button class="filtro filtro-bus" onclick="filtra('bus',this)" data-i18n="sv_filtro_bus">🚌 Bus &amp; Tram</button>
+    <button class="filtro filtro-bancomat" onclick="filtra('bancomat',this)" data-i18n="sv_filtro_bancomat">🏦 Bancomat</button>
+    <button class="filtro filtro-poste" onclick="filtra('poste',this)" data-i18n="sv_filtro_poste">📮 Uffici postali</button>
+  </div>
 </div>
 
 <!-- SCHEDA POI -->
@@ -265,6 +337,19 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
       <span data-i18n="sv_btn_portami">PORTAMI QUI</span>
     </button>
   </div>
+</div>
+
+<!-- PANNELLO LISTA CATEGORIA -->
+<div class="cat-list-panel" id="cat-list-panel">
+  <div class="cat-list-header">
+    <div class="cat-list-title">
+      <span id="cl-emoji">📍</span>
+      <span id="cl-titolo">Categoria</span>
+      <span class="cat-list-count" id="cl-count">0</span>
+    </div>
+    <button class="cat-list-close" onclick="chiudiListaCategoria()">✕</button>
+  </div>
+  <div class="cat-list-body" id="cl-body"></div>
 </div>
 
 <!-- Leaflet JS -->
@@ -688,6 +773,391 @@ const POI_I18N = {
         "Historisches Zentrum"
       ]
     }
+  },
+  "bus-termini": {
+    "it": { "nome": "Bus — Stazione Termini", "cat": "Bus & Tram ATAC", "desc": "Capolinea bus ATAC davanti alla Stazione Termini. Numerose linee per tutta la città.", "badges": ["ATAC", "Hub principale"] },
+    "en": { "nome": "Bus — Termini Station", "cat": "ATAC Bus & Tram", "desc": "Main ATAC bus terminus in front of Termini Station. Many lines serving the whole city.", "badges": ["ATAC", "Main hub"] },
+    "zh": { "nome": "公交车 — 特米尼车站", "cat": "ATAC公交与电车", "desc": "特米尼车站前的ATAC公交车终点站，多条线路通往全市各地。", "badges": ["ATAC", "主要枢纽"] },
+    "es": { "nome": "Bus — Estación Termini", "cat": "Bus y Tranvía ATAC", "desc": "Terminal principal de autobuses ATAC frente a la Estación Termini. Numerosas líneas hacia toda la ciudad.", "badges": ["ATAC", "Centro principal"] },
+    "fr": { "nome": "Bus — Gare Termini", "cat": "Bus & Tram ATAC", "desc": "Terminus de bus ATAC principal devant la gare Termini. De nombreuses lignes vers toute la ville.", "badges": ["ATAC", "Hub principal"] },
+    "de": { "nome": "Bus — Bahnhof Termini", "cat": "ATAC Bus & Tram", "desc": "Wichtigste ATAC-Bus-Endstation vor dem Bahnhof Termini. Zahlreiche Linien in die ganze Stadt.", "badges": ["ATAC", "Hauptknoten"] }
+  },
+  "bus-venezia": {
+    "it": { "nome": "Bus — Piazza Venezia", "cat": "Bus & Tram ATAC", "desc": "Importante nodo bus ATAC in Piazza Venezia, snodo per il centro storico.", "badges": ["ATAC", "Centro storico"] },
+    "en": { "nome": "Bus — Piazza Venezia", "cat": "ATAC Bus & Tram", "desc": "Major ATAC bus hub in Piazza Venezia, a key junction for the historic centre.", "badges": ["ATAC", "Historic centre"] },
+    "zh": { "nome": "公交车 — 威尼斯广场", "cat": "ATAC公交与电车", "desc": "威尼斯广场重要的ATAC公交枢纽，是通往历史中心的关键节点。", "badges": ["ATAC", "历史中心"] },
+    "es": { "nome": "Bus — Piazza Venezia", "cat": "Bus y Tranvía ATAC", "desc": "Importante nodo de autobuses ATAC en Piazza Venezia, cruce clave hacia el centro histórico.", "badges": ["ATAC", "Centro histórico"] },
+    "fr": { "nome": "Bus — Piazza Venezia", "cat": "Bus & Tram ATAC", "desc": "Important nœud de bus ATAC sur la Piazza Venezia, carrefour vers le centre historique.", "badges": ["ATAC", "Centre historique"] },
+    "de": { "nome": "Bus — Piazza Venezia", "cat": "ATAC Bus & Tram", "desc": "Wichtiger ATAC-Busknotenpunkt an der Piazza Venezia, Verbindung zur Altstadt.", "badges": ["ATAC", "Altstadt"] }
+  },
+  "bus-vaticano": {
+    "it": { "nome": "Bus — Piazza del Risorgimento", "cat": "Bus & Tram ATAC", "desc": "Fermata bus ATAC a pochi passi dai Musei Vaticani e da Piazza San Pietro.", "badges": ["ATAC", "Vaticano"] },
+    "en": { "nome": "Bus — Piazza del Risorgimento", "cat": "ATAC Bus & Tram", "desc": "ATAC bus stop a short walk from the Vatican Museums and St. Peter's Square.", "badges": ["ATAC", "Vatican"] },
+    "zh": { "nome": "公交车 — 复兴广场", "cat": "ATAC公交与电车", "desc": "ATAC公交车站，距梵蒂冈博物馆和圣彼得广场仅几步之遥。", "badges": ["ATAC", "梵蒂冈"] },
+    "es": { "nome": "Bus — Piazza del Risorgimento", "cat": "Bus y Tranvía ATAC", "desc": "Parada de autobús ATAC a pocos pasos de los Museos Vaticanos y la Plaza de San Pedro.", "badges": ["ATAC", "Vaticano"] },
+    "fr": { "nome": "Bus — Piazza del Risorgimento", "cat": "Bus & Tram ATAC", "desc": "Arrêt de bus ATAC à deux pas des Musées du Vatican et de la Place Saint-Pierre.", "badges": ["ATAC", "Vatican"] },
+    "de": { "nome": "Bus — Piazza del Risorgimento", "cat": "ATAC Bus & Tram", "desc": "ATAC-Bushaltestelle nur wenige Schritte von den Vatikanischen Museen und dem Petersplatz entfernt.", "badges": ["ATAC", "Vatikan"] }
+  },
+  "bus-trastevere": {
+    "it": { "nome": "Tram — Trastevere (Belli)", "cat": "Bus & Tram ATAC", "desc": "Fermata del tram 8, collega Trastevere al centro (Piazza Venezia).", "badges": ["ATAC", "Tram 8"] },
+    "en": { "nome": "Tram — Trastevere (Belli)", "cat": "ATAC Bus & Tram", "desc": "Tram line 8 stop, connecting Trastevere to the centre (Piazza Venezia).", "badges": ["ATAC", "Tram 8"] },
+    "zh": { "nome": "电车 — 特拉斯泰韦雷（贝利）", "cat": "ATAC公交与电车", "desc": "8号电车站，连接特拉斯泰韦雷区与市中心（威尼斯广场）。", "badges": ["ATAC", "8号电车"] },
+    "es": { "nome": "Tranvía — Trastevere (Belli)", "cat": "Bus y Tranvía ATAC", "desc": "Parada del tranvía 8, conecta Trastevere con el centro (Piazza Venezia).", "badges": ["ATAC", "Tranvía 8"] },
+    "fr": { "nome": "Tram — Trastevere (Belli)", "cat": "Bus & Tram ATAC", "desc": "Arrêt du tram 8, reliant le Trastevere au centre (Piazza Venezia).", "badges": ["ATAC", "Tram 8"] },
+    "de": { "nome": "Straßenbahn — Trastevere (Belli)", "cat": "ATAC Bus & Tram", "desc": "Haltestelle der Straßenbahnlinie 8, verbindet Trastevere mit dem Zentrum (Piazza Venezia).", "badges": ["ATAC", "Linie 8"] }
+  },
+  "bus-colosseo": {
+    "it": { "nome": "Bus — Colosseo", "cat": "Bus & Tram ATAC", "desc": "Fermata bus ATAC nei pressi del Colosseo e di Via dei Fori Imperiali.", "badges": ["ATAC", "Colosseo"] },
+    "en": { "nome": "Bus — Colosseum", "cat": "ATAC Bus & Tram", "desc": "ATAC bus stop near the Colosseum and Via dei Fori Imperiali.", "badges": ["ATAC", "Colosseum"] },
+    "zh": { "nome": "公交车 — 罗马竞技场", "cat": "ATAC公交与电车", "desc": "ATAC公交车站，靠近罗马竞技场和帝国广场大道。", "badges": ["ATAC", "竞技场"] },
+    "es": { "nome": "Bus — Coliseo", "cat": "Bus y Tranvía ATAC", "desc": "Parada de autobús ATAC cerca del Coliseo y la Via dei Fori Imperiali.", "badges": ["ATAC", "Coliseo"] },
+    "fr": { "nome": "Bus — Colisée", "cat": "Bus & Tram ATAC", "desc": "Arrêt de bus ATAC près du Colisée et de la Via dei Fori Imperiali.", "badges": ["ATAC", "Colisée"] },
+    "de": { "nome": "Bus — Kolosseum", "cat": "ATAC Bus & Tram", "desc": "ATAC-Bushaltestelle in der Nähe des Kolosseums und der Via dei Fori Imperiali.", "badges": ["ATAC", "Kolosseum"] }
+  },
+  "bus-navona": {
+    "it": { "nome": "Bus — Corso Rinascimento", "cat": "Bus & Tram ATAC", "desc": "Fermata bus ATAC vicino a Piazza Navona e al Pantheon.", "badges": ["ATAC", "Pantheon"] },
+    "en": { "nome": "Bus — Corso Rinascimento", "cat": "ATAC Bus & Tram", "desc": "ATAC bus stop near Piazza Navona and the Pantheon.", "badges": ["ATAC", "Pantheon"] },
+    "zh": { "nome": "公交车 — 文艺复兴大道", "cat": "ATAC公交与电车", "desc": "ATAC公交车站，靠近纳沃纳广场和万神殿。", "badges": ["ATAC", "万神殿"] },
+    "es": { "nome": "Bus — Corso Rinascimento", "cat": "Bus y Tranvía ATAC", "desc": "Parada de autobús ATAC cerca de la Piazza Navona y el Panteón.", "badges": ["ATAC", "Panteón"] },
+    "fr": { "nome": "Bus — Corso Rinascimento", "cat": "Bus & Tram ATAC", "desc": "Arrêt de bus ATAC près de la Place Navone et du Panthéon.", "badges": ["ATAC", "Panthéon"] },
+    "de": { "nome": "Bus — Corso Rinascimento", "cat": "ATAC Bus & Tram", "desc": "ATAC-Bushaltestelle in der Nähe der Piazza Navona und des Pantheons.", "badges": ["ATAC", "Pantheon"] }
+  },
+  "bus-spagna": {
+    "it": { "nome": "Bus — Via del Tritone", "cat": "Bus & Tram ATAC", "desc": "Fermata bus ATAC tra Piazza di Spagna e Fontana di Trevi.", "badges": ["ATAC", "Centro storico"] },
+    "en": { "nome": "Bus — Via del Tritone", "cat": "ATAC Bus & Tram", "desc": "ATAC bus stop between Piazza di Spagna and the Trevi Fountain.", "badges": ["ATAC", "Historic centre"] },
+    "zh": { "nome": "公交车 — 特里同大道", "cat": "ATAC公交与电车", "desc": "ATAC公交车站，位于西班牙广场和特莱维喷泉之间。", "badges": ["ATAC", "历史中心"] },
+    "es": { "nome": "Bus — Via del Tritone", "cat": "Bus y Tranvía ATAC", "desc": "Parada de autobús ATAC entre la Plaza de España y la Fontana di Trevi.", "badges": ["ATAC", "Centro histórico"] },
+    "fr": { "nome": "Bus — Via del Tritone", "cat": "Bus & Tram ATAC", "desc": "Arrêt de bus ATAC entre la Place d'Espagne et la Fontaine de Trevi.", "badges": ["ATAC", "Centre historique"] },
+    "de": { "nome": "Bus — Via del Tritone", "cat": "ATAC Bus & Tram", "desc": "ATAC-Bushaltestelle zwischen der Piazza di Spagna und dem Trevi-Brunnen.", "badges": ["ATAC", "Historisches Zentrum"] }
+  },
+  "bus-repubblica": {
+    "it": { "nome": "Bus — Piazza della Repubblica", "cat": "Bus & Tram ATAC", "desc": "Fermata bus ATAC in Piazza della Repubblica, vicino a Termini.", "badges": ["ATAC", "Termini"] },
+    "en": { "nome": "Bus — Piazza della Repubblica", "cat": "ATAC Bus & Tram", "desc": "ATAC bus stop in Piazza della Repubblica, near Termini.", "badges": ["ATAC", "Termini"] },
+    "zh": { "nome": "公交车 — 共和广场", "cat": "ATAC公交与电车", "desc": "ATAC公交车站，位于共和广场，靠近特米尼车站。", "badges": ["ATAC", "特米尼"] },
+    "es": { "nome": "Bus — Piazza della Repubblica", "cat": "Bus y Tranvía ATAC", "desc": "Parada de autobús ATAC en la Piazza della Repubblica, cerca de Termini.", "badges": ["ATAC", "Termini"] },
+    "fr": { "nome": "Bus — Piazza della Repubblica", "cat": "Bus & Tram ATAC", "desc": "Arrêt de bus ATAC sur la Piazza della Repubblica, près de Termini.", "badges": ["ATAC", "Termini"] },
+    "de": { "nome": "Bus — Piazza della Repubblica", "cat": "ATAC Bus & Tram", "desc": "ATAC-Bushaltestelle an der Piazza della Repubblica, nahe Termini.", "badges": ["ATAC", "Termini"] }
+  },
+  "bancomat-termini": {
+    "it": { "nome": "Bancomat — Stazione Termini", "cat": "Bancomat", "desc": "Sportelli bancomat all'interno e nei pressi della Stazione Termini.", "badges": ["H24", "Stazione"] },
+    "en": { "nome": "ATM — Termini Station", "cat": "ATMs", "desc": "Cash machines inside and near Termini Station.", "badges": ["24/7", "Station"] },
+    "zh": { "nome": "自动取款机 — 特米尼车站", "cat": "自动取款机", "desc": "特米尼车站内及周边的自动取款机。", "badges": ["全天开放", "车站"] },
+    "es": { "nome": "Cajero automático — Estación Termini", "cat": "Cajeros automáticos", "desc": "Cajeros automáticos dentro y cerca de la Estación Termini.", "badges": ["24 h", "Estación"] },
+    "fr": { "nome": "Distributeur — Gare Termini", "cat": "Distributeurs", "desc": "Distributeurs automatiques à l'intérieur et près de la gare Termini.", "badges": ["24h/24", "Gare"] },
+    "de": { "nome": "Geldautomat — Bahnhof Termini", "cat": "Geldautomaten", "desc": "Geldautomaten im und in der Nähe des Bahnhofs Termini.", "badges": ["24 Std.", "Bahnhof"] }
+  },
+  "bancomat-spagna": {
+    "it": { "nome": "Bancomat — Piazza di Spagna", "cat": "Bancomat", "desc": "Sportello bancomat nei pressi di Piazza di Spagna e Via Condotti.", "badges": ["Centro storico"] },
+    "en": { "nome": "ATM — Piazza di Spagna", "cat": "ATMs", "desc": "Cash machine near Piazza di Spagna and Via Condotti.", "badges": ["Historic centre"] },
+    "zh": { "nome": "自动取款机 — 西班牙广场", "cat": "自动取款机", "desc": "自动取款机，靠近西班牙广场和孔多蒂大道。", "badges": ["历史中心"] },
+    "es": { "nome": "Cajero automático — Piazza di Spagna", "cat": "Cajeros automáticos", "desc": "Cajero automático cerca de la Plaza de España y Via Condotti.", "badges": ["Centro histórico"] },
+    "fr": { "nome": "Distributeur — Place d'Espagne", "cat": "Distributeurs", "desc": "Distributeur automatique près de la Place d'Espagne et de la Via Condotti.", "badges": ["Centre historique"] },
+    "de": { "nome": "Geldautomat — Piazza di Spagna", "cat": "Geldautomaten", "desc": "Geldautomat in der Nähe der Piazza di Spagna und der Via Condotti.", "badges": ["Historisches Zentrum"] }
+  },
+  "bancomat-pantheon": {
+    "it": { "nome": "Bancomat — Pantheon", "cat": "Bancomat", "desc": "Sportello bancomat vicino al Pantheon e Piazza della Rotonda.", "badges": ["Centro storico"] },
+    "en": { "nome": "ATM — Pantheon", "cat": "ATMs", "desc": "Cash machine near the Pantheon and Piazza della Rotonda.", "badges": ["Historic centre"] },
+    "zh": { "nome": "自动取款机 — 万神殿", "cat": "自动取款机", "desc": "自动取款机，靠近万神殿和圆环广场。", "badges": ["历史中心"] },
+    "es": { "nome": "Cajero automático — Panteón", "cat": "Cajeros automáticos", "desc": "Cajero automático cerca del Panteón y la Piazza della Rotonda.", "badges": ["Centro histórico"] },
+    "fr": { "nome": "Distributeur — Panthéon", "cat": "Distributeurs", "desc": "Distributeur automatique près du Panthéon et de la Piazza della Rotonda.", "badges": ["Centre historique"] },
+    "de": { "nome": "Geldautomat — Pantheon", "cat": "Geldautomaten", "desc": "Geldautomat in der Nähe des Pantheons und der Piazza della Rotonda.", "badges": ["Historisches Zentrum"] }
+  },
+  "bancomat-navona": {
+    "it": { "nome": "Bancomat — Piazza Navona", "cat": "Bancomat", "desc": "Sportello bancomat vicino a Piazza Navona.", "badges": ["Centro storico"] },
+    "en": { "nome": "ATM — Piazza Navona", "cat": "ATMs", "desc": "Cash machine near Piazza Navona.", "badges": ["Historic centre"] },
+    "zh": { "nome": "自动取款机 — 纳沃纳广场", "cat": "自动取款机", "desc": "自动取款机，靠近纳沃纳广场。", "badges": ["历史中心"] },
+    "es": { "nome": "Cajero automático — Piazza Navona", "cat": "Cajeros automáticos", "desc": "Cajero automático cerca de la Piazza Navona.", "badges": ["Centro histórico"] },
+    "fr": { "nome": "Distributeur — Place Navone", "cat": "Distributeurs", "desc": "Distributeur automatique près de la Place Navone.", "badges": ["Centre historique"] },
+    "de": { "nome": "Geldautomat — Piazza Navona", "cat": "Geldautomaten", "desc": "Geldautomat in der Nähe der Piazza Navona.", "badges": ["Historisches Zentrum"] }
+  },
+  "bancomat-trevi": {
+    "it": { "nome": "Bancomat — Fontana di Trevi", "cat": "Bancomat", "desc": "Sportello bancomat nei pressi della Fontana di Trevi.", "badges": ["Turismo"] },
+    "en": { "nome": "ATM — Trevi Fountain", "cat": "ATMs", "desc": "Cash machine near the Trevi Fountain.", "badges": ["Tourism"] },
+    "zh": { "nome": "自动取款机 — 特莱维喷泉", "cat": "自动取款机", "desc": "自动取款机，靠近特莱维喷泉。", "badges": ["旅游"] },
+    "es": { "nome": "Cajero automático — Fontana di Trevi", "cat": "Cajeros automáticos", "desc": "Cajero automático cerca de la Fontana di Trevi.", "badges": ["Turismo"] },
+    "fr": { "nome": "Distributeur — Fontaine de Trevi", "cat": "Distributeurs", "desc": "Distributeur automatique près de la Fontaine de Trevi.", "badges": ["Tourisme"] },
+    "de": { "nome": "Geldautomat — Trevi-Brunnen", "cat": "Geldautomaten", "desc": "Geldautomat in der Nähe des Trevi-Brunnens.", "badges": ["Tourismus"] }
+  },
+  "bancomat-venezia": {
+    "it": { "nome": "Bancomat — Piazza Venezia", "cat": "Bancomat", "desc": "Sportello bancomat in Piazza Venezia, cuore del centro storico.", "badges": ["Centro storico"] },
+    "en": { "nome": "ATM — Piazza Venezia", "cat": "ATMs", "desc": "Cash machine in Piazza Venezia, the heart of the historic centre.", "badges": ["Historic centre"] },
+    "zh": { "nome": "自动取款机 — 威尼斯广场", "cat": "自动取款机", "desc": "自动取款机，位于历史中心核心的威尼斯广场。", "badges": ["历史中心"] },
+    "es": { "nome": "Cajero automático — Piazza Venezia", "cat": "Cajeros automáticos", "desc": "Cajero automático en la Piazza Venezia, el corazón del centro histórico.", "badges": ["Centro histórico"] },
+    "fr": { "nome": "Distributeur — Piazza Venezia", "cat": "Distributeurs", "desc": "Distributeur automatique sur la Piazza Venezia, cœur du centre historique.", "badges": ["Centre historique"] },
+    "de": { "nome": "Geldautomat — Piazza Venezia", "cat": "Geldautomaten", "desc": "Geldautomat an der Piazza Venezia, dem Herzen der Altstadt.", "badges": ["Historisches Zentrum"] }
+  },
+  "bancomat-campo-fiori": {
+    "it": { "nome": "Bancomat — Campo de' Fiori", "cat": "Bancomat", "desc": "Sportello bancomat vicino a Campo de' Fiori.", "badges": ["Centro storico"] },
+    "en": { "nome": "ATM — Campo de' Fiori", "cat": "ATMs", "desc": "Cash machine near Campo de' Fiori.", "badges": ["Historic centre"] },
+    "zh": { "nome": "自动取款机 — 花田广场", "cat": "自动取款机", "desc": "自动取款机，靠近花田广场。", "badges": ["历史中心"] },
+    "es": { "nome": "Cajero automático — Campo de' Fiori", "cat": "Cajeros automáticos", "desc": "Cajero automático cerca de Campo de' Fiori.", "badges": ["Centro histórico"] },
+    "fr": { "nome": "Distributeur — Campo de' Fiori", "cat": "Distributeurs", "desc": "Distributeur automatique près du Campo de' Fiori.", "badges": ["Centre historique"] },
+    "de": { "nome": "Geldautomat — Campo de' Fiori", "cat": "Geldautomaten", "desc": "Geldautomat in der Nähe des Campo de' Fiori.", "badges": ["Historisches Zentrum"] }
+  },
+  "bancomat-trastevere": {
+    "it": { "nome": "Bancomat — Trastevere", "cat": "Bancomat", "desc": "Sportello bancomat in zona Trastevere, vicino a Piazza Santa Maria.", "badges": ["Trastevere"] },
+    "en": { "nome": "ATM — Trastevere", "cat": "ATMs", "desc": "Cash machine in the Trastevere area, near Piazza Santa Maria.", "badges": ["Trastevere"] },
+    "zh": { "nome": "自动取款机 — 特拉斯泰韦雷", "cat": "自动取款机", "desc": "自动取款机，位于特拉斯泰韦雷区，靠近圣玛利亚广场。", "badges": ["特拉斯泰韦雷"] },
+    "es": { "nome": "Cajero automático — Trastevere", "cat": "Cajeros automáticos", "desc": "Cajero automático en la zona de Trastevere, cerca de la Piazza Santa Maria.", "badges": ["Trastevere"] },
+    "fr": { "nome": "Distributeur — Trastevere", "cat": "Distributeurs", "desc": "Distributeur automatique dans le quartier du Trastevere, près de la Piazza Santa Maria.", "badges": ["Trastevere"] },
+    "de": { "nome": "Geldautomat — Trastevere", "cat": "Geldautomaten", "desc": "Geldautomat im Stadtteil Trastevere, nahe der Piazza Santa Maria.", "badges": ["Trastevere"] }
+  },
+  "bancomat-vaticano": {
+    "it": { "nome": "Bancomat — San Pietro", "cat": "Bancomat", "desc": "Sportello bancomat nei pressi di Piazza San Pietro e Via della Conciliazione.", "badges": ["Vaticano"] },
+    "en": { "nome": "ATM — St. Peter's", "cat": "ATMs", "desc": "Cash machine near St. Peter's Square and Via della Conciliazione.", "badges": ["Vatican"] },
+    "zh": { "nome": "自动取款机 — 圣彼得广场", "cat": "自动取款机", "desc": "自动取款机，靠近圣彼得广场和协和大道。", "badges": ["梵蒂冈"] },
+    "es": { "nome": "Cajero automático — San Pedro", "cat": "Cajeros automáticos", "desc": "Cajero automático cerca de la Plaza de San Pedro y la Via della Conciliazione.", "badges": ["Vaticano"] },
+    "fr": { "nome": "Distributeur — Saint-Pierre", "cat": "Distributeurs", "desc": "Distributeur automatique près de la Place Saint-Pierre et de la Via della Conciliazione.", "badges": ["Vatican"] },
+    "de": { "nome": "Geldautomat — Petersplatz", "cat": "Geldautomaten", "desc": "Geldautomat in der Nähe des Petersplatzes und der Via della Conciliazione.", "badges": ["Vatikan"] }
+  },
+  "bancomat-repubblica": {
+    "it": { "nome": "Bancomat — Piazza della Repubblica", "cat": "Bancomat", "desc": "Sportello bancomat in Piazza della Repubblica.", "badges": ["Termini"] },
+    "en": { "nome": "ATM — Piazza della Repubblica", "cat": "ATMs", "desc": "Cash machine in Piazza della Repubblica.", "badges": ["Termini"] },
+    "zh": { "nome": "自动取款机 — 共和广场", "cat": "自动取款机", "desc": "自动取款机，位于共和广场。", "badges": ["特米尼"] },
+    "es": { "nome": "Cajero automático — Piazza della Repubblica", "cat": "Cajeros automáticos", "desc": "Cajero automático en la Piazza della Repubblica.", "badges": ["Termini"] },
+    "fr": { "nome": "Distributeur — Piazza della Repubblica", "cat": "Distributeurs", "desc": "Distributeur automatique sur la Piazza della Repubblica.", "badges": ["Termini"] },
+    "de": { "nome": "Geldautomat — Piazza della Repubblica", "cat": "Geldautomaten", "desc": "Geldautomat an der Piazza della Repubblica.", "badges": ["Termini"] }
+  },
+  "bancomat-colosseo": {
+    "it": { "nome": "Bancomat — Colosseo", "cat": "Bancomat", "desc": "Sportello bancomat nei pressi del Colosseo.", "badges": ["Colosseo"] },
+    "en": { "nome": "ATM — Colosseum", "cat": "ATMs", "desc": "Cash machine near the Colosseum.", "badges": ["Colosseum"] },
+    "zh": { "nome": "自动取款机 — 罗马竞技场", "cat": "自动取款机", "desc": "自动取款机，靠近罗马竞技场。", "badges": ["竞技场"] },
+    "es": { "nome": "Cajero automático — Coliseo", "cat": "Cajeros automáticos", "desc": "Cajero automático cerca del Coliseo.", "badges": ["Coliseo"] },
+    "fr": { "nome": "Distributeur — Colisée", "cat": "Distributeurs", "desc": "Distributeur automatique près du Colisée.", "badges": ["Colisée"] },
+    "de": { "nome": "Geldautomat — Kolosseum", "cat": "Geldautomaten", "desc": "Geldautomat in der Nähe des Kolosseums.", "badges": ["Kolosseum"] }
+  },
+  "bancomat-barberini": {
+    "it": { "nome": "Bancomat — Piazza Barberini", "cat": "Bancomat", "desc": "Sportello bancomat in Piazza Barberini, vicino a Via Veneto.", "badges": ["Via Veneto"] },
+    "en": { "nome": "ATM — Piazza Barberini", "cat": "ATMs", "desc": "Cash machine in Piazza Barberini, near Via Veneto.", "badges": ["Via Veneto"] },
+    "zh": { "nome": "自动取款机 — 巴尔贝里尼广场", "cat": "自动取款机", "desc": "自动取款机，位于巴尔贝里尼广场，靠近维内托大道。", "badges": ["维内托大道"] },
+    "es": { "nome": "Cajero automático — Piazza Barberini", "cat": "Cajeros automáticos", "desc": "Cajero automático en la Piazza Barberini, cerca de Via Veneto.", "badges": ["Via Veneto"] },
+    "fr": { "nome": "Distributeur — Piazza Barberini", "cat": "Distributeurs", "desc": "Distributeur automatique sur la Piazza Barberini, près de la Via Veneto.", "badges": ["Via Veneto"] },
+    "de": { "nome": "Geldautomat — Piazza Barberini", "cat": "Geldautomaten", "desc": "Geldautomat an der Piazza Barberini, nahe der Via Veneto.", "badges": ["Via Veneto"] }
+  },
+  "bancomat-san-giovanni": {
+    "it": { "nome": "Bancomat — San Giovanni", "cat": "Bancomat", "desc": "Sportello bancomat in zona San Giovanni in Laterano.", "badges": ["San Giovanni"] },
+    "en": { "nome": "ATM — San Giovanni", "cat": "ATMs", "desc": "Cash machine in the San Giovanni in Laterano area.", "badges": ["San Giovanni"] },
+    "zh": { "nome": "自动取款机 — 圣若望", "cat": "自动取款机", "desc": "自动取款机，位于拉特朗圣若望区。", "badges": ["圣若望"] },
+    "es": { "nome": "Cajero automático — San Giovanni", "cat": "Cajeros automáticos", "desc": "Cajero automático en la zona de San Giovanni in Laterano.", "badges": ["San Giovanni"] },
+    "fr": { "nome": "Distributeur — San Giovanni", "cat": "Distributeurs", "desc": "Distributeur automatique dans le quartier de San Giovanni in Laterano.", "badges": ["San Giovanni"] },
+    "de": { "nome": "Geldautomat — San Giovanni", "cat": "Geldautomaten", "desc": "Geldautomat im Stadtteil San Giovanni in Laterano.", "badges": ["San Giovanni"] }
+  },
+  "poste-san-silvestro": {
+    "it": { "nome": "Poste — Piazza San Silvestro", "cat": "Uffici postali", "desc": "Storica sede centrale delle Poste Italiane a Roma, in Piazza San Silvestro.", "badges": ["Sede storica", "Centro storico"] },
+    "en": { "nome": "Post Office — Piazza San Silvestro", "cat": "Post offices", "desc": "Historic main post office of Rome, in Piazza San Silvestro.", "badges": ["Historic branch", "Historic centre"] },
+    "zh": { "nome": "邮局 — 圣西尔维斯特罗广场", "cat": "邮局", "desc": "罗马历史悠久的意大利邮政总局，位于圣西尔维斯特罗广场。", "badges": ["历史邮局", "历史中心"] },
+    "es": { "nome": "Correos — Piazza San Silvestro", "cat": "Oficinas de correos", "desc": "Histórica sede central de Correos Italianos en Roma, en la Piazza San Silvestro.", "badges": ["Sede histórica", "Centro histórico"] },
+    "fr": { "nome": "Poste — Piazza San Silvestro", "cat": "Bureaux de poste", "desc": "Siège historique de la Poste italienne à Rome, sur la Piazza San Silvestro.", "badges": ["Siège historique", "Centre historique"] },
+    "de": { "nome": "Post — Piazza San Silvestro", "cat": "Postämter", "desc": "Historischer Hauptsitz der italienischen Post in Rom, an der Piazza San Silvestro.", "badges": ["Historischer Sitz", "Historisches Zentrum"] }
+  },
+  "poste-termini": {
+    "it": { "nome": "Poste — Stazione Termini", "cat": "Uffici postali", "desc": "Ufficio postale nei pressi della Stazione Termini.", "badges": ["Stazione"] },
+    "en": { "nome": "Post Office — Termini Station", "cat": "Post offices", "desc": "Post office near Termini Station.", "badges": ["Station"] },
+    "zh": { "nome": "邮局 — 特米尼车站", "cat": "邮局", "desc": "邮局，靠近特米尼车站。", "badges": ["车站"] },
+    "es": { "nome": "Correos — Estación Termini", "cat": "Oficinas de correos", "desc": "Oficina de correos cerca de la Estación Termini.", "badges": ["Estación"] },
+    "fr": { "nome": "Poste — Gare Termini", "cat": "Bureaux de poste", "desc": "Bureau de poste près de la gare Termini.", "badges": ["Gare"] },
+    "de": { "nome": "Post — Bahnhof Termini", "cat": "Postämter", "desc": "Postamt in der Nähe des Bahnhofs Termini.", "badges": ["Bahnhof"] }
+  },
+  "poste-trastevere": {
+    "it": { "nome": "Poste — Trastevere", "cat": "Uffici postali", "desc": "Ufficio postale in zona Trastevere.", "badges": ["Trastevere"] },
+    "en": { "nome": "Post Office — Trastevere", "cat": "Post offices", "desc": "Post office in the Trastevere area.", "badges": ["Trastevere"] },
+    "zh": { "nome": "邮局 — 特拉斯泰韦雷", "cat": "邮局", "desc": "邮局，位于特拉斯泰韦雷区。", "badges": ["特拉斯泰韦雷"] },
+    "es": { "nome": "Correos — Trastevere", "cat": "Oficinas de correos", "desc": "Oficina de correos en la zona de Trastevere.", "badges": ["Trastevere"] },
+    "fr": { "nome": "Poste — Trastevere", "cat": "Bureaux de poste", "desc": "Bureau de poste dans le quartier du Trastevere.", "badges": ["Trastevere"] },
+    "de": { "nome": "Post — Trastevere", "cat": "Postämter", "desc": "Postamt im Stadtteil Trastevere.", "badges": ["Trastevere"] }
+  },
+  "poste-vaticano": {
+    "it": { "nome": "Poste — Borgo Pio (Vaticano)", "cat": "Uffici postali", "desc": "Ufficio postale nei pressi del Vaticano, zona Borgo Pio.", "badges": ["Vaticano"] },
+    "en": { "nome": "Post Office — Borgo Pio (Vatican)", "cat": "Post offices", "desc": "Post office near the Vatican, in the Borgo Pio area.", "badges": ["Vatican"] },
+    "zh": { "nome": "邮局 — 皮奥堡（梵蒂冈）", "cat": "邮局", "desc": "邮局，靠近梵蒂冈，位于皮奥堡区。", "badges": ["梵蒂冈"] },
+    "es": { "nome": "Correos — Borgo Pio (Vaticano)", "cat": "Oficinas de correos", "desc": "Oficina de correos cerca del Vaticano, en la zona de Borgo Pio.", "badges": ["Vaticano"] },
+    "fr": { "nome": "Poste — Borgo Pio (Vatican)", "cat": "Bureaux de poste", "desc": "Bureau de poste près du Vatican, dans le quartier du Borgo Pio.", "badges": ["Vatican"] },
+    "de": { "nome": "Post — Borgo Pio (Vatikan)", "cat": "Postämter", "desc": "Postamt in der Nähe des Vatikans, im Stadtteil Borgo Pio.", "badges": ["Vatikan"] }
+  },
+  "poste-pantheon": {
+    "it": { "nome": "Poste — Pantheon / Campo Marzio", "cat": "Uffici postali", "desc": "Ufficio postale in zona Campo Marzio, vicino al Pantheon.", "badges": ["Centro storico"] },
+    "en": { "nome": "Post Office — Pantheon / Campo Marzio", "cat": "Post offices", "desc": "Post office in the Campo Marzio area, near the Pantheon.", "badges": ["Historic centre"] },
+    "zh": { "nome": "邮局 — 万神殿 / 马尔斯广场", "cat": "邮局", "desc": "邮局，位于马尔斯广场区，靠近万神殿。", "badges": ["历史中心"] },
+    "es": { "nome": "Correos — Panteón / Campo Marzio", "cat": "Oficinas de correos", "desc": "Oficina de correos en la zona de Campo Marzio, cerca del Panteón.", "badges": ["Centro histórico"] },
+    "fr": { "nome": "Poste — Panthéon / Campo Marzio", "cat": "Bureaux de poste", "desc": "Bureau de poste dans le quartier du Campo Marzio, près du Panthéon.", "badges": ["Centre historique"] },
+    "de": { "nome": "Post — Pantheon / Campo Marzio", "cat": "Postämter", "desc": "Postamt im Stadtteil Campo Marzio, in der Nähe des Pantheons.", "badges": ["Historisches Zentrum"] }
+  },
+  "poste-esquilino": {
+    "it": { "nome": "Poste — Esquilino", "cat": "Uffici postali", "desc": "Ufficio postale in zona Esquilino, vicino a Santa Maria Maggiore.", "badges": ["Esquilino"] },
+    "en": { "nome": "Post Office — Esquilino", "cat": "Post offices", "desc": "Post office in the Esquilino area, near Santa Maria Maggiore.", "badges": ["Esquilino"] },
+    "zh": { "nome": "邮局 — 埃斯奎利诺", "cat": "邮局", "desc": "邮局，位于埃斯奎利诺区，靠近圣母大殿。", "badges": ["埃斯奎利诺"] },
+    "es": { "nome": "Correos — Esquilino", "cat": "Oficinas de correos", "desc": "Oficina de correos en la zona de Esquilino, cerca de Santa Maria Maggiore.", "badges": ["Esquilino"] },
+    "fr": { "nome": "Poste — Esquilino", "cat": "Bureaux de poste", "desc": "Bureau de poste dans le quartier de l'Esquilino, près de Sainte-Marie-Majeure.", "badges": ["Esquilino"] },
+    "de": { "nome": "Post — Esquilino", "cat": "Postämter", "desc": "Postamt im Stadtteil Esquilino, in der Nähe von Santa Maria Maggiore.", "badges": ["Esquilino"] }
+  },
+  "poste-san-giovanni": {
+    "it": { "nome": "Poste — San Giovanni", "cat": "Uffici postali", "desc": "Ufficio postale in zona San Giovanni in Laterano.", "badges": ["San Giovanni"] },
+    "en": { "nome": "Post Office — San Giovanni", "cat": "Post offices", "desc": "Post office in the San Giovanni in Laterano area.", "badges": ["San Giovanni"] },
+    "zh": { "nome": "邮局 — 圣若望", "cat": "邮局", "desc": "邮局，位于拉特朗圣若望区。", "badges": ["圣若望"] },
+    "es": { "nome": "Correos — San Giovanni", "cat": "Oficinas de correos", "desc": "Oficina de correos en la zona de San Giovanni in Laterano.", "badges": ["San Giovanni"] },
+    "fr": { "nome": "Poste — San Giovanni", "cat": "Bureaux de poste", "desc": "Bureau de poste dans le quartier de San Giovanni in Laterano.", "badges": ["San Giovanni"] },
+    "de": { "nome": "Post — San Giovanni", "cat": "Postämter", "desc": "Postamt im Stadtteil San Giovanni in Laterano.", "badges": ["San Giovanni"] }
+  },
+  "poste-prati": {
+    "it": { "nome": "Poste — Prati", "cat": "Uffici postali", "desc": "Ufficio postale in zona Prati, vicino a Piazza Cavour.", "badges": ["Prati"] },
+    "en": { "nome": "Post Office — Prati", "cat": "Post offices", "desc": "Post office in the Prati area, near Piazza Cavour.", "badges": ["Prati"] },
+    "zh": { "nome": "邮局 — 普拉蒂", "cat": "邮局", "desc": "邮局，位于普拉蒂区，靠近卡富尔广场。", "badges": ["普拉蒂"] },
+    "es": { "nome": "Correos — Prati", "cat": "Oficinas de correos", "desc": "Oficina de correos en la zona de Prati, cerca de la Piazza Cavour.", "badges": ["Prati"] },
+    "fr": { "nome": "Poste — Prati", "cat": "Bureaux de poste", "desc": "Bureau de poste dans le quartier du Prati, près de la Piazza Cavour.", "badges": ["Prati"] },
+    "de": { "nome": "Post — Prati", "cat": "Postämter", "desc": "Postamt im Stadtteil Prati, in der Nähe der Piazza Cavour.", "badges": ["Prati"] }
+  },
+  "poste-monti": {
+    "it": { "nome": "Poste — Monti", "cat": "Uffici postali", "desc": "Ufficio postale in zona Monti, vicino a Via Nazionale.", "badges": ["Monti"] },
+    "en": { "nome": "Post Office — Monti", "cat": "Post offices", "desc": "Post office in the Monti area, near Via Nazionale.", "badges": ["Monti"] },
+    "zh": { "nome": "邮局 — 蒙蒂", "cat": "邮局", "desc": "邮局，位于蒙蒂区，靠近国家大道。", "badges": ["蒙蒂"] },
+    "es": { "nome": "Correos — Monti", "cat": "Oficinas de correos", "desc": "Oficina de correos en la zona de Monti, cerca de Via Nazionale.", "badges": ["Monti"] },
+    "fr": { "nome": "Poste — Monti", "cat": "Bureaux de poste", "desc": "Bureau de poste dans le quartier de Monti, près de la Via Nazionale.", "badges": ["Monti"] },
+    "de": { "nome": "Post — Monti", "cat": "Postämter", "desc": "Postamt im Stadtteil Monti, in der Nähe der Via Nazionale.", "badges": ["Monti"] }
+  }
+,
+  "nasone-trastevere": {
+    "it": { "nome": "Nasone — Trastevere", "cat": "Servizi pubblici", "desc": "Fontanella pubblica con acqua potabile gratuita, in zona Trastevere.", "badges": ["Gratuito", "H24"] },
+    "en": { "nome": "Water fountain — Trastevere", "cat": "Public services", "desc": "Free drinking water fountain in the Trastevere area.", "badges": ["Free", "24/7"] },
+    "zh": { "nome": "饮水点 — 特拉斯泰韦雷", "cat": "公共服务", "desc": "免费饮用水公共饮水点，位于特拉斯泰韦雷区。", "badges": ["免费", "全天开放"] },
+    "es": { "nome": "Fuente de agua — Trastevere", "cat": "Servicios públicos", "desc": "Fuente pública de agua potable gratuita, en la zona de Trastevere.", "badges": ["Gratis", "24 h"] },
+    "fr": { "nome": "Fontaine d'eau — Trastevere", "cat": "Services publics", "desc": "Fontaine publique d'eau potable gratuite, dans le quartier du Trastevere.", "badges": ["Gratuit", "24h/24"] },
+    "de": { "nome": "Trinkwasserbrunnen — Trastevere", "cat": "Öffentliche Dienste", "desc": "Öffentlicher kostenloser Trinkwasserbrunnen im Stadtteil Trastevere.", "badges": ["Kostenlos", "24 Std."] }
+  },
+  "nasone-vaticano": {
+    "it": { "nome": "Nasone — Piazza San Pietro", "cat": "Servizi pubblici", "desc": "Fontanella pubblica con acqua potabile gratuita, nei pressi di Piazza San Pietro.", "badges": ["Gratuito", "H24"] },
+    "en": { "nome": "Water fountain — St. Peter's Square", "cat": "Public services", "desc": "Free drinking water fountain near St. Peter's Square.", "badges": ["Free", "24/7"] },
+    "zh": { "nome": "饮水点 — 圣彼得广场", "cat": "公共服务", "desc": "免费饮用水公共饮水点，靠近圣彼得广场。", "badges": ["免费", "全天开放"] },
+    "es": { "nome": "Fuente de agua — Plaza de San Pedro", "cat": "Servicios públicos", "desc": "Fuente pública de agua potable gratuita, cerca de la Plaza de San Pedro.", "badges": ["Gratis", "24 h"] },
+    "fr": { "nome": "Fontaine d'eau — Place Saint-Pierre", "cat": "Services publics", "desc": "Fontaine publique d'eau potable gratuite, près de la Place Saint-Pierre.", "badges": ["Gratuit", "24h/24"] },
+    "de": { "nome": "Trinkwasserbrunnen — Petersplatz", "cat": "Öffentliche Dienste", "desc": "Öffentlicher kostenloser Trinkwasserbrunnen in der Nähe des Petersplatzes.", "badges": ["Kostenlos", "24 Std."] }
+  },
+  "nasone-colosseo": {
+    "it": { "nome": "Nasone — Colosseo", "cat": "Servizi pubblici", "desc": "Fontanella pubblica con acqua potabile gratuita, nei pressi del Colosseo.", "badges": ["Gratuito", "H24"] },
+    "en": { "nome": "Water fountain — Colosseum", "cat": "Public services", "desc": "Free drinking water fountain near the Colosseum.", "badges": ["Free", "24/7"] },
+    "zh": { "nome": "饮水点 — 罗马竞技场", "cat": "公共服务", "desc": "免费饮用水公共饮水点，靠近罗马竞技场。", "badges": ["免费", "全天开放"] },
+    "es": { "nome": "Fuente de agua — Coliseo", "cat": "Servicios públicos", "desc": "Fuente pública de agua potable gratuita, cerca del Coliseo.", "badges": ["Gratis", "24 h"] },
+    "fr": { "nome": "Fontaine d'eau — Colisée", "cat": "Services publics", "desc": "Fontaine publique d'eau potable gratuite, près du Colisée.", "badges": ["Gratuit", "24h/24"] },
+    "de": { "nome": "Trinkwasserbrunnen — Kolosseum", "cat": "Öffentliche Dienste", "desc": "Öffentlicher kostenloser Trinkwasserbrunnen in der Nähe des Kolosseums.", "badges": ["Kostenlos", "24 Std."] }
+  },
+  "nasone-termini": {
+    "it": { "nome": "Nasone — Stazione Termini", "cat": "Servizi pubblici", "desc": "Fontanella pubblica con acqua potabile gratuita, nei pressi della Stazione Termini.", "badges": ["Gratuito", "H24"] },
+    "en": { "nome": "Water fountain — Termini Station", "cat": "Public services", "desc": "Free drinking water fountain near Termini Station.", "badges": ["Free", "24/7"] },
+    "zh": { "nome": "饮水点 — 特米尼车站", "cat": "公共服务", "desc": "免费饮用水公共饮水点，靠近特米尼车站。", "badges": ["免费", "全天开放"] },
+    "es": { "nome": "Fuente de agua — Estación Termini", "cat": "Servicios públicos", "desc": "Fuente pública de agua potable gratuita, cerca de la Estación Termini.", "badges": ["Gratis", "24 h"] },
+    "fr": { "nome": "Fontaine d'eau — Gare Termini", "cat": "Services publics", "desc": "Fontaine publique d'eau potable gratuite, près de la gare Termini.", "badges": ["Gratuit", "24h/24"] },
+    "de": { "nome": "Trinkwasserbrunnen — Bahnhof Termini", "cat": "Öffentliche Dienste", "desc": "Öffentlicher kostenloser Trinkwasserbrunnen in der Nähe des Bahnhofs Termini.", "badges": ["Kostenlos", "24 Std."] }
+  },
+  "nasone-trevi": {
+    "it": { "nome": "Nasone — Fontana di Trevi", "cat": "Servizi pubblici", "desc": "Fontanella pubblica con acqua potabile gratuita, nei pressi della Fontana di Trevi.", "badges": ["Gratuito", "H24"] },
+    "en": { "nome": "Water fountain — Trevi Fountain", "cat": "Public services", "desc": "Free drinking water fountain near the Trevi Fountain.", "badges": ["Free", "24/7"] },
+    "zh": { "nome": "饮水点 — 特莱维喷泉", "cat": "公共服务", "desc": "免费饮用水公共饮水点，靠近特莱维喷泉。", "badges": ["免费", "全天开放"] },
+    "es": { "nome": "Fuente de agua — Fontana di Trevi", "cat": "Servicios públicos", "desc": "Fuente pública de agua potable gratuita, cerca de la Fontana di Trevi.", "badges": ["Gratis", "24 h"] },
+    "fr": { "nome": "Fontaine d'eau — Fontaine de Trevi", "cat": "Services publics", "desc": "Fontaine publique d'eau potable gratuite, près de la Fontaine de Trevi.", "badges": ["Gratuit", "24h/24"] },
+    "de": { "nome": "Trinkwasserbrunnen — Trevi-Brunnen", "cat": "Öffentliche Dienste", "desc": "Öffentlicher kostenloser Trinkwasserbrunnen in der Nähe des Trevi-Brunnens.", "badges": ["Kostenlos", "24 Std."] }
+  },
+  "nasone-campo-fiori": {
+    "it": { "nome": "Nasone — Campo de' Fiori", "cat": "Servizi pubblici", "desc": "Fontanella pubblica con acqua potabile gratuita, in Campo de' Fiori.", "badges": ["Gratuito", "H24"] },
+    "en": { "nome": "Water fountain — Campo de' Fiori", "cat": "Public services", "desc": "Free drinking water fountain in Campo de' Fiori.", "badges": ["Free", "24/7"] },
+    "zh": { "nome": "饮水点 — 花田广场", "cat": "公共服务", "desc": "免费饮用水公共饮水点，位于花田广场。", "badges": ["免费", "全天开放"] },
+    "es": { "nome": "Fuente de agua — Campo de' Fiori", "cat": "Servicios públicos", "desc": "Fuente pública de agua potable gratuita, en Campo de' Fiori.", "badges": ["Gratis", "24 h"] },
+    "fr": { "nome": "Fontaine d'eau — Campo de' Fiori", "cat": "Services publics", "desc": "Fontaine publique d'eau potable gratuite, sur le Campo de' Fiori.", "badges": ["Gratuit", "24h/24"] },
+    "de": { "nome": "Trinkwasserbrunnen — Campo de' Fiori", "cat": "Öffentliche Dienste", "desc": "Öffentlicher kostenloser Trinkwasserbrunnen auf dem Campo de' Fiori.", "badges": ["Kostenlos", "24 Std."] }
+  },
+  "nasone-san-giovanni": {
+    "it": { "nome": "Nasone — San Giovanni", "cat": "Servizi pubblici", "desc": "Fontanella pubblica con acqua potabile gratuita, in zona San Giovanni in Laterano.", "badges": ["Gratuito", "H24"] },
+    "en": { "nome": "Water fountain — San Giovanni", "cat": "Public services", "desc": "Free drinking water fountain in the San Giovanni in Laterano area.", "badges": ["Free", "24/7"] },
+    "zh": { "nome": "饮水点 — 圣若望", "cat": "公共服务", "desc": "免费饮用水公共饮水点，位于拉特朗圣若望区。", "badges": ["免费", "全天开放"] },
+    "es": { "nome": "Fuente de agua — San Giovanni", "cat": "Servicios públicos", "desc": "Fuente pública de agua potable gratuita, en la zona de San Giovanni in Laterano.", "badges": ["Gratis", "24 h"] },
+    "fr": { "nome": "Fontaine d'eau — San Giovanni", "cat": "Services publics", "desc": "Fontaine publique d'eau potable gratuite, dans le quartier de San Giovanni in Laterano.", "badges": ["Gratuit", "24h/24"] },
+    "de": { "nome": "Trinkwasserbrunnen — San Giovanni", "cat": "Öffentliche Dienste", "desc": "Öffentlicher kostenloser Trinkwasserbrunnen im Stadtteil San Giovanni in Laterano.", "badges": ["Kostenlos", "24 Std."] }
+  },
+  "nasone-borghese": {
+    "it": { "nome": "Nasone — Villa Borghese", "cat": "Servizi pubblici", "desc": "Fontanella pubblica con acqua potabile gratuita, all'ingresso di Villa Borghese.", "badges": ["Gratuito", "H24"] },
+    "en": { "nome": "Water fountain — Villa Borghese", "cat": "Public services", "desc": "Free drinking water fountain at the entrance of Villa Borghese.", "badges": ["Free", "24/7"] },
+    "zh": { "nome": "饮水点 — 博尔盖塞别墅", "cat": "公共服务", "desc": "免费饮用水公共饮水点，位于博尔盖塞别墅入口处。", "badges": ["免费", "全天开放"] },
+    "es": { "nome": "Fuente de agua — Villa Borghese", "cat": "Servicios públicos", "desc": "Fuente pública de agua potable gratuita, en la entrada de Villa Borghese.", "badges": ["Gratis", "24 h"] },
+    "fr": { "nome": "Fontaine d'eau — Villa Borghese", "cat": "Services publics", "desc": "Fontaine publique d'eau potable gratuite, à l'entrée de la Villa Borghese.", "badges": ["Gratuit", "24h/24"] },
+    "de": { "nome": "Trinkwasserbrunnen — Villa Borghese", "cat": "Öffentliche Dienste", "desc": "Öffentlicher kostenloser Trinkwasserbrunnen am Eingang der Villa Borghese.", "badges": ["Kostenlos", "24 Std."] }
+  },
+  "presa-termini": {
+    "it": { "nome": "Presa elettrica — Stazione Termini", "cat": "Servizi pubblici", "desc": "Presa elettrica pubblica ACEA 220V, nei pressi della Stazione Termini.", "badges": ["ACEA", "220V"] },
+    "en": { "nome": "Power outlet — Termini Station", "cat": "Public services", "desc": "Public ACEA 220V power outlet, near Termini Station.", "badges": ["ACEA", "220V"] },
+    "zh": { "nome": "电源插座 — 特米尼车站", "cat": "公共服务", "desc": "ACEA公共220V电源插座，靠近特米尼车站。", "badges": ["ACEA", "220伏"] },
+    "es": { "nome": "Toma de corriente — Estación Termini", "cat": "Servicios públicos", "desc": "Toma de corriente pública ACEA de 220V, cerca de la Estación Termini.", "badges": ["ACEA", "220V"] },
+    "fr": { "nome": "Prise électrique — Gare Termini", "cat": "Services publics", "desc": "Prise électrique publique ACEA 220V, près de la gare Termini.", "badges": ["ACEA", "220V"] },
+    "de": { "nome": "Steckdose — Bahnhof Termini", "cat": "Öffentliche Dienste", "desc": "Öffentliche ACEA-Steckdose 220V, in der Nähe des Bahnhofs Termini.", "badges": ["ACEA", "220V"] }
+  },
+  "presa-venezia": {
+    "it": { "nome": "Presa elettrica — Piazza Venezia", "cat": "Servizi pubblici", "desc": "Presa elettrica pubblica ACEA 220V, in Piazza Venezia.", "badges": ["ACEA", "220V"] },
+    "en": { "nome": "Power outlet — Piazza Venezia", "cat": "Public services", "desc": "Public ACEA 220V power outlet, in Piazza Venezia.", "badges": ["ACEA", "220V"] },
+    "zh": { "nome": "电源插座 — 威尼斯广场", "cat": "公共服务", "desc": "ACEA公共220V电源插座，位于威尼斯广场。", "badges": ["ACEA", "220伏"] },
+    "es": { "nome": "Toma de corriente — Piazza Venezia", "cat": "Servicios públicos", "desc": "Toma de corriente pública ACEA de 220V, en la Piazza Venezia.", "badges": ["ACEA", "220V"] },
+    "fr": { "nome": "Prise électrique — Piazza Venezia", "cat": "Services publics", "desc": "Prise électrique publique ACEA 220V, sur la Piazza Venezia.", "badges": ["ACEA", "220V"] },
+    "de": { "nome": "Steckdose — Piazza Venezia", "cat": "Öffentliche Dienste", "desc": "Öffentliche ACEA-Steckdose 220V, an der Piazza Venezia.", "badges": ["ACEA", "220V"] }
+  },
+  "presa-navona": {
+    "it": { "nome": "Presa elettrica — Piazza Navona", "cat": "Servizi pubblici", "desc": "Presa elettrica pubblica ACEA 220V, in Piazza Navona.", "badges": ["ACEA", "220V"] },
+    "en": { "nome": "Power outlet — Piazza Navona", "cat": "Public services", "desc": "Public ACEA 220V power outlet, in Piazza Navona.", "badges": ["ACEA", "220V"] },
+    "zh": { "nome": "电源插座 — 纳沃纳广场", "cat": "公共服务", "desc": "ACEA公共220V电源插座，位于纳沃纳广场。", "badges": ["ACEA", "220伏"] },
+    "es": { "nome": "Toma de corriente — Piazza Navona", "cat": "Servicios públicos", "desc": "Toma de corriente pública ACEA de 220V, en la Piazza Navona.", "badges": ["ACEA", "220V"] },
+    "fr": { "nome": "Prise électrique — Place Navone", "cat": "Services publics", "desc": "Prise électrique publique ACEA 220V, sur la Place Navone.", "badges": ["ACEA", "220V"] },
+    "de": { "nome": "Steckdose — Piazza Navona", "cat": "Öffentliche Dienste", "desc": "Öffentliche ACEA-Steckdose 220V, an der Piazza Navona.", "badges": ["ACEA", "220V"] }
+  },
+  "presa-trevi": {
+    "it": { "nome": "Presa elettrica — Fontana di Trevi", "cat": "Servizi pubblici", "desc": "Presa elettrica pubblica ACEA 220V, nei pressi della Fontana di Trevi.", "badges": ["ACEA", "220V"] },
+    "en": { "nome": "Power outlet — Trevi Fountain", "cat": "Public services", "desc": "Public ACEA 220V power outlet, near the Trevi Fountain.", "badges": ["ACEA", "220V"] },
+    "zh": { "nome": "电源插座 — 特莱维喷泉", "cat": "公共服务", "desc": "ACEA公共220V电源插座，靠近特莱维喷泉。", "badges": ["ACEA", "220伏"] },
+    "es": { "nome": "Toma de corriente — Fontana di Trevi", "cat": "Servicios públicos", "desc": "Toma de corriente pública ACEA de 220V, cerca de la Fontana di Trevi.", "badges": ["ACEA", "220V"] },
+    "fr": { "nome": "Prise électrique — Fontaine de Trevi", "cat": "Services publics", "desc": "Prise électrique publique ACEA 220V, près de la Fontaine de Trevi.", "badges": ["ACEA", "220V"] },
+    "de": { "nome": "Steckdose — Trevi-Brunnen", "cat": "Öffentliche Dienste", "desc": "Öffentliche ACEA-Steckdose 220V, in der Nähe des Trevi-Brunnens.", "badges": ["ACEA", "220V"] }
+  },
+  "presa-spagna": {
+    "it": { "nome": "Presa elettrica — Piazza di Spagna", "cat": "Servizi pubblici", "desc": "Presa elettrica pubblica ACEA 220V, in Piazza di Spagna.", "badges": ["ACEA", "220V"] },
+    "en": { "nome": "Power outlet — Piazza di Spagna", "cat": "Public services", "desc": "Public ACEA 220V power outlet, in Piazza di Spagna.", "badges": ["ACEA", "220V"] },
+    "zh": { "nome": "电源插座 — 西班牙广场", "cat": "公共服务", "desc": "ACEA公共220V电源插座，位于西班牙广场。", "badges": ["ACEA", "220伏"] },
+    "es": { "nome": "Toma de corriente — Plaza de España", "cat": "Servicios públicos", "desc": "Toma de corriente pública ACEA de 220V, en la Plaza de España.", "badges": ["ACEA", "220V"] },
+    "fr": { "nome": "Prise électrique — Place d'Espagne", "cat": "Services publics", "desc": "Prise électrique publique ACEA 220V, sur la Place d'Espagne.", "badges": ["ACEA", "220V"] },
+    "de": { "nome": "Steckdose — Piazza di Spagna", "cat": "Öffentliche Dienste", "desc": "Öffentliche ACEA-Steckdose 220V, an der Piazza di Spagna.", "badges": ["ACEA", "220V"] }
+  },
+  "presa-colosseo": {
+    "it": { "nome": "Presa elettrica — Colosseo", "cat": "Servizi pubblici", "desc": "Presa elettrica pubblica ACEA 220V, nei pressi del Colosseo.", "badges": ["ACEA", "220V"] },
+    "en": { "nome": "Power outlet — Colosseum", "cat": "Public services", "desc": "Public ACEA 220V power outlet, near the Colosseum.", "badges": ["ACEA", "220V"] },
+    "zh": { "nome": "电源插座 — 罗马竞技场", "cat": "公共服务", "desc": "ACEA公共220V电源插座，靠近罗马竞技场。", "badges": ["ACEA", "220伏"] },
+    "es": { "nome": "Toma de corriente — Coliseo", "cat": "Servicios públicos", "desc": "Toma de corriente pública ACEA de 220V, cerca del Coliseo.", "badges": ["ACEA", "220V"] },
+    "fr": { "nome": "Prise électrique — Colisée", "cat": "Services publics", "desc": "Prise électrique publique ACEA 220V, près du Colisée.", "badges": ["ACEA", "220V"] },
+    "de": { "nome": "Steckdose — Kolosseum", "cat": "Öffentliche Dienste", "desc": "Öffentliche ACEA-Steckdose 220V, in der Nähe des Kolosseums.", "badges": ["ACEA", "220V"] }
+  },
+  "presa-trastevere": {
+    "it": { "nome": "Presa elettrica — Trastevere", "cat": "Servizi pubblici", "desc": "Presa elettrica pubblica ACEA 220V, in zona Trastevere.", "badges": ["ACEA", "220V"] },
+    "en": { "nome": "Power outlet — Trastevere", "cat": "Public services", "desc": "Public ACEA 220V power outlet, in the Trastevere area.", "badges": ["ACEA", "220V"] },
+    "zh": { "nome": "电源插座 — 特拉斯泰韦雷", "cat": "公共服务", "desc": "ACEA公共220V电源插座，位于特拉斯泰韦雷区。", "badges": ["ACEA", "220伏"] },
+    "es": { "nome": "Toma de corriente — Trastevere", "cat": "Servicios públicos", "desc": "Toma de corriente pública ACEA de 220V, en la zona de Trastevere.", "badges": ["ACEA", "220V"] },
+    "fr": { "nome": "Prise électrique — Trastevere", "cat": "Services publics", "desc": "Prise électrique publique ACEA 220V, dans le quartier du Trastevere.", "badges": ["ACEA", "220V"] },
+    "de": { "nome": "Steckdose — Trastevere", "cat": "Öffentliche Dienste", "desc": "Öffentliche ACEA-Steckdose 220V, im Stadtteil Trastevere.", "badges": ["ACEA", "220V"] }
+  },
+  "presa-vaticano": {
+    "it": { "nome": "Presa elettrica — San Pietro", "cat": "Servizi pubblici", "desc": "Presa elettrica pubblica ACEA 220V, nei pressi di Piazza San Pietro.", "badges": ["ACEA", "220V"] },
+    "en": { "nome": "Power outlet — St. Peter's", "cat": "Public services", "desc": "Public ACEA 220V power outlet, near St. Peter's Square.", "badges": ["ACEA", "220V"] },
+    "zh": { "nome": "电源插座 — 圣彼得广场", "cat": "公共服务", "desc": "ACEA公共220V电源插座，靠近圣彼得广场。", "badges": ["ACEA", "220伏"] },
+    "es": { "nome": "Toma de corriente — San Pedro", "cat": "Servicios públicos", "desc": "Toma de corriente pública ACEA de 220V, cerca de la Plaza de San Pedro.", "badges": ["ACEA", "220V"] },
+    "fr": { "nome": "Prise électrique — Saint-Pierre", "cat": "Services publics", "desc": "Prise électrique publique ACEA 220V, près de la Place Saint-Pierre.", "badges": ["ACEA", "220V"] },
+    "de": { "nome": "Steckdose — Petersplatz", "cat": "Öffentliche Dienste", "desc": "Öffentliche ACEA-Steckdose 220V, in der Nähe des Petersplatzes.", "badges": ["ACEA", "220V"] }
+  },
+  "presa-repubblica": {
+    "it": { "nome": "Presa elettrica — Piazza della Repubblica", "cat": "Servizi pubblici", "desc": "Presa elettrica pubblica ACEA 220V, in Piazza della Repubblica.", "badges": ["ACEA", "220V"] },
+    "en": { "nome": "Power outlet — Piazza della Repubblica", "cat": "Public services", "desc": "Public ACEA 220V power outlet, in Piazza della Repubblica.", "badges": ["ACEA", "220V"] },
+    "zh": { "nome": "电源插座 — 共和广场", "cat": "公共服务", "desc": "ACEA公共220V电源插座，位于共和广场。", "badges": ["ACEA", "220伏"] },
+    "es": { "nome": "Toma de corriente — Piazza della Repubblica", "cat": "Servicios públicos", "desc": "Toma de corriente pública ACEA de 220V, en la Piazza della Repubblica.", "badges": ["ACEA", "220V"] },
+    "fr": { "nome": "Prise électrique — Piazza della Repubblica", "cat": "Services publics", "desc": "Prise électrique publique ACEA 220V, sur la Piazza della Repubblica.", "badges": ["ACEA", "220V"] },
+    "de": { "nome": "Steckdose — Piazza della Repubblica", "cat": "Öffentliche Dienste", "desc": "Öffentliche ACEA-Steckdose 220V, an der Piazza della Repubblica.", "badges": ["ACEA", "220V"] }
+  },
+  "presa-borghese": {
+    "it": { "nome": "Presa elettrica — Villa Borghese", "cat": "Servizi pubblici", "desc": "Presa elettrica pubblica ACEA 220V, all'ingresso di Villa Borghese.", "badges": ["ACEA", "220V"] },
+    "en": { "nome": "Power outlet — Villa Borghese", "cat": "Public services", "desc": "Public ACEA 220V power outlet, at the entrance of Villa Borghese.", "badges": ["ACEA", "220V"] },
+    "zh": { "nome": "电源插座 — 博尔盖塞别墅", "cat": "公共服务", "desc": "ACEA公共220V电源插座，位于博尔盖塞别墅入口处。", "badges": ["ACEA", "220伏"] },
+    "es": { "nome": "Toma de corriente — Villa Borghese", "cat": "Servicios públicos", "desc": "Toma de corriente pública ACEA de 220V, en la entrada de Villa Borghese.", "badges": ["ACEA", "220V"] },
+    "fr": { "nome": "Prise électrique — Villa Borghese", "cat": "Services publics", "desc": "Prise électrique publique ACEA 220V, à l'entrée de la Villa Borghese.", "badges": ["ACEA", "220V"] },
+    "de": { "nome": "Steckdose — Villa Borghese", "cat": "Öffentliche Dienste", "desc": "Öffentliche ACEA-Steckdose 220V, am Eingang der Villa Borghese.", "badges": ["ACEA", "220V"] }
   }
 };
 
@@ -701,6 +1171,169 @@ const POIS = [
     badges:[{t:'Gratuito',c:'verde'},{t:'H24',c:'verde'},{t:'Acqua potabile',c:'cielo'}],
     lat:41.8967, lon:12.4822,
     dest:'nasoni+fontanelle+Roma+acqua+potabile'
+  },
+  {
+    id:'nasone-trastevere', tipo:'pubblico', emoji:'💧',
+    nome:'Nasone — Trastevere',
+    cat:'Servizi pubblici',
+    desc:'Fontanella pubblica con acqua potabile gratuita, in zona Trastevere.',
+    badges:[{t:'Gratuito',c:'verde'},{t:'H24',c:'verde'}],
+    lat:41.8896, lon:12.4698,
+    dest:'nasone+fontanella+trastevere+Roma'
+  },
+  {
+    id:'nasone-vaticano', tipo:'pubblico', emoji:'💧',
+    nome:'Nasone — Piazza San Pietro',
+    cat:'Servizi pubblici',
+    desc:'Fontanella pubblica con acqua potabile gratuita, nei pressi di Piazza San Pietro.',
+    badges:[{t:'Gratuito',c:'verde'},{t:'H24',c:'verde'}],
+    lat:41.9020, lon:12.4580,
+    dest:'nasone+fontanella+piazza+san+pietro+Roma'
+  },
+  {
+    id:'nasone-colosseo', tipo:'pubblico', emoji:'💧',
+    nome:'Nasone — Colosseo',
+    cat:'Servizi pubblici',
+    desc:'Fontanella pubblica con acqua potabile gratuita, nei pressi del Colosseo.',
+    badges:[{t:'Gratuito',c:'verde'},{t:'H24',c:'verde'}],
+    lat:41.8902, lon:12.4920,
+    dest:'nasone+fontanella+colosseo+Roma'
+  },
+  {
+    id:'nasone-termini', tipo:'pubblico', emoji:'💧',
+    nome:'Nasone — Stazione Termini',
+    cat:'Servizi pubblici',
+    desc:'Fontanella pubblica con acqua potabile gratuita, nei pressi della Stazione Termini.',
+    badges:[{t:'Gratuito',c:'verde'},{t:'H24',c:'verde'}],
+    lat:41.9009, lon:12.5025,
+    dest:'nasone+fontanella+stazione+termini+Roma'
+  },
+  {
+    id:'nasone-trevi', tipo:'pubblico', emoji:'💧',
+    nome:'Nasone — Fontana di Trevi',
+    cat:'Servizi pubblici',
+    desc:'Fontanella pubblica con acqua potabile gratuita, nei pressi della Fontana di Trevi.',
+    badges:[{t:'Gratuito',c:'verde'},{t:'H24',c:'verde'}],
+    lat:41.9009, lon:12.4835,
+    dest:'nasone+fontanella+fontana+trevi+Roma'
+  },
+  {
+    id:'nasone-campo-fiori', tipo:'pubblico', emoji:'💧',
+    nome:'Nasone — Campo de\' Fiori',
+    cat:'Servizi pubblici',
+    desc:'Fontanella pubblica con acqua potabile gratuita, in Campo de\' Fiori.',
+    badges:[{t:'Gratuito',c:'verde'},{t:'H24',c:'verde'}],
+    lat:41.8957, lon:12.4722,
+    dest:'nasone+fontanella+campo+de+fiori+Roma'
+  },
+  {
+    id:'nasone-san-giovanni', tipo:'pubblico', emoji:'💧',
+    nome:'Nasone — San Giovanni',
+    cat:'Servizi pubblici',
+    desc:'Fontanella pubblica con acqua potabile gratuita, in zona San Giovanni in Laterano.',
+    badges:[{t:'Gratuito',c:'verde'},{t:'H24',c:'verde'}],
+    lat:41.8858, lon:12.5063,
+    dest:'nasone+fontanella+san+giovanni+Roma'
+  },
+  {
+    id:'nasone-borghese', tipo:'pubblico', emoji:'💧',
+    nome:'Nasone — Villa Borghese',
+    cat:'Servizi pubblici',
+    desc:'Fontanella pubblica con acqua potabile gratuita, all\'ingresso di Villa Borghese.',
+    badges:[{t:'Gratuito',c:'verde'},{t:'H24',c:'verde'}],
+    lat:41.9136, lon:12.4828,
+    dest:'nasone+fontanella+villa+borghese+Roma'
+  },
+  // ── PRESE ELETTRICHE ACEA ──
+  {
+    id:'presa-termini', tipo:'pubblico', emoji:'🔌',
+    nome:'Presa elettrica — Stazione Termini',
+    cat:'Servizi pubblici',
+    desc:'Presa elettrica pubblica ACEA 220V, nei pressi della Stazione Termini.',
+    badges:[{t:'ACEA',c:'ocra'},{t:'220V',c:'cielo'}],
+    lat:41.9004, lon:12.5018,
+    dest:'presa+elettrica+pubblica+acea+stazione+termini+Roma'
+  },
+  {
+    id:'presa-venezia', tipo:'pubblico', emoji:'🔌',
+    nome:'Presa elettrica — Piazza Venezia',
+    cat:'Servizi pubblici',
+    desc:'Presa elettrica pubblica ACEA 220V, in Piazza Venezia.',
+    badges:[{t:'ACEA',c:'ocra'},{t:'220V',c:'cielo'}],
+    lat:41.8958, lon:12.4830,
+    dest:'presa+elettrica+pubblica+acea+piazza+venezia+Roma'
+  },
+  {
+    id:'presa-navona', tipo:'pubblico', emoji:'🔌',
+    nome:'Presa elettrica — Piazza Navona',
+    cat:'Servizi pubblici',
+    desc:'Presa elettrica pubblica ACEA 220V, in Piazza Navona.',
+    badges:[{t:'ACEA',c:'ocra'},{t:'220V',c:'cielo'}],
+    lat:41.8989, lon:12.4731,
+    dest:'presa+elettrica+pubblica+acea+piazza+navona+Roma'
+  },
+  {
+    id:'presa-trevi', tipo:'pubblico', emoji:'🔌',
+    nome:'Presa elettrica — Fontana di Trevi',
+    cat:'Servizi pubblici',
+    desc:'Presa elettrica pubblica ACEA 220V, nei pressi della Fontana di Trevi.',
+    badges:[{t:'ACEA',c:'ocra'},{t:'220V',c:'cielo'}],
+    lat:41.9006, lon:12.4832,
+    dest:'presa+elettrica+pubblica+acea+fontana+trevi+Roma'
+  },
+  {
+    id:'presa-spagna', tipo:'pubblico', emoji:'🔌',
+    nome:'Presa elettrica — Piazza di Spagna',
+    cat:'Servizi pubblici',
+    desc:'Presa elettrica pubblica ACEA 220V, in Piazza di Spagna.',
+    badges:[{t:'ACEA',c:'ocra'},{t:'220V',c:'cielo'}],
+    lat:41.9057, lon:12.4823,
+    dest:'presa+elettrica+pubblica+acea+piazza+spagna+Roma'
+  },
+  {
+    id:'presa-colosseo', tipo:'pubblico', emoji:'🔌',
+    nome:'Presa elettrica — Colosseo',
+    cat:'Servizi pubblici',
+    desc:'Presa elettrica pubblica ACEA 220V, nei pressi del Colosseo.',
+    badges:[{t:'ACEA',c:'ocra'},{t:'220V',c:'cielo'}],
+    lat:41.8898, lon:12.4923,
+    dest:'presa+elettrica+pubblica+acea+colosseo+Roma'
+  },
+  {
+    id:'presa-trastevere', tipo:'pubblico', emoji:'🔌',
+    nome:'Presa elettrica — Trastevere',
+    cat:'Servizi pubblici',
+    desc:'Presa elettrica pubblica ACEA 220V, in zona Trastevere.',
+    badges:[{t:'ACEA',c:'ocra'},{t:'220V',c:'cielo'}],
+    lat:41.8892, lon:12.4700,
+    dest:'presa+elettrica+pubblica+acea+trastevere+Roma'
+  },
+  {
+    id:'presa-vaticano', tipo:'pubblico', emoji:'🔌',
+    nome:'Presa elettrica — San Pietro',
+    cat:'Servizi pubblici',
+    desc:'Presa elettrica pubblica ACEA 220V, nei pressi di Piazza San Pietro.',
+    badges:[{t:'ACEA',c:'ocra'},{t:'220V',c:'cielo'}],
+    lat:41.9027, lon:12.4588,
+    dest:'presa+elettrica+pubblica+acea+piazza+san+pietro+Roma'
+  },
+  {
+    id:'presa-repubblica', tipo:'pubblico', emoji:'🔌',
+    nome:'Presa elettrica — Piazza della Repubblica',
+    cat:'Servizi pubblici',
+    desc:'Presa elettrica pubblica ACEA 220V, in Piazza della Repubblica.',
+    badges:[{t:'ACEA',c:'ocra'},{t:'220V',c:'cielo'}],
+    lat:41.9016, lon:12.4953,
+    dest:'presa+elettrica+pubblica+acea+piazza+repubblica+Roma'
+  },
+  {
+    id:'presa-borghese', tipo:'pubblico', emoji:'🔌',
+    nome:'Presa elettrica — Villa Borghese',
+    cat:'Servizi pubblici',
+    desc:'Presa elettrica pubblica ACEA 220V, all\'ingresso di Villa Borghese.',
+    badges:[{t:'ACEA',c:'ocra'},{t:'220V',c:'cielo'}],
+    lat:41.9133, lon:12.4825,
+    dest:'presa+elettrica+pubblica+acea+villa+borghese+Roma'
   },
   {
     id:'bagni', tipo:'bagni', emoji:'🚻',
@@ -840,6 +1473,279 @@ const POIS = [
     lat:41.8856, lon:12.5051,
     dest:'metro+san+giovanni+roma+linea+C'
   },
+  // ── BUS & TRAM ATAC ──
+  {
+    id:'bus-termini', tipo:'bus', emoji:'🚌',
+    nome:'Bus — Stazione Termini',
+    cat:'Bus & Tram ATAC',
+    desc:'Capolinea bus ATAC davanti alla Stazione Termini. Numerose linee per tutta la città.',
+    badges:[{t:'ATAC',c:'verde'},{t:'Hub principale',c:'cielo'}],
+    lat:41.9007, lon:12.5021,
+    dest:'bus+atac+stazione+termini+Roma'
+  },
+  {
+    id:'bus-venezia', tipo:'bus', emoji:'🚌',
+    nome:'Bus — Piazza Venezia',
+    cat:'Bus & Tram ATAC',
+    desc:'Importante nodo bus ATAC in Piazza Venezia, snodo per il centro storico.',
+    badges:[{t:'ATAC',c:'verde'},{t:'Centro storico',c:'ocra'}],
+    lat:41.8955, lon:12.4828,
+    dest:'bus+atac+piazza+venezia+Roma'
+  },
+  {
+    id:'bus-vaticano', tipo:'bus', emoji:'🚌',
+    nome:'Bus — Piazza del Risorgimento',
+    cat:'Bus & Tram ATAC',
+    desc:'Fermata bus ATAC a pochi passi dai Musei Vaticani e da Piazza San Pietro.',
+    badges:[{t:'ATAC',c:'verde'},{t:'Vaticano',c:'ocra'}],
+    lat:41.9034, lon:12.4566,
+    dest:'bus+atac+piazza+risorgimento+vaticano+Roma'
+  },
+  {
+    id:'bus-trastevere', tipo:'bus', emoji:'🚊',
+    nome:'Tram — Trastevere (Belli)',
+    cat:'Bus & Tram ATAC',
+    desc:'Fermata del tram 8, collega Trastevere al centro (Piazza Venezia).',
+    badges:[{t:'ATAC',c:'verde'},{t:'Tram 8',c:'cielo'}],
+    lat:41.8889, lon:12.4694,
+    dest:'tram+8+trastevere+belli+Roma'
+  },
+  {
+    id:'bus-colosseo', tipo:'bus', emoji:'🚌',
+    nome:'Bus — Colosseo',
+    cat:'Bus & Tram ATAC',
+    desc:'Fermata bus ATAC nei pressi del Colosseo e di Via dei Fori Imperiali.',
+    badges:[{t:'ATAC',c:'verde'},{t:'Colosseo',c:'ocra'}],
+    lat:41.8896, lon:12.4929,
+    dest:'bus+atac+colosseo+Roma'
+  },
+  {
+    id:'bus-navona', tipo:'bus', emoji:'🚌',
+    nome:'Bus — Corso Rinascimento',
+    cat:'Bus & Tram ATAC',
+    desc:'Fermata bus ATAC vicino a Piazza Navona e al Pantheon.',
+    badges:[{t:'ATAC',c:'verde'},{t:'Pantheon',c:'cielo'}],
+    lat:41.8978, lon:12.4748,
+    dest:'bus+atac+corso+rinascimento+navona+Roma'
+  },
+  {
+    id:'bus-spagna', tipo:'bus', emoji:'🚌',
+    nome:'Bus — Via del Tritone',
+    cat:'Bus & Tram ATAC',
+    desc:'Fermata bus ATAC tra Piazza di Spagna e Fontana di Trevi.',
+    badges:[{t:'ATAC',c:'verde'},{t:'Centro storico',c:'ocra'}],
+    lat:41.9013, lon:12.4839,
+    dest:'bus+atac+via+tritone+Roma'
+  },
+  {
+    id:'bus-repubblica', tipo:'bus', emoji:'🚌',
+    nome:'Bus — Piazza della Repubblica',
+    cat:'Bus & Tram ATAC',
+    desc:'Fermata bus ATAC in Piazza della Repubblica, vicino a Termini.',
+    badges:[{t:'ATAC',c:'verde'},{t:'Termini',c:'cielo'}],
+    lat:41.9018, lon:12.4955,
+    dest:'bus+atac+piazza+repubblica+Roma'
+  },
+  // ── BANCOMAT ──
+  {
+    id:'bancomat-termini', tipo:'bancomat', emoji:'🏦',
+    nome:'Bancomat — Stazione Termini',
+    cat:'Bancomat',
+    desc:'Sportelli bancomat all\'interno e nei pressi della Stazione Termini.',
+    badges:[{t:'H24',c:'ocra'},{t:'Stazione',c:'cielo'}],
+    lat:41.9012, lon:12.5015,
+    dest:'bancomat+stazione+termini+Roma'
+  },
+  {
+    id:'bancomat-spagna', tipo:'bancomat', emoji:'🏦',
+    nome:'Bancomat — Piazza di Spagna',
+    cat:'Bancomat',
+    desc:'Sportello bancomat nei pressi di Piazza di Spagna e Via Condotti.',
+    badges:[{t:'Centro storico',c:'ocra'}],
+    lat:41.9055, lon:12.4818,
+    dest:'bancomat+piazza+spagna+Roma'
+  },
+  {
+    id:'bancomat-pantheon', tipo:'bancomat', emoji:'🏦',
+    nome:'Bancomat — Pantheon',
+    cat:'Bancomat',
+    desc:'Sportello bancomat vicino al Pantheon e Piazza della Rotonda.',
+    badges:[{t:'Centro storico',c:'ocra'}],
+    lat:41.8986, lon:12.4768,
+    dest:'bancomat+pantheon+Roma'
+  },
+  {
+    id:'bancomat-navona', tipo:'bancomat', emoji:'🏦',
+    nome:'Bancomat — Piazza Navona',
+    cat:'Bancomat',
+    desc:'Sportello bancomat vicino a Piazza Navona.',
+    badges:[{t:'Centro storico',c:'ocra'}],
+    lat:41.8990, lon:12.4733,
+    dest:'bancomat+piazza+navona+Roma'
+  },
+  {
+    id:'bancomat-trevi', tipo:'bancomat', emoji:'🏦',
+    nome:'Bancomat — Fontana di Trevi',
+    cat:'Bancomat',
+    desc:'Sportello bancomat nei pressi della Fontana di Trevi.',
+    badges:[{t:'Turismo',c:'ocra'}],
+    lat:41.9007, lon:12.4830,
+    dest:'bancomat+fontana+trevi+Roma'
+  },
+  {
+    id:'bancomat-venezia', tipo:'bancomat', emoji:'🏦',
+    nome:'Bancomat — Piazza Venezia',
+    cat:'Bancomat',
+    desc:'Sportello bancomat in Piazza Venezia, cuore del centro storico.',
+    badges:[{t:'Centro storico',c:'ocra'}],
+    lat:41.8959, lon:12.4827,
+    dest:'bancomat+piazza+venezia+Roma'
+  },
+  {
+    id:'bancomat-campo-fiori', tipo:'bancomat', emoji:'🏦',
+    nome:'Bancomat — Campo de\' Fiori',
+    cat:'Bancomat',
+    desc:'Sportello bancomat vicino a Campo de\' Fiori.',
+    badges:[{t:'Centro storico',c:'ocra'}],
+    lat:41.8955, lon:12.4724,
+    dest:'bancomat+campo+de+fiori+Roma'
+  },
+  {
+    id:'bancomat-trastevere', tipo:'bancomat', emoji:'🏦',
+    nome:'Bancomat — Trastevere',
+    cat:'Bancomat',
+    desc:'Sportello bancomat in zona Trastevere, vicino a Piazza Santa Maria.',
+    badges:[{t:'Trastevere',c:'verde'}],
+    lat:41.8898, lon:12.4695,
+    dest:'bancomat+trastevere+Roma'
+  },
+  {
+    id:'bancomat-vaticano', tipo:'bancomat', emoji:'🏦',
+    nome:'Bancomat — San Pietro',
+    cat:'Bancomat',
+    desc:'Sportello bancomat nei pressi di Piazza San Pietro e Via della Conciliazione.',
+    badges:[{t:'Vaticano',c:'ocra'}],
+    lat:41.9024, lon:12.4592,
+    dest:'bancomat+piazza+san+pietro+Roma'
+  },
+  {
+    id:'bancomat-repubblica', tipo:'bancomat', emoji:'🏦',
+    nome:'Bancomat — Piazza della Repubblica',
+    cat:'Bancomat',
+    desc:'Sportello bancomat in Piazza della Repubblica.',
+    badges:[{t:'Termini',c:'cielo'}],
+    lat:41.9020, lon:12.4958,
+    dest:'bancomat+piazza+repubblica+Roma'
+  },
+  {
+    id:'bancomat-colosseo', tipo:'bancomat', emoji:'🏦',
+    nome:'Bancomat — Colosseo',
+    cat:'Bancomat',
+    desc:'Sportello bancomat nei pressi del Colosseo.',
+    badges:[{t:'Colosseo',c:'ocra'}],
+    lat:41.8900, lon:12.4925,
+    dest:'bancomat+colosseo+Roma'
+  },
+  {
+    id:'bancomat-barberini', tipo:'bancomat', emoji:'🏦',
+    nome:'Bancomat — Piazza Barberini',
+    cat:'Bancomat',
+    desc:'Sportello bancomat in Piazza Barberini, vicino a Via Veneto.',
+    badges:[{t:'Via Veneto',c:'cielo'}],
+    lat:41.9034, lon:12.4878,
+    dest:'bancomat+piazza+barberini+Roma'
+  },
+  {
+    id:'bancomat-san-giovanni', tipo:'bancomat', emoji:'🏦',
+    nome:'Bancomat — San Giovanni',
+    cat:'Bancomat',
+    desc:'Sportello bancomat in zona San Giovanni in Laterano.',
+    badges:[{t:'San Giovanni',c:'verde'}],
+    lat:41.8860, lon:12.5058,
+    dest:'bancomat+san+giovanni+Roma'
+  },
+  // ── UFFICI POSTALI ──
+  {
+    id:'poste-san-silvestro', tipo:'poste', emoji:'📮',
+    nome:'Poste — Piazza San Silvestro',
+    cat:'Uffici postali',
+    desc:'Storica sede centrale delle Poste Italiane a Roma, in Piazza San Silvestro.',
+    badges:[{t:'Sede storica',c:'ocra'},{t:'Centro storico',c:'cielo'}],
+    lat:41.9034, lon:12.4810,
+    dest:'poste+italiane+piazza+san+silvestro+Roma'
+  },
+  {
+    id:'poste-termini', tipo:'poste', emoji:'📮',
+    nome:'Poste — Stazione Termini',
+    cat:'Uffici postali',
+    desc:'Ufficio postale nei pressi della Stazione Termini.',
+    badges:[{t:'Stazione',c:'cielo'}],
+    lat:41.9001, lon:12.5034,
+    dest:'poste+italiane+stazione+termini+Roma'
+  },
+  {
+    id:'poste-trastevere', tipo:'poste', emoji:'📮',
+    nome:'Poste — Trastevere',
+    cat:'Uffici postali',
+    desc:'Ufficio postale in zona Trastevere.',
+    badges:[{t:'Trastevere',c:'verde'}],
+    lat:41.8893, lon:12.4701,
+    dest:'poste+italiane+trastevere+Roma'
+  },
+  {
+    id:'poste-vaticano', tipo:'poste', emoji:'📮',
+    nome:'Poste — Borgo Pio (Vaticano)',
+    cat:'Uffici postali',
+    desc:'Ufficio postale nei pressi del Vaticano, zona Borgo Pio.',
+    badges:[{t:'Vaticano',c:'ocra'}],
+    lat:41.9038, lon:12.4583,
+    dest:'poste+italiane+borgo+pio+vaticano+Roma'
+  },
+  {
+    id:'poste-pantheon', tipo:'poste', emoji:'📮',
+    nome:'Poste — Pantheon / Campo Marzio',
+    cat:'Uffici postali',
+    desc:'Ufficio postale in zona Campo Marzio, vicino al Pantheon.',
+    badges:[{t:'Centro storico',c:'cielo'}],
+    lat:41.9001, lon:12.4789,
+    dest:'poste+italiane+campo+marzio+pantheon+Roma'
+  },
+  {
+    id:'poste-esquilino', tipo:'poste', emoji:'📮',
+    nome:'Poste — Esquilino',
+    cat:'Uffici postali',
+    desc:'Ufficio postale in zona Esquilino, vicino a Santa Maria Maggiore.',
+    badges:[{t:'Esquilino',c:'verde'}],
+    lat:41.8957, lon:12.5009,
+    dest:'poste+italiane+esquilino+Roma'
+  },
+  {
+    id:'poste-san-giovanni', tipo:'poste', emoji:'📮',
+    nome:'Poste — San Giovanni',
+    cat:'Uffici postali',
+    desc:'Ufficio postale in zona San Giovanni in Laterano.',
+    badges:[{t:'San Giovanni',c:'verde'}],
+    lat:41.8852, lon:12.5070,
+    dest:'poste+italiane+san+giovanni+Roma'
+  },
+  {
+    id:'poste-prati', tipo:'poste', emoji:'📮',
+    nome:'Poste — Prati',
+    cat:'Uffici postali',
+    desc:'Ufficio postale in zona Prati, vicino a Piazza Cavour.',
+    badges:[{t:'Prati',c:'cielo'}],
+    lat:41.9069, lon:12.4677,
+    dest:'poste+italiane+prati+Roma'
+  },
+  {
+    id:'poste-monti', tipo:'poste', emoji:'📮',
+    nome:'Poste — Monti',
+    cat:'Uffici postali',
+    desc:'Ufficio postale in zona Monti, vicino a Via Nazionale.',
+    badges:[{t:'Monti',c:'ocra'}],
+    lat:41.8967, lon:12.4881,
+    dest:'poste+italiane+monti+Roma'
+  },
   // ── AGENZIE VIAGGIO ──
   {
     id:'agenzia-1', tipo:'agenzia', emoji:'✈️',
@@ -877,6 +1783,10 @@ function getPoiTradotto(poi) {
 // ═══════════════════════════════════════════════
 let map, userMarker, userLat, userLon;
 let poiSelezionato = null;
+// Stack di navigazione semplice: ogni voce è { vista: 'lista'|'scheda', dati: {...} }.
+// "← Indietro" fa semplicemente il pop dell'ultima voce e mostra quella
+// precedente; se lo stack è vuoto, esce verso index.html.
+let navStack = [];
 let filtroAttivo   = 'tutti';
 let markers        = {};
 let lineaRetta = null;
@@ -899,10 +1809,10 @@ function initMappa(lat, lon) {
     attributionControl: true
   });
 
-  // Tile OpenStreetMap — stile scuro per contrasto
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution:'© <a href="https://www.openstreetmap.org/copyright">OSM</a> © <a href="https://carto.com/">CARTO</a>',
-    subdomains:'abcd', maxZoom:19
+  // Tile OpenStreetMap standard — più contrasto, leggibile anche sotto sole forte
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+    subdomains:'abc', maxZoom:19
   }).addTo(map);
 
   // Marker utente
@@ -922,19 +1832,11 @@ function initMappa(lat, lon) {
     fillColor:'rgba(34,160,80,.05)', fillOpacity:1, weight:1.5
   }).addTo(map);
 
-  // Aggiungi solo il POI più vicino per ogni tipo/categoria
-  const tipi = [...new Set(POIS.map(p => p.tipo))];
-  tipi.forEach(function(tipo) {
-    const delTipo = POIS.filter(p => p.tipo === tipo);
-    // Ordina per distanza dall'utente
-    delTipo.sort(function(a, b) {
-      return haversine(lat, lon, a.lat, a.lon) - haversine(lat, lon, b.lat, b.lon);
-    });
-    // Aggiungi solo il più vicino
-    if (delTipo.length > 0) addMarker(delTipo[0]);
-  });
   // Salva tutti i POI per uso futuro nei filtri
   window._tuttiPOI = POIS;
+
+  // Mappa pulita all'avvio: nessun pannello aperto, l'utente sceglie
+  // quale categoria esplorare dalla griglia dei filtri in basso.
 
   // Ricalcola anti-collisione marker su zoom/pan, e al primo render
   map.on('zoomend moveend', risolviCollisioniMarker);
@@ -994,10 +1896,14 @@ function calcolaLarghezzaMarker(label) {
 function addMarker(poi) {
   const colClass = poi.id === 'nasoni' ? 'marker-acqua' :
     poi.id === 'papa' ? 'marker-papa' :
+    poi.id.startsWith('presa-') ? 'marker-presa' :
     poi.tipo === 'pubblico' ? 'marker-pubblico' : 
     poi.tipo === 'bagni' ? 'marker-bagni' : 
     poi.tipo === 'taxi' ? 'marker-taxi' :
     poi.tipo === 'metro' ? 'marker-metro' :
+    poi.tipo === 'bus' ? 'marker-bus' :
+    poi.tipo === 'bancomat' ? 'marker-bancomat' :
+    poi.tipo === 'poste' ? 'marker-poste' :
     poi.tipo === 'agenzia' ? 'marker-agenzia' : 'marker-iconico';
   const label = getMarkerLabel(poi);
   // FIX overlap marker su mobile: iconSize:[null,36] lasciava a Leaflet
@@ -1015,7 +1921,7 @@ function addMarker(poi) {
     iconSize:[estWidth, 36], iconAnchor:[estWidth/2, 36], className:''
   });
   const m = L.marker([poi.lat, poi.lon], {icon}).addTo(map);
-  m.on('click', () => apriSheet(poi));
+  m.on('click', () => { navStack = []; apriSheet(poi); });
   markers[poi.id] = {marker:m, poi};
 }
 
@@ -1028,10 +1934,14 @@ function refreshMarkerLabels() {
     const poi = entry.poi;
     const colClass = poi.id === 'nasoni' ? 'marker-acqua' :
       poi.id === 'papa' ? 'marker-papa' :
+      poi.id.startsWith('presa-') ? 'marker-presa' :
       poi.tipo === 'pubblico' ? 'marker-pubblico' :
       poi.tipo === 'bagni' ? 'marker-bagni' :
       poi.tipo === 'taxi' ? 'marker-taxi' :
       poi.tipo === 'metro' ? 'marker-metro' :
+      poi.tipo === 'bus' ? 'marker-bus' :
+      poi.tipo === 'bancomat' ? 'marker-bancomat' :
+      poi.tipo === 'poste' ? 'marker-poste' :
       poi.tipo === 'agenzia' ? 'marker-agenzia' : 'marker-iconico';
     const label = getMarkerLabel(poi);
     const estWidth = calcolaLarghezzaMarker(label);
@@ -1170,8 +2080,9 @@ function apriSheet(poiOriginale) {
     const distTxt = distM < 1000 ? Math.round(distM) + ' m' : (distM/1000).toFixed(1) + ' km';
     distMarker = L.marker([midLat, midLon], {
       icon: L.divIcon({
-        className: '',
+        className: 'dist-badge-icon',
         html: '<div style="background:#fff;color:#1A4A9F;font-size:18px;font-weight:800;padding:8px 20px;border-radius:12px;border:3px solid #1A4A9F;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.35);letter-spacing:.02em;">↔ ' + distTxt + '</div>',
+        iconSize: null,
         iconAnchor: [55, 20]
       }),
       interactive: false
@@ -1185,6 +2096,42 @@ function chiudiSheet() {
   poiSelezionato = null;
   if (lineaRetta) { map.removeLayer(lineaRetta); lineaRetta = null; }
   if (distMarker) { map.removeLayer(distMarker); distMarker = null; }
+}
+
+// Bottone "← Indietro" della topbar: usa lo stack di navigazione
+// (navStack). Se c'è una scheda POI aperta, la chiude e fa il pop
+// dell'ultima vista nello stack (es. la lista da cui veniva). Se lo
+// stack è vuoto, semplicemente esce verso index.html.
+function gestisciIndietro() {
+  if (poiSelezionato) {
+    chiudiSheet();
+    const precedente = navStack.pop();
+    if (precedente && precedente.vista === 'lista') {
+      apriListaCategoria(precedente.tipo, precedente.lista, precedente.meta);
+    } else if (precedente && precedente.vista === 'menu-pubblico') {
+      apriMenuSottoservizi(window._tuttiPOI || POIS);
+    }
+    return false;
+  }
+
+  if (document.getElementById('cat-list-panel').classList.contains('open')) {
+    const precedente = navStack.pop();
+    if (precedente && precedente.vista === 'menu-pubblico') {
+      apriMenuSottoservizi(window._tuttiPOI || POIS);
+      return false;
+    }
+    document.getElementById('cat-list-panel').classList.remove('open');
+    document.querySelectorAll('.filtro').forEach(b => b.classList.remove('active','active-ocra'));
+    filtroAttivo = null;
+    Object.values(markers).forEach(({marker}) => {
+      if (map.hasLayer(marker)) map.removeLayer(marker);
+    });
+    markers = {};
+    return false; // torna alla mappa, pulita
+  }
+
+  window.location.href = 'index.html';
+  return false;
 }
 
 // ═══════════════════════════════════════════════
@@ -1207,8 +2154,36 @@ function portaMiQui() {
 // ═══════════════════════════════════════════════
 // FILTRI
 // ═══════════════════════════════════════════════
+// Categorie che, una volta filtrate, mostrano una LISTA verticale
+// ordinata per distanza invece di marker sparsi sulla mappa —
+// più leggibile quando ci sono molti POI vicini tra loro (bancomat,
+// poste, fermate bus/taxi/metro, agenzie).
+const CATEGORIE_LISTA = ['iconico', 'bancomat', 'poste', 'bus', 'taxi', 'metro', 'agenzia'];
+
+const META_CATEGORIE_LISTA = {
+  iconico:  { emoji:'🛍', titolo:'Luoghi iconici' },
+  bancomat: { emoji:'🏦', titolo:'Bancomat' },
+  poste:    { emoji:'📮', titolo:'Uffici postali' },
+  bus:      { emoji:'🚌', titolo:'Bus & Tram' },
+  taxi:     { emoji:'🚕', titolo:'Taxi' },
+  metro:    { emoji:'🚇', titolo:'Metro' },
+  agenzia:  { emoji:'✈️', titolo:'Agenzie viaggio' }
+};
+
+// "Servizi pubblici" ha un livello in più: cliccando il filtro si apre
+// prima un MENU di sotto-servizi (Nasoni, Prese elettriche, WiFi, Bagni),
+// e solo cliccando una di queste righe si apre la lista vera e propria
+// dei punti specifici di quel sotto-servizio, ordinata per distanza.
+const SOTTOSERVIZI_PUBBLICO = [
+  { id:'nasoni',  emoji:'💧', titolo:'Nasoni',           match: p => p.tipo === 'pubblico' && (p.id === 'nasoni' || p.id.startsWith('nasone-')) },
+  { id:'presa',   emoji:'🔌', titolo:'Prese elettriche', match: p => p.tipo === 'pubblico' && p.id.startsWith('presa-') },
+  { id:'wifi',    emoji:'📶', titolo:'WiFi pubblico',    match: p => p.tipo === 'pubblico' && p.id === 'wifi' },
+  { id:'bagni',   emoji:'🚻', titolo:'Bagni pubblici',   match: p => p.tipo === 'bagni' }
+];
+
 function filtra(tipo, btn) {
   filtroAttivo = tipo;
+  navStack = [];
   document.querySelectorAll('.filtro').forEach(b => {
     b.classList.remove('active','active-ocra');
   });
@@ -1219,8 +2194,23 @@ function filtra(tipo, btn) {
     if (map.hasLayer(marker)) map.removeLayer(marker);
   });
   markers = {};
+  chiudiSheet();
 
   const allPOI = window._tuttiPOI || POIS;
+
+  if (tipo === 'pubblico') {
+    chiudiListaCategoria(true);
+    apriMenuSottoservizi(allPOI);
+    return;
+  }
+
+  if (CATEGORIE_LISTA.includes(tipo)) {
+    chiudiListaCategoria(true);
+    apriListaCategoria(tipo, allPOI.filter(p => p.tipo === tipo));
+    return;
+  }
+
+  chiudiListaCategoria(true);
 
   if (tipo === 'tutti') {
     // Mostra solo il più vicino per ogni tipo
@@ -1239,7 +2229,119 @@ function filtra(tipo, btn) {
   }
 
   setTimeout(risolviCollisioniMarker, 50);
-  chiudiSheet();
+}
+
+// ═══════════════════════════════════════════════
+// PANNELLO LISTA CATEGORIA
+// ═══════════════════════════════════════════════
+function apriListaCategoria(tipo, poiList, metaCustom) {
+  const meta = metaCustom || META_CATEGORIE_LISTA[tipo] || { emoji:'📍', titolo:tipo };
+
+  // Ordina per distanza crescente dal pin utente
+  const ordinati = poiList.slice().sort(function(a, b) {
+    if (!userLat) return 0;
+    return haversine(userLat, userLon, a.lat, a.lon) - haversine(userLat, userLon, b.lat, b.lon);
+  });
+
+  document.getElementById('cl-emoji').textContent = meta.emoji;
+  document.getElementById('cl-titolo').textContent = meta.titolo;
+  document.getElementById('cl-count').textContent = ordinati.length;
+
+  const body = document.getElementById('cl-body');
+  body.innerHTML = ordinati.map(function(poiOriginale) {
+    const poi = getPoiTradotto(poiOriginale);
+    const distTxt = userLat
+      ? formatDist(haversine(userLat, userLon, poi.lat, poi.lon))
+      : '—';
+    return '<div class="cat-list-row" onclick="selezionaDaLista(\'' + poiOriginale.id + '\')">' +
+      '<div class="cat-list-emoji">' + poi.emoji + '</div>' +
+      '<div class="cat-list-info">' +
+        '<div class="cat-list-nome">' + poi.nome + '</div>' +
+        '<div class="cat-list-sub">' + poi.cat + '</div>' +
+      '</div>' +
+      '<div class="cat-list-dist">' + distTxt + '</div>' +
+    '</div>';
+  }).join('');
+
+  document.getElementById('cat-list-panel').classList.add('open');
+}
+
+// Menu intermedio per "Servizi pubblici": mostra le sotto-categorie
+// (Nasoni, Prese elettriche, WiFi, Bagni) come righe cliccabili,
+// ognuna con il conteggio dei punti disponibili. Cliccando una riga
+// si apre la lista vera e propria di quel sotto-servizio.
+function apriMenuSottoservizi(allPOI) {
+  document.getElementById('cl-emoji').textContent = '💧';
+  document.getElementById('cl-titolo').textContent = 'Servizi pubblici';
+  document.getElementById('cl-count').textContent = allPOI.filter(p => p.tipo === 'pubblico' || p.tipo === 'bagni').length;
+
+  const body = document.getElementById('cl-body');
+  body.innerHTML = SOTTOSERVIZI_PUBBLICO.map(function(sotto) {
+    const n = allPOI.filter(sotto.match).length;
+    return '<div class="cat-list-row" onclick="apriSottoservizio(\'' + sotto.id + '\')">' +
+      '<div class="cat-list-emoji">' + sotto.emoji + '</div>' +
+      '<div class="cat-list-info">' +
+        '<div class="cat-list-nome">' + sotto.titolo + '</div>' +
+      '</div>' +
+      '<div class="cat-list-dist">' + n + '</div>' +
+    '</div>';
+  }).join('');
+
+  document.getElementById('cat-list-panel').classList.add('open');
+}
+
+function apriSottoservizio(sottoId) {
+  const sotto = SOTTOSERVIZI_PUBBLICO.find(s => s.id === sottoId);
+  if (!sotto) return;
+  const allPOI = window._tuttiPOI || POIS;
+  // Metto sullo stack il menu sotto-servizi da cui arrivo, così
+  // "← Indietro" dalla lista torna al menu, non dritto alla mappa.
+  navStack.push({ vista: 'menu-pubblico' });
+  apriListaCategoria(sotto.id, allPOI.filter(sotto.match), { emoji: sotto.emoji, titolo: sotto.titolo });
+}
+
+function chiudiListaCategoria(senzaResetFiltro) {
+  document.getElementById('cat-list-panel').classList.remove('open');
+  navStack = [];
+  if (!senzaResetFiltro) {
+    // Torna alla mappa pulita, nessun filtro evidenziato come attivo —
+    // l'utente sceglie di nuovo quale categoria esplorare.
+    document.querySelectorAll('.filtro').forEach(b => b.classList.remove('active','active-ocra'));
+    filtroAttivo = null;
+    Object.values(markers).forEach(({marker}) => {
+      if (map.hasLayer(marker)) map.removeLayer(marker);
+    });
+    markers = {};
+  }
+}
+
+function selezionaDaLista(poiId) {
+  const allPOI = window._tuttiPOI || POIS;
+  const poi = allPOI.find(p => p.id === poiId);
+  if (!poi) return;
+
+  // Se il POI appartiene a un sotto-servizio di "pubblico" (nasoni,
+  // prese, wifi, bagni), rimetto nello stack la lista di QUEL
+  // sotto-servizio specifico, non l'intero tipo:'pubblico' mescolato.
+  const sottoServizio = SOTTOSERVIZI_PUBBLICO.find(s => s.match(poi));
+  if (sottoServizio) {
+    navStack.push({
+      vista: 'lista',
+      tipo: sottoServizio.id,
+      lista: allPOI.filter(sottoServizio.match),
+      meta: { emoji: sottoServizio.emoji, titolo: sottoServizio.titolo }
+    });
+  } else {
+    // Prima di aprire la scheda, metto sullo stack la vista "lista" da
+    // cui arrivo, così "← Indietro" sa di doverci tornare.
+    navStack.push({ vista: 'lista', tipo: poi.tipo, lista: allPOI.filter(p => p.tipo === poi.tipo) });
+  }
+
+  document.getElementById('cat-list-panel').classList.remove('open');
+  // Assicura che il marker di questo POI sia presente sulla mappa
+  // (necessario perché apriSheet/panTo si aspettano la mappa pronta)
+  if (!markers[poi.id]) addMarker(poi);
+  apriSheet(poi);
 }
 
 // ═══════════════════════════════════════════════
@@ -1287,6 +2389,7 @@ document.getElementById('poi-sheet').addEventListener('touchend', e => {
 
 startGPS();
 applyI18nDOMServizi();
+
 window.addEventListener('storage', function() {
   applyI18nDOMServizi();
   syncLangSwitchDisplay(localStorage.getItem('it_lang') || 'it');
