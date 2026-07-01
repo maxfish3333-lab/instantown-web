@@ -292,8 +292,8 @@ footer a:hover{color:var(--ocra-l);}
 
 <!-- LANGUAGE BAR -->
 <div id="lang-bar" style="position:fixed;top:0;left:0;right:0;z-index:1000;background:#1C1410;border-bottom:1px solid rgba(200,134,10,.2);padding:7px 32px;display:flex;align-items:center;gap:6px;">
-  <img src="Nuovo_logo_3_diss.png" style="width:28px;height:28px;border-radius:5px;margin-right:8px;flex-shrink:0;" onerror="this.style.display='none'">
-  <span style="font-size:10px;letter-spacing:.14em;color:rgba(255,255,255,.35);text-transform:uppercase;margin-right:8px;">Lingua</span>
+  <img src="Nuovo_logo_3_diss.png" style="width:60px;height:60px;border-radius:10px;margin-right:8px;flex-shrink:0;" onerror="this.style.display='none'">
+
   <button onclick="applyLang('it')" class="lbtn active" data-lang="it"><img src="https://flagcdn.com/16x12/it.png" width="16" height="12" alt="IT" style="vertical-align:middle;margin-right:4px;border-radius:2px;"> IT</button>
   <button onclick="applyLang('en')" class="lbtn" data-lang="en"><img src="https://flagcdn.com/16x12/gb.png" width="16" height="12" alt="EN" style="vertical-align:middle;margin-right:4px;border-radius:2px;"> EN</button>
   <button onclick="applyLang('zh')" class="lbtn" data-lang="zh"><img src="https://flagcdn.com/16x12/cn.png" width="16" height="12" alt="ZH" style="vertical-align:middle;margin-right:4px;border-radius:2px;"> 中文</button>
@@ -500,14 +500,23 @@ footer a:hover{color:var(--ocra-l);}
       <div style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ocra-l);margin-bottom:10px;">COME FUNZIONA · HOW IT WORKS · 如何运作 · CÓMO FUNCIONA</div>
       <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(26px,3.5vw,40px);font-weight:600;color:#fff;">INSTANTOWN in 4 scene</h2>
     </div>
-    <div class="comic-panel" data-langs="it,en,fr">
-      <img src="Fumetto_inglese.png" alt="INSTANTOWN — Come funziona" style="width:100%;border-radius:12px;box-shadow:0 4px 32px rgba(0,0,0,.4);display:block;">
+    <div class="comic-panel" data-langs="it">
+      <img src="fumettto_italiano.png" alt="INSTANTOWN — Come funziona" style="width:100%;border-radius:12px;box-shadow:0 4px 32px rgba(0,0,0,.4);display:block;">
+    </div>
+    <div class="comic-panel" data-langs="en" style="display:none;">
+      <img src="Fumetto_inglese.png" alt="INSTANTOWN — How it works" style="width:100%;border-radius:12px;box-shadow:0 4px 32px rgba(0,0,0,.4);display:block;">
+    </div>
+    <div class="comic-panel" data-langs="fr" style="display:none;">
+      <img src="fumettto_francese.png" alt="INSTANTOWN — Comment ça marche" style="width:100%;border-radius:12px;box-shadow:0 4px 32px rgba(0,0,0,.4);display:block;">
     </div>
     <div class="comic-panel" data-langs="zh" style="display:none;">
-      <img src="Fumetto_Cinese.png" alt="INSTANTOWN — 瞬城" style="width:100%;border-radius:12px;box-shadow:0 4px 32px rgba(0,0,0,.4);display:block;">
+      <img src="fumettto_cinese.png" alt="INSTANTOWN — 瞬城" style="width:100%;border-radius:12px;box-shadow:0 4px 32px rgba(0,0,0,.4);display:block;">
     </div>
     <div class="comic-panel" data-langs="es" style="display:none;">
-      <img src="Fumetto_Spagnolo.png" alt="INSTANTOWN — Cómo funciona" style="width:100%;border-radius:12px;box-shadow:0 4px 32px rgba(0,0,0,.4);display:block;">
+      <img src="fumettto_spagnolo.png" alt="INSTANTOWN — Cómo funciona" style="width:100%;border-radius:12px;box-shadow:0 4px 32px rgba(0,0,0,.4);display:block;">
+    </div>
+    <div class="comic-panel" data-langs="de" style="display:none;">
+      <img src="Fumetto_Tedesco.png" alt="INSTANTOWN — Wie es funktioniert" style="width:100%;border-radius:12px;box-shadow:0 4px 32px rgba(0,0,0,.4);display:block;">
     </div>
   </div>
 </section>
