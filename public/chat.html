@@ -195,6 +195,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--ink);
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBez4L85HA1__NPKOzagfmKeoGLniIQeAc",
@@ -208,6 +209,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 let currentTX = null;
 let unsubscribe = null;
@@ -679,6 +681,18 @@ window.accediConEmail = async function() {
       console.log('DEBUG-LOGIN: ramo VERIFICATO - nascondo email-login-screen ed entro in chat');
       // Account già attivo: accesso immediato, niente attesa email.
       localStorage.setItem('it_email', email);
+
+      // ── Firebase Auth silenzioso ──
+      // Password derivata dall'email (stabile, non serve che l'utente la conosca)
+      const fbPassword = 'IT_' + btoa(email).replace(/[^a-zA-Z0-9]/g,'').substring(0,20);
+      try {
+        await signInWithEmailAndPassword(auth, email, fbPassword);
+      } catch(authErr) {
+        if (authErr.code === 'auth/user-not-found' || authErr.code === 'auth/invalid-credential') {
+          try { await createUserWithEmailAndPassword(auth, email, fbPassword); } catch(e) {}
+        }
+      }
+
       document.getElementById('email-login-screen').style.display = 'none';
       console.log('DEBUG-LOGIN: display dopo set =', document.getElementById('email-login-screen').style.display);
       mostraLoginTxOAutoEntra();

@@ -176,6 +176,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--ink);
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, getDocs, doc, updateDoc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBez4L85HA1__NPKOzagfmKeoGLniIQeAc",
@@ -189,6 +190,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
 
 let negozioCorrente = null;
@@ -245,6 +247,19 @@ window.accediDashboard = async function() {
     negozioLat = trovato.lat;
     negozioLon = trovato.lon;
     document.getElementById('header-negozio').textContent = trovato.nome;
+
+    // ── Firebase Auth silenzioso per esercente ──
+    // Email sintetica basata sul PIN, invisibile all'utente
+    const fbEmail = 'pin' + pin + '@instantown.internal';
+    const fbPassword = 'IT_ESE_' + pin + '_2025';
+    try {
+      await signInWithEmailAndPassword(auth, fbEmail, fbPassword);
+    } catch(authErr) {
+      if (authErr.code === 'auth/user-not-found' || authErr.code === 'auth/invalid-credential') {
+        try { await createUserWithEmailAndPassword(auth, fbEmail, fbPassword); } catch(e) {}
+      }
+    }
+
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('dashboard').style.display = 'flex';
 
