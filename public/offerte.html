@@ -540,7 +540,7 @@ function applyI18nDOM() {
 <!-- LEGENDA COLORI DISTANZA — visibile solo quando GPS attivo -->
 <div id="legenda-distanza" style="display:none;padding:6px 16px;background:linear-gradient(90deg,rgba(26,122,58,.15) 0%,transparent 100%);border-bottom:1px solid rgba(26,122,58,.12);font-size:11px;color:#1A7A3A;display:flex;align-items:center;gap:8px;">
   <span>🟢</span>
-  <span>Il colore verde indica le offerte migliori secondo il filtro attivo — segui i colori</span>
+  <span id="legenda-testo">Le prime 5 offerte più rilevanti sono evidenziate in verde</span>
   <span style="display:flex;gap:3px;margin-left:4px;">
     <span style="width:12px;height:12px;border-radius:50%;background:rgba(26,122,58,.22);display:inline-block;"></span>
     <span style="width:12px;height:12px;border-radius:50%;background:rgba(26,122,58,.16);display:inline-block;"></span>
@@ -837,9 +837,6 @@ function renderLista() {
     return;
   }
   calcolaRankingDistanza(filtrate);
-  const leg = document.getElementById('legenda-distanza');
-  if (leg && filtrate.length >= 2) leg.style.display = 'flex';
-  else if (leg) leg.style.display = 'none';
   container.innerHTML = `<div class="offerte-grid">${filtrate.map(renderCard).join('')}</div>`;
 }
 
@@ -849,10 +846,24 @@ window._distRankColor = {};
 function calcolaRankingDistanza(offerte) {
   window._distRankColor = {};
 
-  // Mostra legenda se GPS attivo o se c'è un criterio di ordinamento attivo
+  // Mostra legenda con testo specifico per il filtro attivo
   const leg = document.getElementById('legenda-distanza');
-  if (leg && (window._userLat || ordinaCriterio !== 'nessuno' || ordinaCerca.trim())) {
+  const legendaTesto = document.getElementById('legenda-testo');
+  if (leg && offerte.length >= 2) {
     leg.style.display = 'flex';
+    if (legendaTesto) {
+      const testi = {
+        distanza: '🚶 Verde = più vicine a te — la più scura è la più vicina',
+        prezzo:   '💰 Verde = prezzo più basso — la più scura è la più conveniente',
+        scadenza: '⏱ Verde = scadono prima — agisci subito su quelle più scure',
+        nessuno:  '🟢 Le prime 5 offerte più rilevanti sono evidenziate in verde'
+      };
+      legendaTesto.textContent = testi[ordinaCriterio] || (ordinaCerca.trim()
+        ? `🔍 Risultati per "${ordinaCerca}" — i primi 5 in verde`
+        : testi.nessuno);
+    }
+  } else if (leg) {
+    leg.style.display = 'none';
   }
 
   // Colora sempre le prime 5 della lista (qualunque sia l'ordine attivo)
