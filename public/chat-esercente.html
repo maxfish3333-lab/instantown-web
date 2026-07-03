@@ -210,38 +210,19 @@ window.accediDashboard = async function() {
   btn.disabled = true;
 
   try {
-    // Verifica PIN nel Google Sheet tab anagrafica
-    const SHEET_ID = '1m5ovESlhcbVwafN3EOpuYpWUGm1tbH6CtNPTBNZZrOI';
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=anagrafica_negozi`;
-    const res = await fetch(url);
-    const text = await res.text();
-    const json = JSON.parse(text.substring(47).slice(0,-2));
-    const cols = json.table.cols.map(c => c.label.toLowerCase().trim());
-    const pinIdx = cols.findIndex(c => c.includes('pin'));
-    const nomeIdx = cols.findIndex(c => c.includes('nome'));
-    const latIdx = cols.findIndex(c => c.includes('lat'));
-    const lonIdx = cols.findIndex(c => c.includes('lon'));
+    // Verifica PIN tramite Apps Script (evita problemi CORS con gviz/tq)
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
+    const res = await fetch(`${APPS_SCRIPT_URL}?azione=verificaPin&pin=${encodeURIComponent(pin)}`);
+    const risposta = await res.json();
 
-    let trovato = null;
-    for (const row of json.table.rows) {
-      if (!row.c[pinIdx]) continue;
-      const val = (row.c[pinIdx].v || '').toString().trim();
-      if (val === pin) {
-        trovato = {
-          nome: row.c[nomeIdx] ? row.c[nomeIdx].v : 'Negozio',
-          lat: latIdx >= 0 && row.c[latIdx] ? parseFloat(row.c[latIdx].v) : null,
-          lon: lonIdx >= 0 && row.c[lonIdx] ? parseFloat(row.c[lonIdx].v) : null
-        };
-        break;
-      }
-    }
-
-    if (!trovato) {
+    if (risposta.stato !== 'ok' || !risposta.negozio) {
       document.getElementById('login-error').style.display = 'block';
       btn.innerHTML = 'Accedi →';
       btn.disabled = false;
       return;
     }
+
+    const trovato = risposta.negozio;
 
     negozioCorrente = trovato.nome;
     negozioLat = trovato.lat;
@@ -328,15 +309,18 @@ function caricaRichiesteReverseCompatibili() {
       const dist = haversine(negozioLat, negozioLon, r.lat, r.lon);
       if (dist > r.raggio) return;
       count++;
+      const notti = r.notti || 1;
       const card = document.createElement('div');
       card.className = 'richiesta-card';
       card.innerHTML = `
-        <div class="richiesta-card-budget">Budget max € ${r.budgetMax.toFixed(2)}</div>
-        <div class="richiesta-card-dist">~${Math.round(dist)}m di distanza</div>
-        ${r.note ? `<div class="richiesta-card-note">${r.note}</div>` : ''}
+        <div class="richiesta-card-budget">💰 Budget max € ${r.budgetMax.toFixed(2)}/notte · ${notti} nott${notti===1?'e':'i'}</div>
+        <div class="richiesta-card-dist">📍 ~${Math.round(dist)}m di distanza</div>
+        ${r.note ? `<div class="richiesta-card-note">📝 ${r.note}</div>` : ''}
+        <div class="richiesta-card-totale" id="rev-totale-${richDoc.id}" style="font-size:11px;color:rgba(28,20,16,.5);margin-bottom:6px;display:none;">Totale: € <span id="rev-tot-val-${richDoc.id}">0.00</span></div>
         <div class="richiesta-propose-row" id="rev-form-${richDoc.id}">
-          <input type="number" class="richiesta-input" id="rev-prezzo-${richDoc.id}" placeholder="0.00" step="1">
-          <button class="richiesta-propose-btn" onclick="inviaPropostaHotel('${richDoc.id}')">Proponi</button>
+          <input type="number" class="richiesta-input" id="rev-prezzo-${richDoc.id}" placeholder="€/notte" step="1"
+            oninput="aggiornaTotale('${richDoc.id}', ${notti})">
+          <button class="richiesta-propose-btn" onclick="inviaPropostaHotel('${richDoc.id}', ${notti})">Proponi →</button>
         </div>
       `;
       list.appendChild(card);
@@ -345,16 +329,37 @@ function caricaRichiesteReverseCompatibili() {
   });
 }
 
-window.inviaPropostaHotel = async function(richiestaId) {
+function aggiornaTotale(richiestaId, notti) {
   const input = document.getElementById('rev-prezzo-' + richiestaId);
-  const prezzo = parseFloat(input.value);
-  if (!prezzo || prezzo <= 0 || !negozioCorrente) return;
+  const totaleDiv = document.getElementById('rev-totale-' + richiestaId);
+  const totaleVal = document.getElementById('rev-tot-val-' + richiestaId);
+  const prezzo = parseFloat(input.value) || 0;
+  if (prezzo > 0 && notti > 1) {
+    totaleDiv.style.display = 'block';
+    totaleVal.textContent = (prezzo * notti).toFixed(2);
+  } else {
+    totaleDiv.style.display = 'none';
+  }
+}
+
+window.inviaPropostaHotel = async function(richiestaId, notti) {
+  const input = document.getElementById('rev-prezzo-' + richiestaId);
+  const prezzoNotte = parseFloat(input.value);
+  if (!prezzoNotte || prezzoNotte <= 0 || !negozioCorrente) return;
+  const totale = prezzoNotte * (notti || 1);
   try {
     await addDoc(collection(db, 'richieste-reverse', richiestaId, 'proposte'), {
-      hotelNome: negozioCorrente, prezzo, stato: 'in_attesa', ts: serverTimestamp()
+      hotelNome: negozioCorrente,
+      prezzoNotte,
+      notti: notti || 1,
+      totale,
+      stato: 'in_attesa',
+      ts: serverTimestamp()
     });
     const formRow = document.getElementById('rev-form-' + richiestaId);
-    if (formRow) formRow.innerHTML = `<span class="richiesta-inviata">✓ Proposta di € ${prezzo.toFixed(2)} inviata</span>`;
+    const totaleDiv = document.getElementById('rev-totale-' + richiestaId);
+    if (totaleDiv) totaleDiv.style.display = 'none';
+    if (formRow) formRow.innerHTML = `<span class="richiesta-inviata">✓ Proposta inviata: € ${prezzoNotte.toFixed(2)}/notte${notti > 1 ? ' · Totale € ' + totale.toFixed(2) : ''}</span>`;
   } catch(e) { console.error(e); }
 };
 

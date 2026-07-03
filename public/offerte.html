@@ -61,7 +61,7 @@ nav{background:var(--ink);padding:13px 32px;display:flex;align-items:center;just
 main{max-width:1000px;margin:0 auto;padding:24px 32px 80px;}
 
 .stats-bar{display:flex;gap:16px;margin-bottom:22px;flex-wrap:wrap;}
-.stat{background:#fff;border:1px solid var(--rule);border-radius:4px;padding:10px 18px;}
+.stat{background:#D4E8D4;border:1.5px solid #8AB88A;border-radius:4px;padding:10px 18px;}
 .stat-num{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:var(--rosso);line-height:1;}
 .stat-lbl{font-size:10px;color:var(--ink-mu);letter-spacing:.06em;text-transform:uppercase;margin-top:2px;}
 
@@ -77,6 +77,7 @@ main{max-width:1000px;margin:0 auto;padding:24px 32px 80px;}
 .pill-scaduta{background:#f1f1f1;color:#999;}
 .pill-cat{font-size:10px;font-weight:500;padding:3px 9px;border-radius:20px;background:var(--ocra-p);color:var(--ocra);}
 .pill-raggio{font-size:10px;color:var(--cielo);border:1px solid rgba(74,144,196,.25);padding:3px 9px;border-radius:20px;}
+.pill-dist{font-size:10px;color:#1A7A3A;border:1px solid rgba(26,122,58,.3);padding:3px 9px;border-radius:20px;font-weight:600;}
 .card-desc{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:5px;line-height:1.4;text-transform:capitalize;}
 .card-addr{font-size:11.5px;color:var(--ink-mu);}
 .card-prezzi{display:flex;align-items:baseline;gap:8px;margin-top:12px;}
@@ -536,6 +537,19 @@ function applyI18nDOM() {
   </div>
 </div>
 
+<!-- LEGENDA COLORI DISTANZA — visibile solo quando GPS attivo -->
+<div id="legenda-distanza" style="display:none;padding:6px 16px;background:linear-gradient(90deg,rgba(26,122,58,.15) 0%,transparent 100%);border-bottom:1px solid rgba(26,122,58,.12);font-size:11px;color:#1A7A3A;display:flex;align-items:center;gap:8px;">
+  <span>🟢</span>
+  <span id="legenda-testo">Le prime 5 offerte più rilevanti sono evidenziate in verde</span>
+  <span style="display:flex;gap:3px;margin-left:4px;">
+    <span style="width:12px;height:12px;border-radius:50%;background:rgba(26,122,58,.22);display:inline-block;"></span>
+    <span style="width:12px;height:12px;border-radius:50%;background:rgba(26,122,58,.16);display:inline-block;"></span>
+    <span style="width:12px;height:12px;border-radius:50%;background:rgba(26,122,58,.11);display:inline-block;"></span>
+    <span style="width:12px;height:12px;border-radius:50%;background:rgba(26,122,58,.07);display:inline-block;"></span>
+    <span style="width:12px;height:12px;border-radius:50%;background:rgba(26,122,58,.03);display:inline-block;"></span>
+  </span>
+</div>
+
 <button class="btn-cerca-alloggio" id="btn-cerca-alloggio" style="display:none;" onclick="apriRichiestaReverse()">🏨 Cerca alloggio last minute</button>
 
 <!-- BANNER PREFERENZE -->
@@ -731,6 +745,15 @@ function getDesc(o) {
   return o.descrizione || '';
 }
 
+function haversine(lat1, lon1, lat2, lon2) {
+  const R = 6371000;
+  const toRad = d => d * Math.PI / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
 function renderCard(o) {
   const sc   = sconto(o.prezzoStd, o.prezzoFlash);
   const anom = isAnomalia(o);
@@ -742,8 +765,20 @@ function renderCard(o) {
 
   const primaFoto = (o.foto || '').split(',').map(s => s.trim()).filter(Boolean)[0] || '';
 
+  const distHtml = (window._userLat && window._userLon && o.lat && o.lon)
+    ? (() => {
+        const d = haversine(window._userLat, window._userLon, o.lat, o.lon);
+        const txt = d < 1000 ? Math.round(d) + ' m' : (d/1000).toFixed(1) + ' km';
+        return `<span class="pill-dist">🚶 ${txt}</span>`;
+      })()
+    : '';
+
+  const rankColor = (window._distRankColor && o.idtx && window._distRankColor[o.idtx])
+    ? `background:linear-gradient(135deg, ${window._distRankColor[o.idtx]} 0%, transparent 60%);`
+    : '';
+
   return `
-  <div class="offerta-card ${anom?'anomalia':''}" style="${isPref?'border-color:var(--cielo);':''}">
+  <div class="offerta-card ${anom?'anomalia':''}" style="${isPref?'border-color:var(--cielo);':''}${rankColor}">
     ${primaFoto
       ? `<img class="card-img" src="${primaFoto}" alt="${desc}" loading="lazy" onerror="this.style.display='none'">`
       : `<div class="card-img" style="display:flex;align-items:center;justify-content:center;font-size:48px;">${emoji[o.categoria]||'📍'}</div>`
@@ -753,6 +788,7 @@ function renderCard(o) {
         <span class="pill-stato ${o.stato==='ATTIVA'?'pill-attiva':'pill-scaduta'}">${o.stato==='ATTIVA' ? t('statoAttiva') : t('statoScaduta')}</span>
         <span class="pill-cat">${emoji[o.categoria]||''} ${traduciCategoria(o.categoria)}</span>
         <span class="pill-raggio">${o.raggio}m</span>
+        ${distHtml}
       </div>
       <div class="card-desc">${desc}${anom?`<span class="anomalia-tag">${t('anomTag')}</span>`:''}</div>
       <div class="card-addr">📍 ${o.indirizzo||'—'}</div>
@@ -800,7 +836,49 @@ function renderLista() {
     container.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><p>${t('noOffers')}</p></div>`;
     return;
   }
+  calcolaRankingDistanza(filtrate);
   container.innerHTML = `<div class="offerte-grid">${filtrate.map(renderCard).join('')}</div>`;
+}
+
+// Mappa globale: idtx → colore sfondo gradiente distanza (prime 5 più vicine)
+window._distRankColor = {};
+
+function calcolaRankingDistanza(offerte) {
+  window._distRankColor = {};
+
+  // Mostra legenda con testo specifico per il filtro attivo
+  const leg = document.getElementById('legenda-distanza');
+  const legendaTesto = document.getElementById('legenda-testo');
+  if (leg && offerte.length >= 2) {
+    leg.style.display = 'flex';
+    if (legendaTesto) {
+      const criterio = (typeof ordinaCriterio !== 'undefined') ? ordinaCriterio : 'nessuno';
+      const cerca = (typeof ordinaCerca !== 'undefined') ? ordinaCerca.trim() : '';
+      const testi = {
+        distanza: '🚶 Verde = più vicine a te — la più scura è la più vicina',
+        prezzo:   '💰 Verde = prezzo più basso — la più scura è la più conveniente',
+        scadenza: '⏱ Verde = scadono prima — agisci subito su quelle più scure',
+        nessuno:  '🟢 Le prime 5 offerte più rilevanti sono evidenziate in verde'
+      };
+      legendaTesto.textContent = testi[criterio] || (cerca
+        ? `🔍 Risultati per "${cerca}" — i primi 5 in verde`
+        : testi.nessuno);
+    }
+  } else if (leg) {
+    leg.style.display = 'none';
+  }
+
+  // Colora sempre le prime 5 della lista (qualunque sia l'ordine attivo)
+  const verdi = [
+    'rgba(26,122,58,.22)',
+    'rgba(26,122,58,.16)',
+    'rgba(26,122,58,.11)',
+    'rgba(26,122,58,.07)',
+    'rgba(26,122,58,.03)',
+  ];
+  offerte.slice(0, 5).forEach((o, i) => {
+    if (o.idtx) window._distRankColor[o.idtx] = verdi[i];
+  });
 }
 
 function filtraCat(cat, btn) {
@@ -822,6 +900,24 @@ function filtraRaggio(v) {
 
 async function init() {
   document.getElementById('ultimo-agg').textContent = t('loading');
+
+  // Acquisisce GPS subito all'avvio — pronto quando l'utente apre la scheda offerta
+  if (navigator.geolocation) {
+    navigator.geolocation.watchPosition(
+      pos => {
+        const aggiorna = !window._userLat;
+        window._userLat = pos.coords.latitude;
+        window._userLon = pos.coords.longitude;
+        // Prima volta che arriva il GPS: ridisegna la lista con i colori distanza
+        if (aggiorna && tutteOfferte.length > 0) {
+          renderLista();
+        }
+      },
+      () => {},
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+    );
+  }
+
   let dati = await caricaDaSheet();
   if(!dati) {
     tutteOfferte = normalizza(CSV_FALLBACK);
