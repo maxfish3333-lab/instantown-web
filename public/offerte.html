@@ -61,7 +61,7 @@ nav{background:var(--ink);padding:13px 32px;display:flex;align-items:center;just
 main{max-width:1000px;margin:0 auto;padding:24px 32px 80px;}
 
 .stats-bar{display:flex;gap:16px;margin-bottom:22px;flex-wrap:wrap;}
-.stat{background:#fff;border:1px solid var(--rule);border-radius:4px;padding:10px 18px;}
+.stat{background:#D4E8D4;border:1.5px solid #8AB88A;border-radius:4px;padding:10px 18px;}
 .stat-num{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:var(--rosso);line-height:1;}
 .stat-lbl{font-size:10px;color:var(--ink-mu);letter-spacing:.06em;text-transform:uppercase;margin-top:2px;}
 
@@ -822,6 +822,16 @@ function filtraRaggio(v) {
 
 async function init() {
   document.getElementById('ultimo-agg').textContent = t('loading');
+
+  // Acquisisce GPS subito all'avvio — pronto quando l'utente apre la scheda offerta
+  if (navigator.geolocation) {
+    navigator.geolocation.watchPosition(
+      pos => { window._userLat = pos.coords.latitude; window._userLon = pos.coords.longitude; },
+      () => {},
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+    );
+  }
+
   let dati = await caricaDaSheet();
   if(!dati) {
     tutteOfferte = normalizza(CSV_FALLBACK);
@@ -859,6 +869,37 @@ function apriOverlay(o) {
   const desc = getDesc(o);
   const descFmt = desc ? desc.charAt(0).toUpperCase() + desc.slice(1) : '—';
   const orario = (o.inizio && o.fine) ? `${o.inizio} → ${o.fine}` : t('orarioNd');
+
+  // Calcolo distanza dall'utente
+  let distanzaHtml = '';
+  const calcolaDistanza = () => {
+    if (window._userLat && window._userLon && o.lat && o.lon) {
+      const dist = haversine(window._userLat, window._userLon, o.lat, o.lon);
+      const distTxt = dist < 1000
+        ? Math.round(dist) + ' m'
+        : (dist/1000).toFixed(1) + ' km';
+      const el = document.getElementById('ov-distanza');
+      if (el) el.innerHTML = `<div class="ov-info-label">🚶 Distanza da te</div><div class="ov-info-value" style="font-weight:600;color:var(--verde);">${distTxt}</div>`;
+    }
+  };
+  // Prova subito con GPS già disponibile, altrimenti aspetta
+  if (window._userLat && window._userLon) {
+    const dist = haversine(window._userLat, window._userLon, o.lat, o.lon);
+    const distTxt = dist < 1000 ? Math.round(dist) + ' m' : (dist/1000).toFixed(1) + ' km';
+    distanzaHtml = `<div class="ov-info-item" id="ov-distanza"><div class="ov-info-label">🚶 Distanza da te</div><div class="ov-info-value" style="font-weight:600;color:var(--verde);">${distTxt}</div></div>`;
+  } else {
+    distanzaHtml = `<div class="ov-info-item" id="ov-distanza"><div class="ov-info-label">🚶 Distanza da te</div><div class="ov-info-value" style="color:var(--ink-mu);">⏳ acquisizione GPS...</div></div>`;
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(pos => {
+        window._userLat = pos.coords.latitude;
+        window._userLon = pos.coords.longitude;
+        calcolaDistanza();
+      }, () => {
+        const el = document.getElementById('ov-distanza');
+        if (el) el.style.display = 'none';
+      });
+    }
+  }
   const checkoutUrl = 'checkout.html?' + new URLSearchParams({
     tx:       o.idtx || '',
     amount:   o.prezzoFlash.toFixed(2),
@@ -883,6 +924,7 @@ function apriOverlay(o) {
     <div class="ov-divider"></div>
     <div class="ov-info-grid">
       <div class="ov-info-item"><div class="ov-info-label">📍 ${t('ovIndirizzo')}</div><div class="ov-info-value">${o.indirizzo||'—'}</div></div>
+      ${distanzaHtml}
       <div class="ov-info-item"><div class="ov-info-label">⏱ ${t('ovOrario')}</div><div class="ov-info-value">${orario}</div></div>
       <div class="ov-info-item"><div class="ov-info-label">🏷️ ${t('ovCategoria')}</div><div class="ov-info-value">${emoji[o.categoria]||''} ${traduciCategoria(o.categoria)}</div></div>
       <div class="ov-info-item"><div class="ov-info-label">📡 ${t('ovRaggio')}</div><div class="ov-info-value">${o.raggio} m</div></div>
@@ -936,6 +978,7 @@ document.addEventListener('DOMContentLoaded', () => {
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, collection, addDoc, doc, updateDoc, onSnapshot, query, where, orderBy, serverTimestamp, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBez4L85HA1__NPKOzagfmKeoGLniIQeAc",
@@ -948,6 +991,10 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+
+// Login anonimo non bloccante — non ferma il caricamento offerte se fallisce
+signInAnonymously(auth).catch(e => console.warn('Auth anonima:', e.code));
 
 function haversine(lat1, lon1, lat2, lon2) {
   const R = 6371000;
