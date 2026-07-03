@@ -852,14 +852,16 @@ function calcolaRankingDistanza(offerte) {
   if (leg && offerte.length >= 2) {
     leg.style.display = 'flex';
     if (legendaTesto) {
+      const criterio = (typeof ordinaCriterio !== 'undefined') ? ordinaCriterio : 'nessuno';
+      const cerca = (typeof ordinaCerca !== 'undefined') ? ordinaCerca.trim() : '';
       const testi = {
         distanza: '🚶 Verde = più vicine a te — la più scura è la più vicina',
         prezzo:   '💰 Verde = prezzo più basso — la più scura è la più conveniente',
         scadenza: '⏱ Verde = scadono prima — agisci subito su quelle più scure',
         nessuno:  '🟢 Le prime 5 offerte più rilevanti sono evidenziate in verde'
       };
-      legendaTesto.textContent = testi[ordinaCriterio] || (ordinaCerca.trim()
-        ? `🔍 Risultati per "${ordinaCerca}" — i primi 5 in verde`
+      legendaTesto.textContent = testi[criterio] || (cerca
+        ? `🔍 Risultati per "${cerca}" — i primi 5 in verde`
         : testi.nessuno);
     }
   } else if (leg) {
