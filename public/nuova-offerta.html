@@ -727,7 +727,7 @@ function setStep(n, done, active) {
 
 // ── UPLOAD SINGOLA FOTO SU DRIVE ──
 async function uploadFotoDrive(base64, nomeFile, mimeType) {
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw82Ycb8tjx_yMN50bkDHkFd7yEQNiByfuxpaUx-RXFDFVhFFzw7KNUjaioPV6aDs9c/exec';
   try {
     const resp = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
@@ -768,7 +768,7 @@ async function pubblicaOfferta(e) {
 
   const btn = document.getElementById('btn-pubblica');
   btn.disabled = true;
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw82Ycb8tjx_yMN50bkDHkFd7yEQNiByfuxpaUx-RXFDFVhFFzw7KNUjaioPV6aDs9c/exec';
   const idTx = 'TX-' + Date.now();
 
   // ── STEP 1: UPLOAD FOTO SU DRIVE ──

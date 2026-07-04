@@ -34,6 +34,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--ink);
 .login-btn{width:100%;margin-top:14px;background:var(--ocra);color:#1C1410;border:none;border-radius:8px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s;}
 .login-btn:hover{background:var(--ocra-l);}
 .login-error{color:#ff6b6b;font-size:12px;margin-top:10px;display:none;}
+.login-retry-note{color:rgba(28,20,16,.4);font-size:11px;margin-top:8px;display:none;}
 
 /* DASHBOARD */
 #dashboard{flex:1;display:none;flex-direction:row;}
@@ -144,6 +145,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--ink);
     <input class="login-input" id="pin-input" type="password" placeholder="PIN" maxlength="10" autocomplete="off">
     <button class="login-btn" onclick="accediDashboard()">Accedi →</button>
     <div class="login-error" id="login-error">PIN non trovato. Controlla e riprova.</div>
+    <div class="login-retry-note" id="login-retry-note">Verifica in corso, un attimo…</div>
   </div>
 </div>
 
@@ -191,7 +193,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw82Ycb8tjx_yMN50bkDHkFd7yEQNiByfuxpaUx-RXFDFVhFFzw7KNUjaioPV6aDs9c/exec';
 
 let negozioCorrente = null;
 let negozioLat = null;
@@ -201,19 +203,47 @@ let unsubMessages = null;
 let unsubChats = null;
 let unsubRichiesteReverse = null;
 
+// ── Verifica PIN con retry automatico + cache-busting ──
+// Google Apps Script può occasionalmente restituire una risposta di
+// fallback ("Script attivo") invece del risultato reale, specie subito
+// dopo un ridispiegamento o per instabilità infrastrutturale lato Google.
+// Ritentiamo fino a 3 volte con backoff progressivo prima di arrendersi.
+async function verificaPinConRetry(pin, tentativi = 3) {
+  for (let i = 0; i < tentativi; i++) {
+    try {
+      const url = `${APPS_SCRIPT_URL}?azione=verificaPin&pin=${encodeURIComponent(pin)}&t=${Date.now()}`;
+      const res = await fetch(url, { cache: 'no-store' });
+      const risposta = await res.json();
+      if (risposta.stato === 'ok' && risposta.negozio) {
+        return risposta;
+      }
+      // Risposta di fallback o PIN non valido: se non è l'ultimo tentativo, riprova
+      if (i < tentativi - 1) {
+        await new Promise(r => setTimeout(r, 800 * (i + 1))); // 800ms, 1600ms
+        continue;
+      }
+      return risposta; // ultimo tentativo, restituisci quello che c'è (probabile PIN errato)
+    } catch (err) {
+      if (i === tentativi - 1) throw err;
+      await new Promise(r => setTimeout(r, 800 * (i + 1)));
+    }
+  }
+}
+
 window.accediDashboard = async function() {
   const pin = document.getElementById('pin-input').value.trim();
   if (!pin) return;
 
   const btn = document.querySelector('.login-btn');
+  const retryNote = document.getElementById('login-retry-note');
   btn.innerHTML = '<span class="loading"></span>';
   btn.disabled = true;
+  document.getElementById('login-error').style.display = 'none';
+  retryNote.style.display = 'block';
 
   try {
-    // Verifica PIN tramite Apps Script (evita problemi CORS con gviz/tq)
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
-    const res = await fetch(`${APPS_SCRIPT_URL}?azione=verificaPin&pin=${encodeURIComponent(pin)}`);
-    const risposta = await res.json();
+    const risposta = await verificaPinConRetry(pin, 3);
+    retryNote.style.display = 'none';
 
     if (risposta.stato !== 'ok' || !risposta.negozio) {
       document.getElementById('login-error').style.display = 'block';
@@ -249,6 +279,7 @@ window.accediDashboard = async function() {
 
   } catch(e) {
     console.error(e);
+    retryNote.style.display = 'none';
     document.getElementById('login-error').textContent = 'Errore di connessione.';
     document.getElementById('login-error').style.display = 'block';
     btn.innerHTML = 'Accedi →';

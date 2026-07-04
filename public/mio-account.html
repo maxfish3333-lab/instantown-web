@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>INSTANTOWN — Il mio account</title>
+<title>INSTANTOWN � Il mio account</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -27,7 +27,7 @@ nav a:hover{color:var(--ocra-l);}
 
 main{max-width:600px;margin:0 auto;padding:28px 20px 80px;}
 
-/* ── PIN CARD ── */
+/* -- PIN CARD -- */
 .pin-card{background:#fff;border:1px solid var(--rule);border-radius:8px;
   padding:24px;margin-bottom:20px;box-shadow:0 2px 12px rgba(28,20,16,.05);}
 .pin-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;
@@ -39,7 +39,7 @@ main{max-width:600px;margin:0 auto;padding:28px 20px 80px;}
   border-radius:4px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;
   cursor:pointer;margin-top:10px;}
 
-/* ── SEZIONE QR ── */
+/* -- SEZIONE QR -- */
 .section-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;
   color:var(--ink);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
 .badge-count{background:var(--rosso);color:#fff;font-size:11px;font-weight:600;
@@ -49,7 +49,7 @@ main{max-width:600px;margin:0 auto;padding:28px 20px 80px;}
 .empty-icon{font-size:40px;margin-bottom:12px;}
 .empty-text{font-size:14px;line-height:1.7;}
 
-/* ── QR CARD ── */
+/* -- QR CARD -- */
 .qr-card{background:#fff;border:1px solid var(--rule);border-radius:8px;
   margin-bottom:14px;overflow:hidden;box-shadow:0 2px 10px rgba(28,20,16,.04);}
 .qr-card-header{padding:14px 18px;border-bottom:1px solid var(--rule);
@@ -76,7 +76,7 @@ main{max-width:600px;margin:0 auto;padding:28px 20px 80px;}
 .btn-elimina{background:none;border:1px solid var(--rule);color:var(--ink-mu);
   padding:8px 14px;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;}
 
-/* ── MODAL QR GRANDE ── */
+/* -- MODAL QR GRANDE -- */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);
   z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
 .modal-overlay.open{display:flex;}
@@ -105,18 +105,18 @@ main{max-width:600px;margin:0 auto;padding:28px 20px 80px;}
 <nav>
   <a href="index.html" class="topbar-back">&#8592;</a>
   <span class="nav-brand">INSTANT<span>TOWN</span></span>
-  <a href="map.html" data-i18n="ma_nav_radar">Radar →</a>
+  <a href="map.html" data-i18n="ma_nav_radar">Radar ?</a>
 </nav>
 
 <main>
 
   <!-- STATO: VERIFICA TOKEN IN CORSO -->
   <div id="verifica-in-corso" style="display:none;text-align:center;padding:60px 20px;">
-    <div style="font-size:40px;margin-bottom:16px;">⏳</div>
+    <div style="font-size:40px;margin-bottom:16px;">?</div>
     <div style="font-size:14px;color:var(--ink-mu);">Verifica del tuo account in corso...</div>
   </div>
 
-  <!-- STATO: NESSUNA SESSIONE — FORM EMAIL -->
+  <!-- STATO: NESSUNA SESSIONE � FORM EMAIL -->
   <div id="login-email-form" style="display:none;">
     <div class="pin-card">
       <div class="pin-label">Accedi al tuo account INSTANTOWN</div>
@@ -128,7 +128,7 @@ main{max-width:600px;margin:0 auto;padding:28px 20px 80px;}
         style="width:100%;padding:14px 16px;font-size:15px;border:1px solid var(--rule);
         border-radius:8px;font-family:'DM Sans',sans-serif;margin-bottom:12px;outline:none;">
       <button class="pin-copy" style="width:100%;text-align:center;" onclick="inviaEmailAccesso()" id="login-submit-btn">
-        Continua →
+        Continua ?
       </button>
       <p id="login-email-status" style="font-size:13px;margin-top:14px;line-height:1.6;"></p>
     </div>
@@ -140,12 +140,12 @@ main{max-width:600px;margin:0 auto;padding:28px 20px 80px;}
     <!-- PIN UTENTE -->
     <div class="pin-card">
       <div class="pin-label" data-i18n="ma_pin_label">Il tuo PIN personale INSTANTOWN</div>
-      <div class="pin-value" id="pin-display">——</div>
+      <div class="pin-value" id="pin-display">��</div>
       <div class="pin-note" data-i18n="ma_pin_note">
         Questo PIN identifica il tuo account. Comunicalo all'esercente insieme al QR-B
         per completare il matching e sbloccare i fondi in Garanzia Bancaria.
       </div>
-      <button class="pin-copy" onclick="copiaPIN()" data-i18n="ma_pin_copy">📋 Copia PIN</button>
+      <button class="pin-copy" onclick="copiaPIN()" data-i18n="ma_pin_copy">?? Copia PIN</button>
     </div>
 
     <!-- QR SALVATI -->
@@ -164,13 +164,13 @@ main{max-width:600px;margin:0 auto;padding:28px 20px 80px;}
 <!-- MODAL QR GRANDE -->
 <div class="modal-overlay" id="modal-qr">
   <div class="modal-box">
-    <div class="modal-title" data-i18n="ma_modal_title">QR-B — Mostra all'esercente</div>
+    <div class="modal-title" data-i18n="ma_modal_title">QR-B � Mostra all'esercente</div>
     <div class="modal-sub" id="modal-negozio-desc"></div>
     <div id="modal-qr-img"></div>
     <div class="modal-id" id="modal-booking-id"></div>
     <div class="modal-pin"><span data-i18n="ma_modal_pin">Il tuo PIN:</span> <strong id="modal-pin-val"></strong></div>
     <div class="modal-istr" data-i18n="ma_modal_istr">
-      ✓ L'esercente mostrerà QR-A — fai scansionare al suo terminale.<br>
+      ? L'esercente mostrer� QR-A � fai scansionare al suo terminale.<br>
       Solo la coppia QR-A + QR-B sblocca i fondi.
     </div>
     <button class="btn-modal-close" onclick="chiudiModal()" data-i18n="ma_modal_close">Chiudi</button>
@@ -189,10 +189,10 @@ function i18nGet(key, fallback) {
   return fallback;
 }
 
-// ══════════════════════════════════
-// SISTEMA ACCOUNT — email-only, no password
-// ══════════════════════════════════
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
+// ----------------------------------
+// SISTEMA ACCOUNT � email-only, no password
+// ----------------------------------
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw82Ycb8tjx_yMN50bkDHkFd7yEQNiByfuxpaUx-RXFDFVhFFzw7KNUjaioPV6aDs9c/exec';
 let mioPin = null;
 
 function mostraStato(stato) {
@@ -225,7 +225,7 @@ async function inviaEmailAccesso() {
     const json = await res.json();
 
     if (json.stato === 'ok' && json.verificato) {
-      // Account già verificato in passato: salvo subito il PIN, niente email da aspettare
+      // Account gi� verificato in passato: salvo subito il PIN, niente email da aspettare
       mioPin = json.pin;
       localStorage.setItem('it_pin', mioPin);
       localStorage.setItem('it_email', email);
@@ -234,20 +234,20 @@ async function inviaEmailAccesso() {
       caricaQR();
     } else if (json.stato === 'ok') {
       statusEl.style.color = 'var(--verde)';
-      statusEl.innerHTML = '✓ Controlla la tua casella email: ti abbiamo mandato un link per confermare l\'accesso.';
+      statusEl.innerHTML = '? Controlla la tua casella email: ti abbiamo mandato un link per confermare l\'accesso.';
       btn.style.display = 'none';
       input.disabled = true;
     } else {
       statusEl.style.color = 'var(--rosso)';
-      statusEl.textContent = json.messaggio || 'Si è verificato un errore. Riprova.';
+      statusEl.textContent = json.messaggio || 'Si � verificato un errore. Riprova.';
       btn.disabled = false;
-      btn.textContent = 'Continua →';
+      btn.textContent = 'Continua ?';
     }
   } catch (e) {
     statusEl.style.color = 'var(--rosso)';
     statusEl.textContent = 'Errore di connessione. Riprova.';
     btn.disabled = false;
-    btn.textContent = 'Continua →';
+    btn.textContent = 'Continua ?';
   }
 }
 
@@ -272,7 +272,7 @@ async function verificaTokenDaUrl(token) {
       mostraStato('login');
       document.getElementById('login-email-status').style.color = 'var(--rosso)';
       document.getElementById('login-email-status').textContent =
-        json.messaggio || 'Link non valido o già usato. Inserisci di nuovo la tua email.';
+        json.messaggio || 'Link non valido o gi� usato. Inserisci di nuovo la tua email.';
     }
   } catch (e) {
     mostraStato('login');
@@ -283,14 +283,14 @@ function copiaPIN() {
   if (!mioPin) return;
   navigator.clipboard.writeText(mioPin).then(()=>{
     const btn = document.querySelector('#account-content .pin-copy');
-    btn.textContent = '✓ Copiato!';
-    setTimeout(()=>btn.textContent='📋 Copia PIN', 2000);
+    btn.textContent = '? Copiato!';
+    setTimeout(()=>btn.textContent='?? Copia PIN', 2000);
   });
 }
 
-// ══════════════════════════════════
+// ----------------------------------
 // INIZIALIZZAZIONE: decido quale stato mostrare
-// ══════════════════════════════════
+// ----------------------------------
 (function initAccount() {
   const params = new URLSearchParams(window.location.search);
   const tokenUrl = params.get('verifica');
@@ -311,18 +311,18 @@ function copiaPIN() {
   }
 })();
 
-// ══════════════════════════════════
+// ----------------------------------
 // CARICA QR SALVATI
-// ══════════════════════════════════
-// QR-B centrali (da Firestore, collection qr_b_emessi) — popolati dal
-// blocco module più sotto, che interroga per email del cliente loggato.
-// Restano un array separato da quelli locali perché arrivano in modo
+// ----------------------------------
+// QR-B centrali (da Firestore, collection qr_b_emessi) � popolati dal
+// blocco module pi� sotto, che interroga per email del cliente loggato.
+// Restano un array separato da quelli locali perch� arrivano in modo
 // asincrono: appena pronti, richiamano renderListaQR() per unirli.
 let qrCentrali = [];
 
 function caricaQR() {
   renderListaQR();
-  // Definita nel blocco <script type="module"> più sotto. Può non
+  // Definita nel blocco <script type="module"> pi� sotto. Pu� non
   // esistere ancora se questo script gira per primo (poco probabile,
   // dato l'ordine nel documento, ma per sicurezza non lancio errori).
   if (typeof caricaQRCentrali === 'function') caricaQRCentrali();
@@ -332,7 +332,7 @@ function renderListaQR() {
   const prenotazioniLocali = JSON.parse(localStorage.getItem('it_prenotazioni') || '[]')
     .map((p, i) => Object.assign({}, p, { localIdx: i, daFirestore: false }));
   // Normalizzo i QR centrali nello stesso formato di quelli locali,
-  // così il resto del rendering (già esistente) non deve sapere da dove
+  // cos� il resto del rendering (gi� esistente) non deve sapere da dove
   // arrivano. bookingId/idtx fittizi ma stabili, usano l'id del documento.
   // localIdx resta null: non esistono in localStorage, eliminaQR() non
   // si applica a loro (il bottone Elimina viene omesso nel template).
@@ -350,7 +350,7 @@ function renderListaQR() {
   if(prenotazioni.length === 0) {
     lista.innerHTML = `
       <div class="empty-state">
-        <div class="empty-icon">🎫</div>
+        <div class="empty-icon">??</div>
         <div class="empty-text" data-i18n="ma_empty_text">
           Non hai ancora QR-B salvati.<br>
           Prenota un'offerta dal Radar per generare il tuo primo QR.
@@ -358,7 +358,7 @@ function renderListaQR() {
         <a href="map.html" style="display:inline-block;margin-top:16px;
           background:var(--rosso);color:#fff;padding:10px 24px;border-radius:4px;
           text-decoration:none;font-size:14px;font-weight:500;">
-          <span data-i18n="ma_empty_cta">Apri il Radar →</span>
+          <span data-i18n="ma_empty_cta">Apri il Radar ?</span>
         </a>
       </div>`;
     return;
@@ -370,8 +370,8 @@ function renderListaQR() {
       {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
     const statoClass = p.stato==='USATO' ? 'stato-usato' :
                        p.stato==='SCADUTO' ? 'stato-scaduto' : 'stato-attesa';
-    const statoLabel = p.stato==='USATO' ? i18nGet('ma_stato_completato','✓ Completato') :
-                       p.stato==='SCADUTO' ? i18nGet('ma_stato_scaduto','Scaduto') : i18nGet('ma_stato_attesa','⏳ In attesa');
+    const statoLabel = p.stato==='USATO' ? i18nGet('ma_stato_completato','? Completato') :
+                       p.stato==='SCADUTO' ? i18nGet('ma_stato_scaduto','Scaduto') : i18nGet('ma_stato_attesa','? In attesa');
     return `
     <div class="qr-card" id="card-${idx}">
       <div class="qr-card-header">
@@ -385,12 +385,12 @@ function renderListaQR() {
         <div class="qr-box-img" id="qr-mini-${idx}"></div>
         <div class="qr-info">
           <div class="qr-desc">${(p.desc||'').toLowerCase()}</div>
-          <div class="qr-prezzo">€ ${parseFloat(p.prezzo).toFixed(2)}</div>
+          <div class="qr-prezzo">� ${parseFloat(p.prezzo).toFixed(2)}</div>
           <div class="qr-id">${p.bookingId}</div>
         </div>
       </div>
       <div class="qr-card-footer">
-        <button class="btn-mostra" onclick="mostraQR(${idx})" data-i18n="ma_btn_mostra">🔍 Mostra QR grande</button>
+        <button class="btn-mostra" onclick="mostraQR(${idx})" data-i18n="ma_btn_mostra">?? Mostra QR grande</button>
         ${p.daFirestore ? '' : `<button class="btn-elimina" onclick="eliminaQR(${p.localIdx})" data-i18n="ma_btn_elimina">Elimina</button>`}
       </div>
     </div>`;
@@ -418,9 +418,9 @@ function renderListaQR() {
   });
 }
 
-// ══════════════════════════════════
+// ----------------------------------
 // MOSTRA QR GRANDE
-// ══════════════════════════════════
+// ----------------------------------
 function mostraQR(idx) {
   const prenotazioniLocali = JSON.parse(localStorage.getItem('it_prenotazioni') || '[]');
   const centraliNormalizzati = qrCentrali.map(q => ({
@@ -432,7 +432,7 @@ function mostraQR(idx) {
   if(!p) return;
 
   document.getElementById('modal-negozio-desc').textContent =
-    (p.negozio||'Esercente') + ' — ' + (p.desc||'');
+    (p.negozio||'Esercente') + ' � ' + (p.desc||'');
   document.getElementById('modal-booking-id').textContent = p.bookingId;
   document.getElementById('modal-pin-val').textContent = mioPin;
 
@@ -459,11 +459,11 @@ function chiudiModal() {
   document.getElementById('modal-qr-img').innerHTML = '';
 }
 
-// ══════════════════════════════════
+// ----------------------------------
 // ELIMINA QR
-// ══════════════════════════════════
+// ----------------------------------
 function eliminaQR(idx) {
-  if(!confirm(i18nGet('ma_confirm_elimina','Eliminare questo QR-B? Non potrai più usarlo per il matching.'))) return;
+  if(!confirm(i18nGet('ma_confirm_elimina','Eliminare questo QR-B? Non potrai pi� usarlo per il matching.'))) return;
   const prenotazioni = JSON.parse(localStorage.getItem('it_prenotazioni') || '[]');
   prenotazioni.splice(idx, 1);
   localStorage.setItem('it_prenotazioni', JSON.stringify(prenotazioni));
@@ -516,8 +516,8 @@ window.caricaQRCentrali = async function() {
         tsMillis: d.ts && d.ts.seconds ? d.ts.seconds * 1000 : Date.now()
       });
     });
-    // window.qrCentrali esiste già come variabile globale (script principale);
-    // qui la aggiorniamo e richiamiamo il rendering già pronto a riceverla.
+    // window.qrCentrali esiste gi� come variabile globale (script principale);
+    // qui la aggiorniamo e richiamiamo il rendering gi� pronto a riceverla.
     qrCentrali = risultati;
     if (typeof renderListaQR === 'function') renderListaQR();
   } catch(e) {
