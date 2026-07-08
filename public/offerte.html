@@ -885,6 +885,8 @@ function filtraCat(cat, btn) {
   filtroCat = cat;
   document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  const btnAlloggio = document.getElementById('btn-cerca-alloggio');
+  if (btnAlloggio) btnAlloggio.style.display = (cat === 'VIAGGI') ? 'block' : 'none';
   renderLista();
 }
 function filtraStato(stato, btn) {
@@ -940,8 +942,6 @@ async function init() {
   } else {
     renderLista();
   }
-
-  setInterval(init, 60000);
 }
 
 function apriOverlayBtn(btn) {
@@ -1040,6 +1040,7 @@ function chiudiOverlay() {
 document.addEventListener('keydown', function(e){ if(e.key==='Escape') chiudiOverlay(); });
 
 init();
+setInterval(init, 60000);
 function applyLang(lang) {
   var ok = ['it','en','zh','es','fr','de'];
   if (!ok.includes(lang)) lang = 'it';
@@ -1094,6 +1095,7 @@ function haversine(lat1, lon1, lat2, lon2) {
 const REVERSE_LABELS = {
   titolo:        { it:'Cerca alloggio last minute', en:'Find last-minute lodging', zh:'寻找临时住宿', es:'Buscar alojamiento de última hora', fr:'Chercher un hébergement de dernière minute', de:'Last-Minute-Unterkunft suchen' },
   budgetMax:     { it:'Budget massimo (€)', en:'Maximum budget (€)', zh:'最高预算（欧元）', es:'Presupuesto máximo (€)', fr:'Budget maximum (€)', de:'Maximalbudget (€)' },
+  notti:         { it:'Numero di notti', en:'Number of nights', zh:'住宿晚数', es:'Número de noches', fr:'Nombre de nuits', de:'Anzahl der Nächte' },
   raggio:        { it:'Raggio di ricerca', en:'Search radius', zh:'搜索范围', es:'Radio de búsqueda', fr:'Rayon de recherche', de:'Suchradius' },
   note:          { it:'Note (opzionale)', en:'Notes (optional)', zh:'备注（可选）', es:'Notas (opcional)', fr:'Notes (facultatif)', de:'Notizen (optional)' },
   gpsRichiesta:  { it:'Acquisizione posizione GPS...', en:'Getting GPS position...', zh:'正在获取GPS位置...', es:'Obteniendo posición GPS...', fr:'Acquisition de la position GPS...', de:'GPS-Position wird ermittelt...' },
@@ -1103,7 +1105,27 @@ const REVERSE_LABELS = {
   inAttesa:      { it:'Richiesta pubblicata. In attesa di proposte dagli hotel...', en:'Request published. Waiting for hotel offers...', zh:'请求已发布，等待酒店报价...', es:'Solicitud publicada. Esperando ofertas de hoteles...', fr:'Demande publiée. En attente d\'offres des hôtels...', de:'Anfrage veröffentlicht. Warten auf Hotelangebote...' },
   nessunaProposta:{ it:'Nessuna proposta ricevuta ancora.', en:'No offers received yet.', zh:'尚未收到报价。', es:'Aún no se han recibido ofertas.', fr:'Aucune offre reçue pour le moment.', de:'Noch keine Angebote erhalten.' },
   accettaProposta:{ it:'Accetta questa proposta', en:'Accept this offer', zh:'接受此报价', es:'Aceptar esta oferta', fr:'Accepter cette offre', de:'Dieses Angebot annehmen' },
-  richiestaChiusa:{ it:'Richiesta conclusa', en:'Request closed', zh:'请求已结束', es:'Solicitud cerrada', fr:'Demande clôturée', de:'Anfrage abgeschlossen' }
+  richiestaChiusa:{ it:'Richiesta conclusa', en:'Request closed', zh:'请求已结束', es:'Solicitud cerrada', fr:'Demande clôturée', de:'Anfrage abgeschlossen' },
+  emailPerConferma:{ it:'La tua email, per ricevere la conferma e il QR', en:'Your email, to receive confirmation and the QR', zh:'您的邮箱，用于接收确认和二维码', es:'Tu email, para recibir la confirmación y el QR', fr:'Votre email, pour recevoir la confirmation et le QR', de:'Deine E-Mail, um die Bestätigung und den QR-Code zu erhalten' },
+  confermaAccetta:{ it:'Conferma', en:'Confirm', zh:'确认', es:'Confirmar', fr:'Confirmer', de:'Bestätigen' },
+  attesaConfermaHotel:{ it:"Accettato! In attesa che l'hotel invii la conferma via email...", en:'Accepted! Waiting for the hotel to send confirmation by email...', zh:'已接受！等待酒店通过电子邮件发送确认...', es:'¡Aceptado! Esperando a que el hotel envíe la confirmación por email...', fr:"Accepté ! En attente que l'hôtel envoie la confirmation par email...", de:'Angenommen! Warten auf die Bestätigung per E-Mail vom Hotel...' },
+  modalitaBroadcast:{ it:'📍 Cerca tra hotel vicini', en:'📍 Search nearby hotels', zh:'📍 搜索附近的酒店', es:'📍 Buscar hoteles cercanos', fr:'📍 Chercher des hôtels à proximité', de:'📍 Hotels in der Nähe suchen' },
+  modalitaMirata:{ it:'🔍 Cerca un hotel specifico', en:'🔍 Search a specific hotel', zh:'🔍 搜索特定酒店', es:'🔍 Buscar un hotel específico', fr:'🔍 Chercher un hôtel spécifique', de:'🔍 Ein bestimmtes Hotel suchen' },
+  cercaHotelLabel:{ it:'Nome hotel', en:'Hotel name', zh:'酒店名称', es:'Nombre del hotel', fr:'Nom de l\'hôtel', de:'Hotelname' },
+  cercaHotelPlaceholder:{ it:'Inizia a digitare il nome...', en:'Start typing the name...', zh:'开始输入名称...', es:'Empieza a escribir el nombre...', fr:'Commencez à taper le nom...', de:'Namen eingeben...' },
+  nonLoTrovi:{ it:'Non lo trovi? Inseriscilo manualmente', en:"Can't find it? Enter it manually", zh:'找不到？手动输入', es:'¿No lo encuentras? Introdúcelo manualmente', fr:"Vous ne le trouvez pas ? Saisissez-le manuellement", de:'Nicht gefunden? Manuell eingeben' },
+  nomeHotelManuale:{ it:'Nome hotel (da Booking o altra piattaforma)', en:'Hotel name (from Booking or other platform)', zh:'酒店名称（来自Booking或其他平台）', es:'Nombre del hotel (de Booking u otra plataforma)', fr:"Nom de l'hôtel (depuis Booking ou une autre plateforme)", de:'Hotelname (von Booking oder anderer Plattform)' },
+  emailHotelManuale:{ it:"Email dell'hotel", en:'Hotel email', zh:'酒店邮箱', es:'Email del hotel', fr:"Email de l'hôtel", de:'E-Mail des Hotels' },
+  linkContattiHotel:{ it:'Link alla pagina "Contatti" del sito hotel (facoltativo)', en:'Link to the hotel website\'s "Contact" page (optional)', zh:'酒店网站"联系我们"页面链接（可选）', es:'Enlace a la página de "Contacto" del hotel (opcional)', fr:'Lien vers la page "Contact" du site de l\'hôtel (facultatif)', de:'Link zur "Kontakt"-Seite der Hotelwebsite (optional)' },
+  trovaEmailBtn:{ it:'🔍 Trova email', en:'🔍 Find email', zh:'🔍 查找邮箱', es:'🔍 Buscar email', fr:'🔍 Trouver l\'email', de:'🔍 E-Mail finden' },
+  trovaEmailCercando:{ it:'Cerco...', en:'Searching...', zh:'搜索中...', es:'Buscando...', fr:'Recherche...', de:'Suche...' },
+  trovaEmailOk:{ it:'✓ Email trovata e inserita, verificala', en:'✓ Email found and filled in, please verify', zh:'✓ 已找到并填入邮箱，请核实', es:'✓ Email encontrado e insertado, verifícalo', fr:'✓ Email trouvé et renseigné, vérifiez-le', de:'✓ E-Mail gefunden und eingetragen, bitte prüfen' },
+  trovaEmailKo:{ it:'Nessuna email trovata in quella pagina — inseriscila tu qui sotto', en:'No email found on that page — enter it below', zh:'该页面未找到邮箱——请在下方输入', es:'No se encontró ningún email en esa página — introdúcelo abajo', fr:"Aucun email trouvé sur cette page — saisissez-le ci-dessous", de:'Auf dieser Seite wurde keine E-Mail gefunden – bitte unten eingeben' },
+  tuoContatto:{ it:'Il tuo contatto (email o telefono)', en:'Your contact (email or phone)', zh:'您的联系方式（邮箱或电话）', es:'Tu contacto (email o teléfono)', fr:'Votre contact (email ou téléphone)', de:'Dein Kontakt (E-Mail oder Telefon)' },
+  tuoContattoNota:{ it:"Serve perché l'hotel non è su Instantown: ti risponderà direttamente", en:"Needed because the hotel isn't on Instantown: they'll reply directly", zh:'因为该酒店不在Instantown上，需要此信息以便直接回复您', es:'Es necesario porque el hotel no está en Instantown: te responderá directamente', fr:"Nécessaire car l'hôtel n'est pas sur Instantown : il vous répondra directement", de:'Erforderlich, da das Hotel nicht bei Instantown ist: Sie antworten dir direkt' },
+  hotelSelezionato:{ it:'Hotel selezionato', en:'Selected hotel', zh:'已选择的酒店', es:'Hotel seleccionado', fr:'Hôtel sélectionné', de:'Ausgewähltes Hotel' },
+  cambia:{ it:'Cambia', en:'Change', zh:'更改', es:'Cambiar', fr:'Changer', de:'Ändern' },
+  richiestaInviataEsterna:{ it:"Richiesta inviata via email all'hotel. Ti risponderanno direttamente al contatto fornito.", en:"Request sent by email to the hotel. They'll reply directly to the contact you provided.", zh:'请求已通过电子邮件发送给酒店。他们会直接回复您提供的联系方式。', es:'Solicitud enviada por email al hotel. Te responderán directamente al contacto proporcionado.', fr:"Demande envoyée par email à l'hôtel. Il vous répondra directement au contact fourni.", de:'Anfrage per E-Mail an das Hotel gesendet. Sie antworten direkt an den angegebenen Kontakt.' }
 };
 
 function rt(key) {
@@ -1114,22 +1136,37 @@ function rt(key) {
 let reverseUserLat = null, reverseUserLon = null;
 let currentRichiestaId = null;
 let unsubRichiesta = null;
+let revModalita = 'broadcast'; // 'broadcast' | 'mirata'
+let revHotelSelezionato = null; // {nome, email, lat, lon} quando scelto da autocomplete
+let revHotelManuale = false;
+let revCercaTimeout = null;
+
+const APPS_SCRIPT_URL_OFFERTE = 'https://script.google.com/macros/s/AKfycbw82Ycb8tjx_yMN50bkDHkFd7yEQNiByfuxpaUx-RXFDFVhFFzw7KNUjaioPV6aDs9c/exec';
 
 window.apriRichiestaReverse = function() {
   document.getElementById('reverse-overlay').classList.add('open');
+  revModalita = 'broadcast';
+  revHotelSelezionato = null;
+  revHotelManuale = false;
+  renderFormRichiesta();
+  acquisisciGpsTurista();
+};
+
+function renderFormRichiesta() {
   document.getElementById('reverse-body').innerHTML = `
+    <div class="reverse-field" style="display:flex;gap:8px;">
+      <button type="button" class="sub-btn${revModalita==='broadcast' ? ' active' : ''}" id="rev-mode-broadcast" onclick="setModalitaRichiesta('broadcast')" style="flex:1;">${rt('modalitaBroadcast')}</button>
+      <button type="button" class="sub-btn${revModalita==='mirata' ? ' active' : ''}" id="rev-mode-mirata" onclick="setModalitaRichiesta('mirata')" style="flex:1;">${rt('modalitaMirata')}</button>
+    </div>
     <div class="reverse-field">
       <label>${rt('budgetMax')}</label>
       <input type="number" id="rev-budget" placeholder="80" step="5" min="1">
     </div>
     <div class="reverse-field">
-      <label>${rt('raggio')}</label>
-      <select id="rev-raggio">
-        <option value="200">200 m</option>
-        <option value="300" selected>300 m</option>
-        <option value="500">500 m</option>
-      </select>
+      <label>${rt('notti')}</label>
+      <input type="number" id="rev-notti" placeholder="1" step="1" min="1" value="1">
     </div>
+    <div id="rev-modalita-specifica"></div>
     <div class="reverse-field">
       <label>${rt('note')}</label>
       <input type="text" id="rev-note" placeholder="es. camera doppia, stanotte">
@@ -1137,7 +1174,193 @@ window.apriRichiestaReverse = function() {
     <div class="reverse-gps-status" id="rev-gps-status">${rt('gpsRichiesta')}</div>
     <button class="btn-pubblica-richiesta" id="rev-pubblica-btn" onclick="pubblicaRichiestaReverse()" disabled>${rt('pubblica')}</button>
   `;
-  acquisisciGpsTurista();
+  renderModalitaSpecifica();
+}
+
+window.setModalitaRichiesta = function(modalita) {
+  revModalita = modalita;
+  revHotelSelezionato = null;
+  revHotelManuale = false;
+  document.getElementById('rev-mode-broadcast').classList.toggle('active', modalita==='broadcast');
+  document.getElementById('rev-mode-mirata').classList.toggle('active', modalita==='mirata');
+  renderModalitaSpecifica();
+};
+
+function renderModalitaSpecifica() {
+  const box = document.getElementById('rev-modalita-specifica');
+  if (!box) return;
+
+  if (revModalita === 'broadcast') {
+    box.innerHTML = `
+      <div class="reverse-field">
+        <label>${rt('raggio')}</label>
+        <select id="rev-raggio">
+          <option value="200">200 m</option>
+          <option value="300" selected>300 m</option>
+          <option value="500">500 m</option>
+        </select>
+      </div>
+    `;
+    return;
+  }
+
+  // Modalità mirata: se un hotel è già stato selezionato (da ricerca o manuale)
+  if (revHotelSelezionato) {
+    box.innerHTML = `
+      <div class="reverse-field">
+        <label>${rt('hotelSelezionato')}</label>
+        <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(74,144,196,.08);border:1px solid rgba(74,144,196,.25);border-radius:8px;padding:10px 14px;">
+          <span style="font-weight:600;">${escapeHtmlOfferte(revHotelSelezionato.nome)}</span>
+          <button type="button" onclick="resetHotelSelezionato()" style="background:none;border:none;color:var(--cielo);font-size:13px;cursor:pointer;text-decoration:underline;">${rt('cambia')}</button>
+        </div>
+      </div>
+      ${!revHotelSelezionato.registrato ? `
+      <div class="reverse-field">
+        <label>${rt('tuoContatto')}</label>
+        <input type="text" id="rev-contatto-turista" placeholder="email@esempio.com o +39...">
+        <div style="font-size:11px;color:var(--ink-mu);margin-top:4px;">${rt('tuoContattoNota')}</div>
+      </div>` : ''}
+    `;
+    return;
+  }
+
+  // Nessun hotel ancora selezionato: mostra ricerca + opzione manuale
+  box.innerHTML = `
+    <div class="reverse-field">
+      <label>${rt('cercaHotelLabel')}</label>
+      <input type="text" id="rev-hotel-search" placeholder="${rt('cercaHotelPlaceholder')}" oninput="cercaHotelInput()" autocomplete="off">
+      <div id="rev-hotel-results" style="margin-top:6px;"></div>
+    </div>
+    ${!revHotelManuale ? `
+    <div class="reverse-field">
+      <button type="button" onclick="attivaHotelManuale()" style="background:none;border:none;color:var(--cielo);font-size:13px;cursor:pointer;text-decoration:underline;padding:0;">${rt('nonLoTrovi')}</button>
+    </div>` : `
+    <div class="reverse-field">
+      <label>${rt('nomeHotelManuale')}</label>
+      <input type="text" id="rev-hotel-nome-manuale" placeholder="Hotel Roma Centro">
+    </div>
+    <div class="reverse-field">
+      <label>${rt('linkContattiHotel')}</label>
+      <div style="display:flex;gap:8px;">
+        <input type="url" id="rev-hotel-link-contatti" placeholder="https://hotel-esempio.com/contact" style="flex:1;">
+        <button type="button" id="rev-trova-email-btn" onclick="trovaEmailDaLink()" style="background:var(--ocra-p, #FDF3DC);border:1px solid rgba(200,134,10,.4);border-radius:8px;padding:0 14px;font-size:13px;cursor:pointer;white-space:nowrap;">${rt('trovaEmailBtn')}</button>
+      </div>
+      <div id="rev-trova-email-status" style="font-size:12px;margin-top:6px;"></div>
+    </div>
+    <div class="reverse-field">
+      <label>${rt('emailHotelManuale')}</label>
+      <input type="email" id="rev-hotel-email-manuale" placeholder="info@hotel.com">
+    </div>
+    <div class="reverse-field">
+      <label>${rt('tuoContatto')}</label>
+      <input type="text" id="rev-contatto-turista" placeholder="email@esempio.com o +39...">
+      <div style="font-size:11px;color:var(--ink-mu);margin-top:4px;">${rt('tuoContattoNota')}</div>
+    </div>
+    <button type="button" onclick="confermaHotelManuale()" class="sub-btn active" style="width:100%;">✓ Conferma questo hotel</button>
+    `}
+  `;
+};
+
+function escapeHtmlOfferte(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+window.cercaHotelInput = function() {
+  clearTimeout(revCercaTimeout);
+  const val = document.getElementById('rev-hotel-search').value.trim();
+  const resultsBox = document.getElementById('rev-hotel-results');
+  if (val.length < 2) { resultsBox.innerHTML = ''; return; }
+  revCercaTimeout = setTimeout(async () => {
+    try {
+      const resp = await fetch(`${APPS_SCRIPT_URL_OFFERTE}?azione=cercaNegozi&q=${encodeURIComponent(val)}&t=${Date.now()}`, {cache:'no-store'});
+      const json = await resp.json();
+      const risultati = (json.stato === 'ok' && json.risultati) ? json.risultati : [];
+      // Salviamo i risultati in un array globale e referenziamo solo l'indice
+      // nel click: evita ogni problema di escaping di virgolette/apostrofi
+      // che si avrebbe passando l'oggetto JSON direttamente nell'attributo onclick.
+      window._revUltimiRisultati = risultati;
+      if (risultati.length === 0) {
+        resultsBox.innerHTML = `<div style="font-size:12px;color:var(--ink-mu);padding:6px 2px;">Nessun risultato</div>`;
+        return;
+      }
+      resultsBox.innerHTML = risultati.map((r, i) => `
+        <div onclick="selezionaHotelIndice(${i})"
+          style="padding:10px 12px;border:1px solid var(--rule);border-radius:8px;margin-bottom:6px;cursor:pointer;background:#fff;">
+          <div style="font-weight:600;font-size:14px;">${escapeHtmlOfferte(r.nome)}</div>
+        </div>
+      `).join('');
+    } catch(e) {
+      console.warn('Ricerca hotel fallita:', e);
+      resultsBox.innerHTML = `<div style="font-size:12px;color:var(--ink-mu);">Ricerca non disponibile al momento</div>`;
+    }
+  }, 350);
+};
+
+window.selezionaHotelIndice = function(indice) {
+  const risultato = (window._revUltimiRisultati || [])[indice];
+  if (!risultato) return;
+  revHotelSelezionato = { nome: risultato.nome, email: risultato.email, lat: risultato.lat, lon: risultato.lon, registrato: true };
+  revHotelManuale = false;
+  renderModalitaSpecifica();
+};
+
+window.resetHotelSelezionato = function() {
+  revHotelSelezionato = null;
+  revHotelManuale = false;
+  renderModalitaSpecifica();
+};
+
+window.attivaHotelManuale = function() {
+  revHotelManuale = true;
+  renderModalitaSpecifica();
+};
+
+window.confermaHotelManuale = function() {
+  const nome = document.getElementById('rev-hotel-nome-manuale').value.trim();
+  const email = document.getElementById('rev-hotel-email-manuale').value.trim();
+  if (!nome || !email || !email.includes('@')) {
+    alert('Inserisci nome ed email validi per l\'hotel.');
+    return;
+  }
+  revHotelSelezionato = { nome, email, lat: null, lon: null, registrato: false };
+  renderModalitaSpecifica();
+};
+
+window.trovaEmailDaLink = async function() {
+  const linkInput = document.getElementById('rev-hotel-link-contatti');
+  const emailInput = document.getElementById('rev-hotel-email-manuale');
+  const statusDiv = document.getElementById('rev-trova-email-status');
+  const btn = document.getElementById('rev-trova-email-btn');
+  const link = linkInput.value.trim();
+  if (!link) return;
+
+  btn.disabled = true;
+  const testoOriginale = btn.textContent;
+  btn.textContent = rt('trovaEmailCercando');
+  statusDiv.textContent = '';
+  statusDiv.style.color = '';
+
+  try {
+    const resp = await fetch(`${APPS_SCRIPT_URL_OFFERTE}?azione=estraiEmailDaUrl&url=${encodeURIComponent(link)}&t=${Date.now()}`, {cache:'no-store'});
+    const json = await resp.json();
+    if (json.stato === 'ok' && json.email) {
+      emailInput.value = json.email;
+      statusDiv.textContent = rt('trovaEmailOk');
+      statusDiv.style.color = '#2e7d32';
+    } else {
+      statusDiv.textContent = rt('trovaEmailKo');
+      statusDiv.style.color = 'var(--ink-mu)';
+    }
+  } catch(e) {
+    console.warn('Estrazione email fallita:', e);
+    statusDiv.textContent = rt('trovaEmailKo');
+    statusDiv.style.color = 'var(--ink-mu)';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = testoOriginale;
+  }
 };
 
 function acquisisciGpsTurista() {
@@ -1164,22 +1387,90 @@ window.chiudiReverseOverlay = function() {
 
 window.pubblicaRichiestaReverse = async function() {
   const budget = parseFloat(document.getElementById('rev-budget').value);
-  const raggio = parseInt(document.getElementById('rev-raggio').value);
+  const notti = parseInt(document.getElementById('rev-notti').value) || 1;
   const note = document.getElementById('rev-note').value.trim();
   if (!budget || budget <= 0 || !reverseUserLat) return;
 
   const btn = document.getElementById('rev-pubblica-btn');
-  btn.disabled = true;
-  try {
-    const docRef = await addDoc(collection(db, 'richieste-reverse'), {
-      lat: reverseUserLat, lon: reverseUserLon, raggio, budgetMax: budget,
-      note, stato: 'aperta', ts: serverTimestamp()
-    });
-    currentRichiestaId = docRef.id;
-    mostraAttesaProposte(docRef.id);
-  } catch(e) {
-    console.error(e);
-    btn.disabled = false;
+
+  // ── MODALITÀ BROADCAST (comportamento originale, invariato) ──
+  if (revModalita === 'broadcast') {
+    const raggio = parseInt(document.getElementById('rev-raggio').value);
+    btn.disabled = true;
+    try {
+      const docRef = await addDoc(collection(db, 'richieste-reverse'), {
+        lat: reverseUserLat, lon: reverseUserLon, raggio, budgetMax: budget,
+        notti, note, modalita: 'broadcast', stato: 'aperta', ts: serverTimestamp()
+      });
+      currentRichiestaId = docRef.id;
+      mostraAttesaProposte(docRef.id);
+    } catch(e) {
+      console.error(e);
+      btn.disabled = false;
+    }
+    return;
+  }
+
+  // ── MODALITÀ MIRATA: serve un hotel selezionato (registrato o manuale) ──
+  if (!revHotelSelezionato) {
+    alert('Seleziona o inserisci un hotel prima di continuare.');
+    return;
+  }
+
+  if (revHotelSelezionato.registrato) {
+    // Hotel registrato su Instantown: crea la richiesta, la vedrà nella sua
+    // dashboard indipendentemente dalla distanza GPS (targeting per nome).
+    btn.disabled = true;
+    try {
+      const docRef = await addDoc(collection(db, 'richieste-reverse'), {
+        lat: reverseUserLat, lon: reverseUserLon, budgetMax: budget,
+        notti, note, modalita: 'mirata_registrato',
+        hotelTarget: revHotelSelezionato.nome,
+        stato: 'aperta', ts: serverTimestamp()
+      });
+      currentRichiestaId = docRef.id;
+      mostraAttesaProposte(docRef.id);
+    } catch(e) {
+      console.error(e);
+      btn.disabled = false;
+    }
+  } else {
+    // Hotel esterno (non registrato): serve il contatto del turista per
+    // permettere all'hotel di rispondere fuori piattaforma.
+    const contattoInput = document.getElementById('rev-contatto-turista');
+    const contatto = contattoInput ? contattoInput.value.trim() : '';
+    if (!contatto) {
+      if (contattoInput) contattoInput.style.borderColor = '#c0392b';
+      return;
+    }
+    btn.disabled = true;
+    try {
+      await addDoc(collection(db, 'richieste-reverse'), {
+        lat: reverseUserLat, lon: reverseUserLon, budgetMax: budget,
+        notti, note, modalita: 'mirata_esterna',
+        hotelEsternoNome: revHotelSelezionato.nome,
+        hotelEsternoEmail: revHotelSelezionato.email,
+        contattoTurista: contatto,
+        stato: 'notificata', ts: serverTimestamp()
+      });
+      await fetch(APPS_SCRIPT_URL_OFFERTE, {
+        method: 'POST',
+        headers: {'Content-Type': 'text/plain;charset=utf-8'},
+        body: JSON.stringify({
+          tipo: 'notifica_richiesta_hotel_esterno',
+          emailHotel: revHotelSelezionato.email,
+          nomeHotel: revHotelSelezionato.nome,
+          budgetMax: budget, notti, note,
+          contattoTurista: contatto
+        })
+      });
+      document.getElementById('reverse-body').innerHTML = `
+        <div class="richiesta-stato-banner">✅ ${rt('richiestaInviataEsterna')}</div>
+      `;
+    } catch(e) {
+      console.error(e);
+      btn.disabled = false;
+    }
   }
 };
 
@@ -1200,40 +1491,64 @@ function mostraAttesaProposte(richiestaId) {
     snap.forEach(d => {
       const p = d.data();
       if (p.stato === 'rifiutata') return;
+      // Compatibilità: alcune proposte più vecchie potrebbero avere 'prezzo'
+      // invece di 'prezzoNotte' — usiamo il primo disponibile.
+      const prezzoNotte = (typeof p.prezzoNotte === 'number') ? p.prezzoNotte : (p.prezzo || 0);
+      const notti = p.notti || 1;
+      const totale = p.totale || (prezzoNotte * notti);
       html += `<div class="proposta-hotel-card">
         <div class="proposta-hotel-nome">${p.hotelNome || 'Hotel'}</div>
-        <div class="proposta-hotel-prezzo">€ ${p.prezzo.toFixed(2)}</div>
+        <div class="proposta-hotel-prezzo">€ ${prezzoNotte.toFixed(2)}/notte${notti > 1 ? ` · ${notti} notti · Totale € ${totale.toFixed(2)}` : ''}</div>
         ${p.stato === 'accettata'
-          ? `<div style="color:#2e7d32;font-weight:600;font-size:13px;">✅ ${rt('richiestaChiusa')}</div>`
-          : `<button class="btn-accetta-hotel" onclick="accettaPropostaHotel('${richiestaId}','${d.id}')">${rt('accettaProposta')}</button>`}
+          ? `<div style="color:#2e7d32;font-weight:600;font-size:13px;">✅ ${p.qrGenerato ? rt('richiestaChiusa') : rt('attesaConfermaHotel')}</div>`
+          : `<div id="accetta-row-${d.id}">
+               <button class="btn-accetta-hotel" onclick="mostraCampoEmail('${richiestaId}','${d.id}')">${rt('accettaProposta')}</button>
+             </div>`}
       </div>`;
     });
     list.innerHTML = html || `<p style="color:var(--ink-mu);font-size:13px;">${rt('nessunaProposta')}</p>`;
   });
 }
 
+// Al click su "Accetta", mostriamo un piccolo campo email inline invece di
+// confermare subito: serve per sapere dove l'hotel dovrà inviare la
+// conferma e il QR, dato che il cliente naviga in modo anonimo.
+window.mostraCampoEmail = function(richiestaId, propostaId) {
+  const row = document.getElementById('accetta-row-' + propostaId);
+  if (!row) return;
+  row.innerHTML = `
+    <input type="email" class="reverse-field" id="email-accetta-${propostaId}"
+      placeholder="${rt('emailPerConferma')}"
+      style="width:100%;padding:10px 12px;border:1px solid var(--rule);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;margin-bottom:8px;box-sizing:border-box;">
+    <button class="btn-accetta-hotel" onclick="accettaPropostaHotel('${richiestaId}','${propostaId}')">${rt('confermaAccetta')}</button>
+  `;
+};
+
 window.accettaPropostaHotel = async function(richiestaId, propostaId) {
+  const emailInput = document.getElementById('email-accetta-' + propostaId);
+  const email = emailInput ? emailInput.value.trim() : '';
+  if (!email || !email.includes('@')) {
+    if (emailInput) emailInput.style.borderColor = '#c0392b';
+    return;
+  }
   try {
     const snap = await getDocs(collection(db, 'richieste-reverse', richiestaId, 'proposte'));
     const updates = [];
     snap.forEach(d => {
-      const stato = d.id === propostaId ? 'accettata' : 'rifiutata';
-      updates.push(updateDoc(doc(db, 'richieste-reverse', richiestaId, 'proposte', d.id), { stato }));
+      if (d.id === propostaId) {
+        updates.push(updateDoc(doc(db, 'richieste-reverse', richiestaId, 'proposte', d.id), {
+          stato: 'accettata', emailCliente: email
+        }));
+      } else {
+        updates.push(updateDoc(doc(db, 'richieste-reverse', richiestaId, 'proposte', d.id), { stato: 'rifiutata' }));
+      }
     });
     await Promise.all(updates);
     await updateDoc(doc(db, 'richieste-reverse', richiestaId), { stato: 'chiusa' });
   } catch(e) { console.error(e); }
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-  const observer = new MutationObserver(() => {
-    const activeCat = document.querySelector('.cat-tab.active');
-    const btn = document.getElementById('btn-cerca-alloggio');
-    if (btn) btn.style.display = (activeCat && activeCat.dataset.cat === 'VIAGGI') ? 'block' : 'none';
-  });
-  const catTabs = document.getElementById('cat-tabs');
-  if (catTabs) observer.observe(catTabs, { attributes: true, subtree: true, attributeFilter: ['class'] });
-});
+
 </script>
 </body>
 </html>

@@ -795,7 +795,7 @@ async function pubblicaOfferta(e) {
   btn.textContent = '⚡ Pubblicazione in corso...';
   const formData = {
     timestamp:    new Date().toISOString(),
-    insegna:      document.querySelector('[name=insegna]')?.value || '',
+    insegna:      document.querySelector('[name=negozio]')?.value || document.getElementById('negozio-hidden')?.value || '',
     denominazione:document.querySelector('[name=denominazione]')?.value || '',
     categoria:    document.getElementById('cat-val')?.value || '',
     descrizione:  document.getElementById('desc-input')?.value || '',
