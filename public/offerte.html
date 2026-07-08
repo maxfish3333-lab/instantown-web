@@ -1120,7 +1120,7 @@ const REVERSE_LABELS = {
   trovaEmailBtn:{ it:'🔍 Trova email', en:'🔍 Find email', zh:'🔍 查找邮箱', es:'🔍 Buscar email', fr:'🔍 Trouver l\'email', de:'🔍 E-Mail finden' },
   trovaEmailCercando:{ it:'Cerco...', en:'Searching...', zh:'搜索中...', es:'Buscando...', fr:'Recherche...', de:'Suche...' },
   trovaEmailOk:{ it:'✓ Email trovata e inserita, verificala', en:'✓ Email found and filled in, please verify', zh:'✓ 已找到并填入邮箱，请核实', es:'✓ Email encontrado e insertado, verifícalo', fr:'✓ Email trouvé et renseigné, vérifiez-le', de:'✓ E-Mail gefunden und eingetragen, bitte prüfen' },
-  trovaEmailKo:{ it:'Nessuna email trovata in quella pagina — inseriscila tu qui sotto', en:'No email found on that page — enter it below', zh:'该页面未找到邮箱——请在下方输入', es:'No se encontró ningún email en esa página — introdúcelo abajo', fr:"Aucun email trouvé sur cette page — saisissez-le ci-dessous", de:'Auf dieser Seite wurde keine E-Mail gefunden – bitte unten eingeben' },
+  trovaEmailKo:{ it:'Email non trovata — inseriscila qui sotto', en:'Email not found — enter it below', zh:'未找到邮箱——请在下方输入', es:'Email no encontrado — introdúcelo abajo', fr:"Email non trouvé — saisissez-le ci-dessous", de:'E-Mail nicht gefunden – bitte unten eingeben' },
   tuoContatto:{ it:'Il tuo contatto (email o telefono)', en:'Your contact (email or phone)', zh:'您的联系方式（邮箱或电话）', es:'Tu contacto (email o teléfono)', fr:'Votre contact (email ou téléphone)', de:'Dein Kontakt (E-Mail oder Telefon)' },
   tuoContattoNota:{ it:"Serve perché l'hotel non è su Instantown: ti risponderà direttamente", en:"Needed because the hotel isn't on Instantown: they'll reply directly", zh:'因为该酒店不在Instantown上，需要此信息以便直接回复您', es:'Es necesario porque el hotel no está en Instantown: te responderá directamente', fr:"Nécessaire car l'hôtel n'est pas sur Instantown : il vous répondra directement", de:'Erforderlich, da das Hotel nicht bei Instantown ist: Sie antworten dir direkt' },
   hotelSelezionato:{ it:'Hotel selezionato', en:'Selected hotel', zh:'已选择的酒店', es:'Hotel seleccionado', fr:'Hôtel sélectionné', de:'Ausgewähltes Hotel' },
@@ -1171,7 +1171,7 @@ function renderFormRichiesta() {
       <label>${rt('note')}</label>
       <input type="text" id="rev-note" placeholder="es. camera doppia, stanotte">
     </div>
-    <div class="reverse-gps-status" id="rev-gps-status">${rt('gpsRichiesta')}</div>
+    <div class="reverse-gps-status" id="rev-gps-status" style="cursor:pointer;text-decoration:underline;" onclick="acquisisciGpsTurista()" title="Clicca per riprovare">${rt('gpsRichiesta')}</div>
     <button class="btn-pubblica-richiesta" id="rev-pubblica-btn" onclick="pubblicaRichiestaReverse()" disabled>${rt('pubblica')}</button>
   `;
   renderModalitaSpecifica();
@@ -1217,7 +1217,8 @@ function renderModalitaSpecifica() {
       ${!revHotelSelezionato.registrato ? `
       <div class="reverse-field">
         <label>${rt('tuoContatto')}</label>
-        <input type="text" id="rev-contatto-turista" placeholder="email@esempio.com o +39...">
+        <input type="text" id="rev-contatto-turista" placeholder="email@esempio.com o +39..."
+          value="${escapeHtmlOfferte(revHotelSelezionato.contattoTurista || '')}">
         <div style="font-size:11px;color:var(--ink-mu);margin-top:4px;">${rt('tuoContattoNota')}</div>
       </div>` : ''}
     `;
@@ -1320,11 +1321,14 @@ window.attivaHotelManuale = function() {
 window.confermaHotelManuale = function() {
   const nome = document.getElementById('rev-hotel-nome-manuale').value.trim();
   const email = document.getElementById('rev-hotel-email-manuale').value.trim();
+  // Salva il contatto turista già compilato prima che renderModalitaSpecifica()
+  // sostituisca il DOM e azzeri il campo.
+  const contattoGiaCompilato = (document.getElementById('rev-contatto-turista')?.value || '').trim();
   if (!nome || !email || !email.includes('@')) {
     alert('Inserisci nome ed email validi per l\'hotel.');
     return;
   }
-  revHotelSelezionato = { nome, email, lat: null, lon: null, registrato: false };
+  revHotelSelezionato = { nome, email, lat: null, lon: null, registrato: false, contattoTurista: contattoGiaCompilato };
   renderModalitaSpecifica();
 };
 
@@ -1368,6 +1372,7 @@ function acquisisciGpsTurista() {
     document.getElementById('rev-gps-status').textContent = rt('gpsErrore');
     return;
   }
+  document.getElementById('rev-gps-status').textContent = rt('gpsRichiesta');
   navigator.geolocation.getCurrentPosition(
     (pos) => {
       reverseUserLat = pos.coords.latitude;
@@ -1379,6 +1384,8 @@ function acquisisciGpsTurista() {
     { enableHighAccuracy: true, timeout: 10000 }
   );
 }
+// Esposta su window per permettere il click di "riprova" sul messaggio di stato
+window.acquisisciGpsTurista = acquisisciGpsTurista;
 
 window.chiudiReverseOverlay = function() {
   document.getElementById('reverse-overlay').classList.remove('open');

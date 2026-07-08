@@ -1,7 +1,6 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
     // ── CHAT TRADING ──
     // Solo utenti autenticati possono leggere/scrivere le chat
     match /chats/{txId}/{document=**} {
@@ -21,8 +20,9 @@ service cloud.firestore {
     }
 
     // ── RICHIESTE REVERSE ──
-    // Solo utenti autenticati
-    match /richieste-reverse/{docId} {
+    // Solo utenti autenticati — {document=**} estende il permesso anche
+    // alla sottocollezione /proposte, altrimenti non ereditata automaticamente
+    match /richieste-reverse/{docId}/{document=**} {
       allow read, write: if request.auth != null;
     }
 

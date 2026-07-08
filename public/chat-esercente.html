@@ -58,6 +58,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--ink);
 .richiesta-input{flex:1;background:#FFFFFF;border:1px solid rgba(200,134,10,.4);border-radius:6px;padding:7px 9px;font-size:13px;color:var(--ink);font-family:'DM Sans',sans-serif;outline:none;}
 .richiesta-propose-btn{background:var(--ocra);color:#1C1410;border:none;border-radius:6px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;}
 .richiesta-inviata{font-size:11px;color:#4caf50;font-weight:600;}
+.prenotazione-accettata-card{padding:14px 20px;border-bottom:1px solid rgba(28,20,16,.04);background:rgba(46,125,50,.06);}
+.prenotazione-accettata-prezzo{font-size:14px;font-weight:600;color:#2e7d32;margin-bottom:4px;}
+.prenotazione-accettata-nota{font-size:11px;color:rgba(28,20,16,.45);margin-bottom:8px;}
+.btn-genera-qr-hotel{width:100%;background:#2e7d32;color:#fff;border:none;border-radius:6px;padding:9px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.btn-genera-qr-hotel:disabled{background:rgba(46,125,50,.4);cursor:not-allowed;}
+.prenotazione-qr-ok{font-size:11px;color:#2e7d32;font-weight:600;}
 
 /* AREA CHAT */
 .chat-area{flex:1;display:flex;flex-direction:column;min-width:0;}
@@ -152,6 +158,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--ink);
 <!-- DASHBOARD -->
 <div id="dashboard">
   <div class="chat-list" id="chat-list">
+    <div class="chat-list-header" id="prenotazioni-accettate-header" style="display:none;">✅ Prenotazioni accettate dal cliente</div>
+    <div id="prenotazioni-accettate-list"></div>
     <div class="chat-list-header" id="richieste-reverse-header" style="display:none;">🏨 Richieste alloggio vicine</div>
     <div id="richieste-reverse-list"></div>
     <div class="chat-list-header">Conversazioni</div>
@@ -177,7 +185,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--ink);
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, getDocs, doc, updateDoc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, getDocs, doc, updateDoc, setDoc, serverTimestamp, collectionGroup, where } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
 const firebaseConfig = {
@@ -276,6 +284,7 @@ window.accediDashboard = async function() {
 
     caricaChats(trovato.nome);
     if (negozioLat && negozioLon) caricaRichiesteReverseCompatibili();
+    caricaPrenotazioniAccettate(trovato.nome);
 
   } catch(e) {
     console.error(e);
@@ -336,16 +345,29 @@ function caricaRichiesteReverseCompatibili() {
     snap.forEach(richDoc => {
       const r = richDoc.data();
       if (r.stato !== 'aperta') return;
-      if (typeof r.lat !== 'number' || typeof r.lon !== 'number') return;
-      const dist = haversine(negozioLat, negozioLon, r.lat, r.lon);
-      if (dist > r.raggio) return;
+
+      // Richiesta mirata specificamente a questo hotel per nome: la mostriamo
+      // sempre, indipendentemente dalla distanza GPS (il turista l'ha scelta
+      // di proposito, non conta la vicinanza).
+      const isMirataAMe = r.modalita === 'mirata_registrato' &&
+        String(r.hotelTarget || '').trim().toLowerCase() === String(negozioCorrente || '').trim().toLowerCase();
+
+      let dist = null;
+      if (!isMirataAMe) {
+        // Comportamento originale: richiesta broadcast, filtrata per distanza
+        if (typeof r.lat !== 'number' || typeof r.lon !== 'number') return;
+        dist = haversine(negozioLat, negozioLon, r.lat, r.lon);
+        if (dist > r.raggio) return;
+      }
+
       count++;
       const notti = r.notti || 1;
       const card = document.createElement('div');
       card.className = 'richiesta-card';
       card.innerHTML = `
+        ${isMirataAMe ? `<div style="font-size:11px;font-weight:600;color:var(--ocra-d);margin-bottom:4px;">🎯 Richiesta diretta a te</div>` : ''}
         <div class="richiesta-card-budget">💰 Budget max € ${r.budgetMax.toFixed(2)}/notte · ${notti} nott${notti===1?'e':'i'}</div>
-        <div class="richiesta-card-dist">📍 ~${Math.round(dist)}m di distanza</div>
+        ${dist !== null ? `<div class="richiesta-card-dist">📍 ~${Math.round(dist)}m di distanza</div>` : ''}
         ${r.note ? `<div class="richiesta-card-note">📝 ${r.note}</div>` : ''}
         <div class="richiesta-card-totale" id="rev-totale-${richDoc.id}" style="font-size:11px;color:rgba(28,20,16,.5);margin-bottom:6px;display:none;">Totale: € <span id="rev-tot-val-${richDoc.id}">0.00</span></div>
         <div class="richiesta-propose-row" id="rev-form-${richDoc.id}">
@@ -392,6 +414,83 @@ window.inviaPropostaHotel = async function(richiestaId, notti) {
     if (totaleDiv) totaleDiv.style.display = 'none';
     if (formRow) formRow.innerHTML = `<span class="richiesta-inviata">✓ Proposta inviata: € ${prezzoNotte.toFixed(2)}/notte${notti > 1 ? ' · Totale € ' + totale.toFixed(2) : ''}</span>`;
   } catch(e) { console.error(e); }
+};
+
+// ── PRENOTAZIONI HOTEL ACCETTATE DAL CLIENTE ──
+// Ascolta in tempo reale (via collectionGroup) tutte le proposte fatte da
+// questo hotel su qualsiasi richiesta-reverse. Quando il cliente ne accetta
+// una, mostriamo qui un bottone per generare il QR e inviare la conferma
+// via email — lo stesso meccanismo già usato per il sistema di trading.
+let unsubPrenotazioniAccettate = null;
+
+function caricaPrenotazioniAccettate(negozio) {
+  if (unsubPrenotazioniAccettate) unsubPrenotazioniAccettate();
+  const q = query(collectionGroup(db, 'proposte'), where('hotelNome', '==', negozio), where('stato', '==', 'accettata'));
+  unsubPrenotazioniAccettate = onSnapshot(q, (snap) => {
+    const list = document.getElementById('prenotazioni-accettate-list');
+    const header = document.getElementById('prenotazioni-accettate-header');
+    list.innerHTML = '';
+    let count = 0;
+    snap.forEach(propDoc => {
+      const p = propDoc.data();
+      // L'id della richiesta-reverse è il genitore del genitore del doc proposta
+      const richiestaId = propDoc.ref.parent.parent.id;
+      count++;
+      const notti = p.notti || 1;
+      const totale = p.totale || (p.prezzoNotte * notti);
+      const card = document.createElement('div');
+      card.className = 'prenotazione-accettata-card';
+      card.innerHTML = `
+        <div class="prenotazione-accettata-prezzo">€ ${p.prezzoNotte.toFixed(2)}/notte · ${notti} nott${notti===1?'e':'i'} · Totale € ${totale.toFixed(2)}</div>
+        <div class="prenotazione-accettata-nota">Cliente: ${p.emailCliente || 'email non disponibile'}</div>
+        ${p.qrGenerato
+          ? `<div class="prenotazione-qr-ok">✓ Conferma inviata al cliente</div>`
+          : `<button class="btn-genera-qr-hotel" onclick="generaQRHotelEInvia(this, '${richiestaId}', '${propDoc.id}', ${totale}, '${escapeHtml(p.emailCliente || '')}')">📤 Genera QR e invia conferma</button>`}
+      `;
+      list.appendChild(card);
+    });
+    header.style.display = count > 0 ? 'block' : 'none';
+  });
+}
+
+// Genera il QR per una prenotazione hotel accettata e invia l'email di
+// conferma al cliente, riusando lo stesso schema 'qr_b_emessi' già usato
+// dal sistema di trading, così mio-account.html mostra il QR ovunque il
+// cliente acceda, indipendentemente dal dispositivo.
+window.generaQRHotelEInvia = async function(btn, richiestaId, propostaId, prezzoTotale, emailCliente) {
+  if (!emailCliente) {
+    alert('Email del cliente non disponibile per questa prenotazione.');
+    return;
+  }
+  if (btn) { btn.disabled = true; btn.textContent = '...'; }
+
+  try {
+    const idQr = 'QR-HOTEL-' + Date.now();
+    await setDoc(doc(db, 'qr_b_emessi', idQr), {
+      email: emailCliente,
+      negozio: negozioCorrente || '',
+      prezzo: prezzoTotale,
+      tx: 'HOTEL-' + richiestaId,
+      stato: 'attivo',
+      ts: serverTimestamp()
+    });
+
+    await updateDoc(doc(db, 'richieste-reverse', richiestaId, 'proposte', propostaId), { qrGenerato: true });
+
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({
+        tipo: 'notifica_qr_pronto',
+        email: emailCliente,
+        negozio: negozioCorrente || '',
+        prezzo: prezzoTotale
+      })
+    });
+  } catch(e) {
+    console.error('Errore generazione QR hotel:', e);
+    if (btn) { btn.disabled = false; btn.textContent = '📤 Genera QR e invia conferma'; }
+  }
 };
 
 
