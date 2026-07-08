@@ -830,7 +830,7 @@ async function pubblicaOfferta(e) {
 
   const ini = document.getElementById('inizio-input').value;
   const fin = document.getElementById('fine-input').value;
-  if(ini && fin && fin <= ini) { alert('L\'orario di fine deve essere successivo all\'inizio.'); return; }
+  if(ini && fin && fin === ini) { alert('L\'orario di fine deve essere successivo all\'inizio.'); return; }
 
   const btn = document.getElementById('btn-pubblica');
   btn.disabled = true;
