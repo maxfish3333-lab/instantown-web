@@ -15,10 +15,10 @@
   --rosso:#8B1A1A;--rosso-l:#C0392B;
   --ocra:#C8860A;--ocra-l:#E8A020;--ocra-d:#8B5A05;
   --ink:#1C1410;--ink-m:#3D2E24;--ink-mu:#6B5A4E;
-  --bianco:#FDFAF4;--rule:rgba(139,26,26,0.10);
+  --bianco:#FDFAF4;--rule:rgba(139,26,26,0.10);--cielo-p:#E8F4FB;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--ink);height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+body{font-family:'DM Sans',sans-serif;background:var(--cielo-p);color:var(--ink);height:100vh;overflow:hidden;display:flex;flex-direction:column;}
 
 /* HEADER */
 .chat-header{background:#FFFFFF;border-bottom:1px solid var(--rule);padding:14px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(28,20,16,.04);}
@@ -490,6 +490,7 @@ function testoVisualizzato(d) {
     const lang = getCurrentLang();
     return QUICK_PHRASES[d.quickPhrase][lang] || QUICK_PHRASES[d.quickPhrase].it;
   }
+  if (d.da === 'esercente' && d.testoCliente) return d.testoCliente;
   return d.testo;
 }
 
@@ -654,14 +655,33 @@ window.inviaMsgCliente = async function() {
   btn.disabled = true;
   input.value = '';
   try {
+    // Traduce il messaggio in italiano per l'esercente, mantenendo il
+    // testo originale per la propria vista (il cliente rilegge sempre
+    // quello che ha scritto lui, senza passare per il traduttore).
+    let testoIt = testo;
+    try {
+      const lang = getCurrentLang();
+      if (lang !== 'it') {
+        const tradResp = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: {'Content-Type': 'text/plain;charset=utf-8'},
+          body: JSON.stringify({ tipo: 'traduci_messaggio', testo, da: lang, a: 'it' })
+        });
+        const tradJson = await tradResp.json();
+        if (tradJson.stato === 'ok' && tradJson.tradotto) testoIt = tradJson.tradotto;
+      }
+    } catch (tradErr) {
+      console.warn('Traduzione messaggio fallita, salvo originale:', tradErr);
+    }
     await addDoc(collection(db, 'chats', currentTX, 'messages'), {
-      testo, da: 'cliente', ts: serverTimestamp()
+      testo, testoIt, da: 'cliente', ts: serverTimestamp()
     });
     // Aggiorna documento padre con info
     const { setDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
     await setDoc(doc(db, 'chats', currentTX), {
       negozio: document.getElementById('info-negozio').textContent,
-      ultimoMsg: testo,
+      linguaCliente: getCurrentLang(),
+      ultimoMsg: testoIt,
       ultimoTs: serverTimestamp(),
       daLeggere: true
     }, { merge: true });
