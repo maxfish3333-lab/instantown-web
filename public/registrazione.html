@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title data-i18n-title="rg_title">InstantTown — Registrazione</title>
+<title data-i18n-title="rg_title">InstantTown â€” Registrazione</title>
 <script src="i18n.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -18,7 +18,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--ink);
 .card-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;text-align:center;color:var(--ink);margin-bottom:4px;}
 .card-sub{font-size:13px;color:var(--ink-mu);text-align:center;margin-bottom:28px;}
 
-/* ── SELETTORE TIPO ── */
+/* â”€â”€ SELETTORE TIPO â”€â”€ */
 .tipo-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:28px;}
 .tipo-btn{padding:14px 10px;border:1.5px solid var(--rule);border-radius:4px;background:#fff;cursor:pointer;text-align:center;transition:all .2s;font-family:'DM Sans',sans-serif;}
 .tipo-btn:hover{border-color:var(--cielo);}
@@ -28,7 +28,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--ink);
 .tipo-btn .tipo-label{font-size:13px;font-weight:500;display:block;}
 .tipo-btn .tipo-sub{font-size:11px;opacity:.7;display:block;margin-top:2px;}
 
-/* ── PANELS ── */
+/* â”€â”€ PANELS â”€â”€ */
 .panel{display:none;}
 .panel.visible{display:block;}
 
@@ -36,7 +36,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--ink);
 .info-cielo{background:#EBF5FF;border-left:3px solid var(--cielo);color:var(--ink-m);}
 .info-rosso{background:#FDF0EF;border-left:3px solid var(--rosso);color:var(--ink-m);}
 
-/* ── CAMPI ── */
+/* â”€â”€ CAMPI â”€â”€ */
 .field{margin-bottom:14px;position:relative;}
 .field-row{display:grid;gap:12px;margin-bottom:14px;}
 .field-row.col2{grid-template-columns:1fr 1fr;}
@@ -46,7 +46,7 @@ input,select{width:100%;padding:11px 14px;border:1px solid rgba(139,26,26,.15);b
 input:focus,select:focus{outline:none;border-color:var(--cielo);}
 input.focus-rosso:focus{border-color:var(--rosso);}
 
-/* ── VALIDAZIONE FEEDBACK ── */
+/* â”€â”€ VALIDAZIONE FEEDBACK â”€â”€ */
 .field-wrap{position:relative;}
 .val-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:16px;display:none;}
 .val-msg{font-size:11px;margin-top:4px;display:none;padding:4px 8px;border-radius:2px;}
@@ -73,7 +73,7 @@ input.invalid{border-color:var(--rosso-l) !important;}
 .back{display:block;text-align:center;margin-top:16px;font-size:13px;color:var(--ink-mu);text-decoration:none;}
 .back:hover{color:var(--ocra);}
 
-/* ── PROMO BANNER ── */
+/* â”€â”€ PROMO BANNER â”€â”€ */
 .promo{background:linear-gradient(135deg,#14532d,#16a34a);color:#fff;border-radius:4px;padding:10px 16px;font-size:12px;text-align:center;margin-bottom:20px;letter-spacing:.04em;}
 .promo strong{font-size:13px;}
 </style>
@@ -84,12 +84,12 @@ input.invalid{border-color:var(--rosso-l) !important;}
 <div class="card">
   <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
     <select id="lang-sel" onchange="applyLang(this.value)" style="padding:4px 8px;border:1px solid var(--rule);border-radius:3px;background:#fff;font-family:inherit;font-size:12px;color:var(--ink-mu);cursor:pointer;">
-      <option value="it">🇮🇹 IT</option>
-      <option value="en">🇬🇧 EN</option>
-      <option value="zh">🇨🇳 中文</option>
-      <option value="es">🇪🇸 ES</option>
-      <option value="fr">🇫🇷 FR</option>
-      <option value="de">🇩🇪 DE</option>
+      <option value="it">ðŸ‡®ðŸ‡¹ IT</option>
+      <option value="en">ðŸ‡¬ðŸ‡§ EN</option>
+      <option value="zh">ðŸ‡¨ðŸ‡³ ä¸­æ–‡</option>
+      <option value="es">ðŸ‡ªðŸ‡¸ ES</option>
+      <option value="fr">ðŸ‡«ðŸ‡· FR</option>
+      <option value="de">ðŸ‡©ðŸ‡ª DE</option>
     </select>
   </div>
   <div class="card-logo"><img src="Nuovo_logo_3_diss.png" alt="Logo InstantTown"></div>
@@ -98,24 +98,24 @@ input.invalid{border-color:var(--rosso-l) !important;}
 
   <div class="tipo-row">
     <button class="tipo-btn" id="btn-privato" onclick="setTipo('privato')">
-      <span class="tipo-icon">👤</span>
+      <span class="tipo-icon">ðŸ‘¤</span>
       <span class="tipo-label" data-i18n="rg_btn_priv_label">Utente Privato</span>
       <span class="tipo-sub" data-i18n="rg_btn_priv_sub">Cittadino o turista</span>
     </button>
     <button class="tipo-btn" id="btn-impresa" onclick="setTipo('impresa')">
-      <span class="tipo-icon">🏪</span>
+      <span class="tipo-icon">ðŸª</span>
       <span class="tipo-label" data-i18n="rg_btn_imp_label">Impresa / Esercente</span>
-      <span class="tipo-sub" data-i18n="rg_btn_imp_sub">Negozio o attività</span>
+      <span class="tipo-sub" data-i18n="rg_btn_imp_sub">Negozio o attivitÃ </span>
     </button>
   </div>
 
-  <!-- ══ PANEL PRIVATO ══ -->
+  <!-- â•â• PANEL PRIVATO â•â• -->
   <div class="panel" id="panel-privato">
-    <div class="info-box info-cielo" data-i18n="rg_info_priv">Registrazione rapida — ti basta la <strong>email</strong>.<br>Gli altri dati li raccogliamo in modo sicuro dalla carta di pagamento al momento del primo acquisto.</div>
+    <div class="info-box info-cielo" data-i18n="rg_info_priv">Registrazione rapida â€” ti basta la <strong>email</strong>.<br>Gli altri dati li raccogliamo in modo sicuro dalla carta di pagamento al momento del primo acquisto.</div>
     <form action="https://script.google.com/macros/s/AKfycbw82Ycb8tjx_yMN50bkDHkFd7yEQNiByfuxpaUx-RXFDFVhFFzw7KNUjaioPV6aDs9c/exec" data-email="info@instantown.it" method="POST">
       <input type="hidden" name="tipo_profilo" value="Utente Privato">
       <input type="hidden" name="_cc" value="info@instantown.it">
-      <input type="hidden" name="_subject" value="[InstantTown] Nuova registrazione — Utente Privato">
+      <input type="hidden" name="_subject" value="[InstantTown] Nuova registrazione â€” Utente Privato">
       <div class="field">
         <label data-i18n="rg_label_email_priv">La tua email</label>
         <input type="email" name="_replyto" placeholder="tua@email.com" data-i18n-placeholder="rg_ph_email_priv" required>
@@ -124,28 +124,28 @@ input.invalid{border-color:var(--rosso-l) !important;}
         <input type="checkbox" name="termini" required>
         <span data-i18n="rg_check_priv">Accetto i termini del servizio e il sistema di pagamento con Garanzia Bancaria</span>
       </div>
-      <button type="submit" class="btn-submit btn-cielo-full" data-i18n="rg_btn_send_priv">Invia — ricevi il link di conferma</button>
+      <button type="submit" class="btn-submit btn-cielo-full" data-i18n="rg_btn_send_priv">Invia â€” ricevi il link di conferma</button>
       <p class="note" data-i18n="rg_note_priv">Riceverai una email con il link per attivare il tuo account.</p>
     </form>
   </div>
 
-  <!-- ══ PANEL IMPRESA ══ -->
+  <!-- â•â• PANEL IMPRESA â•â• -->
   <div class="panel" id="panel-impresa">
 
-    <div class="info-box info-rosso" data-i18n="rg_info_imp">Compila i dati della tua attività. Verificheremo <strong>Codice Fiscale</strong> e <strong>P.IVA</strong> in tempo reale prima dell'invio.</div>
+    <div class="info-box info-rosso" data-i18n="rg_info_imp">Compila i dati della tua attivitÃ . Verificheremo <strong>Codice Fiscale</strong> e <strong>P.IVA</strong> in tempo reale prima dell'invio.</div>
     <div id="success-impresa" style="display:none;padding:28px 20px;background:#f0fdf4;border:2px solid #16a34a;border-radius:6px;text-align:center;margin-bottom:16px;">
       <div style="font-size:32px;margin-bottom:10px;">&#x2705;</div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:#1C1410;margin-bottom:12px;" data-i18n="rg_success_title">Registrazione completata!</div>
       <div style="font-size:14px;color:#3D2E24;line-height:1.8;background:#fff;border-radius:6px;padding:14px 18px;border:1px solid #16a34a;">
-        &#x1F4E7; <strong>Controlla la tua email</strong> — riceverai il tuo <strong>PIN personale</strong> da <em>info@instantown.it</em> entro pochi minuti.<br>
-        <span style="font-size:12px;color:#6B5A4E;">Il PIN ti servirà per pubblicare offerte e accedere all'area esercente.</span>
+        &#x1F4E7; <strong>Controlla la tua email</strong> â€” riceverai il tuo <strong>PIN personale</strong> da <em>info@instantown.it</em> entro pochi minuti.<br>
+        <span style="font-size:12px;color:#6B5A4E;">Il PIN ti servirÃ  per pubblicare offerte e accedere all'area esercente.</span>
       </div>
     </div>
 
     <form id="form-impresa" action="https://formspree.io/f/xbjnvpzw" data-email="info@instantown.it" method="POST" onsubmit="return inviaRegistrazione(event)">
       <input type="hidden" name="tipo_profilo" value="Impresa / Esercente">
       <input type="hidden" name="_cc" value="info@instantown.it">
-      <input type="hidden" name="_subject" value="[InstantTown] Nuova registrazione — Impresa/Esercente">
+      <input type="hidden" name="_subject" value="[InstantTown] Nuova registrazione â€” Impresa/Esercente">
 
       <div class="field">
         <label data-i18n="rg_label_insegna">Nome Insegna</label>
@@ -160,13 +160,13 @@ input.invalid{border-color:var(--rosso-l) !important;}
       <div class="field">
         <label data-i18n="rg_label_cat">Categoria merceologica</label>
         <select name="categoria" required class="focus-rosso" style="border:1px solid rgba(139,26,26,.15);border-radius:3px;padding:11px 14px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--ink);">
-          <option value="" data-i18n="rg_opt_default">— Seleziona la categoria principale —</option>
-          <option value="CIBO" data-i18n="rg_opt_cibo">🍕 Cibo — Alimentari, ristoranti, bar, gastronomia</option>
-          <option value="MODA" data-i18n="rg_opt_moda">👗 Moda — Abbigliamento, scarpe, accessori</option>
-          <option value="TECH" data-i18n="rg_opt_tech">📱 Tech — Elettronica, informatica, telefonia</option>
-          <option value="VIAGGI" data-i18n="rg_opt_viaggi">✈️ Viaggi — Turismo, esperienze, trasporti</option>
-          <option value="DIVERTIMENTO" data-i18n="rg_opt_divert">🎭 Divertimento — Spettacoli, eventi, sport, cultura</option>
-          <option value="ALTRO" data-i18n="rg_opt_altro">🛍️ Altro — Servizi, artigianato, altre categorie</option>
+          <option value="" data-i18n="rg_opt_default">â€” Seleziona la categoria principale â€”</option>
+          <option value="CIBO" data-i18n="rg_opt_cibo">ðŸ• Cibo â€” Alimentari, ristoranti, bar, gastronomia</option>
+          <option value="MODA" data-i18n="rg_opt_moda">ðŸ‘— Moda â€” Abbigliamento, scarpe, accessori</option>
+          <option value="TECH" data-i18n="rg_opt_tech">ðŸ“± Tech â€” Elettronica, informatica, telefonia</option>
+          <option value="VIAGGI" data-i18n="rg_opt_viaggi">âœˆï¸ Viaggi â€” Turismo, esperienze, trasporti</option>
+          <option value="DIVERTIMENTO" data-i18n="rg_opt_divert">ðŸŽ­ Divertimento â€” Spettacoli, eventi, sport, cultura</option>
+          <option value="ALTRO" data-i18n="rg_opt_altro">ðŸ›ï¸ Altro â€” Servizi, artigianato, altre categorie</option>
         </select>
       </div>
 
@@ -201,11 +201,11 @@ input.invalid{border-color:var(--rosso-l) !important;}
           <input type="text" name="via" placeholder="Via Roma" data-i18n-placeholder="rg_ph_via" required class="focus-rosso">
         </div>
         <div>
-          <label data-i18n="rg_label_civico">N°</label>
+          <label data-i18n="rg_label_civico">NÂ°</label>
           <input type="text" name="civico" placeholder="12" required class="focus-rosso">
         </div>
         <div>
-          <label data-i18n="rg_label_citta">Città</label>
+          <label data-i18n="rg_label_citta">CittÃ </label>
           <input type="text" name="citta" placeholder="Roma" data-i18n-placeholder="rg_ph_citta" required class="focus-rosso">
         </div>
       </div>
@@ -228,7 +228,7 @@ input.invalid{border-color:var(--rosso-l) !important;}
         <span data-i18n="rg_check_imp">Dichiaro che i dati inseriti sono veritieri e accetto i termini del servizio InstantTown</span>
       </div>
       <button type="submit" id="btn-invia" class="btn-submit btn-rosso-full" data-i18n="rg_btn_send_imp">Invia richiesta di attivazione</button>
-      <p class="note" id="nota-attivazione" data-i18n="rg_note_attivazione">Il tuo pannello esercente verrà attivato entro 24 ore dalla verifica dei dati fiscali.</p>
+      <p class="note" id="nota-attivazione" data-i18n="rg_note_attivazione">Il tuo pannello esercente verrÃ  attivato entro 24 ore dalla verifica dei dati fiscali.</p>
     </form>
   </div>
 
@@ -236,7 +236,7 @@ input.invalid{border-color:var(--rosso-l) !important;}
 </div>
 
 <script>
-/* ── SWITCH PANEL ── */
+/* â”€â”€ SWITCH PANEL â”€â”€ */
 function setTipo(tipo) {
   document.getElementById('panel-privato').classList.remove('visible');
   document.getElementById('panel-impresa').classList.remove('visible');
@@ -252,10 +252,10 @@ function setTipo(tipo) {
 }
 setTipo('privato');
 
-/* ══════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    VALIDAZIONE CODICE FISCALE ITALIANO
    Algoritmo ufficiale Agenzia delle Entrate
-══════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function validaCF() {
   const input = document.getElementById('cf');
   const msg   = document.getElementById('cf-msg');
@@ -264,7 +264,7 @@ function validaCF() {
 
   if(val.length === 0) return true;
 
-  // Società: CF numerico a 11 cifre (coincide con P.IVA)
+  // SocietÃ : CF numerico a 11 cifre (coincide con P.IVA)
   if(/^[0-9]{11}$/.test(val)) {
     input.classList.remove('invalid'); input.classList.add('valid');
     msg.textContent = i18n('rg_msg_cf_corp'); msg.classList.add('ok');
@@ -299,10 +299,10 @@ function validaCF() {
   return true;
 }
 
-/* ══════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    VALIDAZIONE PARTITA IVA ITALIANA
    Algoritmo Luhn mod 10 (standard europeo)
-══════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function validaPIVA() {
   const input = document.getElementById('piva');
   const msg   = document.getElementById('piva-msg');
@@ -352,7 +352,7 @@ function validaPIVA() {
   return true;
 }
 
-/* ── VALIDAZIONE AL SUBMIT ── */
+/* â”€â”€ VALIDAZIONE AL SUBMIT â”€â”€ */
 function validaForm() {
   const cfOk   = validaCF();
   const pivaOk = validaPIVA();
@@ -363,7 +363,7 @@ function validaForm() {
   return true;
 }
 
-/* ── INVIO REGISTRAZIONE ESERCENTE + MOSTRA PIN ── */
+/* â”€â”€ INVIO REGISTRAZIONE ESERCENTE + MOSTRA PIN â”€â”€ */
 async function inviaRegistrazione(e) {
   e.preventDefault();
   if(!validaForm()) return false;
@@ -378,6 +378,46 @@ async function inviaRegistrazione(e) {
 
   const form = document.getElementById('form-impresa');
   const data = new FormData(form);
+
+  // Costruisce l'indirizzo completo e lo geocodifica (Nominatim, gratuito)
+  const via = form.querySelector('[name=via]').value.trim();
+  const civico = form.querySelector('[name=civico]').value.trim();
+  const citta = form.querySelector('[name=citta]').value.trim();
+  const indirizzoCompleto = via + ' ' + civico + ', ' + citta + ', Italia';
+  let geoLat = '', geoLon = '';
+  try {
+    const geoRes = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(indirizzoCompleto));
+    const geoJson = await geoRes.json();
+    if (geoJson && geoJson[0]) {
+      geoLat = geoJson[0].lat;
+      geoLon = geoJson[0].lon;
+    }
+  } catch (geoErr) {
+    console.warn('Geocodifica indirizzo fallita:', geoErr);
+  }
+  // Ribalta i dati anche su Apps Script (Google Sheet), indipendentemente
+  // dall'esito di Formspree: cosi' l'esercente scrive le sue informazioni
+  // una sola volta nel form, e non serve un secondo inserimento manuale.
+  try {
+    await fetch('https://script.google.com/macros/s/AKfycbw82Ycb8tjx_yMN50bkDHkFd7yEQNiByfuxpaUx-RXFDFVhFFzw7KNUjaioPV6aDs9c/exec', {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({
+        tipo: 'registrazione',
+        nome: form.querySelector('[name=insegna]').value.trim(),
+        indirizzo: indirizzoCompleto,
+        piva: form.querySelector('[name=partita_iva]').value.trim(),
+        cf: form.querySelector('[name=codice_fiscale]').value.trim(),
+        telefono: form.querySelector('[name=telefono]').value.trim(),
+        email: form.querySelector('[name=_replyto]').value.trim(),
+        pin: pin,
+        lat: geoLat,
+        lon: geoLon
+      })
+    });
+  } catch (scriptErr) {
+    console.warn('Sincronizzazione Apps Script fallita:', scriptErr);
+  }
   data.append('pin_esercente', pin); // lo manda anche nell'email
 
   try {
@@ -395,7 +435,7 @@ async function inviaRegistrazione(e) {
 
       // Mostra riquadro successo con PIN
       const box = document.getElementById('success-impresa');
-      var pinEl = document.getElementById('pin-display'); if (pinEl) pinEl.textContent = '••••••';
+      var pinEl = document.getElementById('pin-display'); if (pinEl) pinEl.textContent = 'â€¢â€¢â€¢â€¢â€¢â€¢';
       box.style.display = 'block';
       box.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } else {
