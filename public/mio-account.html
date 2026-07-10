@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>INSTANTOWN — Il mio account</title>
+<title>INSTANTOWN â€” Il mio account</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -116,7 +116,7 @@ main{max-width:600px;margin:0 auto;padding:28px 20px 80px;}
     <div style="font-size:14px;color:var(--ink-mu);">Verifica del tuo account in corso...</div>
   </div>
 
-  <!-- STATO: NESSUNA SESSIONE — FORM EMAIL -->
+  <!-- STATO: NESSUNA SESSIONE â€” FORM EMAIL -->
   <div id="login-email-form" style="display:none;">
     <div class="pin-card">
       <div class="pin-label">Accedi al tuo account INSTANTOWN</div>
@@ -140,7 +140,7 @@ main{max-width:600px;margin:0 auto;padding:28px 20px 80px;}
     <!-- PIN UTENTE -->
     <div class="pin-card">
       <div class="pin-label" data-i18n="ma_pin_label">Il tuo PIN personale INSTANTOWN</div>
-      <div class="pin-value" id="pin-display">——</div>
+      <div class="pin-value" id="pin-display">â€”â€”</div>
       <div class="pin-note" data-i18n="ma_pin_note">
         Questo PIN identifica il tuo account. Comunicalo all'esercente insieme al QR-B
         per completare il matching e sbloccare i fondi in Garanzia Bancaria.
@@ -164,13 +164,13 @@ main{max-width:600px;margin:0 auto;padding:28px 20px 80px;}
 <!-- MODAL QR GRANDE -->
 <div class="modal-overlay" id="modal-qr">
   <div class="modal-box">
-    <div class="modal-title" data-i18n="ma_modal_title">QR-B — Mostra all'esercente</div>
+    <div class="modal-title" data-i18n="ma_modal_title">QR-B â€” Mostra all'esercente</div>
     <div class="modal-sub" id="modal-negozio-desc"></div>
     <div id="modal-qr-img"></div>
     <div class="modal-id" id="modal-booking-id"></div>
     <div class="modal-pin"><span data-i18n="ma_modal_pin">Il tuo PIN:</span> <strong id="modal-pin-val"></strong></div>
     <div class="modal-istr" data-i18n="ma_modal_istr">
-      ? L'esercente mostrerà QR-A — fai scansionare al suo terminale.<br>
+      ? L'esercente mostrerÃ  QR-A â€” fai scansionare al suo terminale.<br>
       Solo la coppia QR-A + QR-B sblocca i fondi.
     </div>
     <button class="btn-modal-close" onclick="chiudiModal()" data-i18n="ma_modal_close">Chiudi</button>
@@ -190,7 +190,7 @@ function i18nGet(key, fallback) {
 }
 
 // ----------------------------------
-// SISTEMA ACCOUNT — email-only, no password
+// SISTEMA ACCOUNT â€” email-only, no password
 // ----------------------------------
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw82Ycb8tjx_yMN50bkDHkFd7yEQNiByfuxpaUx-RXFDFVhFFzw7KNUjaioPV6aDs9c/exec';
 let mioPin = null;
@@ -225,7 +225,7 @@ async function inviaEmailAccesso() {
     const json = await res.json();
 
     if (json.stato === 'ok' && json.verificato) {
-      // Account già verificato in passato: salvo subito il PIN, niente email da aspettare
+      // Account giÃ  verificato in passato: salvo subito il PIN, niente email da aspettare
       mioPin = json.pin;
       localStorage.setItem('it_pin', mioPin);
       localStorage.setItem('it_email', email);
@@ -239,7 +239,7 @@ async function inviaEmailAccesso() {
       input.disabled = true;
     } else {
       statusEl.style.color = 'var(--rosso)';
-      statusEl.textContent = json.messaggio || 'Si è verificato un errore. Riprova.';
+      statusEl.textContent = json.messaggio || 'Si Ã¨ verificato un errore. Riprova.';
       btn.disabled = false;
       btn.textContent = 'Continua ?';
     }
@@ -272,7 +272,7 @@ async function verificaTokenDaUrl(token) {
       mostraStato('login');
       document.getElementById('login-email-status').style.color = 'var(--rosso)';
       document.getElementById('login-email-status').textContent =
-        json.messaggio || 'Link non valido o già usato. Inserisci di nuovo la tua email.';
+        json.messaggio || 'Link non valido o giÃ  usato. Inserisci di nuovo la tua email.';
     }
   } catch (e) {
     mostraStato('login');
@@ -314,15 +314,15 @@ function copiaPIN() {
 // ----------------------------------
 // CARICA QR SALVATI
 // ----------------------------------
-// QR-B centrali (da Firestore, collection qr_b_emessi) — popolati dal
-// blocco module più sotto, che interroga per email del cliente loggato.
-// Restano un array separato da quelli locali perché arrivano in modo
+// QR-B centrali (da Firestore, collection qr_b_emessi) â€” popolati dal
+// blocco module piÃ¹ sotto, che interroga per email del cliente loggato.
+// Restano un array separato da quelli locali perchÃ© arrivano in modo
 // asincrono: appena pronti, richiamano renderListaQR() per unirli.
-let qrCentrali = [];
+window.qrCentrali = []; // FIX: proprieta' di window invece di 'let' locale, per essere accessibile in sicurezza dallo script module (nessuna Temporal Dead Zone)
 
 function caricaQR() {
   renderListaQR();
-  // Definita nel blocco <script type="module"> più sotto. Può non
+  // Definita nel blocco <script type="module"> piÃ¹ sotto. PuÃ² non
   // esistere ancora se questo script gira per primo (poco probabile,
   // dato l'ordine nel documento, ma per sicurezza non lancio errori).
   if (typeof caricaQRCentrali === 'function') caricaQRCentrali();
@@ -332,11 +332,11 @@ function renderListaQR() {
   const prenotazioniLocali = JSON.parse(localStorage.getItem('it_prenotazioni') || '[]')
     .map((p, i) => Object.assign({}, p, { localIdx: i, daFirestore: false }));
   // Normalizzo i QR centrali nello stesso formato di quelli locali,
-  // così il resto del rendering (già esistente) non deve sapere da dove
+  // cosÃ¬ il resto del rendering (giÃ  esistente) non deve sapere da dove
   // arrivano. bookingId/idtx fittizi ma stabili, usano l'id del documento.
   // localIdx resta null: non esistono in localStorage, eliminaQR() non
   // si applica a loro (il bottone Elimina viene omesso nel template).
-  const centraliNormalizzati = qrCentrali.map(q => ({
+  const centraliNormalizzati = (window.qrCentrali || []).map(q => ({
     negozio: q.negozio, desc: '', prezzo: q.prezzo,
     bookingId: q.id, idtx: q.tx, ts: q.tsMillis || Date.now(),
     stato: q.stato === 'usato' ? 'USATO' : 'ATTESA', daFirestore: true, localIdx: null
@@ -385,7 +385,7 @@ function renderListaQR() {
         <div class="qr-box-img" id="qr-mini-${idx}"></div>
         <div class="qr-info">
           <div class="qr-desc">${(p.desc||'').toLowerCase()}</div>
-          <div class="qr-prezzo">€ ${parseFloat(p.prezzo).toFixed(2)}</div>
+          <div class="qr-prezzo">â‚¬ ${parseFloat(p.prezzo).toFixed(2)}</div>
           <div class="qr-id">${p.bookingId}</div>
         </div>
       </div>
@@ -423,7 +423,7 @@ function renderListaQR() {
 // ----------------------------------
 function mostraQR(idx) {
   const prenotazioniLocali = JSON.parse(localStorage.getItem('it_prenotazioni') || '[]');
-  const centraliNormalizzati = qrCentrali.map(q => ({
+  const centraliNormalizzati = (window.qrCentrali || []).map(q => ({
     negozio: q.negozio, desc: '', prezzo: q.prezzo,
     bookingId: q.id, idtx: q.tx, ts: q.tsMillis || Date.now(), daFirestore: true
   }));
@@ -432,7 +432,7 @@ function mostraQR(idx) {
   if(!p) return;
 
   document.getElementById('modal-negozio-desc').textContent =
-    (p.negozio||'Esercente') + ' — ' + (p.desc||'');
+    (p.negozio||'Esercente') + ' â€” ' + (p.desc||'');
   document.getElementById('modal-booking-id').textContent = p.bookingId;
   document.getElementById('modal-pin-val').textContent = mioPin;
 
@@ -463,7 +463,7 @@ function chiudiModal() {
 // ELIMINA QR
 // ----------------------------------
 function eliminaQR(idx) {
-  if(!confirm(i18nGet('ma_confirm_elimina','Eliminare questo QR-B? Non potrai più usarlo per il matching.'))) return;
+  if(!confirm(i18nGet('ma_confirm_elimina','Eliminare questo QR-B? Non potrai piÃ¹ usarlo per il matching.'))) return;
   const prenotazioni = JSON.parse(localStorage.getItem('it_prenotazioni') || '[]');
   prenotazioni.splice(idx, 1);
   localStorage.setItem('it_prenotazioni', JSON.stringify(prenotazioni));
@@ -484,6 +484,7 @@ document.getElementById('modal-qr').addEventListener('click', e => {
 // all'email del cliente e quindi visibili da qualsiasi dispositivo.
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBez4L85HA1__NPKOzagfmKeoGLniIQeAc",
@@ -496,12 +497,14 @@ const firebaseConfig = {
 };
 const appFs = initializeApp(firebaseConfig);
 const dbFs = getFirestore(appFs);
+const authFs = getAuth(appFs);
 
 window.caricaQRCentrali = async function() {
   const email = localStorage.getItem('it_email');
   if (!email) return; // nessuna email nota in questa sessione, niente da cercare
 
   try {
+    await signInAnonymously(authFs).catch(e => console.warn('Login anonimo fallito:', e));
     const q = query(collection(dbFs, 'qr_b_emessi'), where('email', '==', email));
     const snap = await getDocs(q);
     const risultati = [];
@@ -516,9 +519,9 @@ window.caricaQRCentrali = async function() {
         tsMillis: d.ts && d.ts.seconds ? d.ts.seconds * 1000 : Date.now()
       });
     });
-    // window.qrCentrali esiste già come variabile globale (script principale);
-    // qui la aggiorniamo e richiamiamo il rendering già pronto a riceverla.
-    qrCentrali = risultati;
+    // window.qrCentrali esiste giÃ  come variabile globale (script principale);
+    // qui la aggiorniamo e richiamiamo il rendering giÃ  pronto a riceverla.
+    window.qrCentrali = risultati;
     if (typeof renderListaQR === 'function') renderListaQR();
   } catch(e) {
     console.error('Errore caricamento QR centrali:', e);
