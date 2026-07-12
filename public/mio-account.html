@@ -105,14 +105,14 @@ main{max-width:600px;margin:0 auto;padding:28px 20px 80px;}
 <nav>
   <a href="index.html" class="topbar-back">&#8592;</a>
   <span class="nav-brand">INSTANT<span>TOWN</span></span>
-  <a href="map.html" data-i18n="ma_nav_radar">Radar ?</a>
+  <a href="map.html" data-i18n="ma_nav_radar">Radar →</a>
 </nav>
 
 <main>
 
   <!-- STATO: VERIFICA TOKEN IN CORSO -->
   <div id="verifica-in-corso" style="display:none;text-align:center;padding:60px 20px;">
-    <div style="font-size:40px;margin-bottom:16px;">?</div>
+    <div style="font-size:40px;margin-bottom:16px;">⏳</div>
     <div style="font-size:14px;color:var(--ink-mu);">Verifica del tuo account in corso...</div>
   </div>
 
@@ -128,9 +128,13 @@ main{max-width:600px;margin:0 auto;padding:28px 20px 80px;}
         style="width:100%;padding:14px 16px;font-size:15px;border:1px solid var(--rule);
         border-radius:8px;font-family:'DM Sans',sans-serif;margin-bottom:12px;outline:none;">
       <button class="pin-copy" style="width:100%;text-align:center;" onclick="inviaEmailAccesso()" id="login-submit-btn">
-        Continua ?
+        Continua →
       </button>
       <p id="login-email-status" style="font-size:13px;margin-top:14px;line-height:1.6;"></p>
+      <p style="font-size:12px;color:var(--ink-mu);margin-top:16px;line-height:1.6;border-top:1px solid var(--rule);padding-top:12px;">
+        ⚠️ Non ricordi l'email con cui ti sei registrato? Puoi registrarti di nuovo con un'email diversa,
+        ma sarà un account nuovo con un nuovo PIN — segnatelo bene questa volta, così non lo perdi ancora.
+      </p>
     </div>
   </div>
 
@@ -145,7 +149,7 @@ main{max-width:600px;margin:0 auto;padding:28px 20px 80px;}
         Questo PIN identifica il tuo account. Comunicalo all'esercente insieme al QR-B
         per completare il matching e sbloccare i fondi in Garanzia Bancaria.
       </div>
-      <button class="pin-copy" onclick="copiaPIN()" data-i18n="ma_pin_copy">?? Copia PIN</button>
+      <button class="pin-copy" onclick="copiaPIN()" data-i18n="ma_pin_copy">📋 Copia PIN</button>
     </div>
 
     <!-- QR SALVATI -->
@@ -170,7 +174,7 @@ main{max-width:600px;margin:0 auto;padding:28px 20px 80px;}
     <div class="modal-id" id="modal-booking-id"></div>
     <div class="modal-pin"><span data-i18n="ma_modal_pin">Il tuo PIN:</span> <strong id="modal-pin-val"></strong></div>
     <div class="modal-istr" data-i18n="ma_modal_istr">
-      ? L'esercente mostrerà QR-A — fai scansionare al suo terminale.<br>
+      ✓ L'esercente mostrerà QR-A — fai scansionare al suo terminale.<br>
       Solo la coppia QR-A + QR-B sblocca i fondi.
     </div>
     <button class="btn-modal-close" onclick="chiudiModal()" data-i18n="ma_modal_close">Chiudi</button>
@@ -192,7 +196,7 @@ function i18nGet(key, fallback) {
 // ----------------------------------
 // SISTEMA ACCOUNT — email-only, no password
 // ----------------------------------
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw82Ycb8tjx_yMN50bkDHkFd7yEQNiByfuxpaUx-RXFDFVhFFzw7KNUjaioPV6aDs9c/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
 let mioPin = null;
 
 function mostraStato(stato) {
@@ -220,7 +224,7 @@ async function inviaEmailAccesso() {
   try {
     const res = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      body: JSON.stringify({ tipo: 'registrazione_cliente', email: email })
+      body: JSON.stringify({ tipo: 'registrazione_cliente', email: email, deviceToken: localStorage.getItem('it_device') || '' })
     });
     const json = await res.json();
 
@@ -234,20 +238,20 @@ async function inviaEmailAccesso() {
       caricaQR();
     } else if (json.stato === 'ok') {
       statusEl.style.color = 'var(--verde)';
-      statusEl.innerHTML = '? Controlla la tua casella email: ti abbiamo mandato un link per confermare l\'accesso.';
+      statusEl.innerHTML = '✓ ' + (json.messaggio || "Controlla la tua casella email: ti abbiamo mandato un link per confermare l'accesso.");
       btn.style.display = 'none';
       input.disabled = true;
     } else {
       statusEl.style.color = 'var(--rosso)';
       statusEl.textContent = json.messaggio || 'Si è verificato un errore. Riprova.';
       btn.disabled = false;
-      btn.textContent = 'Continua ?';
+      btn.textContent = 'Continua →';
     }
   } catch (e) {
     statusEl.style.color = 'var(--rosso)';
     statusEl.textContent = 'Errore di connessione. Riprova.';
     btn.disabled = false;
-    btn.textContent = 'Continua ?';
+    btn.textContent = 'Continua →';
   }
 }
 
@@ -261,6 +265,7 @@ async function verificaTokenDaUrl(token) {
       mioPin = json.pin;
       localStorage.setItem('it_pin', mioPin);
       if (json.email) localStorage.setItem('it_email', json.email);
+      if (json.deviceToken) localStorage.setItem('it_device', json.deviceToken);
       document.getElementById('pin-display').textContent = mioPin;
       // Rimuovo il parametro dall'URL per evitare riverifiche su refresh
       const url = new URL(window.location);
@@ -283,8 +288,8 @@ function copiaPIN() {
   if (!mioPin) return;
   navigator.clipboard.writeText(mioPin).then(()=>{
     const btn = document.querySelector('#account-content .pin-copy');
-    btn.textContent = '? Copiato!';
-    setTimeout(()=>btn.textContent='?? Copia PIN', 2000);
+    btn.textContent = '✓ Copiato!';
+    setTimeout(()=>btn.textContent='📋 Copia PIN', 2000);
   });
 }
 
@@ -350,7 +355,7 @@ function renderListaQR() {
   if(prenotazioni.length === 0) {
     lista.innerHTML = `
       <div class="empty-state">
-        <div class="empty-icon">??</div>
+        <div class="empty-icon">🎫</div>
         <div class="empty-text" data-i18n="ma_empty_text">
           Non hai ancora QR-B salvati.<br>
           Prenota un'offerta dal Radar per generare il tuo primo QR.
@@ -358,7 +363,7 @@ function renderListaQR() {
         <a href="map.html" style="display:inline-block;margin-top:16px;
           background:var(--rosso);color:#fff;padding:10px 24px;border-radius:4px;
           text-decoration:none;font-size:14px;font-weight:500;">
-          <span data-i18n="ma_empty_cta">Apri il Radar ?</span>
+          <span data-i18n="ma_empty_cta">Apri il Radar →</span>
         </a>
       </div>`;
     return;
@@ -370,8 +375,8 @@ function renderListaQR() {
       {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
     const statoClass = p.stato==='USATO' ? 'stato-usato' :
                        p.stato==='SCADUTO' ? 'stato-scaduto' : 'stato-attesa';
-    const statoLabel = p.stato==='USATO' ? i18nGet('ma_stato_completato','? Completato') :
-                       p.stato==='SCADUTO' ? i18nGet('ma_stato_scaduto','Scaduto') : i18nGet('ma_stato_attesa','? In attesa');
+    const statoLabel = p.stato==='USATO' ? i18nGet('ma_stato_completato','✓ Completato') :
+                       p.stato==='SCADUTO' ? i18nGet('ma_stato_scaduto','Scaduto') : i18nGet('ma_stato_attesa','⏳ In attesa');
     return `
     <div class="qr-card" id="card-${idx}">
       <div class="qr-card-header">
@@ -390,7 +395,7 @@ function renderListaQR() {
         </div>
       </div>
       <div class="qr-card-footer">
-        <button class="btn-mostra" onclick="mostraQR(${idx})" data-i18n="ma_btn_mostra">?? Mostra QR grande</button>
+        <button class="btn-mostra" onclick="mostraQR(${idx})" data-i18n="ma_btn_mostra">🔍 Mostra QR grande</button>
         ${p.daFirestore ? '' : `<button class="btn-elimina" onclick="eliminaQR(${p.localIdx})" data-i18n="ma_btn_elimina">Elimina</button>`}
       </div>
     </div>`;

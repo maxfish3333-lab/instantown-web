@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>INSTANTOWN Ã¢â‚¬â€ Dashboard Messaggi</title>
+<title>INSTANTOWN — Dashboard Messaggi</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -145,29 +145,29 @@ body{font-family:'DM Sans',sans-serif;background:var(--cielo-p);color:var(--ink)
 <!-- LOGIN -->
 <div id="login-screen">
   <div class="login-box">
-    <div class="login-icon">Ã°Å¸ÂÂª</div>
+    <div class="login-icon">🏪</div>
     <div class="login-title">Accesso esercente</div>
     <div class="login-desc">Inserisci il tuo PIN per vedere i messaggi dei clienti.</div>
     <input class="login-input" id="pin-input" type="password" placeholder="PIN" maxlength="10" autocomplete="off">
-    <button class="login-btn" onclick="accediDashboard()">Accedi Ã¢â€ â€™</button>
+    <button class="login-btn" onclick="accediDashboard()">Accedi →</button>
     <div class="login-error" id="login-error">PIN non trovato. Controlla e riprova.</div>
-    <div class="login-retry-note" id="login-retry-note">Verifica in corso, un attimoÃ¢â‚¬Â¦</div>
+    <div class="login-retry-note" id="login-retry-note">Verifica in corso, un attimo…</div>
   </div>
 </div>
 
 <!-- DASHBOARD -->
 <div id="dashboard">
   <div class="chat-list" id="chat-list">
-    <div class="chat-list-header" id="prenotazioni-accettate-header" style="display:none;">Ã¢Å“â€¦ Prenotazioni accettate dal cliente</div>
+    <div class="chat-list-header" id="prenotazioni-accettate-header" style="display:none;">✅ Prenotazioni accettate dal cliente</div>
     <div id="prenotazioni-accettate-list"></div>
-    <div class="chat-list-header" id="richieste-reverse-header" style="display:none;">Ã°Å¸ÂÂ¨ Richieste alloggio vicine</div>
+    <div class="chat-list-header" id="richieste-reverse-header" style="display:none;">🏨 Richieste alloggio vicine</div>
     <div id="richieste-reverse-list"></div>
     <div class="chat-list-header">Conversazioni</div>
     <div class="no-chats" id="no-chats">Nessun messaggio ancora.</div>
   </div>
   <div class="chat-area" id="chat-area">
     <div class="chat-area-empty" id="chat-area-empty">
-      <div class="chat-area-empty-icon">Ã°Å¸â€™Â¬</div>
+      <div class="chat-area-empty-icon">💬</div>
       <div>Seleziona una conversazione</div>
     </div>
     <div id="chat-active" style="display:none;flex:1;flex-direction:column;">
@@ -177,7 +177,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cielo-p);color:var(--ink)
       <div class="messages" id="messages"></div>
       <div class="chat-input-bar">
         <textarea class="chat-input" id="msg-input" placeholder="Rispondi al cliente..." rows="1"></textarea>
-        <button class="send-btn" onclick="inviaMsgEsercente()">Ã¢Å¾Â¤</button>
+        <button class="send-btn" onclick="inviaMsgEsercente()">➤</button>
       </div>
     </div>
   </div>
@@ -201,7 +201,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw82Ycb8tjx_yMN50bkDHkFd7yEQNiByfuxpaUx-RXFDFVhFFzw7KNUjaioPV6aDs9c/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
 
 let negozioCorrente = null;
 let negozioLat = null;
@@ -211,10 +211,10 @@ let unsubMessages = null;
 let unsubChats = null;
 let unsubRichiesteReverse = null;
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ Verifica PIN con retry automatico + cache-busting Ã¢â€â‚¬Ã¢â€â‚¬
-// Google Apps Script puÃƒÂ² occasionalmente restituire una risposta di
+// ── Verifica PIN con retry automatico + cache-busting ──
+// Google Apps Script può occasionalmente restituire una risposta di
 // fallback ("Script attivo") invece del risultato reale, specie subito
-// dopo un ridispiegamento o per instabilitÃƒÂ  infrastrutturale lato Google.
+// dopo un ridispiegamento o per instabilità infrastrutturale lato Google.
 // Ritentiamo fino a 3 volte con backoff progressivo prima di arrendersi.
 async function verificaPinConRetry(pin, tentativi = 3) {
   for (let i = 0; i < tentativi; i++) {
@@ -225,12 +225,12 @@ async function verificaPinConRetry(pin, tentativi = 3) {
       if (risposta.stato === 'ok' && risposta.negozio) {
         return risposta;
       }
-      // Risposta di fallback o PIN non valido: se non ÃƒÂ¨ l'ultimo tentativo, riprova
+      // Risposta di fallback o PIN non valido: se non è l'ultimo tentativo, riprova
       if (i < tentativi - 1) {
         await new Promise(r => setTimeout(r, 800 * (i + 1))); // 800ms, 1600ms
         continue;
       }
-      return risposta; // ultimo tentativo, restituisci quello che c'ÃƒÂ¨ (probabile PIN errato)
+      return risposta; // ultimo tentativo, restituisci quello che c'è (probabile PIN errato)
     } catch (err) {
       if (i === tentativi - 1) throw err;
       await new Promise(r => setTimeout(r, 800 * (i + 1)));
@@ -255,7 +255,7 @@ window.accediDashboard = async function() {
 
     if (risposta.stato !== 'ok' || !risposta.negozio) {
       document.getElementById('login-error').style.display = 'block';
-      btn.innerHTML = 'Accedi Ã¢â€ â€™';
+      btn.innerHTML = 'Accedi →';
       btn.disabled = false;
       return;
     }
@@ -267,7 +267,7 @@ window.accediDashboard = async function() {
     negozioLon = trovato.lon;
     document.getElementById('header-negozio').textContent = trovato.nome;
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ Firebase Auth silenzioso per esercente Ã¢â€â‚¬Ã¢â€â‚¬
+    // ── Firebase Auth silenzioso per esercente ──
     // Email sintetica basata sul PIN, invisibile all'utente
     const fbEmail = 'pin' + pin + '@instantown.internal';
     const fbPassword = 'IT_ESE_' + pin + '_2025';
@@ -292,7 +292,7 @@ window.accediDashboard = async function() {
     retryNote.style.display = 'none';
     document.getElementById('login-error').textContent = 'Errore di connessione.';
     document.getElementById('login-error').style.display = 'block';
-    btn.innerHTML = 'Accedi Ã¢â€ â€™';
+    btn.innerHTML = 'Accedi →';
     btn.disabled = false;
   }
 };
@@ -366,15 +366,15 @@ function caricaRichiesteReverseCompatibili() {
       const card = document.createElement('div');
       card.className = 'richiesta-card';
       card.innerHTML = `
-        ${isMirataAMe ? `<div style="font-size:11px;font-weight:600;color:var(--ocra-d);margin-bottom:4px;">Ã°Å¸Å½Â¯ Richiesta diretta a te</div>` : ''}
-        <div class="richiesta-card-budget">Ã°Å¸â€™Â° Budget max Ã¢â€šÂ¬ ${r.budgetMax.toFixed(2)}/notte Ã‚Â· ${notti} nott${notti===1?'e':'i'}</div>
-        ${dist !== null ? `<div class="richiesta-card-dist">Ã°Å¸â€œÂ ~${Math.round(dist)}m di distanza</div>` : ''}
-        ${r.note ? `<div class="richiesta-card-note">Ã°Å¸â€œÂ ${r.note}</div>` : ''}
-        <div class="richiesta-card-totale" id="rev-totale-${richDoc.id}" style="font-size:11px;color:rgba(28,20,16,.5);margin-bottom:6px;display:none;">Totale: Ã¢â€šÂ¬ <span id="rev-tot-val-${richDoc.id}">0.00</span></div>
+        ${isMirataAMe ? `<div style="font-size:11px;font-weight:600;color:var(--ocra-d);margin-bottom:4px;">🎯 Richiesta diretta a te</div>` : ''}
+        <div class="richiesta-card-budget">💰 Budget max € ${r.budgetMax.toFixed(2)}/notte · ${notti} nott${notti===1?'e':'i'}</div>
+        ${dist !== null ? `<div class="richiesta-card-dist">📍 ~${Math.round(dist)}m di distanza</div>` : ''}
+        ${r.note ? `<div class="richiesta-card-note">📝 ${r.note}</div>` : ''}
+        <div class="richiesta-card-totale" id="rev-totale-${richDoc.id}" style="font-size:11px;color:rgba(28,20,16,.5);margin-bottom:6px;display:none;">Totale: € <span id="rev-tot-val-${richDoc.id}">0.00</span></div>
         <div class="richiesta-propose-row" id="rev-form-${richDoc.id}">
-          <input type="number" class="richiesta-input" id="rev-prezzo-${richDoc.id}" placeholder="Ã¢â€šÂ¬/notte" step="1"
+          <input type="number" class="richiesta-input" id="rev-prezzo-${richDoc.id}" placeholder="€/notte" step="1"
             oninput="aggiornaTotale('${richDoc.id}', ${notti})">
-          <button class="richiesta-propose-btn" onclick="inviaPropostaHotel('${richDoc.id}', ${notti})">Proponi Ã¢â€ â€™</button>
+          <button class="richiesta-propose-btn" onclick="inviaPropostaHotel('${richDoc.id}', ${notti})">Proponi →</button>
         </div>
       `;
       list.appendChild(card);
@@ -413,15 +413,15 @@ window.inviaPropostaHotel = async function(richiestaId, notti) {
     const formRow = document.getElementById('rev-form-' + richiestaId);
     const totaleDiv = document.getElementById('rev-totale-' + richiestaId);
     if (totaleDiv) totaleDiv.style.display = 'none';
-    if (formRow) formRow.innerHTML = `<span class="richiesta-inviata">Ã¢Å“â€œ Proposta inviata: Ã¢â€šÂ¬ ${prezzoNotte.toFixed(2)}/notte${notti > 1 ? ' Ã‚Â· Totale Ã¢â€šÂ¬ ' + totale.toFixed(2) : ''}</span>`;
+    if (formRow) formRow.innerHTML = `<span class="richiesta-inviata">✓ Proposta inviata: € ${prezzoNotte.toFixed(2)}/notte${notti > 1 ? ' · Totale € ' + totale.toFixed(2) : ''}</span>`;
   } catch(e) { console.error(e); }
 };
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ PRENOTAZIONI HOTEL ACCETTATE DAL CLIENTE Ã¢â€â‚¬Ã¢â€â‚¬
+// ── PRENOTAZIONI HOTEL ACCETTATE DAL CLIENTE ──
 // Ascolta in tempo reale (via collectionGroup) tutte le proposte fatte da
 // questo hotel su qualsiasi richiesta-reverse. Quando il cliente ne accetta
 // una, mostriamo qui un bottone per generare il QR e inviare la conferma
-// via email Ã¢â‚¬â€ lo stesso meccanismo giÃƒÂ  usato per il sistema di trading.
+// via email — lo stesso meccanismo già usato per il sistema di trading.
 let unsubPrenotazioniAccettate = null;
 
 function caricaPrenotazioniAccettate(negozio) {
@@ -434,7 +434,7 @@ function caricaPrenotazioniAccettate(negozio) {
     let count = 0;
     snap.forEach(propDoc => {
       const p = propDoc.data();
-      // L'id della richiesta-reverse ÃƒÂ¨ il genitore del genitore del doc proposta
+      // L'id della richiesta-reverse è il genitore del genitore del doc proposta
       const richiestaId = propDoc.ref.parent.parent.id;
       count++;
       const notti = p.notti || 1;
@@ -442,11 +442,11 @@ function caricaPrenotazioniAccettate(negozio) {
       const card = document.createElement('div');
       card.className = 'prenotazione-accettata-card';
       card.innerHTML = `
-        <div class="prenotazione-accettata-prezzo">Ã¢â€šÂ¬ ${p.prezzoNotte.toFixed(2)}/notte Ã‚Â· ${notti} nott${notti===1?'e':'i'} Ã‚Â· Totale Ã¢â€šÂ¬ ${totale.toFixed(2)}</div>
+        <div class="prenotazione-accettata-prezzo">€ ${p.prezzoNotte.toFixed(2)}/notte · ${notti} nott${notti===1?'e':'i'} · Totale € ${totale.toFixed(2)}</div>
         <div class="prenotazione-accettata-nota">Cliente: ${p.emailCliente || 'email non disponibile'}</div>
         ${p.qrGenerato
-          ? `<div class="prenotazione-qr-ok">Ã¢Å“â€œ Conferma inviata al cliente</div>`
-          : `<button class="btn-genera-qr-hotel" onclick="generaQRHotelEInvia(this, '${richiestaId}', '${propDoc.id}', ${totale}, '${escapeHtml(p.emailCliente || '')}')">Ã°Å¸â€œÂ¤ Genera QR e invia conferma</button>`}
+          ? `<div class="prenotazione-qr-ok">✓ Conferma inviata al cliente</div>`
+          : `<button class="btn-genera-qr-hotel" onclick="generaQRHotelEInvia(this, '${richiestaId}', '${propDoc.id}', ${totale}, '${escapeHtml(p.emailCliente || '')}')">📤 Genera QR e invia conferma</button>`}
       `;
       list.appendChild(card);
     });
@@ -455,8 +455,8 @@ function caricaPrenotazioniAccettate(negozio) {
 }
 
 // Genera il QR per una prenotazione hotel accettata e invia l'email di
-// conferma al cliente, riusando lo stesso schema 'qr_b_emessi' giÃƒÂ  usato
-// dal sistema di trading, cosÃƒÂ¬ mio-account.html mostra il QR ovunque il
+// conferma al cliente, riusando lo stesso schema 'qr_b_emessi' già usato
+// dal sistema di trading, così mio-account.html mostra il QR ovunque il
 // cliente acceda, indipendentemente dal dispositivo.
 window.generaQRHotelEInvia = async function(btn, richiestaId, propostaId, prezzoTotale, emailCliente) {
   if (!emailCliente) {
@@ -490,79 +490,79 @@ window.generaQRHotelEInvia = async function(btn, richiestaId, propostaId, prezzo
     });
   } catch(e) {
     console.error('Errore generazione QR hotel:', e);
-    if (btn) { btn.disabled = false; btn.textContent = 'Ã°Å¸â€œÂ¤ Genera QR e invia conferma'; }
+    if (btn) { btn.disabled = false; btn.textContent = '📤 Genera QR e invia conferma'; }
   }
 };
 
 
 
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ══════════════════════════════════
 // LETTURA TRADOTTA FRASI RAPIDE (lato esercente)
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// ══════════════════════════════════
 const QUICK_PHRASES = {
   "arriving": {
-    "it": "Ã°Å¸Å¡Â¶ Sto arrivando",
-    "en": "Ã°Å¸Å¡Â¶ I'm on my way",
-    "zh": "Ã°Å¸Å¡Â¶ Ã¦Ë†â€˜Ã¦Â­Â£Ã¥Å“Â¨Ã¨Â·Â¯Ã¤Â¸Å ",
-    "es": "Ã°Å¸Å¡Â¶ Ya voy",
-    "fr": "Ã°Å¸Å¡Â¶ J'arrive",
-    "de": "Ã°Å¸Å¡Â¶ Ich bin auf dem Weg"
+    "it": "🚶 Sto arrivando",
+    "en": "🚶 I'm on my way",
+    "zh": "🚶 我正在路上",
+    "es": "🚶 Ya voy",
+    "fr": "🚶 J'arrive",
+    "de": "🚶 Ich bin auf dem Weg"
   },
   "late5": {
-    "it": "Ã¢ÂÂ±Ã¯Â¸Â 5 minuti di ritardo",
-    "en": "Ã¢ÂÂ±Ã¯Â¸Â 5 minutes late",
-    "zh": "Ã¢ÂÂ±Ã¯Â¸Â Ã¦â„¢Å¡Ã¥Ë†Â°5Ã¥Ë†â€ Ã©â€™Å¸",
-    "es": "Ã¢ÂÂ±Ã¯Â¸Â 5 minutos de retraso",
-    "fr": "Ã¢ÂÂ±Ã¯Â¸Â 5 minutes de retard",
-    "de": "Ã¢ÂÂ±Ã¯Â¸Â 5 Minuten VerspÃƒÂ¤tung"
+    "it": "⏱️ 5 minuti di ritardo",
+    "en": "⏱️ 5 minutes late",
+    "zh": "⏱️ 晚到5分钟",
+    "es": "⏱️ 5 minutos de retraso",
+    "fr": "⏱️ 5 minutes de retard",
+    "de": "⏱️ 5 Minuten Verspätung"
   },
   "arrived": {
-    "it": "Ã¢Å“â€¦ Sono arrivato/a",
-    "en": "Ã¢Å“â€¦ I have arrived",
-    "zh": "Ã¢Å“â€¦ Ã¦Ë†â€˜Ã¥Â·Â²Ã¥Ë†Â°Ã¨Â¾Â¾",
-    "es": "Ã¢Å“â€¦ Ya lleguÃƒÂ©",
-    "fr": "Ã¢Å“â€¦ Je suis arrivÃƒÂ©(e)",
-    "de": "Ã¢Å“â€¦ Ich bin angekommen"
+    "it": "✅ Sono arrivato/a",
+    "en": "✅ I have arrived",
+    "zh": "✅ 我已到达",
+    "es": "✅ Ya llegué",
+    "fr": "✅ Je suis arrivé(e)",
+    "de": "✅ Ich bin angekommen"
   },
   "whereExactly": {
-    "it": "Ã¢Ââ€œ Dove vi trovo esattamente?",
-    "en": "Ã¢Ââ€œ Where exactly can I find you?",
-    "zh": "Ã¢Ââ€œ Ã¥â€¦Â·Ã¤Â½â€œÃ¥Å“Â¨Ã¥â€œÂªÃ©â€¡Å’Ã¨Æ’Â½Ã¦â€°Â¾Ã¥Ë†Â°Ã¦â€šÂ¨Ã¯Â¼Å¸",
-    "es": "Ã¢Ââ€œ Ã‚Â¿DÃƒÂ³nde os encuentro exactamente?",
-    "fr": "Ã¢Ââ€œ OÃƒÂ¹ puis-je vous trouver exactement ?",
-    "de": "Ã¢Ââ€œ Wo genau finde ich Sie?"
+    "it": "❓ Dove vi trovo esattamente?",
+    "en": "❓ Where exactly can I find you?",
+    "zh": "❓ 具体在哪里能找到您?",
+    "es": "❓ ¿Dónde os encuentro exactamente?",
+    "fr": "❓ Où puis-je vous trouver exactement ?",
+    "de": "❓ Wo genau finde ich Sie?"
   },
   "thanksLater": {
-    "it": "Ã°Å¸â„¢Â Grazie, a dopo",
-    "en": "Ã°Å¸â„¢Â Thanks, see you soon",
-    "zh": "Ã°Å¸â„¢Â Ã¨Â°Â¢Ã¨Â°Â¢Ã¯Â¼Å’Ã¥Â¾â€¦Ã¤Â¼Å¡Ã¨Â§Â",
-    "es": "Ã°Å¸â„¢Â Gracias, hasta luego",
-    "fr": "Ã°Å¸â„¢Â Merci, ÃƒÂ  bientÃƒÂ´t",
-    "de": "Ã°Å¸â„¢Â Danke, bis gleich"
+    "it": "🙏 Grazie, a dopo",
+    "en": "🙏 Thanks, see you soon",
+    "zh": "🙏 谢谢,待会见",
+    "es": "🙏 Gracias, hasta luego",
+    "fr": "🙏 Merci, à bientôt",
+    "de": "🙏 Danke, bis gleich"
   },
   "problem": {
-    "it": "Ã¢Å¡Â Ã¯Â¸Â C'ÃƒÂ¨ un problema",
-    "en": "Ã¢Å¡Â Ã¯Â¸Â There is a problem",
-    "zh": "Ã¢Å¡Â Ã¯Â¸Â Ã¥â€¡ÂºÃ§Å½Â°Ã¤Âºâ€ Ã©â€”Â®Ã©Â¢Ëœ",
-    "es": "Ã¢Å¡Â Ã¯Â¸Â Hay un problema",
-    "fr": "Ã¢Å¡Â Ã¯Â¸Â Il y a un problÃƒÂ¨me",
-    "de": "Ã¢Å¡Â Ã¯Â¸Â Es gibt ein Problem"
+    "it": "⚠️ C'è un problema",
+    "en": "⚠️ There is a problem",
+    "zh": "⚠️ 出现了问题",
+    "es": "⚠️ Hay un problema",
+    "fr": "⚠️ Il y a un problème",
+    "de": "⚠️ Es gibt ein Problem"
   }
 };
 
 const TRADING_LABELS = {
-  laTuaProposta:   { it:'La tua controproposta', en:'Your counter-offer', zh:'Ã¤Â½Â Ã§Å¡â€žÃ¨Â¿ËœÃ¤Â»Â·', es:'Tu contraoferta', fr:'Votre contre-proposition', de:'Dein Gegenangebot' },
-  controproposta:  { it:'Proposta cliente', en:'Customer offer', zh:'Ã¥Â®Â¢Ã¦Ë†Â·Ã¦ÂÂÃ¨Â®Â®', es:'Propuesta del cliente', fr:'Proposition du client', de:'Angebot des Kunden' },
-  accetta:         { it:'Accetta', en:'Accept', zh:'Ã¦Å½Â¥Ã¥Ââ€”', es:'Aceptar', fr:'Accepter', de:'Annehmen' },
-  rifiuta:         { it:'Rifiuta', en:'Decline', zh:'Ã¦â€¹â€™Ã§Â»Â', es:'Rechazar', fr:'Refuser', de:'Ablehnen' },
-  rilancia:        { it:'Rilancia', en:'Counter', zh:'Ã¨Â¿ËœÃ¤Â»Â·', es:'Contraofertar', fr:'Contre-offre', de:'Gegenangebot' },
-  invia:           { it:'Invia', en:'Send', zh:'Ã¥Ââ€˜Ã©â‚¬Â', es:'Enviar', fr:'Envoyer', de:'Senden' },
-  accordoRaggiunto:{ it:'Accordo raggiunto a', en:'Agreement reached at', zh:'Ã¥Â·Â²Ã¨Â¾Â¾Ã¦Ë†ÂÃ¥ÂÂÃ¨Â®Â®Ã¯Â¼Å’Ã¤Â»Â·Ã¦Â Â¼Ã¤Â¸Âº', es:'Acuerdo alcanzado en', fr:'Accord conclu ÃƒÂ ', de:'Einigung erzielt bei' },
-  propostaRifiutata:{ it:'Proposta rifiutata', en:'Offer declined', zh:'Ã¦ÂÂÃ¨Â®Â®Ã¥Â·Â²Ã¨Â¢Â«Ã¦â€¹â€™Ã§Â»Â', es:'Propuesta rechazada', fr:'Proposition refusÃƒÂ©e', de:'Angebot abgelehnt' },
-  propostaScaduta: { it:'Proposta scaduta', en:'Offer expired', zh:'Ã¦ÂÂÃ¨Â®Â®Ã¥Â·Â²Ã¨Â¿â€¡Ã¦Å“Å¸', es:'Propuesta caducada', fr:'Proposition expirÃƒÂ©e', de:'Angebot abgelaufen' },
-  scadeIn:         { it:'scade in', en:'expires in', zh:'Ã¥â€°Â©Ã¤Â½â„¢', es:'caduca en', fr:'expire dans', de:'lÃƒÂ¤uft ab in' },
-  generaQRInvia:   { it:'Genera QR-A e invia conferma', en:'Generate QR-A and send confirmation', zh:'Ã§â€Å¸Ã¦Ë†ÂQR-AÃ¥Â¹Â¶Ã¥Ââ€˜Ã©â‚¬ÂÃ§Â¡Â®Ã¨Â®Â¤', es:'Generar QR-A y enviar confirmaciÃƒÂ³n', fr:'GÃƒÂ©nÃƒÂ©rer le QR-A et envoyer la confirmation', de:'QR-A erstellen und BestÃƒÂ¤tigung senden' },
-  qrInviato:       { it:'Conferma inviata al cliente', en:'Confirmation sent to customer', zh:'Ã§Â¡Â®Ã¨Â®Â¤Ã¥Â·Â²Ã¥Ââ€˜Ã©â‚¬ÂÃ§Â»â„¢Ã¥Â®Â¢Ã¦Ë†Â·', es:'ConfirmaciÃƒÂ³n enviada al cliente', fr:'Confirmation envoyÃƒÂ©e au client', de:'BestÃƒÂ¤tigung an Kunden gesendet' }
+  laTuaProposta:   { it:'La tua controproposta', en:'Your counter-offer', zh:'你的还价', es:'Tu contraoferta', fr:'Votre contre-proposition', de:'Dein Gegenangebot' },
+  controproposta:  { it:'Proposta cliente', en:'Customer offer', zh:'客户提议', es:'Propuesta del cliente', fr:'Proposition du client', de:'Angebot des Kunden' },
+  accetta:         { it:'Accetta', en:'Accept', zh:'接受', es:'Aceptar', fr:'Accepter', de:'Annehmen' },
+  rifiuta:         { it:'Rifiuta', en:'Decline', zh:'拒绝', es:'Rechazar', fr:'Refuser', de:'Ablehnen' },
+  rilancia:        { it:'Rilancia', en:'Counter', zh:'还价', es:'Contraofertar', fr:'Contre-offre', de:'Gegenangebot' },
+  invia:           { it:'Invia', en:'Send', zh:'发送', es:'Enviar', fr:'Envoyer', de:'Senden' },
+  accordoRaggiunto:{ it:'Accordo raggiunto a', en:'Agreement reached at', zh:'已达成协议,价格为', es:'Acuerdo alcanzado en', fr:'Accord conclu à', de:'Einigung erzielt bei' },
+  propostaRifiutata:{ it:'Proposta rifiutata', en:'Offer declined', zh:'提议已被拒绝', es:'Propuesta rechazada', fr:'Proposition refusée', de:'Angebot abgelehnt' },
+  propostaScaduta: { it:'Proposta scaduta', en:'Offer expired', zh:'提议已过期', es:'Propuesta caducada', fr:'Proposition expirée', de:'Angebot abgelaufen' },
+  scadeIn:         { it:'scade in', en:'expires in', zh:'剩余', es:'caduca en', fr:'expire dans', de:'läuft ab in' },
+  generaQRInvia:   { it:'Genera QR-A e invia conferma', en:'Generate QR-A and send confirmation', zh:'生成QR-A并发送确认', es:'Generar QR-A y enviar confirmación', fr:'Générer le QR-A et envoyer la confirmation', de:'QR-A erstellen und Bestätigung senden' },
+  qrInviato:       { it:'Conferma inviata al cliente', en:'Confirmation sent to customer', zh:'确认已发送给客户', es:'Confirmación enviada al cliente', fr:'Confirmation envoyée au client', de:'Bestätigung an Kunden gesendet' }
 };
 
 function tt(key) {
@@ -600,19 +600,19 @@ window.inviaRilancio = async function(msgId, offertaOriginale) {
       offertaOriginale: offertaOriginale, nota: nota || null, ts: serverTimestamp()
     });
     await updateDoc(doc(db, 'chats', currentTX), {
-      ultimoMsg: 'Ã°Å¸â€â€ž Controproposta: Ã¢â€šÂ¬ ' + valore.toFixed(2), ultimoTs: serverTimestamp(), daLeggere: false
+      ultimoMsg: '🔄 Controproposta: € ' + valore.toFixed(2), ultimoTs: serverTimestamp(), daLeggere: false
     });
   } catch(e) { console.error(e); }
 };
 
 // Genera il QR-A (lato esercente) e, in un unico passo:
-// 1. salva un documento in 'qr_b_emessi' Ã¢â‚¬â€ questo ÃƒÂ¨ il dato centrale che
-//    mio-account.html leggerÃƒÂ  per mostrare il QR-B al cliente, da
+// 1. salva un documento in 'qr_b_emessi' — questo è il dato centrale che
+//    mio-account.html leggerà per mostrare il QR-B al cliente, da
 //    qualsiasi dispositivo usi (non dipende dal localStorage di un
 //    singolo browser);
 // 2. marca la proposta come 'qrGenerato' per non permettere doppi invii;
 // 3. chiama l'Apps Script per mandare l'email di notifica al cliente,
-//    con un link a mio-account.html dove troverÃƒÂ  il QR pronto.
+//    con un link a mio-account.html dove troverà il QR pronto.
 window.generaQRAEInvia = async function(btn, msgId, prezzo, emailCliente) {
   if (!currentTX || !emailCliente) {
     alert('Email del cliente non disponibile per questa proposta.');
@@ -673,16 +673,16 @@ function renderProposta(d, docId, isUltima) {
 
   let statoHtml = '';
   if (statoEffettivo === 'accettata') {
-    statoHtml = `<div class="msg-proposta-stato accettata">Ã¢Å“â€¦ ${tt('accordoRaggiunto')} Ã¢â€šÂ¬ ${d.prezzoProposto.toFixed(2)}</div>`;
+    statoHtml = `<div class="msg-proposta-stato accettata">✅ ${tt('accordoRaggiunto')} € ${d.prezzoProposto.toFixed(2)}</div>`;
     if (!d.qrGenerato) {
-      statoHtml += `<button class="btn-genera-qr" onclick="generaQRAEInvia(this, '${docId}', ${d.prezzoProposto}, '${escapeHtml(d.emailCliente || '')}')">Ã°Å¸â€œÂ¤ ${tt('generaQRInvia')}</button>`;
+      statoHtml += `<button class="btn-genera-qr" onclick="generaQRAEInvia(this, '${docId}', ${d.prezzoProposto}, '${escapeHtml(d.emailCliente || '')}')">📤 ${tt('generaQRInvia')}</button>`;
     } else {
-      statoHtml += `<div class="msg-proposta-qr-ok">Ã¢Å“â€œ ${tt('qrInviato')}</div>`;
+      statoHtml += `<div class="msg-proposta-qr-ok">✓ ${tt('qrInviato')}</div>`;
     }
   } else if (statoEffettivo === 'rifiutata') {
-    statoHtml = `<div class="msg-proposta-stato rifiutata">Ã¢Å“â€¢ ${tt('propostaRifiutata')}</div>`;
+    statoHtml = `<div class="msg-proposta-stato rifiutata">✕ ${tt('propostaRifiutata')}</div>`;
   } else if (statoEffettivo === 'scaduta') {
-    statoHtml = `<div class="msg-proposta-stato scaduta">Ã¢ÂÂ± ${tt('propostaScaduta')}</div>`;
+    statoHtml = `<div class="msg-proposta-stato scaduta">⏱ ${tt('propostaScaduta')}</div>`;
   } else if (d.scadenza) {
     const msRimanenti = new Date(d.scadenza) - new Date();
     const minRimanenti = Math.max(0, Math.ceil(msRimanenti / 60000));
@@ -691,7 +691,7 @@ function renderProposta(d, docId, isUltima) {
 
   const notaHtml = d.nota ? `<div class="msg-proposta-nota">"${escapeHtml(d.nota)}"</div>` : '';
   const label = daEsercente ? tt('laTuaProposta') : tt('controproposta');
-  div.innerHTML = `<div class="msg-proposta-label">${label}</div><div class="msg-proposta-amount">Ã¢â€šÂ¬ ${d.prezzoProposto.toFixed(2)}</div>${notaHtml}${azioniHtml}${statoHtml}`;
+  div.innerHTML = `<div class="msg-proposta-label">${label}</div><div class="msg-proposta-amount">€ ${d.prezzoProposto.toFixed(2)}</div>${notaHtml}${azioniHtml}${statoHtml}`;
   return div;
 }
 
@@ -742,7 +742,7 @@ window.apriChat = function(tx) {
         div.className = 'msg msg-' + (msg.da === 'esercente' ? 'esercente' : msg.da === 'sistema' ? 'sistema' : 'cliente');
         const ora = msg.ts ? new Date(msg.ts.seconds * 1000).toLocaleTimeString('it-IT', {hour:'2-digit',minute:'2-digit'}) : '';
         const notaColor = 'rgba(28,20,16,.65)';
-        div.innerHTML = `<div>${testoVisualizzato(msg)}</div>${msg.quickPhrase ? `<div style="font-size:9px;opacity:1;color:${notaColor};margin-top:2px;font-style:italic;">Ã¢Å¡Â¡ frase rapida</div>` : ''}${ora ? `<div class="msg-time">${ora}</div>` : ''}`;
+        div.innerHTML = `<div>${testoVisualizzato(msg)}</div>${msg.quickPhrase ? `<div style="font-size:9px;opacity:1;color:${notaColor};margin-top:2px;font-style:italic;">âš¡ frase rapida</div>` : ''}${ora ? `<div class="msg-time">${ora}</div>` : ''}`;
         container.appendChild(div);
       }
     });
