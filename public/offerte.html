@@ -1349,7 +1349,9 @@ const REVERSE_LABELS = {
   notaLocationLibera:{ it:'Puoi scegliere qualsiasi location: se non è presente nel nostro database, sarà INSTANTOWN a mettersi in contatto con la struttura. Lavoreremo per te.', en:"You can choose any location: if it's not in our database, INSTANTOWN will get in touch with the property for you. We'll work for you.", zh:'您可以选择任何地点:如果不在我们的数据库中,INSTANTOWN将为您联系该机构。我们将为您服务。', es:'Puedes elegir cualquier ubicación: si no está en nuestra base de datos, será INSTANTOWN quien se ponga en contacto con el establecimiento por ti. Trabajaremos para ti.', fr:"Vous pouvez choisir n'importe quel lieu : s'il ne figure pas dans notre base de données, c'est INSTANTOWN qui contactera l'établissement pour vous. Nous travaillerons pour vous.", de:'Du kannst jeden beliebigen Ort wählen: Ist er nicht in unserer Datenbank, kontaktiert INSTANTOWN die Unterkunft für dich. Wir kümmern uns darum.' },
   cercandoStrutture:{ it:'Cerco strutture nel raggio scelto...', en:'Searching for properties in the selected radius...', zh:'正在所选范围内搜索住宿...', es:'Buscando alojamientos en el radio seleccionado...', fr:'Recherche d\'hébergements dans le rayon sélectionné...', de:'Suche nach Unterkünften im gewählten Radius...' },
   nessunaStrutturaVicina:{ it:'Nessuna struttura registrata trovata in questo raggio. Prova ad ampliarlo, oppure usa "Cerca un hotel specifico".', en:'No registered property found in this radius. Try widening it, or use "Search a specific hotel".', zh:'在此范围内未找到已注册的住宿。请尝试扩大范围,或使用"搜索特定酒店"。', es:'No se encontró ningún alojamiento registrado en este radio. Prueba a ampliarlo, o usa "Buscar un hotel específico".', fr:'Aucun hébergement enregistré trouvé dans ce rayon. Essayez de l\'élargir, ou utilisez "Chercher un hôtel spécifique".', de:'Keine registrierte Unterkunft in diesem Radius gefunden. Versuche einen größeren Radius oder nutze "Ein bestimmtes Hotel suchen".' },
-  struttureTrovate:{ it:'Strutture trovate nel raggio', en:'Properties found in radius', zh:'范围内找到的住宿', es:'Alojamientos encontrados en el radio', fr:'Hébergements trouvés dans le rayon', de:'Gefundene Unterkünfte im Radius' }
+  struttureTrovate:{ it:'Strutture trovate nel raggio', en:'Properties found in radius', zh:'范围内找到的住宿', es:'Alojamientos encontrados en el radio', fr:'Hébergements trouvés dans le rayon', de:'Gefundene Unterkünfte im Radius' },
+  struttureEsterneTitolo:{ it:'Altre strutture nelle vicinanze (non ancora su INSTANTOWN)', en:'Other nearby properties (not yet on INSTANTOWN)', zh:'附近其他住宿(尚未加入INSTANTOWN)', es:'Otros alojamientos cercanos (aún no en INSTANTOWN)', fr:'Autres hébergements à proximité (pas encore sur INSTANTOWN)', de:'Weitere Unterkünfte in der Nähe (noch nicht auf INSTANTOWN)' },
+  nessunaStrutturaEsternaVicina:{ it:'Nessun\'altra struttura trovata in questo raggio.', en:'No other property found in this radius.', zh:'在此范围内未找到其他住宿。', es:'No se encontró ningún otro alojamiento en este radio.', fr:'Aucun autre hébergement trouvé dans ce rayon.', de:'Keine weitere Unterkunft in diesem Radius gefunden.' }
 };
 
 function rt(key) {
@@ -1363,6 +1365,7 @@ let reverseUserLat = null, reverseUserLon = null;
 let currentRichiestaId = null;
 let unsubRichiesta = null;
 let revModalita = 'broadcast'; // 'broadcast' | 'mirata'
+let revRaggioSelezionato = 300; // 200 | 300 | 500 — sostituisce il vecchio <select>, inaffidabile su iOS
 let revHotelSelezionato = null; // {nome, email, lat, lon} quando scelto da autocomplete
 let revHotelManuale = false;
 let revCercaTimeout = null;
@@ -1374,7 +1377,9 @@ window.apriRichiestaReverse = function() {
   revModalita = 'broadcast';
   revHotelSelezionato = null;
   revHotelManuale = false;
+  revRaggioSelezionato = 300;
   window._revHotelViciniTutti = null;
+  window._revHotelEsterniTutti = null;
   renderFormRichiesta();
   acquisisciGpsTurista();
 };
@@ -1424,13 +1429,14 @@ function renderModalitaSpecifica() {
     box.innerHTML = `
       <div class="reverse-field">
         <label>${rt('raggio')}</label>
-        <select id="rev-raggio" onchange="renderListaHotelViciniFiltrata()">
-          <option value="200">200 m</option>
-          <option value="300" selected>300 m</option>
-          <option value="500">500 m</option>
-        </select>
+        <div style="display:flex;gap:8px;">
+          <button type="button" class="sub-btn${revRaggioSelezionato===200 ? ' active' : ''}" onclick="selezionaRaggio(200)" style="flex:1;">200 m</button>
+          <button type="button" class="sub-btn${revRaggioSelezionato===300 ? ' active' : ''}" onclick="selezionaRaggio(300)" style="flex:1;">300 m</button>
+          <button type="button" class="sub-btn${revRaggioSelezionato===500 ? ' active' : ''}" onclick="selezionaRaggio(500)" style="flex:1;">500 m</button>
+        </div>
       </div>
       <div class="reverse-field" id="rev-hotel-vicini-list"></div>
+      <div class="reverse-field" id="rev-hotel-esterni-list"></div>
     `;
     // Il bottone "pubblica" non serve più in broadcast: la scelta avviene
     // cliccando una struttura dalla lista qui sotto.
@@ -1439,6 +1445,8 @@ function renderModalitaSpecifica() {
     if (reverseUserLat) {
       if (window._revHotelViciniTutti !== null) renderListaHotelViciniFiltrata();
       else caricaHotelViciniBroadcast();
+      if (window._revHotelEsterniTutti !== null) renderListaHotelEsterniFiltrata();
+      else caricaHotelEsterniViciniBroadcast();
     }
     return;
   }
@@ -1572,16 +1580,20 @@ window.caricaHotelViciniBroadcast = async function() {
   renderListaHotelViciniFiltrata();
 };
 
+window.selezionaRaggio = function(raggio) {
+  revRaggioSelezionato = raggio;
+  renderModalitaSpecifica(); // ridisegna i pulsanti (per l'evidenziazione "active") e rifiltra la lista
+};
+
 window.renderListaHotelViciniFiltrata = function() {
   const listBox = document.getElementById('rev-hotel-vicini-list');
-  const raggioSel = document.getElementById('rev-raggio');
   if (!listBox) return;
   if (window._revHotelViciniTutti === null) {
     // Non ancora caricata (es. GPS arrivato solo ora): la carica adesso.
     caricaHotelViciniBroadcast();
     return;
   }
-  const raggio = raggioSel ? parseInt(raggioSel.value) : 300;
+  const raggio = revRaggioSelezionato;
   const filtrate = window._revHotelViciniTutti.filter(r => r.distanza <= raggio);
   window._revHotelViciniFiltrate = filtrate;
 
@@ -1611,6 +1623,71 @@ window.selezionaHotelDaListaBroadcast = function(indice) {
   revModalita = 'mirata';
   revHotelSelezionato = { nome: risultato.nome, email: risultato.email, lat: risultato.lat, lon: risultato.lon, registrato: true };
   revHotelManuale = false;
+  const bB = document.getElementById('rev-mode-broadcast');
+  const bM = document.getElementById('rev-mode-mirata');
+  if (bB) bB.classList.remove('active');
+  if (bM) bM.classList.add('active');
+  renderModalitaSpecifica();
+};
+
+// ── MODALITÀ BROADCAST: lista strutture ESTERNE (dataset SUAR, non registrate) ──
+// Stessa logica della lista "registrati" sopra, ma legge cercaHotelEsterniVicini
+// e la selezione porta al flusso hotel esterno (email diretta + invito a
+// registrarsi), non a quello per hotel già su INSTANTOWN.
+window._revHotelEsterniTutti = null;
+
+window.caricaHotelEsterniViciniBroadcast = async function() {
+  const listBox = document.getElementById('rev-hotel-esterni-list');
+  if (!listBox || !reverseUserLat) return;
+  listBox.innerHTML = `<div style="font-size:12px;color:var(--ink-mu);padding:6px 2px;">${rt('cercandoStrutture')}</div>`;
+  try {
+    const resp = await fetch(`${APPS_SCRIPT_URL_OFFERTE}?azione=cercaHotelEsterniVicini&lat=${reverseUserLat}&lon=${reverseUserLon}&t=${Date.now()}`, {cache:'no-store'});
+    const json = await resp.json();
+    window._revHotelEsterniTutti = (json.stato === 'ok' && json.risultati) ? json.risultati : [];
+  } catch(e) {
+    console.warn('Ricerca strutture esterne fallita:', e);
+    window._revHotelEsterniTutti = [];
+  }
+  renderListaHotelEsterniFiltrata();
+};
+
+window.renderListaHotelEsterniFiltrata = function() {
+  const listBox = document.getElementById('rev-hotel-esterni-list');
+  if (!listBox) return;
+  if (window._revHotelEsterniTutti === null) {
+    caricaHotelEsterniViciniBroadcast();
+    return;
+  }
+  const raggio = revRaggioSelezionato;
+  const filtrate = window._revHotelEsterniTutti.filter(r => r.distanza <= raggio);
+  window._revHotelEsterniFiltrate = filtrate;
+
+  if (filtrate.length === 0) {
+    listBox.innerHTML = `<div style="font-size:12px;color:var(--ink-mu);padding:10px 2px 2px;">${rt('nessunaStrutturaEsternaVicina')}</div>`;
+    return;
+  }
+
+  listBox.innerHTML = `
+    <label style="margin-top:10px;display:block;">${rt('struttureEsterneTitolo')}</label>
+    ${filtrate.map((r, i) => `
+      <div onclick="selezionaHotelEsternoDaLista(${i})"
+        style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--rule);border-radius:8px;margin-top:6px;cursor:pointer;background:#fff;">
+        <span style="font-weight:600;font-size:14px;">${escapeHtmlOfferte(r.nome)}</span>
+        <span style="font-size:12px;color:var(--ink-mu);white-space:nowrap;margin-left:10px;">${r.distanza} m</span>
+      </div>
+    `).join('')}
+  `;
+};
+
+// Selezionare una struttura esterna equivale al flusso "hotel esterno" già
+// esistente (mirata_esterna): serve solo il contatto del turista, poi
+// l'email va all'hotel tramite notificaRichiestaHotelEsterno.
+window.selezionaHotelEsternoDaLista = function(indice) {
+  const risultato = (window._revHotelEsterniFiltrate || [])[indice];
+  if (!risultato) return;
+  revModalita = 'mirata';
+  revHotelSelezionato = { nome: risultato.nome, email: risultato.email, lat: risultato.lat, lon: risultato.lon, registrato: false };
+  revHotelManuale = true;
   const bB = document.getElementById('rev-mode-broadcast');
   const bM = document.getElementById('rev-mode-mirata');
   if (bB) bB.classList.remove('active');
