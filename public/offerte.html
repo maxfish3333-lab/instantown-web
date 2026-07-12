@@ -1345,7 +1345,8 @@ const REVERSE_LABELS = {
   tuoContattoNota:{ it:"Serve perché l'hotel non è su Instantown: ti risponderà direttamente", en:"Needed because the hotel isn't on Instantown: they'll reply directly", zh:'因为该酒店不在Instantown上,需要此信息以便直接回复您', es:'Es necesario porque el hotel no está en Instantown: te responderá directamente', fr:"Nécessaire car l'hôtel n'est pas sur Instantown : il vous répondra directement", de:'Erforderlich, da das Hotel nicht bei Instantown ist: Sie antworten dir direkt' },
   hotelSelezionato:{ it:'Hotel selezionato', en:'Selected hotel', zh:'已选择的酒店', es:'Hotel seleccionado', fr:'Hôtel sélectionné', de:'Ausgewähltes Hotel' },
   cambia:{ it:'Cambia', en:'Change', zh:'更改', es:'Cambiar', fr:'Changer', de:'Ändern' },
-  richiestaInviataEsterna:{ it:"Richiesta inviata via email all'hotel. Ti risponderanno direttamente al contatto fornito.", en:"Request sent by email to the hotel. They'll reply directly to the contact you provided.", zh:'请求已通过电子邮件发送给酒店。他们会直接回复您提供的联系方式。', es:'Solicitud enviada por email al hotel. Te responderán directamente al contacto proporcionado.', fr:"Demande envoyée par email à l'hôtel. Il vous répondra directement au contact fourni.", de:'Anfrage per E-Mail an das Hotel gesendet. Sie antworten direkt an den angegebenen Kontakt.' }
+  richiestaInviataEsterna:{ it:"Richiesta inviata via email all'hotel. Ti risponderanno direttamente al contatto fornito.", en:"Request sent by email to the hotel. They'll reply directly to the contact you provided.", zh:'请求已通过电子邮件发送给酒店。他们会直接回复您提供的联系方式。', es:'Solicitud enviada por email al hotel. Te responderán directamente al contacto proporcionado.', fr:"Demande envoyée par email à l'hôtel. Il vous répondra directement au contact fourni.", de:'Anfrage per E-Mail an das Hotel gesendet. Sie antworten direkt an den angegebenen Kontakt.' },
+  notaLocationLibera:{ it:'Puoi scegliere qualsiasi location: se non è presente nel nostro database, sarà INSTANTOWN a mettersi in contatto con la struttura. Lavoreremo per te.', en:"You can choose any location: if it's not in our database, INSTANTOWN will get in touch with the property for you. We'll work for you.", zh:'您可以选择任何地点:如果不在我们的数据库中,INSTANTOWN将为您联系该机构。我们将为您服务。', es:'Puedes elegir cualquier ubicación: si no está en nuestra base de datos, será INSTANTOWN quien se ponga en contacto con el establecimiento por ti. Trabajaremos para ti.', fr:"Vous pouvez choisir n'importe quel lieu : s'il ne figure pas dans notre base de données, c'est INSTANTOWN qui contactera l'établissement pour vous. Nous travaillerons pour vous.", de:'Du kannst jeden beliebigen Ort wählen: Ist er nicht in unserer Datenbank, kontaktiert INSTANTOWN die Unterkunft für dich. Wir kümmern uns darum.' }
 };
 
 function rt(key) {
@@ -1376,6 +1377,9 @@ window.apriRichiestaReverse = function() {
 
 function renderFormRichiesta() {
   document.getElementById('reverse-body').innerHTML = `
+    <div class="reverse-field" style="background:var(--ocra-p, #FDF3DC);border:1px solid rgba(200,134,10,.3);border-radius:8px;padding:12px 14px;font-size:12.5px;line-height:1.5;color:var(--ink-m, #3D2E24);">
+      ${rt('notaLocationLibera')}
+    </div>
     <div class="reverse-field" style="display:flex;gap:8px;">
       <button type="button" class="sub-btn${revModalita==='broadcast' ? ' active' : ''}" id="rev-mode-broadcast" onclick="setModalitaRichiesta('broadcast')" style="flex:1;">${rt('modalitaBroadcast')}</button>
       <button type="button" class="sub-btn${revModalita==='mirata' ? ' active' : ''}" id="rev-mode-mirata" onclick="setModalitaRichiesta('mirata')" style="flex:1;">${rt('modalitaMirata')}</button>
