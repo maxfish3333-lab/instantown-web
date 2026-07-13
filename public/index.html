@@ -1144,20 +1144,30 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// Nascondi splash screen dopo caricamento
+// Nascondi splash screen dopo caricamento — l'attesa "cinematografica" di
+// 1,8s ha senso solo alla primissima apertura della sessione. Se l'utente
+// torna su index.html da un'altra pagina dell'app (es. premendo "← Indietro"
+// da servizi.html), sarebbe strano rivedere la stessa animazione: sembra
+// che l'app si stia riavviando da zero invece di tornare semplicemente
+// alla home. sessionStorage tiene traccia di questo per tutta la sessione
+// del browser (si resetta da solo se l'utente chiude del tutto la scheda).
 window.addEventListener('load', function() {
+  var giaVistoSplash = sessionStorage.getItem('it_splash_visto');
+  var attesa = giaVistoSplash ? 0 : 1800;
+  if (!giaVistoSplash) sessionStorage.setItem('it_splash_visto', '1');
+
   setTimeout(function() {
     var splash = document.getElementById('splash');
     if (splash) {
       splash.classList.add('hidden');
-      setTimeout(function(){ splash.remove(); }, 600);
+      setTimeout(function(){ splash.remove(); }, giaVistoSplash ? 0 : 600);
     }
     // Se non è ancora stata fatta una scelta di profilo, la chiediamo ora
     if (!localStorage.getItem('it_profilo')) {
       var chooser = document.getElementById('profilo-chooser');
       if (chooser) chooser.style.display = 'flex';
     }
-  }, 1800);
+  }, attesa);
 });
 
 function sceltaProfilo(tipo, modalita) {
