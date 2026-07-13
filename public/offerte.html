@@ -1701,6 +1701,144 @@ window.selezionaHotelEsternoDaLista = function(indice) {
   renderModalitaSpecifica();
 };
 
+// ── MODALITÀ BROADCAST: lista strutture registrate entro il raggio ──
+// Chiamata quando si apre la modalità broadcast (o quando arriva il GPS,
+// se non era ancora disponibile): interroga cercaHotelVicini() UNA VOLTA
+// (restituisce tutte le strutture ordinate per distanza) e la salva in
+// cache; il cambio del select raggio filtra localmente senza rifare la
+// chiamata di rete.
+window._revHotelViciniTutti = null;
+
+window.caricaHotelViciniBroadcast = async function() {
+  const listBox = document.getElementById('rev-hotel-vicini-list');
+  if (!listBox || !reverseUserLat) return;
+  listBox.innerHTML = `<div style="font-size:12px;color:var(--ink-mu);padding:6px 2px;">${rt('cercandoStrutture')}</div>`;
+  try {
+    const resp = await fetch(`${APPS_SCRIPT_URL_OFFERTE}?azione=cercaHotelVicini&lat=${reverseUserLat}&lon=${reverseUserLon}&t=${Date.now()}`, {cache:'no-store'});
+    const json = await resp.json();
+    window._revHotelViciniTutti = (json.stato === 'ok' && json.risultati) ? json.risultati : [];
+  } catch(e) {
+    console.warn('Ricerca strutture vicine fallita:', e);
+    window._revHotelViciniTutti = [];
+  }
+  renderListaHotelViciniFiltrata();
+};
+
+window.selezionaRaggio = function(raggio) {
+  revRaggioSelezionato = raggio;
+  renderModalitaSpecifica(); // ridisegna i pulsanti (per l'evidenziazione "active") e rifiltra la lista
+};
+
+window.renderListaHotelViciniFiltrata = function() {
+  const listBox = document.getElementById('rev-hotel-vicini-list');
+  if (!listBox) return;
+  if (window._revHotelViciniTutti === null) {
+    // Non ancora caricata (es. GPS arrivato solo ora): la carica adesso.
+    caricaHotelViciniBroadcast();
+    return;
+  }
+  const raggio = revRaggioSelezionato;
+  const filtrate = window._revHotelViciniTutti.filter(r => r.distanza <= raggio);
+  window._revHotelViciniFiltrate = filtrate;
+
+  if (filtrate.length === 0) {
+    listBox.innerHTML = `<div style="font-size:12px;color:var(--ink-mu);padding:6px 2px;">${rt('nessunaStrutturaVicina')}</div>`;
+    return;
+  }
+
+  listBox.innerHTML = `
+    <label>${rt('struttureTrovate')}</label>
+    ${filtrate.map((r, i) => `
+      <div onclick="selezionaHotelDaListaBroadcast(${i})"
+        style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--rule);border-radius:8px;margin-top:6px;cursor:pointer;background:#fff;">
+        <span style="font-weight:600;font-size:14px;">${escapeHtmlOfferte(r.nome)}</span>
+        <span style="font-size:12px;color:var(--ink-mu);white-space:nowrap;margin-left:10px;">${r.distanza} m</span>
+      </div>
+    `).join('')}
+  `;
+};
+
+// Selezionare una struttura dalla lista broadcast equivale a passare alla
+// modalità "mirata" già registrata: riusa la stessa infrastruttura di
+// pubblicazione (mirata_registrato) invece di duplicarla.
+window.selezionaHotelDaListaBroadcast = function(indice) {
+  const risultato = (window._revHotelViciniFiltrate || [])[indice];
+  if (!risultato) return;
+  revModalita = 'mirata';
+  revHotelSelezionato = { nome: risultato.nome, email: risultato.email, lat: risultato.lat, lon: risultato.lon, registrato: true };
+  revHotelManuale = false;
+  const bB = document.getElementById('rev-mode-broadcast');
+  const bM = document.getElementById('rev-mode-mirata');
+  if (bB) bB.classList.remove('active');
+  if (bM) bM.classList.add('active');
+  renderModalitaSpecifica();
+};
+
+// ── MODALITÀ BROADCAST: lista strutture ESTERNE (dataset SUAR, non registrate) ──
+// Stessa logica della lista "registrati" sopra, ma legge cercaHotelEsterniVicini
+// e la selezione porta al flusso hotel esterno (email diretta + invito a
+// registrarsi), non a quello per hotel già su INSTANTOWN.
+window._revHotelEsterniTutti = null;
+
+window.caricaHotelEsterniViciniBroadcast = async function() {
+  const listBox = document.getElementById('rev-hotel-esterni-list');
+  if (!listBox || !reverseUserLat) return;
+  listBox.innerHTML = `<div style="font-size:12px;color:var(--ink-mu);padding:6px 2px;">${rt('cercandoStrutture')}</div>`;
+  try {
+    const resp = await fetch(`${APPS_SCRIPT_URL_OFFERTE}?azione=cercaHotelEsterniVicini&lat=${reverseUserLat}&lon=${reverseUserLon}&t=${Date.now()}`, {cache:'no-store'});
+    const json = await resp.json();
+    window._revHotelEsterniTutti = (json.stato === 'ok' && json.risultati) ? json.risultati : [];
+  } catch(e) {
+    console.warn('Ricerca strutture esterne fallita:', e);
+    window._revHotelEsterniTutti = [];
+  }
+  renderListaHotelEsterniFiltrata();
+};
+
+window.renderListaHotelEsterniFiltrata = function() {
+  const listBox = document.getElementById('rev-hotel-esterni-list');
+  if (!listBox) return;
+  if (window._revHotelEsterniTutti === null) {
+    caricaHotelEsterniViciniBroadcast();
+    return;
+  }
+  const raggio = revRaggioSelezionato;
+  const filtrate = window._revHotelEsterniTutti.filter(r => r.distanza <= raggio);
+  window._revHotelEsterniFiltrate = filtrate;
+
+  if (filtrate.length === 0) {
+    listBox.innerHTML = `<div style="font-size:12px;color:var(--ink-mu);padding:10px 2px 2px;">${rt('nessunaStrutturaEsternaVicina')}</div>`;
+    return;
+  }
+
+  listBox.innerHTML = `
+    <label style="margin-top:10px;display:block;">${rt('struttureEsterneTitolo')}</label>
+    ${filtrate.map((r, i) => `
+      <div onclick="selezionaHotelEsternoDaLista(${i})"
+        style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--rule);border-radius:8px;margin-top:6px;cursor:pointer;background:#fff;">
+        <span style="font-weight:600;font-size:14px;">${escapeHtmlOfferte(r.nome)}</span>
+        <span style="font-size:12px;color:var(--ink-mu);white-space:nowrap;margin-left:10px;">${r.distanza} m</span>
+      </div>
+    `).join('')}
+  `;
+};
+
+// Selezionare una struttura esterna equivale al flusso "hotel esterno" già
+// esistente (mirata_esterna): serve solo il contatto del turista, poi
+// l'email va all'hotel tramite notificaRichiestaHotelEsterno.
+window.selezionaHotelEsternoDaLista = function(indice) {
+  const risultato = (window._revHotelEsterniFiltrate || [])[indice];
+  if (!risultato) return;
+  revModalita = 'mirata';
+  revHotelSelezionato = { nome: risultato.nome, email: risultato.email, lat: risultato.lat, lon: risultato.lon, registrato: false };
+  revHotelManuale = true;
+  const bB = document.getElementById('rev-mode-broadcast');
+  const bM = document.getElementById('rev-mode-mirata');
+  if (bB) bB.classList.remove('active');
+  if (bM) bM.classList.add('active');
+  renderModalitaSpecifica();
+};
+
 window.resetHotelSelezionato = function() {
   revHotelSelezionato = null;
   revHotelManuale = false;

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>INSTANTOWN ó Il mio account</title>
+<title>INSTANTOWN ‚Äî Il mio account</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -105,18 +105,18 @@ main{max-width:600px;margin:0 auto;padding:28px 20px 80px;}
 <nav>
   <a href="index.html" class="topbar-back">&#8592;</a>
   <span class="nav-brand">INSTANT<span>TOWN</span></span>
-  <a href="map.html" data-i18n="ma_nav_radar">Radar ?</a>
+  <a href="map.html" data-i18n="ma_nav_radar">Radar ‚Üí</a>
 </nav>
 
 <main>
 
   <!-- STATO: VERIFICA TOKEN IN CORSO -->
   <div id="verifica-in-corso" style="display:none;text-align:center;padding:60px 20px;">
-    <div style="font-size:40px;margin-bottom:16px;">?</div>
+    <div style="font-size:40px;margin-bottom:16px;">‚è≥</div>
     <div style="font-size:14px;color:var(--ink-mu);">Verifica del tuo account in corso...</div>
   </div>
 
-  <!-- STATO: NESSUNA SESSIONE ó FORM EMAIL -->
+  <!-- STATO: NESSUNA SESSIONE ‚Äî FORM EMAIL -->
   <div id="login-email-form" style="display:none;">
     <div class="pin-card">
       <div class="pin-label">Accedi al tuo account INSTANTOWN</div>
@@ -128,9 +128,13 @@ main{max-width:600px;margin:0 auto;padding:28px 20px 80px;}
         style="width:100%;padding:14px 16px;font-size:15px;border:1px solid var(--rule);
         border-radius:8px;font-family:'DM Sans',sans-serif;margin-bottom:12px;outline:none;">
       <button class="pin-copy" style="width:100%;text-align:center;" onclick="inviaEmailAccesso()" id="login-submit-btn">
-        Continua ?
+        Continua ‚Üí
       </button>
       <p id="login-email-status" style="font-size:13px;margin-top:14px;line-height:1.6;"></p>
+      <p style="font-size:12px;color:var(--ink-mu);margin-top:16px;line-height:1.6;border-top:1px solid var(--rule);padding-top:12px;">
+        ‚ö†Ô∏è Non ricordi l'email con cui ti sei registrato? Puoi registrarti di nuovo con un'email diversa,
+        ma sar√† un account nuovo con un nuovo PIN ‚Äî segnatelo bene questa volta, cos√¨ non lo perdi ancora.
+      </p>
     </div>
   </div>
 
@@ -140,12 +144,12 @@ main{max-width:600px;margin:0 auto;padding:28px 20px 80px;}
     <!-- PIN UTENTE -->
     <div class="pin-card">
       <div class="pin-label" data-i18n="ma_pin_label">Il tuo PIN personale INSTANTOWN</div>
-      <div class="pin-value" id="pin-display">óó</div>
+      <div class="pin-value" id="pin-display">‚Äî‚Äî</div>
       <div class="pin-note" data-i18n="ma_pin_note">
         Questo PIN identifica il tuo account. Comunicalo all'esercente insieme al QR-B
         per completare il matching e sbloccare i fondi in Garanzia Bancaria.
       </div>
-      <button class="pin-copy" onclick="copiaPIN()" data-i18n="ma_pin_copy">?? Copia PIN</button>
+      <button class="pin-copy" onclick="copiaPIN()" data-i18n="ma_pin_copy">üìã Copia PIN</button>
     </div>
 
     <!-- QR SALVATI -->
@@ -164,13 +168,13 @@ main{max-width:600px;margin:0 auto;padding:28px 20px 80px;}
 <!-- MODAL QR GRANDE -->
 <div class="modal-overlay" id="modal-qr">
   <div class="modal-box">
-    <div class="modal-title" data-i18n="ma_modal_title">QR-B ó Mostra all'esercente</div>
+    <div class="modal-title" data-i18n="ma_modal_title">QR-B ‚Äî Mostra all'esercente</div>
     <div class="modal-sub" id="modal-negozio-desc"></div>
     <div id="modal-qr-img"></div>
     <div class="modal-id" id="modal-booking-id"></div>
     <div class="modal-pin"><span data-i18n="ma_modal_pin">Il tuo PIN:</span> <strong id="modal-pin-val"></strong></div>
     <div class="modal-istr" data-i18n="ma_modal_istr">
-      ? L'esercente mostrer‡ QR-A ó fai scansionare al suo terminale.<br>
+      ‚úì L'esercente mostrer√† QR-A ‚Äî fai scansionare al suo terminale.<br>
       Solo la coppia QR-A + QR-B sblocca i fondi.
     </div>
     <button class="btn-modal-close" onclick="chiudiModal()" data-i18n="ma_modal_close">Chiudi</button>
@@ -190,9 +194,9 @@ function i18nGet(key, fallback) {
 }
 
 // ----------------------------------
-// SISTEMA ACCOUNT ó email-only, no password
+// SISTEMA ACCOUNT ‚Äî email-only, no password
 // ----------------------------------
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw82Ycb8tjx_yMN50bkDHkFd7yEQNiByfuxpaUx-RXFDFVhFFzw7KNUjaioPV6aDs9c/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
 let mioPin = null;
 
 function mostraStato(stato) {
@@ -220,12 +224,12 @@ async function inviaEmailAccesso() {
   try {
     const res = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      body: JSON.stringify({ tipo: 'registrazione_cliente', email: email })
+      body: JSON.stringify({ tipo: 'registrazione_cliente', email: email, deviceToken: localStorage.getItem('it_device') || '' })
     });
     const json = await res.json();
 
     if (json.stato === 'ok' && json.verificato) {
-      // Account gi‡ verificato in passato: salvo subito il PIN, niente email da aspettare
+      // Account gi√† verificato in passato: salvo subito il PIN, niente email da aspettare
       mioPin = json.pin;
       localStorage.setItem('it_pin', mioPin);
       localStorage.setItem('it_email', email);
@@ -234,20 +238,20 @@ async function inviaEmailAccesso() {
       caricaQR();
     } else if (json.stato === 'ok') {
       statusEl.style.color = 'var(--verde)';
-      statusEl.innerHTML = '? Controlla la tua casella email: ti abbiamo mandato un link per confermare l\'accesso.';
+      statusEl.innerHTML = '‚úì ' + (json.messaggio || "Controlla la tua casella email: ti abbiamo mandato un link per confermare l'accesso.");
       btn.style.display = 'none';
       input.disabled = true;
     } else {
       statusEl.style.color = 'var(--rosso)';
-      statusEl.textContent = json.messaggio || 'Si Ë verificato un errore. Riprova.';
+      statusEl.textContent = json.messaggio || 'Si √® verificato un errore. Riprova.';
       btn.disabled = false;
-      btn.textContent = 'Continua ?';
+      btn.textContent = 'Continua ‚Üí';
     }
   } catch (e) {
     statusEl.style.color = 'var(--rosso)';
     statusEl.textContent = 'Errore di connessione. Riprova.';
     btn.disabled = false;
-    btn.textContent = 'Continua ?';
+    btn.textContent = 'Continua ‚Üí';
   }
 }
 
@@ -261,6 +265,7 @@ async function verificaTokenDaUrl(token) {
       mioPin = json.pin;
       localStorage.setItem('it_pin', mioPin);
       if (json.email) localStorage.setItem('it_email', json.email);
+      if (json.deviceToken) localStorage.setItem('it_device', json.deviceToken);
       document.getElementById('pin-display').textContent = mioPin;
       // Rimuovo il parametro dall'URL per evitare riverifiche su refresh
       const url = new URL(window.location);
@@ -272,7 +277,7 @@ async function verificaTokenDaUrl(token) {
       mostraStato('login');
       document.getElementById('login-email-status').style.color = 'var(--rosso)';
       document.getElementById('login-email-status').textContent =
-        json.messaggio || 'Link non valido o gi‡ usato. Inserisci di nuovo la tua email.';
+        json.messaggio || 'Link non valido o gi√† usato. Inserisci di nuovo la tua email.';
     }
   } catch (e) {
     mostraStato('login');
@@ -283,8 +288,8 @@ function copiaPIN() {
   if (!mioPin) return;
   navigator.clipboard.writeText(mioPin).then(()=>{
     const btn = document.querySelector('#account-content .pin-copy');
-    btn.textContent = '? Copiato!';
-    setTimeout(()=>btn.textContent='?? Copia PIN', 2000);
+    btn.textContent = '‚úì Copiato!';
+    setTimeout(()=>btn.textContent='üìã Copia PIN', 2000);
   });
 }
 
@@ -314,15 +319,15 @@ function copiaPIN() {
 // ----------------------------------
 // CARICA QR SALVATI
 // ----------------------------------
-// QR-B centrali (da Firestore, collection qr_b_emessi) ó popolati dal
-// blocco module pi˘ sotto, che interroga per email del cliente loggato.
-// Restano un array separato da quelli locali perchÈ arrivano in modo
+// QR-B centrali (da Firestore, collection qr_b_emessi) ‚Äî popolati dal
+// blocco module pi√π sotto, che interroga per email del cliente loggato.
+// Restano un array separato da quelli locali perch√© arrivano in modo
 // asincrono: appena pronti, richiamano renderListaQR() per unirli.
-let qrCentrali = [];
+window.qrCentrali = []; // FIX: proprieta' di window invece di 'let' locale, per essere accessibile in sicurezza dallo script module (nessuna Temporal Dead Zone)
 
 function caricaQR() {
   renderListaQR();
-  // Definita nel blocco <script type="module"> pi˘ sotto. PuÚ non
+  // Definita nel blocco <script type="module"> pi√π sotto. Pu√≤ non
   // esistere ancora se questo script gira per primo (poco probabile,
   // dato l'ordine nel documento, ma per sicurezza non lancio errori).
   if (typeof caricaQRCentrali === 'function') caricaQRCentrali();
@@ -332,11 +337,11 @@ function renderListaQR() {
   const prenotazioniLocali = JSON.parse(localStorage.getItem('it_prenotazioni') || '[]')
     .map((p, i) => Object.assign({}, p, { localIdx: i, daFirestore: false }));
   // Normalizzo i QR centrali nello stesso formato di quelli locali,
-  // cosÏ il resto del rendering (gi‡ esistente) non deve sapere da dove
+  // cos√¨ il resto del rendering (gi√† esistente) non deve sapere da dove
   // arrivano. bookingId/idtx fittizi ma stabili, usano l'id del documento.
   // localIdx resta null: non esistono in localStorage, eliminaQR() non
   // si applica a loro (il bottone Elimina viene omesso nel template).
-  const centraliNormalizzati = qrCentrali.map(q => ({
+  const centraliNormalizzati = (window.qrCentrali || []).map(q => ({
     negozio: q.negozio, desc: '', prezzo: q.prezzo,
     bookingId: q.id, idtx: q.tx, ts: q.tsMillis || Date.now(),
     stato: q.stato === 'usato' ? 'USATO' : 'ATTESA', daFirestore: true, localIdx: null
@@ -350,7 +355,7 @@ function renderListaQR() {
   if(prenotazioni.length === 0) {
     lista.innerHTML = `
       <div class="empty-state">
-        <div class="empty-icon">??</div>
+        <div class="empty-icon">üé´</div>
         <div class="empty-text" data-i18n="ma_empty_text">
           Non hai ancora QR-B salvati.<br>
           Prenota un'offerta dal Radar per generare il tuo primo QR.
@@ -358,7 +363,7 @@ function renderListaQR() {
         <a href="map.html" style="display:inline-block;margin-top:16px;
           background:var(--rosso);color:#fff;padding:10px 24px;border-radius:4px;
           text-decoration:none;font-size:14px;font-weight:500;">
-          <span data-i18n="ma_empty_cta">Apri il Radar ?</span>
+          <span data-i18n="ma_empty_cta">Apri il Radar ‚Üí</span>
         </a>
       </div>`;
     return;
@@ -370,8 +375,8 @@ function renderListaQR() {
       {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
     const statoClass = p.stato==='USATO' ? 'stato-usato' :
                        p.stato==='SCADUTO' ? 'stato-scaduto' : 'stato-attesa';
-    const statoLabel = p.stato==='USATO' ? i18nGet('ma_stato_completato','? Completato') :
-                       p.stato==='SCADUTO' ? i18nGet('ma_stato_scaduto','Scaduto') : i18nGet('ma_stato_attesa','? In attesa');
+    const statoLabel = p.stato==='USATO' ? i18nGet('ma_stato_completato','‚úì Completato') :
+                       p.stato==='SCADUTO' ? i18nGet('ma_stato_scaduto','Scaduto') : i18nGet('ma_stato_attesa','‚è≥ In attesa');
     return `
     <div class="qr-card" id="card-${idx}">
       <div class="qr-card-header">
@@ -385,12 +390,12 @@ function renderListaQR() {
         <div class="qr-box-img" id="qr-mini-${idx}"></div>
         <div class="qr-info">
           <div class="qr-desc">${(p.desc||'').toLowerCase()}</div>
-          <div class="qr-prezzo">Ä ${parseFloat(p.prezzo).toFixed(2)}</div>
+          <div class="qr-prezzo">‚Ç¨ ${parseFloat(p.prezzo).toFixed(2)}</div>
           <div class="qr-id">${p.bookingId}</div>
         </div>
       </div>
       <div class="qr-card-footer">
-        <button class="btn-mostra" onclick="mostraQR(${idx})" data-i18n="ma_btn_mostra">?? Mostra QR grande</button>
+        <button class="btn-mostra" onclick="mostraQR(${idx})" data-i18n="ma_btn_mostra">üîç Mostra QR grande</button>
         ${p.daFirestore ? '' : `<button class="btn-elimina" onclick="eliminaQR(${p.localIdx})" data-i18n="ma_btn_elimina">Elimina</button>`}
       </div>
     </div>`;
@@ -423,7 +428,7 @@ function renderListaQR() {
 // ----------------------------------
 function mostraQR(idx) {
   const prenotazioniLocali = JSON.parse(localStorage.getItem('it_prenotazioni') || '[]');
-  const centraliNormalizzati = qrCentrali.map(q => ({
+  const centraliNormalizzati = (window.qrCentrali || []).map(q => ({
     negozio: q.negozio, desc: '', prezzo: q.prezzo,
     bookingId: q.id, idtx: q.tx, ts: q.tsMillis || Date.now(), daFirestore: true
   }));
@@ -432,7 +437,7 @@ function mostraQR(idx) {
   if(!p) return;
 
   document.getElementById('modal-negozio-desc').textContent =
-    (p.negozio||'Esercente') + ' ó ' + (p.desc||'');
+    (p.negozio||'Esercente') + ' ‚Äî ' + (p.desc||'');
   document.getElementById('modal-booking-id').textContent = p.bookingId;
   document.getElementById('modal-pin-val').textContent = mioPin;
 
@@ -463,7 +468,7 @@ function chiudiModal() {
 // ELIMINA QR
 // ----------------------------------
 function eliminaQR(idx) {
-  if(!confirm(i18nGet('ma_confirm_elimina','Eliminare questo QR-B? Non potrai pi˘ usarlo per il matching.'))) return;
+  if(!confirm(i18nGet('ma_confirm_elimina','Eliminare questo QR-B? Non potrai pi√π usarlo per il matching.'))) return;
   const prenotazioni = JSON.parse(localStorage.getItem('it_prenotazioni') || '[]');
   prenotazioni.splice(idx, 1);
   localStorage.setItem('it_prenotazioni', JSON.stringify(prenotazioni));
@@ -484,6 +489,7 @@ document.getElementById('modal-qr').addEventListener('click', e => {
 // all'email del cliente e quindi visibili da qualsiasi dispositivo.
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBez4L85HA1__NPKOzagfmKeoGLniIQeAc",
@@ -496,12 +502,14 @@ const firebaseConfig = {
 };
 const appFs = initializeApp(firebaseConfig);
 const dbFs = getFirestore(appFs);
+const authFs = getAuth(appFs);
 
 window.caricaQRCentrali = async function() {
   const email = localStorage.getItem('it_email');
   if (!email) return; // nessuna email nota in questa sessione, niente da cercare
 
   try {
+    await signInAnonymously(authFs).catch(e => console.warn('Login anonimo fallito:', e));
     const q = query(collection(dbFs, 'qr_b_emessi'), where('email', '==', email));
     const snap = await getDocs(q);
     const risultati = [];
@@ -516,9 +524,9 @@ window.caricaQRCentrali = async function() {
         tsMillis: d.ts && d.ts.seconds ? d.ts.seconds * 1000 : Date.now()
       });
     });
-    // window.qrCentrali esiste gi‡ come variabile globale (script principale);
-    // qui la aggiorniamo e richiamiamo il rendering gi‡ pronto a riceverla.
-    qrCentrali = risultati;
+    // window.qrCentrali esiste gi√† come variabile globale (script principale);
+    // qui la aggiorniamo e richiamiamo il rendering gi√† pronto a riceverla.
+    window.qrCentrali = risultati;
     if (typeof renderListaQR === 'function') renderListaQR();
   } catch(e) {
     console.error('Errore caricamento QR centrali:', e);

@@ -10,10 +10,10 @@
   --rosso:#8B1A1A;--rosso-l:#C0392B;
   --ocra:#C8860A;--ocra-l:#E8A020;--ocra-p:#FDF3DC;--ocra-d:#8B5A05;
   --ink:#1C1410;--ink-m:#3D2E24;--ink-mu:#6B5A4E;
-  --bianco:#FDFAF4;--rule:rgba(139,26,26,0.10);
+  --bianco:#FDFAF4;--rule:rgba(139,26,26,0.10);--cielo-p:#E8F4FB;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--ink);height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+body{font-family:'DM Sans',sans-serif;background:var(--cielo-p);color:var(--ink);height:100vh;overflow:hidden;display:flex;flex-direction:column;}
 
 .header{background:#FFFFFF;border-bottom:1px solid var(--rule);padding:14px 20px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 4px rgba(28,20,16,.04);}
 .header img{width:36px;height:36px;border-radius:8px;}
@@ -185,7 +185,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--ink);
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, getDocs, doc, updateDoc, setDoc, serverTimestamp, collectionGroup, where } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, getDocs, getDoc, doc, updateDoc, setDoc, serverTimestamp, collectionGroup, where } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
 const firebaseConfig = {
@@ -201,7 +201,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw82Ycb8tjx_yMN50bkDHkFd7yEQNiByfuxpaUx-RXFDFVhFFzw7KNUjaioPV6aDs9c/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
 
 let negozioCorrente = null;
 let negozioLat = null;
@@ -274,6 +274,7 @@ window.accediDashboard = async function() {
     try {
       await signInWithEmailAndPassword(auth, fbEmail, fbPassword);
     } catch(authErr) {
+      console.error('DEBUG-AUTH: signIn fallito, code=' + authErr.code + ' message=' + authErr.message);
       if (authErr.code === 'auth/user-not-found' || authErr.code === 'auth/invalid-credential') {
         try { await createUserWithEmailAndPassword(auth, fbEmail, fbPassword); } catch(e) {}
       }
@@ -526,7 +527,7 @@ const QUICK_PHRASES = {
   "whereExactly": {
     "it": "❓ Dove vi trovo esattamente?",
     "en": "❓ Where exactly can I find you?",
-    "zh": "❓ 具体在哪里能找到您？",
+    "zh": "❓ 具体在哪里能找到您?",
     "es": "❓ ¿Dónde os encuentro exactamente?",
     "fr": "❓ Où puis-je vous trouver exactement ?",
     "de": "❓ Wo genau finde ich Sie?"
@@ -534,7 +535,7 @@ const QUICK_PHRASES = {
   "thanksLater": {
     "it": "🙏 Grazie, a dopo",
     "en": "🙏 Thanks, see you soon",
-    "zh": "🙏 谢谢，待会见",
+    "zh": "🙏 谢谢,待会见",
     "es": "🙏 Gracias, hasta luego",
     "fr": "🙏 Merci, à bientôt",
     "de": "🙏 Danke, bis gleich"
@@ -556,7 +557,7 @@ const TRADING_LABELS = {
   rifiuta:         { it:'Rifiuta', en:'Decline', zh:'拒绝', es:'Rechazar', fr:'Refuser', de:'Ablehnen' },
   rilancia:        { it:'Rilancia', en:'Counter', zh:'还价', es:'Contraofertar', fr:'Contre-offre', de:'Gegenangebot' },
   invia:           { it:'Invia', en:'Send', zh:'发送', es:'Enviar', fr:'Envoyer', de:'Senden' },
-  accordoRaggiunto:{ it:'Accordo raggiunto a', en:'Agreement reached at', zh:'已达成协议，价格为', es:'Acuerdo alcanzado en', fr:'Accord conclu à', de:'Einigung erzielt bei' },
+  accordoRaggiunto:{ it:'Accordo raggiunto a', en:'Agreement reached at', zh:'已达成协议,价格为', es:'Acuerdo alcanzado en', fr:'Accord conclu à', de:'Einigung erzielt bei' },
   propostaRifiutata:{ it:'Proposta rifiutata', en:'Offer declined', zh:'提议已被拒绝', es:'Propuesta rechazada', fr:'Proposition refusée', de:'Angebot abgelehnt' },
   propostaScaduta: { it:'Proposta scaduta', en:'Offer expired', zh:'提议已过期', es:'Propuesta caducada', fr:'Proposition expirée', de:'Angebot abgelaufen' },
   scadeIn:         { it:'scade in', en:'expires in', zh:'剩余', es:'caduca en', fr:'expire dans', de:'läuft ab in' },
@@ -709,6 +710,7 @@ function testoVisualizzato(d) {
     const lang = getCurrentLang();
     return QUICK_PHRASES[d.quickPhrase][lang] || QUICK_PHRASES[d.quickPhrase].it;
   }
+  if (d.da === 'cliente' && d.testoIt) return d.testoIt;
   return d.testo;
 }
 
@@ -740,7 +742,7 @@ window.apriChat = function(tx) {
         div.className = 'msg msg-' + (msg.da === 'esercente' ? 'esercente' : msg.da === 'sistema' ? 'sistema' : 'cliente');
         const ora = msg.ts ? new Date(msg.ts.seconds * 1000).toLocaleTimeString('it-IT', {hour:'2-digit',minute:'2-digit'}) : '';
         const notaColor = 'rgba(28,20,16,.65)';
-        div.innerHTML = `<div>${testoVisualizzato(msg)}</div>${msg.quickPhrase ? `<div style="font-size:9px;opacity:1;color:${notaColor};margin-top:2px;font-style:italic;">⚡ frase rapida</div>` : ''}${ora ? `<div class="msg-time">${ora}</div>` : ''}`;
+        div.innerHTML = `<div>${testoVisualizzato(msg)}</div>${msg.quickPhrase ? `<div style="font-size:9px;opacity:1;color:${notaColor};margin-top:2px;font-style:italic;">âš¡ frase rapida</div>` : ''}${ora ? `<div class="msg-time">${ora}</div>` : ''}`;
         container.appendChild(div);
       }
     });
@@ -762,8 +764,27 @@ window.inviaMsgEsercente = async function() {
   if (!testo || !currentTX) return;
   input.value = '';
   try {
+    // Legge la lingua del cliente (salvata quando e' entrato in chat)
+    // per tradurre questa risposta prima di salvarla, cosi' lui la
+    // legge sempre nella propria lingua senza fraintendimenti.
+    let testoCliente = testo;
+    try {
+      const chatDoc = await getDoc(doc(db, 'chats', currentTX));
+      const linguaCliente = chatDoc.exists() ? (chatDoc.data().linguaCliente || 'it') : 'it';
+      if (linguaCliente !== 'it') {
+        const tradResp = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: {'Content-Type': 'text/plain;charset=utf-8'},
+          body: JSON.stringify({ tipo: 'traduci_messaggio', testo, da: 'it', a: linguaCliente })
+        });
+        const tradJson = await tradResp.json();
+        if (tradJson.stato === 'ok' && tradJson.tradotto) testoCliente = tradJson.tradotto;
+      }
+    } catch (tradErr) {
+      console.warn('Traduzione risposta fallita, salvo originale:', tradErr);
+    }
     await addDoc(collection(db, 'chats', currentTX, 'messages'), {
-      testo, da: 'esercente', ts: serverTimestamp()
+      testo, testoCliente, da: 'esercente', ts: serverTimestamp()
     });
     await updateDoc(doc(db, 'chats', currentTX), {
       ultimoMsg: testo, ultimoTs: serverTimestamp(), daLeggere: false

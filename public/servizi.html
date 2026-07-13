@@ -1223,6 +1223,7 @@ const POI_I18N = {
     "fr": { "nome": "Fontaine d'eau — Quirinal", "cat": "Services publics", "desc": "Fontaine publique d'eau potable gratuite, près du Palazzo del Quirinale.", "badges": ["Gratuit", "24h/24"] },
     "de": { "nome": "Trinkwasserbrunnen — Quirinal", "cat": "Öffentliche Dienste", "desc": "Öffentlicher kostenloser Trinkwasserbrunnen in der Nähe des Palazzo del Quirinale.", "badges": ["Kostenlos", "24 Std."] }
   },
+  "nasone-termini": {
     "it": { "nome": "Nasone — Stazione Termini", "cat": "Servizi pubblici", "desc": "Fontanella pubblica con acqua potabile gratuita, nei pressi della Stazione Termini.", "badges": ["Gratuito", "H24"] },
     "en": { "nome": "Water fountain — Termini Station", "cat": "Public services", "desc": "Free drinking water fountain near Termini Station.", "badges": ["Free", "24/7"] },
     "zh": { "nome": "饮水点 — 特米尼车站", "cat": "公共服务", "desc": "免费饮用水公共饮水点，靠近特米尼车站。", "badges": ["免费", "全天开放"] },
@@ -2158,6 +2159,59 @@ const POIS = [
   },
 ];
 
+// ═══════════════════════════════════════════════
+// SERVIZI DINAMICI DAL FOGLIO GOOGLE SHEETS
+// ═══════════════════════════════════════════════
+// I punti hardcoded sopra (POIS) restano invariati. In aggiunta, carichiamo
+// qui i servizi che Max aggiunge direttamente nel tab 'servizi' del foglio
+// Google Sheets: vengono uniti a window._tuttiPOI dopo il caricamento, così
+// tutto il resto del codice (filtri, liste, marker) li tratta esattamente
+// come i POI statici, senza bisogno di altre modifiche.
+const APPS_SCRIPT_URL_SERVIZI = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
+
+async function caricaServiziDinamici() {
+  try {
+    const resp = await fetch(`${APPS_SCRIPT_URL_SERVIZI}?azione=getServizi&t=${Date.now()}`, {cache:'no-store'});
+    const dati = await resp.json();
+    if (dati.stato !== 'ok' || !Array.isArray(dati.servizi) || !dati.servizi.length) return;
+
+    const dinamici = dati.servizi.map(s => {
+      // Registra le traduzioni nello stesso formato usato da POI_I18N,
+      // così getPoiTradotto() le trova senza bisogno di logica dedicata.
+      // Nota: traduciTesto() lato Apps Script copre IT/EN/ZH/ES/FR (manca
+      // il tedesco, coerente col resto del sistema di traduzione offerte).
+      if (s.traduzioni && s.traduzioni.nome) {
+        const lingue = ['en','zh','es','fr'];
+        POI_I18N[s.id] = POI_I18N[s.id] || {};
+        lingue.forEach(l => {
+          POI_I18N[s.id][l] = {
+            nome: (s.traduzioni.nome && s.traduzioni.nome[l]) || s.nome,
+            cat:  (s.traduzioni.cat  && s.traduzioni.cat[l])  || s.cat,
+            desc: (s.traduzioni.desc && s.traduzioni.desc[l]) || s.desc,
+            badges: []
+          };
+        });
+        POI_I18N[s.id].it = { nome:s.nome, cat:s.cat, desc:s.desc, badges:[] };
+      }
+
+      return {
+        id: s.id, tipo: s.tipo, emoji: s.emoji,
+        nome: s.nome, cat: s.cat, desc: s.desc,
+        badges: [],
+        lat: s.lat, lon: s.lon,
+        dest: s.dest || encodeURIComponent(s.nome)
+      };
+    });
+
+    // Unione con i POI statici. window._tuttiPOI viene assegnato in
+    // initMappa(); qui lo estendiamo appena il fetch è pronto (di norma
+    // prima che l'utente arrivi a toccare un filtro categoria).
+    window._tuttiPOI = (window._tuttiPOI || POIS).concat(dinamici);
+  } catch(e) {
+    console.warn('Servizi dinamici dal foglio non caricati:', e);
+  }
+}
+
 function getPoiTradotto(poi) {
   var lang = localStorage.getItem('it_lang') || 'it';
   var t = (POI_I18N[poi.id] && POI_I18N[poi.id][lang]) || (POI_I18N[poi.id] && POI_I18N[poi.id].it);
@@ -2225,6 +2279,10 @@ function initMappa(lat, lon) {
 
   // Salva tutti i POI per uso futuro nei filtri
   window._tuttiPOI = POIS;
+
+  // Carica in aggiunta i servizi inseriti da Max nel foglio Google Sheets
+  // (tab 'servizi'). Asincrono: quando arriva, estende window._tuttiPOI.
+  caricaServiziDinamici();
 
   // Mappa pulita all'avvio: nessun pannello aperto, l'utente sceglie
   // quale categoria esplorare dalla griglia dei filtri in basso.

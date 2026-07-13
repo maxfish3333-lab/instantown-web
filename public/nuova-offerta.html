@@ -544,6 +544,22 @@ footer strong{color:var(--ocra-l);}
 // ── FOTO — variabili stato ──
 var fotoCorrente = null;
 
+// ── DISABILITA SCROLL-TO-CHANGE SUI CAMPI ORARIO ──
+// Chrome cambia il valore di <input type="time"> quando si scrolla sopra
+// con la rotellina del mouse/trackpad: uno scroll veloce può far scattare
+// più ore insieme senza che l'utente se ne accorga (es. da 21:00 a 6:00,
+// perché 21+9 supera le 24 e "gira"). Blocchiamo questo comportamento
+// sui campi orario del flash: il valore si cambia solo cliccando sulla
+// cifra e digitando, o con le frecce della tastiera.
+document.addEventListener('DOMContentLoaded', function() {
+  ['inizio-input', 'fine-input'].forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('wheel', function(e) { e.preventDefault(); }, { passive: false });
+    }
+  });
+});
+
 // ── MENU SELEZIONE ──
 function apriFotoMenu(tipo) {
   fotoCorrente = tipo;
@@ -777,7 +793,7 @@ function setStep(n, done, active) {
 // sequenza ravvicinata. Ritentiamo fino a 3 volte con backoff progressivo
 // prima di arrenderci — la stessa strategia usata per il fix del login PIN.
 async function uploadFotoDrive(base64, nomeFile, mimeType, tentativi = 3) {
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw82Ycb8tjx_yMN50bkDHkFd7yEQNiByfuxpaUx-RXFDFVhFFzw7KNUjaioPV6aDs9c/exec';
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
   for (let i = 0; i < tentativi; i++) {
     try {
       const resp = await fetch(APPS_SCRIPT_URL, {
@@ -834,7 +850,7 @@ async function pubblicaOfferta(e) {
 
   const btn = document.getElementById('btn-pubblica');
   btn.disabled = true;
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw82Ycb8tjx_yMN50bkDHkFd7yEQNiByfuxpaUx-RXFDFVhFFzw7KNUjaioPV6aDs9c/exec';
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
   const idTx = 'TX-' + Date.now();
 
   // ── STEP 1: UPLOAD FOTO SU DRIVE ──
