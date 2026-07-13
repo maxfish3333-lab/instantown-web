@@ -2,15 +2,6 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<script>
-  // Se l'esercente ha già scelto il suo profilo in una visita precedente,
-  // saltiamo dritti alla sua area senza nemmeno mostrare la home turistica.
-  // Va qui, prima di tutto il resto, per evitare qualsiasi "flash" di
-  // contenuto sbagliato prima del redirect.
-  if (localStorage.getItem('it_profilo') === 'esercente') {
-    window.location.replace('area-esercente.html');
-  }
-</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>INSTANTOWN — Il mondo ai tuoi piedi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -379,7 +370,10 @@ footer a:hover{color:var(--ocra-l);}
     <img src="Nuovo_logo_3_diss.png" alt="INSTANTOWN" style="width:46px;height:46px;border-radius:10px;flex-shrink:0;display:block;">
     <span class="nav-brand">INSTANTOWN</span>
   </div>
-  <a href="registrazione.html" class="nav-link-cta" id="nav-reg">Registrati come esercente →</a>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <a href="area-esercente.html" style="font-size:12px;color:rgba(255,255,255,.6);text-decoration:underline;">Sei già registrato? Accedi</a>
+    <a href="registrazione.html" class="nav-link-cta" id="nav-reg">Registrati come esercente →</a>
+  </div>
 </nav>
 
 <!-- HERO -->
