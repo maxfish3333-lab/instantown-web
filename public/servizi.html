@@ -2221,8 +2221,17 @@ function getPoiTradotto(poi) {
   var lang = localStorage.getItem('it_lang') || 'it';
   var t = (POI_I18N[poi.id] && POI_I18N[poi.id][lang]) || (POI_I18N[poi.id] && POI_I18N[poi.id].it);
   if (!t) return poi; // fallback: POI senza traduzione (taxi/metro/agenzie - Fase 3)
+  // Il nome italiano resta SEMPRE visibile tra parentesi accanto a quello
+  // tradotto: nomi di vie/piazze/viali tradotti letteralmente (es. da
+  // LanguageApp per i punti dinamici del foglio) non corrispondono più
+  // all'insegna reale della strada — il turista deve poter confrontare
+  // quello che vede sul telefono con quello che vede sul cartello.
+  var nomeFinale = t.nome;
+  if (lang !== 'it' && t.nome !== poi.nome) {
+    nomeFinale = t.nome + ' (' + poi.nome + ')';
+  }
   return Object.assign({}, poi, {
-    nome: t.nome, cat: t.cat, desc: t.desc,
+    nome: nomeFinale, cat: t.cat, desc: t.desc,
     badges: poi.badges.map(function(b, i) { return { t: t.badges[i] || b.t, c: b.c }; })
   });
 }
@@ -2849,10 +2858,19 @@ window.addEventListener('storage', function() {
   applyI18nDOMServizi();
   syncLangSwitchDisplay(localStorage.getItem('it_lang') || 'it');
   refreshMarkerLabels();
+  if (poiSelezionato) apriSheet(poiSelezionato);
 });
 const _origApplyLangSv = window.applyLang;
 if (typeof _origApplyLangSv === 'function') {
-  window.applyLang = function(lang) { _origApplyLangSv(lang); applyI18nDOMServizi(); syncLangSwitchDisplay(lang); refreshMarkerLabels(); };
+  window.applyLang = function(lang) {
+    _origApplyLangSv(lang);
+    applyI18nDOMServizi();
+    syncLangSwitchDisplay(lang);
+    refreshMarkerLabels();
+    // Se una scheda POI è già aperta, ridisegnala nella nuova lingua —
+    // altrimenti resta "congelata" nella lingua di quando è stata aperta.
+    if (poiSelezionato) apriSheet(poiSelezionato);
+  };
 }
 </script>
 </body>
