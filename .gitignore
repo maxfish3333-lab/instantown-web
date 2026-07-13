@@ -76,3 +76,4 @@ fix-*.js
 patch-*.js
 insert-*.js
 check_syntax.js
+.firebase/
