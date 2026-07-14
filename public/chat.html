@@ -336,24 +336,20 @@ window.toggleTradingPanel = function() {
 };
 
 window.inviaProposta = async function() {
-  console.log('DEBUG: inviaProposta chiamata');
   const input = document.getElementById('trading-input');
   const notaInput = document.getElementById('trading-nota-input');
   const errorEl = document.getElementById('trading-error');
   const valore = parseFloat(input.value);
   const nota = notaInput.value.trim();
   errorEl.style.display = 'none';
-  console.log('DEBUG: valore=', valore, 'nota=', nota, 'offertaAmount=', offertaAmount);
 
   const minProponibile = offertaAmount * TRADING_MIN_RATIO;
   if (!valore || valore <= 0) {
-    console.log('DEBUG: bloccato - valore non valido');
     errorEl.textContent = tt('quantoProponi');
     errorEl.style.display = 'block';
     return;
   }
   if (valore < minProponibile) {
-    console.log('DEBUG: bloccato - sotto il minimo');
     errorEl.textContent = tt('erroreMinimo') + ' € ' + minProponibile.toFixed(2);
     errorEl.style.display = 'block';
     return;
@@ -363,14 +359,12 @@ window.inviaProposta = async function() {
   // (vedi email-login-screen) prima di mostrare qualsiasi altro contenuto,
   // quindi a questo punto localStorage.it_email esiste sempre.
   const emailCliente = localStorage.getItem('it_email');
-  console.log('DEBUG: emailCliente=', emailCliente, 'currentTX=', currentTX);
-  if (!emailCliente) { console.log('DEBUG: bloccato - email mancante'); return; }
-  if (!currentTX) { console.log('DEBUG: bloccato - currentTX mancante'); return; }
+  if (!emailCliente) { return; }
+  if (!currentTX) { return; }
 
   const btn = document.getElementById('trading-send-btn');
   btn.disabled = true;
   try {
-    console.log('DEBUG: provo addDoc...');
     const scadenza = new Date(Date.now() + TRADING_TIMEOUT_MIN * 60 * 1000);
     const docRef = await addDoc(collection(db, 'chats', currentTX, 'messages'), {
       tipo: 'proposta', prezzoProposto: valore, daChi: 'cliente',
@@ -378,7 +372,6 @@ window.inviaProposta = async function() {
       offertaOriginale: offertaAmount, nota: nota || null,
       emailCliente: emailCliente, ts: serverTimestamp()
     });
-    console.log('DEBUG: addDoc completato con successo, id=', docRef.id);
     const { setDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
     await setDoc(doc(db, 'chats', currentTX), {
       negozio: offertaNegozio || document.getElementById('info-negozio').textContent,
@@ -386,7 +379,6 @@ window.inviaProposta = async function() {
       ultimoTs: serverTimestamp(),
       daLeggere: true
     }, { merge: true });
-    console.log('DEBUG: setDoc completato con successo');
 
     input.value = '';
     notaInput.value = '';
@@ -703,16 +695,13 @@ document.getElementById('msg-input').addEventListener('keydown', function(e) {
 // Login email obbligatorio prima di accedere alla chat. Stesso
 // meccanismo di mio-account.html: email-only, nessuna password.
 window.accediConEmail = async function() {
-  console.log('DEBUG-LOGIN: accediConEmail chiamata');
   const input = document.getElementById('email-login-input');
   const errorEl = document.getElementById('email-login-error');
   const btn = document.getElementById('email-login-btn');
   const email = (input.value || '').trim().toLowerCase();
-  console.log('DEBUG-LOGIN: email=', email);
 
   errorEl.style.display = 'none';
   if (!email || !email.includes('@')) {
-    console.log('DEBUG-LOGIN: bloccato - email non valida');
     errorEl.textContent = 'Inserisci un indirizzo email valido.';
     errorEl.style.display = 'block';
     return;
@@ -722,17 +711,13 @@ window.accediConEmail = async function() {
   btn.textContent = 'Verifica in corso...';
 
   try {
-    console.log('DEBUG-LOGIN: provo fetch verso', APPS_SCRIPT_URL);
     const res = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       body: JSON.stringify({ tipo: 'registrazione_cliente', email: email })
     });
-    console.log('DEBUG-LOGIN: fetch completata, status HTTP=', res.status);
     const json = await res.json();
-    console.log('DEBUG-LOGIN: risposta JSON=', JSON.stringify(json));
 
     if (json.stato === 'ok' && json.verificato) {
-      console.log('DEBUG-LOGIN: ramo VERIFICATO - nascondo email-login-screen ed entro in chat');
       // Account già attivo: accesso immediato, niente attesa email.
       localStorage.setItem('it_email', email);
 
@@ -748,17 +733,14 @@ window.accediConEmail = async function() {
       }
 
       document.getElementById('email-login-screen').style.display = 'none';
-      console.log('DEBUG-LOGIN: display dopo set =', document.getElementById('email-login-screen').style.display);
       mostraLoginTxOAutoEntra();
     } else if (json.stato === 'ok') {
-      console.log('DEBUG-LOGIN: ramo NON VERIFICATO - mostro messaggio attesa email');
       errorEl.style.color = 'var(--ocra-l)';
       errorEl.innerHTML = '✓ Controlla la tua casella email: ti abbiamo mandato un link per confermare l\'accesso, poi torna su questa pagina.';
       errorEl.style.display = 'block';
       btn.style.display = 'none';
       input.disabled = true;
     } else {
-      console.log('DEBUG-LOGIN: ramo ERRORE -', json.messaggio);
       errorEl.style.color = '';
       errorEl.textContent = json.messaggio || 'Si è verificato un errore. Riprova.';
       errorEl.style.display = 'block';
@@ -766,7 +748,6 @@ window.accediConEmail = async function() {
       btn.textContent = 'Continua →';
     }
   } catch (e) {
-    console.log('DEBUG-LOGIN: ECCEZIONE catturata:', e.message);
     errorEl.textContent = 'Errore di connessione. Riprova.';
     errorEl.style.display = 'block';
     btn.disabled = false;
