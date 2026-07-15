@@ -222,65 +222,35 @@ async function inviaEmailAccesso() {
   statusEl.textContent = '';
 
   try {
+    // 1) Invia il magic link Firebase (autenticazione vera e verificata).
+    //    Da questo momento, quando l'utente clicca il link nell'email,
+    //    Firebase conferma crittograficamente che possiede quell'indirizzo.
+    if (typeof window.inviaMagicLink === 'function') {
+      await window.inviaMagicLink(email);
+    }
+
+    // 2) In parallelo, chiama Apps Script per registrare/recuperare il PIN
+    //    del cliente (il PIN resta un componente del QR, non solo del login).
     const res = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       body: JSON.stringify({ tipo: 'registrazione_cliente', email: email, deviceToken: localStorage.getItem('it_device') || '' })
     });
     const json = await res.json();
 
-    if (json.stato === 'ok' && json.verificato) {
-      // Account già verificato in passato: salvo subito il PIN, niente email da aspettare
-      mioPin = json.pin;
-      localStorage.setItem('it_pin', mioPin);
-      localStorage.setItem('it_email', email);
-      document.getElementById('pin-display').textContent = mioPin;
-      mostraStato('attivo');
-      caricaQR();
-    } else if (json.stato === 'ok') {
-      statusEl.style.color = 'var(--verde)';
-      statusEl.innerHTML = '✓ ' + (json.messaggio || "Controlla la tua casella email: ti abbiamo mandato un link per confermare l'accesso.");
-      btn.style.display = 'none';
-      input.disabled = true;
-    } else {
-      statusEl.style.color = 'var(--rosso)';
-      statusEl.textContent = json.messaggio || 'Si è verificato un errore. Riprova.';
-      btn.disabled = false;
-      btn.textContent = 'Continua →';
-    }
+    // Salvo email e PIN (se già disponibile) per uso locale; l'accesso vero
+    // ai dati Firestore avverrà solo dopo il click sul magic link.
+    localStorage.setItem('it_email', email);
+    if (json.pin) { localStorage.setItem('it_pin', json.pin); }
+
+    statusEl.style.color = 'var(--verde)';
+    statusEl.innerHTML = '✓ ' + "Controlla la tua casella email (anche SPAM): ti abbiamo mandato un link per confermare l'accesso. Aprilo su questo dispositivo.";
+    btn.style.display = 'none';
+    input.disabled = true;
   } catch (e) {
     statusEl.style.color = 'var(--rosso)';
-    statusEl.textContent = 'Errore di connessione. Riprova.';
+    statusEl.textContent = 'Errore nell\'invio del link. Riprova.';
     btn.disabled = false;
     btn.textContent = 'Continua →';
-  }
-}
-
-async function verificaTokenDaUrl(token) {
-  mostraStato('verifica');
-  try {
-    const res = await fetch(APPS_SCRIPT_URL + '?azione=verificaCliente&token=' + encodeURIComponent(token));
-    const json = await res.json();
-
-    if (json.stato === 'ok' && json.pin) {
-      mioPin = json.pin;
-      localStorage.setItem('it_pin', mioPin);
-      if (json.email) localStorage.setItem('it_email', json.email);
-      if (json.deviceToken) localStorage.setItem('it_device', json.deviceToken);
-      document.getElementById('pin-display').textContent = mioPin;
-      // Rimuovo il parametro dall'URL per evitare riverifiche su refresh
-      const url = new URL(window.location);
-      url.searchParams.delete('verifica');
-      window.history.replaceState({}, '', url);
-      mostraStato('attivo');
-      caricaQR();
-    } else {
-      mostraStato('login');
-      document.getElementById('login-email-status').style.color = 'var(--rosso)';
-      document.getElementById('login-email-status').textContent =
-        json.messaggio || 'Link non valido o già usato. Inserisci di nuovo la tua email.';
-    }
-  } catch (e) {
-    mostraStato('login');
   }
 }
 
@@ -297,22 +267,57 @@ function copiaPIN() {
 // INIZIALIZZAZIONE: decido quale stato mostrare
 // ----------------------------------
 (function initAccount() {
-  const params = new URLSearchParams(window.location.search);
-  const tokenUrl = params.get('verifica');
-
-  if (tokenUrl) {
-    verificaTokenDaUrl(tokenUrl);
-    return;
+  // 1) Se stiamo tornando da un magic link Firebase, completiamo l'accesso.
+  //    completaMagicLinkSePresente() è definita nel blocco module qui sotto;
+  //    potrebbe non essere ancora pronta al primissimo giro, quindi usiamo
+  //    un piccolo retry finché il module non ha esposto la funzione.
+  function provaMagicLink(tentativi) {
+    if (typeof window.completaMagicLinkSePresente === 'function') {
+      mostraStato('verifica');
+      window.completaMagicLinkSePresente().then(function(emailVerificata) {
+        if (emailVerificata) {
+          localStorage.setItem('it_email', emailVerificata);
+          const pinSalvato = localStorage.getItem('it_pin');
+          if (pinSalvato) {
+            mioPin = pinSalvato;
+            document.getElementById('pin-display').textContent = mioPin;
+          }
+          mostraStato('attivo');
+          caricaQR();
+          if (typeof window.caricaQRCentrali === 'function') window.caricaQRCentrali();
+        } else {
+          avvioNormale();
+        }
+      });
+    } else if (tentativi > 0) {
+      setTimeout(function(){ provaMagicLink(tentativi - 1); }, 150);
+    } else {
+      avvioNormale();
+    }
   }
 
-  const pinSalvato = localStorage.getItem('it_pin');
-  if (pinSalvato) {
-    mioPin = pinSalvato;
-    document.getElementById('pin-display').textContent = mioPin;
-    mostraStato('attivo');
-    caricaQR();
+  // Avvio normale (nessun magic link nell'URL): se abbiamo già email+pin
+  // salvati da una sessione precedente, mostriamo l'account; altrimenti login.
+  function avvioNormale() {
+    const pinSalvato = localStorage.getItem('it_pin');
+    const emailSalvata = localStorage.getItem('it_email');
+    if (pinSalvato && emailSalvata) {
+      mioPin = pinSalvato;
+      document.getElementById('pin-display').textContent = mioPin;
+      mostraStato('attivo');
+      caricaQR();
+      // caricaQRCentrali verrà comunque richiamata da onAuthStateChanged
+      // quando Firebase ripristina la sessione persistente.
+    } else {
+      mostraStato('login');
+    }
+  }
+
+  // Se l'URL contiene un magic link, lo gestiamo; altrimenti avvio normale.
+  if (window.location.href.indexOf('apiKey=') !== -1 || window.location.href.indexOf('oobCode=') !== -1) {
+    provaMagicLink(20);
   } else {
-    mostraStato('login');
+    avvioNormale();
   }
 })();
 
@@ -489,7 +494,8 @@ document.getElementById('modal-qr').addEventListener('click', e => {
 // all'email del cliente e quindi visibili da qualsiasi dispositivo.
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getAuth, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, onAuthStateChanged, setPersistence, browserLocalPersistence }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBez4L85HA1__NPKOzagfmKeoGLniIQeAc",
@@ -504,12 +510,61 @@ const appFs = initializeApp(firebaseConfig);
 const dbFs = getFirestore(appFs);
 const authFs = getAuth(appFs);
 
+// Sessione persistente: una volta entrato col magic link, l'utente resta
+// loggato a lungo (non deve rifare il link ad ogni visita). È il default
+// di Firebase, ma lo impostiamo esplicitamente per chiarezza.
+setPersistence(authFs, browserLocalPersistence).catch(()=>{});
+
+// Impostazioni del magic link: dopo il click nell'email, l'utente torna
+// su questa stessa pagina (mio-account.html), dove completiamo l'accesso.
+const magicLinkSettings = {
+  url: 'https://instantown.it/mio-account.html',
+  handleCodeInApp: true
+};
+
+// ── INVIO MAGIC LINK ──
+// Esposta al codice non-module. Invia il link Firebase e, in parallelo,
+// mantiene la chiamata Apps Script esistente per recuperare/generare il PIN
+// (che resta un componente del QR, non solo del login).
+window.inviaMagicLink = async function(email) {
+  await sendSignInLinkToEmail(authFs, email, magicLinkSettings);
+  window.localStorage.setItem('emailMagicLink', email);
+};
+
+// ── RITORNO DAL MAGIC LINK ──
+// Chiamata da initAccount() al load: se l'URL è un magic link valido,
+// completa l'accesso Firebase (identità verificata) e restituisce l'email.
+window.completaMagicLinkSePresente = async function() {
+  if (!isSignInWithEmailLink(authFs, window.location.href)) return null;
+  let email = window.localStorage.getItem('emailMagicLink');
+  if (!email) {
+    email = window.prompt('Conferma la tua email per completare l\'accesso:');
+  }
+  if (!email) return null;
+  try {
+    const result = await signInWithEmailLink(authFs, email, window.location.href);
+    window.localStorage.removeItem('emailMagicLink');
+    // Pulisco l'URL dai parametri del magic link (evita ri-verifiche al refresh)
+    const url = new URL(window.location);
+    url.search = '';
+    window.history.replaceState({}, '', url);
+    return result.user.email;
+  } catch (e) {
+    console.error('Errore completamento magic link:', e);
+    return null;
+  }
+};
+
+// ── LETTURA QR-B da Firestore ──
+// Ora NON usa più signInAnonymously(). Legge solo se c'è un utente Firebase
+// realmente autenticato (via magic link): la sua email verificata è quella
+// che le regole Firestore confrontano con il campo 'email' dei documenti.
 window.caricaQRCentrali = async function() {
-  const email = localStorage.getItem('it_email');
-  if (!email) return; // nessuna email nota in questa sessione, niente da cercare
+  const user = authFs.currentUser;
+  if (!user || !user.email) return; // nessun utente autenticato: niente da leggere
+  const email = user.email;
 
   try {
-    await signInAnonymously(authFs).catch(e => console.warn('Login anonimo fallito:', e));
     const q = query(collection(dbFs, 'qr_b_emessi'), where('email', '==', email));
     const snap = await getDocs(q);
     const risultati = [];
@@ -524,14 +579,22 @@ window.caricaQRCentrali = async function() {
         tsMillis: d.ts && d.ts.seconds ? d.ts.seconds * 1000 : Date.now()
       });
     });
-    // window.qrCentrali esiste già come variabile globale (script principale);
-    // qui la aggiorniamo e richiamiamo il rendering già pronto a riceverla.
     window.qrCentrali = risultati;
     if (typeof renderListaQR === 'function') renderListaQR();
   } catch(e) {
     console.error('Errore caricamento QR centrali:', e);
   }
 };
+
+// Espone lo stato di autenticazione al resto della pagina: quando Firebase
+// conferma un utente loggato (sessione persistente ripristinata o magic link
+// appena completato), ricarichiamo i QR centrali.
+onAuthStateChanged(authFs, (user) => {
+  if (user && user.email) {
+    localStorage.setItem('it_email', user.email);
+    if (typeof window.caricaQRCentrali === 'function') window.caricaQRCentrali();
+  }
+});
 </script>
 </body>
 </html>

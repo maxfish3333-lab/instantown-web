@@ -207,7 +207,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cielo-p);color:var(--ink)
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getAuth, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, onAuthStateChanged, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBez4L85HA1__NPKOzagfmKeoGLniIQeAc",
@@ -222,6 +222,16 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+
+// Sessione persistente (default Firebase, esplicitato per chiarezza).
+setPersistence(auth, browserLocalPersistence).catch(()=>{});
+
+// Il magic link riporta l'utente su questa stessa pagina chat, preservando
+// il TX se era nell'URL (così dopo il login torna dritto nella conversazione).
+const magicLinkSettingsChat = {
+  url: window.location.href,
+  handleCodeInApp: true
+};
 
 let currentTX = null;
 let unsubscribe = null;
@@ -336,20 +346,24 @@ window.toggleTradingPanel = function() {
 };
 
 window.inviaProposta = async function() {
+  console.log('DEBUG: inviaProposta chiamata');
   const input = document.getElementById('trading-input');
   const notaInput = document.getElementById('trading-nota-input');
   const errorEl = document.getElementById('trading-error');
   const valore = parseFloat(input.value);
   const nota = notaInput.value.trim();
   errorEl.style.display = 'none';
+  console.log('DEBUG: valore=', valore, 'nota=', nota, 'offertaAmount=', offertaAmount);
 
   const minProponibile = offertaAmount * TRADING_MIN_RATIO;
   if (!valore || valore <= 0) {
+    console.log('DEBUG: bloccato - valore non valido');
     errorEl.textContent = tt('quantoProponi');
     errorEl.style.display = 'block';
     return;
   }
   if (valore < minProponibile) {
+    console.log('DEBUG: bloccato - sotto il minimo');
     errorEl.textContent = tt('erroreMinimo') + ' € ' + minProponibile.toFixed(2);
     errorEl.style.display = 'block';
     return;
@@ -359,12 +373,14 @@ window.inviaProposta = async function() {
   // (vedi email-login-screen) prima di mostrare qualsiasi altro contenuto,
   // quindi a questo punto localStorage.it_email esiste sempre.
   const emailCliente = localStorage.getItem('it_email');
-  if (!emailCliente) { return; }
-  if (!currentTX) { return; }
+  console.log('DEBUG: emailCliente=', emailCliente, 'currentTX=', currentTX);
+  if (!emailCliente) { console.log('DEBUG: bloccato - email mancante'); return; }
+  if (!currentTX) { console.log('DEBUG: bloccato - currentTX mancante'); return; }
 
   const btn = document.getElementById('trading-send-btn');
   btn.disabled = true;
   try {
+    console.log('DEBUG: provo addDoc...');
     const scadenza = new Date(Date.now() + TRADING_TIMEOUT_MIN * 60 * 1000);
     const docRef = await addDoc(collection(db, 'chats', currentTX, 'messages'), {
       tipo: 'proposta', prezzoProposto: valore, daChi: 'cliente',
@@ -372,6 +388,7 @@ window.inviaProposta = async function() {
       offertaOriginale: offertaAmount, nota: nota || null,
       emailCliente: emailCliente, ts: serverTimestamp()
     });
+    console.log('DEBUG: addDoc completato con successo, id=', docRef.id);
     const { setDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
     await setDoc(doc(db, 'chats', currentTX), {
       negozio: offertaNegozio || document.getElementById('info-negozio').textContent,
@@ -379,6 +396,7 @@ window.inviaProposta = async function() {
       ultimoTs: serverTimestamp(),
       daLeggere: true
     }, { merge: true });
+    console.log('DEBUG: setDoc completato con successo');
 
     input.value = '';
     notaInput.value = '';
@@ -692,8 +710,9 @@ document.getElementById('msg-input').addEventListener('keydown', function(e) {
   }
 });
 
-// Login email obbligatorio prima di accedere alla chat. Stesso
-// meccanismo di mio-account.html: email-only, nessuna password.
+// Login email obbligatorio prima di accedere alla chat. Magic link Firebase:
+// l'utente inserisce l'email, riceve un link, ci clicca e torna qui già
+// autenticato in modo verificato. Stesso meccanismo di mio-account.html.
 window.accediConEmail = async function() {
   const input = document.getElementById('email-login-input');
   const errorEl = document.getElementById('email-login-error');
@@ -708,47 +727,29 @@ window.accediConEmail = async function() {
   }
 
   btn.disabled = true;
-  btn.textContent = 'Verifica in corso...';
+  btn.textContent = 'Invio in corso...';
 
   try {
-    const res = await fetch(APPS_SCRIPT_URL, {
+    // 1) Invia il magic link Firebase (autenticazione verificata)
+    await sendSignInLinkToEmail(auth, email, magicLinkSettingsChat);
+    window.localStorage.setItem('emailMagicLink', email);
+    localStorage.setItem('it_email', email);
+
+    // 2) In parallelo notifica Apps Script (registrazione/PIN cliente),
+    //    come faceva prima — non blocca il flusso se fallisce.
+    fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       body: JSON.stringify({ tipo: 'registrazione_cliente', email: email })
-    });
-    const json = await res.json();
+    }).catch(()=>{});
 
-    if (json.stato === 'ok' && json.verificato) {
-      // Account già attivo: accesso immediato, niente attesa email.
-      localStorage.setItem('it_email', email);
-
-      // ── Firebase Auth silenzioso ──
-      // Password derivata dall'email (stabile, non serve che l'utente la conosca)
-      const fbPassword = 'IT_' + btoa(email).replace(/[^a-zA-Z0-9]/g,'').substring(0,20);
-      try {
-        await signInWithEmailAndPassword(auth, email, fbPassword);
-      } catch(authErr) {
-        if (authErr.code === 'auth/user-not-found' || authErr.code === 'auth/invalid-credential') {
-          try { await createUserWithEmailAndPassword(auth, email, fbPassword); } catch(e) {}
-        }
-      }
-
-      document.getElementById('email-login-screen').style.display = 'none';
-      mostraLoginTxOAutoEntra();
-    } else if (json.stato === 'ok') {
-      errorEl.style.color = 'var(--ocra-l)';
-      errorEl.innerHTML = '✓ Controlla la tua casella email: ti abbiamo mandato un link per confermare l\'accesso, poi torna su questa pagina.';
-      errorEl.style.display = 'block';
-      btn.style.display = 'none';
-      input.disabled = true;
-    } else {
-      errorEl.style.color = '';
-      errorEl.textContent = json.messaggio || 'Si è verificato un errore. Riprova.';
-      errorEl.style.display = 'block';
-      btn.disabled = false;
-      btn.textContent = 'Continua →';
-    }
+    errorEl.style.color = 'var(--ocra-l)';
+    errorEl.innerHTML = '✓ Controlla la tua casella email (anche SPAM): ti abbiamo mandato un link per accedere. Aprilo su questo dispositivo e tornerai qui nella chat.';
+    errorEl.style.display = 'block';
+    btn.style.display = 'none';
+    input.disabled = true;
   } catch (e) {
-    errorEl.textContent = 'Errore di connessione. Riprova.';
+    errorEl.style.color = '';
+    errorEl.textContent = 'Errore nell\'invio del link. Riprova.';
     errorEl.style.display = 'block';
     btn.disabled = false;
     btn.textContent = 'Continua →';
@@ -775,17 +776,53 @@ document.getElementById('msg-input').addEventListener('input', function() {
   this.style.height = Math.min(this.scrollHeight, 120) + 'px';
 });
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
   initTrading();
+
+  // 1) Se stiamo tornando da un magic link, completiamo l'accesso verificato.
+  if (isSignInWithEmailLink(auth, window.location.href)) {
+    let email = window.localStorage.getItem('emailMagicLink');
+    if (!email) email = window.prompt('Conferma la tua email per accedere:');
+    if (email) {
+      try {
+        await signInWithEmailLink(auth, email, window.location.href);
+        window.localStorage.removeItem('emailMagicLink');
+        localStorage.setItem('it_email', email);
+        // pulisco l'URL dai parametri del magic link, ma PRESERVO il tx
+        const params = new URLSearchParams(window.location.search);
+        const tx = params.get('tx');
+        const nuovoUrl = new URL(window.location);
+        nuovoUrl.search = tx ? ('?tx=' + encodeURIComponent(tx)) : '';
+        window.history.replaceState({}, '', nuovoUrl);
+        document.getElementById('email-login-screen').style.display = 'none';
+        mostraLoginTxOAutoEntra();
+        return;
+      } catch (e) {
+        console.error('Errore completamento magic link chat:', e);
+      }
+    }
+  }
+
+  // 2) Avvio normale: se Firebase ha già una sessione persistente attiva,
+  //    onAuthStateChanged sotto ci fa entrare; altrimenti, se abbiamo almeno
+  //    l'email salvata, procediamo come prima.
   const emailNota = localStorage.getItem('it_email');
-  if (emailNota) {
-    // Email già garantita da una sessione precedente: si salta dritti
-    // al login TX / auto-login, come prima di questa modifica.
+  if (emailNota && auth.currentUser) {
+    document.getElementById('email-login-screen').style.display = 'none';
     mostraLoginTxOAutoEntra();
   }
-  // Se l'email non è nota, email-login-screen resta visibile (è lo
-  // stato di default nell'HTML) e blocca l'accesso al resto: il cliente
-  // deve completare accediConEmail() prima di proseguire.
+});
+
+// Se Firebase ripristina/conferma una sessione (utente verificato), entriamo.
+onAuthStateChanged(auth, function(user) {
+  if (user && user.email) {
+    localStorage.setItem('it_email', user.email);
+    const screen = document.getElementById('email-login-screen');
+    if (screen && screen.style.display !== 'none') {
+      screen.style.display = 'none';
+      mostraLoginTxOAutoEntra();
+    }
+  }
 });
 
 </script>
