@@ -2175,6 +2175,7 @@ const POIS = [
 const APPS_SCRIPT_URL_SERVIZI = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
 
 async function caricaServiziDinamici() {
+  window._serviziDinamiciPronti = false;
   try {
     const resp = await fetch(`${APPS_SCRIPT_URL_SERVIZI}?azione=getServizi&t=${Date.now()}`, {cache:'no-store'});
     const dati = await resp.json();
@@ -2212,8 +2213,25 @@ async function caricaServiziDinamici() {
     // initMappa(); qui lo estendiamo appena il fetch è pronto (di norma
     // prima che l'utente arrivi a toccare un filtro categoria).
     window._tuttiPOI = (window._tuttiPOI || POIS).concat(dinamici);
+    window._serviziDinamiciPronti = true;
+
+    // Se l'utente aveva già cliccato una categoria-lista (parcheggi, wifi...)
+    // mentre il caricamento era ancora in corso, la lista era rimasta vuota
+    // con "Caricamento…". Ora che i dati sono arrivati, la ridisegniamo.
+    if (window._categoriaInAttesa) {
+      const t = window._categoriaInAttesa;
+      window._categoriaInAttesa = null;
+      const allPOI = window._tuttiPOI || POIS;
+      apriListaCategoria(t, allPOI.filter(p => p.tipo === t));
+    }
   } catch(e) {
     console.warn('Servizi dinamici dal foglio non caricati:', e);
+    window._serviziDinamiciPronti = true; // sblocca comunque, evita attesa infinita
+    if (window._categoriaInAttesa) {
+      const t = window._categoriaInAttesa;
+      window._categoriaInAttesa = null;
+      apriListaCategoria(t, (window._tuttiPOI || POIS).filter(p => p.tipo === t), null, true);
+    }
   }
 }
 
@@ -2698,8 +2716,34 @@ function filtra(tipo, btn) {
 // ═══════════════════════════════════════════════
 // PANNELLO LISTA CATEGORIA
 // ═══════════════════════════════════════════════
-function apriListaCategoria(tipo, poiList, metaCustom) {
+function apriListaCategoria(tipo, poiList, metaCustom, erroreCaricamento) {
   const meta = metaCustom || META_CATEGORIE_LISTA[tipo] || { emoji:'📍', titolo:tipo };
+
+  document.getElementById('cl-emoji').textContent = meta.emoji;
+  document.getElementById('cl-titolo').textContent = meta.titolo;
+
+  const body = document.getElementById('cl-body');
+
+  // Se la lista è vuota E i servizi dinamici non sono ancora arrivati dal
+  // server, mostriamo "Caricamento…" e ricordiamo quale categoria l'utente
+  // vuole: caricaServiziDinamici() la ridisegnerà appena i dati sono pronti.
+  // (Molte categorie-lista — parcheggi, wifi — esistono solo lato foglio.)
+  const categoriaDinamica = !['iconico'].includes(tipo); // iconico è statico
+  if (poiList.length === 0 && categoriaDinamica && !window._serviziDinamiciPronti && !erroreCaricamento) {
+    window._categoriaInAttesa = tipo;
+    document.getElementById('cl-count').textContent = '';
+    body.innerHTML = '<div style="padding:32px 16px;text-align:center;color:var(--ink-mu);font-size:14px;">⏳ Caricamento…</div>';
+    document.getElementById('cat-list-panel').classList.add('open');
+    return;
+  }
+
+  // Se siamo qui dopo un errore di caricamento e la lista è comunque vuota:
+  if (poiList.length === 0 && erroreCaricamento) {
+    document.getElementById('cl-count').textContent = '0';
+    body.innerHTML = '<div style="padding:32px 16px;text-align:center;color:var(--ink-mu);font-size:14px;">Nessun punto disponibile al momento. Riprova tra poco.</div>';
+    document.getElementById('cat-list-panel').classList.add('open');
+    return;
+  }
 
   // Ordina per distanza crescente dal pin utente
   const ordinati = poiList.slice().sort(function(a, b) {
@@ -2707,11 +2751,7 @@ function apriListaCategoria(tipo, poiList, metaCustom) {
     return haversine(userLat, userLon, a.lat, a.lon) - haversine(userLat, userLon, b.lat, b.lon);
   });
 
-  document.getElementById('cl-emoji').textContent = meta.emoji;
-  document.getElementById('cl-titolo').textContent = meta.titolo;
   document.getElementById('cl-count').textContent = ordinati.length;
-
-  const body = document.getElementById('cl-body');
   body.innerHTML = ordinati.map(function(poiOriginale) {
     const poi = getPoiTradotto(poiOriginale);
     const distTxt = userLat
