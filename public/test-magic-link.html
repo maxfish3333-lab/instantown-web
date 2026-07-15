@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Magic Link — INSTANTOWN</title>
+<style>
+  body{font-family:system-ui,sans-serif;max-width:480px;margin:40px auto;padding:0 20px;color:#1C1410;line-height:1.6;}
+  h1{font-size:20px;}
+  input{width:100%;padding:12px;font-size:16px;border:1px solid #ccc;border-radius:8px;box-sizing:border-box;margin:8px 0;}
+  button{width:100%;padding:14px;font-size:16px;font-weight:bold;background:#B20000;color:#fff;border:none;border-radius:8px;cursor:pointer;}
+  #stato{margin-top:20px;padding:14px;border-radius:8px;background:#f4f4f4;white-space:pre-wrap;font-size:13px;font-family:monospace;}
+  .ok{background:#e1f5ee !important;color:#085041;}
+  .err{background:#faece7 !important;color:#712b13;}
+</style>
+</head>
+<body>
+<h1>🔗 Test Magic Link Firebase</h1>
+<p>Pagina di test isolata. Non tocca il login reale. Serve solo a confermare che il magic link funziona end-to-end.</p>
+
+<input type="email" id="email" placeholder="La tua email di test (es. maximam@libero.it)">
+<button onclick="inviaLink()">Inviami il magic link</button>
+
+<div id="stato">In attesa…</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBez4L85HA1__NPKOzagfmKeoGLniIQeAc",
+  authDomain: "instantown-app.firebaseapp.com",
+  projectId: "instantown-app"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const stato = document.getElementById('stato');
+
+function log(msg, cls) {
+  stato.textContent = msg;
+  stato.className = cls || '';
+}
+
+// Le impostazioni del link: dopo il click, l'utente torna QUI (questa pagina)
+const actionCodeSettings = {
+  url: window.location.href.split('?')[0],  // torna a questa stessa pagina, senza query
+  handleCodeInApp: true
+};
+
+window.inviaLink = async function() {
+  const email = document.getElementById('email').value.trim();
+  if (!email) { log('Inserisci un\'email valida.', 'err'); return; }
+  try {
+    await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+    window.localStorage.setItem('emailPerMagicLink', email);
+    log('✅ Link inviato a ' + email + '\n\nControlla la casella (anche SPAM). Apri l\'email su QUESTO stesso dispositivo e clicca il link — tornerai qui e completeremo l\'accesso.', 'ok');
+  } catch (e) {
+    log('❌ Errore invio:\n' + e.code + '\n' + e.message, 'err');
+  }
+};
+
+// Al caricamento: se siamo tornati qui cliccando un magic link, completiamo l'accesso
+window.addEventListener('load', async () => {
+  if (isSignInWithEmailLink(auth, window.location.href)) {
+    log('🔄 Link riconosciuto, completo l\'accesso…');
+    let email = window.localStorage.getItem('emailPerMagicLink');
+    if (!email) {
+      email = window.prompt('Conferma la tua email per completare l\'accesso:');
+    }
+    try {
+      const result = await signInWithEmailLink(auth, email, window.location.href);
+      window.localStorage.removeItem('emailPerMagicLink');
+      log('✅✅ ACCESSO RIUSCITO!\n\nEmail verificata: ' + result.user.email + '\nUID: ' + result.user.uid + '\nEmail verificata da Firebase: ' + result.user.emailVerified + '\n\nIl magic link funziona. Possiamo procedere col codice vero.', 'ok');
+    } catch (e) {
+      log('❌ Errore completamento accesso:\n' + e.code + '\n' + e.message, 'err');
+    }
+  }
+});
+</script>
+</body>
+</html>
