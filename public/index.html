@@ -106,8 +106,13 @@ nav{background:var(--ink);padding:13px 32px;display:flex;align-items:center;just
 /* ══════════════════════════════════════
    I 2 PULSANTI PRINCIPALI
 ══════════════════════════════════════ */
-.cta-main{max-width:960px;margin:36px auto 0;padding:0 32px 48px;
-  display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.cta-main{max-width:1200px;margin:36px auto 0;padding:0 32px 48px;
+  display:grid;grid-template-columns:auto 1fr 1fr auto;gap:14px;align-items:stretch;}
+.vip-side-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;border-radius:10px;text-decoration:none;padding:20px 16px;
+  font-weight:700;font-size:14px;letter-spacing:.03em;line-height:1.3;min-width:96px;}
+.vip-side-qr{background:#1C1410;color:#F2C94C;}
+.vip-side-radar{background:#B20000;color:#fff;}
 
 .btn-main{
   border:none;border-radius:10px;padding:28px 24px;cursor:pointer;
@@ -216,6 +221,8 @@ footer a:hover{color:var(--ocra-l);}
   .boxes{grid-template-columns:1fr;padding:28px 16px 0;}
   .cta-main{grid-template-columns:1fr;padding:0 16px 40px;margin-top:24px;}
   .btn-main{padding:22px 20px;}
+  .vip-side-btn{flex-direction:row;gap:8px;padding:14px 16px;font-size:15px;}
+  .vip-side-btn br{display:none;}
   .cat-grid-modal{grid-template-columns:1fr 1fr;}
 }
 
@@ -344,16 +351,13 @@ footer a:hover{color:var(--ocra-l);}
     </div>
     <span style="font-size:28px;">&#x1F451;</span>
   </div>
-  <div style="max-width:960px;margin:12px auto 0;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;">
-    <a href="mio-account.html" id="vip-btn-qr" style="display:inline-block;background:#1C1410;color:#F2C94C;padding:11px 22px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:700;letter-spacing:.03em;">🎫 I MIEI QR CODE</a>
-    <a href="map.html" id="vip-btn-radar" style="display:inline-block;background:#B20000;color:#fff;padding:11px 22px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:700;letter-spacing:.03em;">📍 APRI RADAR</a>
-  </div>
 </div>
 
 <div class="stripe"></div>
 
 <!-- I 2 PULSANTI PRINCIPALI -->
 <div class="cta-main">
+  <a class="vip-side-btn vip-side-qr" href="mio-account.html" id="vip-btn-qr">🎫<br>I MIEI<br>QR CODE</a>
   <a class="btn-main btn-servizi" href="servizi.html">
     <div class="btn-main-icon">&#x1F5FA;&#xFE0F;</div>
     <div class="btn-main-label" id="btn1-label">Servizi essenziali</div>
@@ -366,6 +370,7 @@ footer a:hover{color:var(--ocra-l);}
     <div class="btn-main-sub" id="btn2-sub">Cibo · Moda · Tech · Viaggi<br>Divertimento · Altro</div>
     <div class="btn-main-arrow">↗</div>
   </button>
+  <a class="vip-side-btn vip-side-radar" href="map.html" id="vip-btn-radar">📍<br>APRI<br>RADAR</a>
 </div>
 
 
@@ -657,7 +662,7 @@ var I18N = {
   it: {
     'vip-title': "L’utente è sempre VIP",
     'vip-sub': "— non paga mai se non riceve il prodotto o il servizio",
-    'vip-btn-qr': "🎫 I MIEI QR CODE", 'vip-btn-radar': "📍 APRI RADAR",
+    'vip-btn-qr': "🎫<br>I MIEI<br>QR CODE", 'vip-btn-radar': "📍<br>APRI<br>RADAR",
     'nav-reg': "Registrati come esercente →",
     'hero-kicker': "Roma — Città Pilota 2025",
     'hero-title': "Il mondo<br><em>ai tuoi piedi.</em>",
@@ -702,7 +707,7 @@ var I18N = {
   en: {
     'vip-title': "The user is always VIP",
     'vip-sub': "— never pays if the product or service is not received",
-    'vip-btn-qr': "🎫 MY QR CODES", 'vip-btn-radar': "📍 OPEN RADAR",
+    'vip-btn-qr': "🎫<br>MY<br>QR CODES", 'vip-btn-radar': "📍<br>OPEN<br>RADAR",
     'nav-reg': "Register as a merchant →",
     'hero-kicker': "Rome — Pilot City 2025",
     'hero-title': "The world<br><em>at your feet.</em>",
@@ -747,7 +752,7 @@ var I18N = {
   zh: {
     'vip-title': "用户始终是VIP",
     'vip-sub': "— 未收到产品或服务则无需付款",
-    'vip-btn-qr': "🎫 我的二维码", 'vip-btn-radar': "📍 打开雷达",
+    'vip-btn-qr': "🎫<br>我的<br>二维码", 'vip-btn-radar': "📍<br>打开<br>雷达",
     'nav-reg': "注册为商家 →",
     'hero-kicker': "罗马 — 试点城市 2025",
     'hero-title': "世界<br><em>在您脚下。</em>",
@@ -792,7 +797,7 @@ var I18N = {
   es: {
     'vip-title': "El usuario siempre es VIP",
     'vip-sub': "— nunca paga si no recibe el producto o servicio",
-    'vip-btn-qr': "🎫 MIS CÓDIGOS QR", 'vip-btn-radar': "📍 ABRIR RADAR",
+    'vip-btn-qr': "🎫<br>MIS<br>CÓDIGOS QR", 'vip-btn-radar': "📍<br>ABRIR<br>RADAR",
     'nav-reg': "Regístrate como comerciante →",
     'hero-kicker': "Roma — Ciudad Piloto 2025",
     'hero-title': "El mundo<br><em>a tus pies.</em>",
@@ -837,7 +842,7 @@ var I18N = {
   fr: {
     'vip-title': "L’utilisateur est toujours VIP",
     'vip-sub': "— ne paie jamais s’il ne reçoit pas le produit ou le service",
-    'vip-btn-qr': "🎫 MES QR CODES", 'vip-btn-radar': "📍 OUVRIR LE RADAR",
+    'vip-btn-qr': "🎫<br>MES<br>QR CODES", 'vip-btn-radar': "📍<br>OUVRIR<br>LE RADAR",
     'nav-reg': "S’inscrire comme commerçant →",
     'hero-kicker': "Rome — Ville Pilote 2025",
     'hero-title': "Le monde<br><em>à vos pieds.</em>",
@@ -882,7 +887,7 @@ var I18N = {
   de: {
     'vip-title': "Der Nutzer ist immer VIP",
     'vip-sub': "— zahlt nie, wenn das Produkt oder die Dienstleistung nicht erhalten wird",
-    'vip-btn-qr': "🎫 MEINE QR-CODES", 'vip-btn-radar': "📍 RADAR ÖFFNEN",
+    'vip-btn-qr': "🎫<br>MEINE<br>QR-CODES", 'vip-btn-radar': "📍<br>RADAR<br>ÖFFNEN",
     'nav-reg': "Als Geschäft registrieren →",
     'hero-kicker': "Rom — Pilotstadt 2025",
     'hero-title': "Die Welt<br><em>zu deinen Füßen.</em>",
