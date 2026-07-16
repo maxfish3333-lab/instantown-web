@@ -347,7 +347,8 @@ function renderListaQR() {
   // localIdx resta null: non esistono in localStorage, eliminaQR() non
   // si applica a loro (il bottone Elimina viene omesso nel template).
   const centraliNormalizzati = (window.qrCentrali || []).map(q => ({
-    negozio: q.negozio, desc: '', prezzo: q.prezzo,
+    negozio: q.negozio, desc: q.descrizione || '', prezzo: q.prezzo,
+    indirizzo: q.indirizzo || '', foto: q.foto || '',
     bookingId: q.id, idtx: q.tx, ts: q.tsMillis || Date.now(),
     stato: q.stato === 'usato' ? 'USATO' : 'ATTESA', daFirestore: true, localIdx: null
   }));
@@ -396,9 +397,11 @@ function renderListaQR() {
         <div class="qr-info">
           <div class="qr-desc">${(p.desc||'').toLowerCase()}</div>
           <div class="qr-prezzo">€ ${parseFloat(p.prezzo).toFixed(2)}</div>
+          ${p.indirizzo ? `<div class="qr-indirizzo" style="font-size:12px;color:var(--ink-mu);margin-top:4px;">📍 ${p.indirizzo}</div>` : ''}
           <div class="qr-id">${p.bookingId}</div>
         </div>
       </div>
+      ${p.foto ? `<div class="qr-card-foto" style="padding:0 14px 10px;"><img src="${p.foto}" alt="" style="width:100%;max-height:120px;object-fit:cover;border-radius:6px;"></div>` : ''}
       <div class="qr-card-footer">
         <button class="btn-mostra" onclick="mostraQR(${idx})" data-i18n="ma_btn_mostra">🔍 Mostra QR grande</button>
         ${p.daFirestore ? '' : `<button class="btn-elimina" onclick="eliminaQR(${p.localIdx})" data-i18n="ma_btn_elimina">Elimina</button>`}
@@ -434,7 +437,8 @@ function renderListaQR() {
 function mostraQR(idx) {
   const prenotazioniLocali = JSON.parse(localStorage.getItem('it_prenotazioni') || '[]');
   const centraliNormalizzati = (window.qrCentrali || []).map(q => ({
-    negozio: q.negozio, desc: '', prezzo: q.prezzo,
+    negozio: q.negozio, desc: q.descrizione || '', prezzo: q.prezzo,
+    indirizzo: q.indirizzo || '', foto: q.foto || '',
     bookingId: q.id, idtx: q.tx, ts: q.tsMillis || Date.now(), daFirestore: true
   }));
   const prenotazioni = prenotazioniLocali.concat(centraliNormalizzati);
@@ -573,6 +577,9 @@ window.caricaQRCentrali = async function() {
       risultati.push({
         id: docSnap.id,
         negozio: d.negozio || '',
+        descrizione: d.descrizione || '',
+        indirizzo: d.indirizzo || '',
+        foto: d.foto || '',
         prezzo: d.prezzo || 0,
         tx: d.tx || '',
         stato: d.stato || 'attivo',
