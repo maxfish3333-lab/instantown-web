@@ -1,0 +1,38 @@
+Nome;Indirizzo;TPL;P_Disabili;P_Totali;Orario;Tariffa;Latitude;Longitude
+LABARO;Via Fornace Vignolo snc (St. Labaro);Roma-Viterbo e Linee di Superficie;4.0;203.0;Feriale 06.00 - 22.00;1,50 12h -  2,50 16h;41.987725;12.494807
+GIARDINETTI;Via Casilina snc;Metro C;5.0;231.0;Feriale 06.00 - 22.00;1,50 12h -  2,50 16h;41.864791;12.609942
+NUOVO SALARIO;Via Serpentara 124;FL1 e Linee di Superficie;0.0;220.0;Feriale 06.00 - 22.00;1,50 12h -  2,50 16h;41.95507;12.511265
+JONIO;Via Gran Paradiso 32;Metro B1 e Linee di Superficie;6.0;252.0;05.15 - 00.15 D - G e 05.15 - 02.15 V - S;1,50 12h -  2,50 16h;41.947694;12.527878
+ANAGNINA;Via Tuscolana snc (stazione Anagnina);Metro A e Linee di Superficie;6.0;134.0;Feriale 06.00 - 22.00;0,00;41.842761;12.585511
+LAURENTINA;Via Francesco de Suppè 35;Metro B e Linee di Superficie;25.0;1244.0;05.15 - 00.15 D - G e 05.15 - 02.15 V - S;1,50 12h -  2,50 16h;41.825759;12.48233
+STAZ. S. PIETRO;Via della Stazione di S. Pietro 52;FL3 FL5 e Linee di Superficie;3.0;125.0;Feriale 06.00 - 22.00;2,00 12h -  3,00 16h;41.895933;12.455501
+PANTANO Multipiano;Via Casilina 341 (Montecompatri);Metro C;8.0;382.0;Feriale 06.00 - 22.00;0,00;41.864694;12.709468
+FONTANA CANDIDA;Via Vita 16;Metro C e Linee di Superficie;7.0;350.0;Feriale 06.00 - 22.00;1,50 12h -  2,50 16h;41.865755;12.658903
+LA GIUSTINIANA;Largo della Giustiniana 7;FL3 e Linee di Superficie;5.0;236.0;Feriale 06.00 - 22.00;1,50 12h -  2,50 16h;41.985294;12.403962
+PANTANO a raso 2;Via Casilina snc (Montecompatri);Metro C;4.0;160.0;Feriale 06.00 - 22.00;0,00;41.864694;12.709468
+LA STORTA;Via Leo de Berardinis 3;FL3 e Linee di Superficie;11.0;489.0;Feriale 06.00 - 22.00;1,50 12h -  2,50 16h;42.00267;12.378916
+MONTEBELLO;Via della Stazione di Montebello 51;Roma-Viterbo e Linee di Superficie;8.0;350.0;Feriale 06.00 - 22.00;1,50 12h -  2,50 16h;42.012058;12.489197
+BORGHESIANA;Via Casilina snc;Metro C;7.0;331.0;Feriale 06.00 - 22.00;1,50 12h -  2,50 16h;41.864391;12.666231
+GROTTECELONI;Via Casilina (St. Grotte Celoni);Metro C e Linee di Superficie;12.0;532.0;Feriale 06.00 - 22.00;1,50 12h -  2,50 16h;41.861886;12.645756
+PALMIRO TOGLIATTI;Viale Palmiro Togliatti snc (St. Metro Ponte Mammolo);Metro B (stazione Ponte Mammolo) e Linee di Superficie;0.0;419.0;Feriale 06.00 - 22.00;1,50 12h -  2,50 16h;41.920696;12.566849
+PONTE MAMMOLO 1;Via delle Messi d'Oro 169;Metro B e Linee di Superficie;18.0;1317.0;Feriale 06.00 - 22.00;1,50 12h -  2,50 16h;41.919566;12.561463
+PARTIGIANI;P.le Partigiani 9;Metro B (stazione Piramide), Roma-Lido (stazione Porta San Paolo), FL1, FL3, FL5 (stazione Roma Ostiense) e Linee di Superficie;9.0;430.0;06.00 - 23.00;0,80 1h;41.874009;12.484511
+VITINIA;via Ostiense 1421;Roma-Lido e Linee di Superficie;4.0;150.0;Feriale 06.00 - 22.00;1,50 12h -  2,50 16h;41.795509;12.403818
+ANAGNINA A e C;Via Vincenzo Giudice 47;Metro A e Linee di Superficie;35.0;1479.0;05.15 - 00.15 D - G e 05.15 - 02.15 V - S;1,50 12h -  2,50 16h;41.844382;12.58728
+REBIBBIA;Via Casal de' Pazzi 8;Metro B e Linee di Superficie;10.0;469.0;05.15 - 00.15 D - G e 05.15 - 00.15 V - S;1,50 12h -  2,50 16h;41.924903;12.571179
+STAZIONE TIBURTINA;Via Pietro l'Eremita snc;FL1 FL2 Metro B e Linee Superficie;3.0;84.0;Feriale 06.00 - 22.00;2,00 12h -  3,00 16h;41.908994;12.527223
+CINECITTA';Via Tuscolana 1568;Metro A e Linee di Superficie;22.0;592.0;05.15 - 00.15 D - G e 05.15 - 02.15 V - S;1,50 12h -  2,50 16h;41.849617;12.573428
+ARCO DI TRAVERTINO;Via dell'Arco di Travertino 55;Metro A e Linee di Superficie;21.0;986.0;05.15 - 00.15 D - G e 05.15 - 02.15 V - S;1,50 12h -  2,50 16h;41.866675;12.535693
+CIPRO;Via Angelo Emo snc;Metro A e Linee di Superficie;6.0;284.0;Feriale 06.00 - 22.00;2,00 12h -  3,00 16h;41.907063;12.447693
+LA CELSA;Via Flaminia snc (St. La Celsa);Roma-Viterbo e Linee di Superficie;4.0;125.0;Feriale 06.00 - 22.00;1,50 12h -  2,50 16h;41.997555;12.497247
+PONTE MAMMOLO 2;Via Salvatore Valitutti 11;Metro B e Linee di Superficie;10.0;271.0;Feriale 06.00 - 22.00;1,50 12h -  2,50 16h;41.919291;12.565859
+ANAGNINA B;Via Otello Stefanini 15;Metro A e Linee di Superficie;6.0;300.0;05.15 - 00.15 D - G e 05.15 - 00.15 V - S;1,50 12h -  2,50 16h;41.84421;12.584743
+PANTANO a raso 1;Via Casilina snc (Montecompatri);Metro C;8.0;322.0;05.15 - 00.15 D - G e 05.15 - 00.15 V - S;0,00;41.864694;12.709468
+STAZ. NOMENTANA;Via Val d'Aosta snc;FL1 e Linee di Superficie;4.0;160.0;Feriale 06.00 - 22.00;1,50 12h -  2,50 16h;41.933418;12.523606
+TRASTEVERE;Via delle Mura Portuensi 25;Linee di Superficie;3.0;221.0;00.00 - 24.00;1,50 tariffa oraria diurna -  3,00 tariffa oraria notturna (20:00 - 06:00);41.883933;12.470927
+SAXA RUBRA;Via Maurizio Barendson snc;Roma-Viterbo e Linee di Superficie;16.0;517.0;Feriale 06.00 - 22.00;1,50 12h -  2,50 16h;41.975296;12.496056
+BATTISTINI;Via Lucio II 120;Metro A e Linee di Superficie;8.0;177.0;Feriale 06.00 - 22.00;1,50 12h -  2,50 16h;41.907221;12.419259
+VILLA BONELLI;Via della Magliana Nuova 380;FL1 e Linee di Superficie;5.0;331.0;Feriale 06.00 - 22.00;1,50 12h -  2,50 16h;41.847279;12.455998
+OSTIENSE;Via Ostiense 803 (St. Magliana);Metro B (stazione Magliana) e Linee di Superficie;3.0;148.0;05.15 - 00.15 D - G e 05.15 - 02.15 V - S;1,50 12h -  2,50 16h;41.838683;12.461571
+S. MARIA DEL SOCCORSO;Via di Pietralata 555 - Via Tiburtina 811;Metro B e Linee di Superficie;17.0;575.0;Feriale 06.00 - 22.00;1,50 12h -  2,50 16h;41.914706;12.555867
+MAGLIANA;Via di Val Fiorita 96;Metro B Roma-Lido Linee Superficie;20.0;962.0;05.15 - 00.15 D - G e 05.15 - 02.15 V - S;1,50 12h -  2,50 16h;41.837364;12.463244
