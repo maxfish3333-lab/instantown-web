@@ -593,7 +593,18 @@ function prenota(){
 
   // Genera ID univoco per questa prenotazione
   const bookingId='BK-'+Date.now();
-  const mioPin = localStorage.getItem('it_pin') || 'NESSUNO';
+
+  // Genera il PIN PRIMA di costruire il QR, così il QR contiene sempre un
+  // PIN valido (prima veniva generato dopo, e la primissima prenotazione di
+  // un utente nuovo finiva nel QR con pin 'NESSUNO').
+  if(!localStorage.getItem('it_pin')){
+    const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let pin='';
+    for(let i=0;i<6;i++) pin+=chars[Math.floor(Math.random()*chars.length)];
+    localStorage.setItem('it_pin',pin);
+  }
+  const mioPin = localStorage.getItem('it_pin');
+
   const qrBData=JSON.stringify({
     type:'QR-B',
     booking:bookingId,
@@ -605,13 +616,6 @@ function prenota(){
     ts:new Date().toISOString(),
   });
 
-  // Genera PIN se non esiste
-  if(!localStorage.getItem('it_pin')){
-    const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    let pin='';
-    for(let i=0;i<6;i++) pin+=chars[Math.floor(Math.random()*chars.length)];
-    localStorage.setItem('it_pin',pin);
-  }
   // Salva prenotazione in localStorage
   const prenotazioni=JSON.parse(localStorage.getItem('it_prenotazioni')||'[]');
   prenotazioni.push({bookingId,idtx:o.idtx,negozio:o.negozio,
@@ -620,6 +624,13 @@ function prenota(){
 
   // Mostra QR-B per il cliente
   mostraQR(bookingId,qrBData,o);
+
+  // Se l'utente è loggato (magic link), salva il QR anche su Firestore per
+  // il recupero cross-device da mio-account.html. Se non loggato, non fa
+  // nulla: la prenotazione resta comunque in locale + Google Sheet.
+  if(typeof window.scriviQrSuFirestore === 'function'){
+    window.scriviQrSuFirestore(bookingId, o, mioPin);
+  }
 
   // Invia notifica al server (Apps Script)
   fetch(APPS_SCRIPT_URL,{
@@ -740,6 +751,56 @@ setInterval(()=>{
 // Apply saved lang
 applyLang(lang);
 startGPS();
+</script>
+
+<!-- Blocco Firebase (module): scrive il QR-B su Firestore SOLO se l'utente
+     è già loggato via magic link. Il Radar resta libero per tutti; chi ha
+     fatto login ottiene in più il recupero del QR da qualsiasi dispositivo. -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, setDoc, doc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBez4L85HA1__NPKOzagfmKeoGLniIQeAc",
+  authDomain: "instantown-app.firebaseapp.com",
+  projectId: "instantown-app",
+  storageBucket: "instantown-app.firebasestorage.app",
+  messagingSenderId: "469598782572",
+  appId: "1:469598782572:web:7fc20afb17a3c3c6d68449"
+};
+const fbApp = initializeApp(firebaseConfig);
+const fbDb = getFirestore(fbApp);
+const fbAuth = getAuth(fbApp);
+setPersistence(fbAuth, browserLocalPersistence).catch(()=>{});
+
+// Teniamo traccia dell'utente loggato (sessione persistente ripristinata
+// automaticamente da Firebase se il cliente ha già fatto il magic link).
+let utenteFb = null;
+onAuthStateChanged(fbAuth, (u) => { utenteFb = (u && u.email) ? u : null; });
+
+// Esposta allo script classico. Scrive il QR-B della prenotazione flash su
+// qr_b_emessi SOLO se c'è un utente autenticato con email verificata; in caso
+// contrario non fa nulla (la prenotazione resta comunque salvata in
+// localStorage e nel Google Sheet, come sempre).
+window.scriviQrSuFirestore = async function(bookingId, o, pin) {
+  if (!utenteFb || !utenteFb.email) return; // non loggato: solo locale, nessun errore
+  try {
+    await setDoc(doc(fbDb, 'qr_b_emessi', bookingId), {
+      email: utenteFb.email,
+      negozio: o.negozio || '',
+      descrizione: o.descrizione || '',
+      prezzo: o.prezzoFlash || 0,
+      tx: o.idtx || '',
+      pin: pin || '',
+      tipo: 'flash',
+      stato: 'attivo',
+      ts: serverTimestamp()
+    });
+  } catch (e) {
+    console.error('Scrittura QR-B su Firestore fallita (prenotazione salvata comunque in locale):', e);
+  }
+};
 </script>
 </body>
 </html>
