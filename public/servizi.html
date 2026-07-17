@@ -313,6 +313,7 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
     <button class="filtro filtro-bancomat" onclick="filtra('bancomat',this)" data-i18n="sv_filtro_bancomat">🏦 Bancomat</button>
     <button class="filtro filtro-poste" onclick="filtra('poste',this)" data-i18n="sv_filtro_poste">📮 Uffici postali</button>
     <button class="filtro filtro-parcheggio" onclick="filtra('parcheggio',this)" data-i18n="sv_filtro_parcheggio">🅿️ Parcheggi</button>
+    <button class="filtro filtro-scambio" onclick="filtra('scambio',this)" data-i18n="sv_filtro_scambio"><img src="/icons/scambio.png" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"> Piazzole di scambio</button>
   </div>
 </div>
 
@@ -2519,7 +2520,7 @@ function formatDist(m){
 function apriSheet(poiOriginale) {
   var poi = getPoiTradotto(poiOriginale);
   poiSelezionato = poiOriginale;
-  document.getElementById('s-emoji').textContent = poi.emoji;
+  document.getElementById('s-emoji').innerHTML = poi.emoji;
   document.getElementById('s-cat').textContent   = poi.cat;
   document.getElementById('s-name').textContent  = poi.nome;
   document.getElementById('s-desc').textContent  = poi.desc;
@@ -2649,7 +2650,8 @@ const META_CATEGORIE_LISTA = {
   taxi:     { emoji:'🚕', titolo:'Taxi' },
   metro:    { emoji:'🚇', titolo:'Metro' },
   agenzia:  { emoji:'✈️', titolo:'Agenzie viaggio' },
-  parcheggio: { emoji:'🅿️', titolo:'Parcheggi (strisce blu)' }
+  parcheggio: { emoji:'🅿️', titolo:'Parcheggi (strisce blu)' },
+  scambio:  { emoji:'<img src="/icons/scambio.png" style="width:26px;height:26px;vertical-align:middle;">', titolo:'Piazzole di scambio' }
 };
 
 // "Servizi pubblici" ha un livello in più: cliccando il filtro si apre
@@ -2719,7 +2721,7 @@ function filtra(tipo, btn) {
 function apriListaCategoria(tipo, poiList, metaCustom, erroreCaricamento) {
   const meta = metaCustom || META_CATEGORIE_LISTA[tipo] || { emoji:'📍', titolo:tipo };
 
-  document.getElementById('cl-emoji').textContent = meta.emoji;
+  document.getElementById('cl-emoji').innerHTML = meta.emoji;
   document.getElementById('cl-titolo').textContent = meta.titolo;
 
   const body = document.getElementById('cl-body');
