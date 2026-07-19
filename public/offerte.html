@@ -102,8 +102,8 @@ main{max-width:1000px;margin:0 auto;padding:24px 32px 80px;}
 #toast-vicino.show{ transform:translateX(-50%) translateY(0); }
 #toast-vicino .tv-emoji{ font-size:26px; flex-shrink:0; }
 #toast-vicino .tv-testo{ flex:1; min-width:0; }
-#toast-vicino .tv-titolo{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--verde); margin-bottom:2px; }
-#toast-vicino .tv-desc{ font-size:13.5px; color:var(--ink); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#toast-vicino .tv-titolo{ font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--ocra-d); margin-bottom:4px; }
+#toast-vicino .tv-desc{ font-size:12.5px; color:var(--ink); font-weight:600; line-height:1.4; white-space:normal; }
 #toast-vicino .tv-sotto{ font-size:12px; color:var(--ink-mu); margin-top:1px; }
 #toast-vicino .tv-close{ font-size:18px; color:var(--ink-mu); flex-shrink:0; padding:4px; }
 .pill-dist{font-size:10px;color:#1A7A3A;border:1px solid rgba(26,122,58,.3);padding:3px 9px;border-radius:20px;font-weight:600;}
@@ -1158,22 +1158,24 @@ let _toastTimeout = null;
 function mostraToastOfferta(o) {
   _toastOffertaCorrente = o;
   const emoji = {CIBO:'🍕',MODA:'👗',TECH:'📱',VIAGGI:'✈️',DIVERTIMENTO:'🎭',ALTRO:'🛍️'};
-  document.getElementById('tv-titolo').textContent = '🔔 Offerta a ' + Math.round(haversine(window._userLat, window._userLon, o.lat, o.lon)) + ' m da te';
-  document.getElementById('tv-desc').textContent = (emoji[o.categoria]||'🛍️') + ' ' + (getDesc(o) || o.negozio || 'Nuova offerta');
-  document.getElementById('tv-sotto').textContent = '€ ' + o.prezzoFlash.toFixed(2) + (o.negozio ? ' — ' + o.negozio : '');
+  const messaggioProva = "QUESTA È UN'OFFERTA DI PROVA. INSTANTOWN SARÀ DISPONIBILE PRIMA DELLA FINE DELL'ANNO. INTANTO GODETEVI QUESTE OCCASIONI. CE NE SARANNO MOLTE ED IN TUTTI I SETTORI. A RIVEDERCI SU APP STORE E PLAY STORE.";
+
+  document.getElementById('tv-titolo').textContent = '⚠️ ' + (emoji[o.categoria]||'🛍️') + ' ' + (getDesc(o) || o.negozio || 'Offerta');
+  document.getElementById('tv-desc').textContent = messaggioProva;
+  document.getElementById('tv-sotto').textContent = '';
 
   const toast = document.getElementById('toast-vicino');
   toast.classList.add('show');
   clearTimeout(_toastTimeout);
-  _toastTimeout = setTimeout(chiudiToast, 9000);
+  _toastTimeout = setTimeout(chiudiToast, 14000);
 
   // Notification API del browser: funziona anche se la scheda è in
   // background (tab non attiva), a differenza del banner in pagina.
   // Richiede permesso già concesso — non lo chiediamo qui, solo se già dato.
   if (window.Notification && Notification.permission === 'granted') {
     try {
-      const n = new Notification('INSTANTOWN — Offerta vicina a te', {
-        body: (getDesc(o) || o.negozio || 'Nuova offerta') + ' — € ' + o.prezzoFlash.toFixed(2),
+      const n = new Notification('INSTANTOWN — Offerta di prova', {
+        body: messaggioProva,
         icon: '/icon-192.png',
         tag: 'offerta-' + (o.idtx || o.descrizione)
       });
