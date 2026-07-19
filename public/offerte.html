@@ -262,7 +262,7 @@ const I18N = {
     datiLocali:     'dati locali (Sheet non raggiungibile)',
     aggiornato:     'aggiornato: ',
     ciRipenso:'Ci ripenso',ovIndirizzo:'Indirizzo',ovOrario:'Orario',ovCategoria:'Categoria',ovRaggio:'Raggio',ovPrezzoFlash:'Prezzo Flash',ovPrezzoStd:'Prezzo standard',ovConferma:'Conferma e prenota →',
-    statoAttiva: "ATTIVA", statoScaduta: "SCADUTA", btnAttivaGaranzia: "🔐 Attiva Garanzia Bancaria →",
+    statoAttiva: "ATTIVA", statoScaduta: "SCADUTA", btnAttivaGaranzia: "✅ Prenota →",
   },
   en: {
     offerteTitle:   'Flash Deals',
@@ -306,7 +306,7 @@ const I18N = {
     datiLocali:     'local data (Sheet unreachable)',
     aggiornato:     'updated: ',
     ciRipenso:'Never mind',ovIndirizzo:'Address',ovOrario:'Time',ovCategoria:'Category',ovRaggio:'Radius',ovPrezzoFlash:'Flash Price',ovPrezzoStd:'Standard price',ovConferma:'Confirm & book →',
-    statoAttiva: "ACTIVE", statoScaduta: "EXPIRED", btnAttivaGaranzia: "🔐 Activate Bank Guarantee →",
+    statoAttiva: "ACTIVE", statoScaduta: "EXPIRED", btnAttivaGaranzia: "✅ Book now →",
   },
   zh: {
     offerteTitle:   '闪购优惠',
@@ -350,7 +350,7 @@ const I18N = {
     datiLocali:     '本地数据(无法连接工作表)',
     aggiornato:     '已更新:',
     ciRipenso:'我再想想',ovIndirizzo:'地址',ovOrario:'时间',ovCategoria:'分类',ovRaggio:'范围',ovPrezzoFlash:'闪购价',ovPrezzoStd:'原价',ovConferma:'确认预订 →',
-    statoAttiva: "进行中", statoScaduta: "已过期", btnAttivaGaranzia: "🔐 启用银行担保 →",
+    statoAttiva: "进行中", statoScaduta: "已过期", btnAttivaGaranzia: "✅ 立即预订 →",
   },
   es: {
     offerteTitle:   'Ofertas Flash',
@@ -394,7 +394,7 @@ const I18N = {
     datiLocali:     'datos locales (Hoja no disponible)',
     aggiornato:     'actualizado: ',
     ciRipenso:'Lo reconsidero',ovIndirizzo:'Dirección',ovOrario:'Horario',ovCategoria:'Categoría',ovRaggio:'Radio',ovPrezzoFlash:'Precio Flash',ovPrezzoStd:'Precio estándar',ovConferma:'Confirmar y reservar →',
-    statoAttiva: "ACTIVA", statoScaduta: "CADUCADA", btnAttivaGaranzia: "🔐 Activar Garantía Bancaria →",
+    statoAttiva: "ACTIVA", statoScaduta: "CADUCADA", btnAttivaGaranzia: "✅ Reservar →",
   },
   fr: {
     offerteTitle:   'Offres Flash',
@@ -438,7 +438,7 @@ const I18N = {
     datiLocali:     'données locales (Feuille inaccessible)',
     aggiornato:     'mis à jour : ',
     ciRipenso:"J'hésite",ovIndirizzo:'Adresse',ovOrario:'Horaire',ovCategoria:'Catégorie',ovRaggio:'Rayon',ovPrezzoFlash:'Prix Flash',ovPrezzoStd:'Prix standard',ovConferma:'Confirmer et réserver →',
-    statoAttiva: "ACTIVE", statoScaduta: "EXPIRÉE", btnAttivaGaranzia: "🔐 Activer la Garantie Bancaire →",
+    statoAttiva: "ACTIVE", statoScaduta: "EXPIRÉE", btnAttivaGaranzia: "✅ Réserver →",
   },
   de: {
     offerteTitle: "Blitzangebote",
@@ -491,7 +491,7 @@ const I18N = {
     ovConferma: "Bestätigen und buchen →",
     statoAttiva: "AKTIV",
     statoScaduta: "ABGELAUFEN",
-    btnAttivaGaranzia: "🔐 Bankgarantie aktivieren →"
+    btnAttivaGaranzia: "✅ Jetzt buchen →"
   },
 };
 
@@ -1181,10 +1181,11 @@ let _toastTimeout = null;
 function mostraToastOfferta(o) {
   _toastOffertaCorrente = o;
   const emoji = {CIBO:'🍕',MODA:'👗',TECH:'📱',VIAGGI:'✈️',DIVERTIMENTO:'🎭',ALTRO:'🛍️'};
-  const messaggioProva = "QUESTA È UN'OFFERTA DI PROVA. INSTANTOWN APP SARÀ DISPONIBILE PRIMA DELLA FINE DELL'ANNO. INTANTO GODETEVI QUESTE OCCASIONI. CE NE SARANNO MOLTE ED IN TUTTI I SETTORI. A RIVEDERCI SU APP STORE E PLAY STORE.";
-  const messaggioProvaConLink = messaggioProva + ' <strong style="color:#004225;">www.instantown.it</strong>';
+  const messaggioProva = "Questa è un'offerta di prova: Pizza Margherita — Antico Forno Rossini <s>12€</s> ora <strong>8,50€</strong> solo per 3 ore. Acquista il coupon e vai in negozio: hai tempo tutto il giorno. Prossimamente su App Store e Play Store.";
+  const messaggioProvaTestoSemplice = "Questa è un'offerta di prova: Pizza Margherita — Antico Forno Rossini 12€ ora 8,50€ solo per 3 ore. Acquista il coupon e vai in negozio: hai tempo tutto il giorno. Prossimamente su App Store e Play Store.";
+  const messaggioProvaConLink = messaggioProva + ' <strong style="color:#004225;">www.instantown.it</strong><br><strong style="color:#B20000;text-decoration:underline;">👉 CLICCA QUI</strong>';
 
-  document.getElementById('tv-titolo').textContent = '⚠️ ' + (emoji[o.categoria]||'🛍️') + ' ' + (getDesc(o) || o.negozio || 'Offerta');
+  document.getElementById('tv-titolo').textContent = '⚠️ Offerta di prova';
   document.getElementById('tv-desc').innerHTML = messaggioProvaConLink;
   document.getElementById('tv-sotto').textContent = '';
 
@@ -1199,7 +1200,7 @@ function mostraToastOfferta(o) {
   if (window.Notification && Notification.permission === 'granted') {
     try {
       const n = new Notification('INSTANTOWN — Offerta di prova', {
-        body: messaggioProva + ' www.instantown.it',
+        body: messaggioProvaTestoSemplice + ' www.instantown.it',
         icon: '/icon-192.png',
         tag: 'offerta-' + (o.idtx || o.descrizione)
       });
