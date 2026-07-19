@@ -106,6 +106,21 @@ main{max-width:1000px;margin:0 auto;padding:24px 32px 80px;}
 #toast-vicino .tv-desc{ font-size:12.5px; color:var(--ink); font-weight:600; line-height:1.4; white-space:normal; }
 #toast-vicino .tv-sotto{ font-size:12px; color:var(--ink-mu); margin-top:1px; }
 #toast-vicino .tv-close{ font-size:18px; color:var(--ink-mu); flex-shrink:0; padding:4px; }
+
+/* ── BANNER "AGGIUNGI A HOME" (solo iPhone/Safari, non ancora installata) ── */
+#banner-ios-home{
+  position:fixed; left:0; right:0; bottom:0; z-index:9998;
+  background:#1C1410; color:#fff;
+  padding:14px 16px calc(14px + env(safe-area-inset-bottom));
+  display:none; align-items:center; gap:12px;
+  box-shadow:0 -6px 20px rgba(0,0,0,.25);
+  transform:translateY(100%); transition:transform .4s ease;
+}
+#banner-ios-home.show{ display:flex; transform:translateY(0); }
+#banner-ios-home .bh-emoji{ font-size:22px; flex-shrink:0; }
+#banner-ios-home .bh-testo{ flex:1; font-size:12.5px; line-height:1.45; }
+#banner-ios-home .bh-testo b{ color:var(--ocra-l); }
+#banner-ios-home .bh-close{ font-size:18px; color:rgba(255,255,255,.6); flex-shrink:0; padding:4px; }
 .pill-dist{font-size:10px;color:#1A7A3A;border:1px solid rgba(26,122,58,.3);padding:3px 9px;border-radius:20px;font-weight:600;}
 .card-desc{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:5px;line-height:1.4;text-transform:capitalize;}
 .card-addr{font-size:11.5px;color:var(--ink-mu);}
@@ -666,6 +681,14 @@ function applyI18nDOM() {
 </main>
 
 <!-- FULL PAGE OFFER OVERLAY -->
+<div id="banner-ios-home">
+  <span class="bh-emoji">📲</span>
+  <div class="bh-testo">
+    <b>Non perdere le occasioni!</b> Tocca <b>Condividi</b> (icona in basso) → <b>"Aggiungi alla schermata Home"</b> per ricevere INSTANTOWN come app e non perdere le notifiche.
+  </div>
+  <span class="bh-close" onclick="chiudiBannerIosHome()">✕</span>
+</div>
+
 <div id="toast-vicino" onclick="apriToastOfferta()">
   <span class="tv-emoji">🔔</span>
   <div class="tv-testo">
@@ -1219,6 +1242,36 @@ function controllaOfferteVicine(offerte) {
     }
   }
 }
+
+// ── BANNER "AGGIUNGI A HOME" — solo iPhone/Safari, non ancora installata ──
+// iOS non permette di far scattare via codice il popup di installazione
+// (a differenza di Android con beforeinstallprompt), quindi mostriamo un
+// banner con le istruzioni manuali. Compare una sola volta (poi resta
+// chiuso per sempre, anche se l'utente non ha installato — non insistiamo).
+const BANNER_IOS_KEY = 'it_banner_ios_home_visto';
+
+function isIosSafariNonInstallata() {
+  const ua = navigator.userAgent;
+  const isIos = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+  const isStandalone = window.navigator.standalone === true; // già installata come app
+  return isIos && !isStandalone;
+}
+
+function mostraBannerIosSeOpportuno() {
+  if (localStorage.getItem(BANNER_IOS_KEY) === '1') return;
+  if (!isIosSafariNonInstallata()) return;
+  document.getElementById('banner-ios-home').classList.add('show');
+}
+
+function chiudiBannerIosHome() {
+  document.getElementById('banner-ios-home').classList.remove('show');
+  localStorage.setItem(BANNER_IOS_KEY, '1');
+}
+
+// Mostra il banner con un piccolo ritardo, dopo che la pagina si è stabilizzata
+// (non subito al caricamento, per non affollare l'utente di richieste insieme
+// al permesso GPS)
+setTimeout(mostraBannerIosSeOpportuno, 3000);
 
 async function init() {
   document.getElementById('ultimo-agg').textContent = t('loading');
