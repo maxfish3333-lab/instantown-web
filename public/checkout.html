@@ -28,6 +28,16 @@
         .btn-attiva{ width:100%; max-width:420px; padding:18px; background:var(--green); border:none; border-radius:12px; font-weight:900; font-size:16px; cursor:pointer; color:black; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; }
         .btn-back{ width:100%; max-width:420px; padding:14px; background:none; border:1px solid #333; color:#666; border-radius:12px; font-size:14px; cursor:pointer; }
         .secure-badge{ font-size:10px; color:#333; text-align:center; margin-top:14px; display:flex; align-items:center; justify-content:center; gap:5px; }
+
+        /* ── MODALE RASSICURAZIONE POST-PRENOTAZIONE ── */
+        .modale-overlay{ position:fixed; inset:0; background:rgba(0,0,0,.75); display:none; align-items:center; justify-content:center; z-index:9999; padding:20px; }
+        .modale-overlay.show{ display:flex; }
+        .modale-box{ background:#0d0d0d; border:1px solid #2a2a2a; border-radius:18px; padding:26px 24px; max-width:380px; width:100%; text-align:center; }
+        .modale-icona{ font-size:34px; margin-bottom:12px; }
+        .modale-titolo{ font-size:17px; font-weight:800; color:var(--gold-l); margin-bottom:14px; }
+        .modale-testo{ font-size:14px; color:#ddd; line-height:1.6; margin-bottom:20px; }
+        .modale-testo strong{ color:var(--green); }
+        .modale-btn{ width:100%; padding:14px; background:var(--green); border:none; border-radius:12px; font-weight:800; font-size:15px; color:black; cursor:pointer; text-transform:uppercase; letter-spacing:.5px; }
         #processing{ display:none; position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:999; flex-direction:column; align-items:center; justify-content:center; gap:20px; }
         #processing.show{ display:flex; }
         .proc-spinner{ width:48px; height:48px; border:4px solid #222; border-top-color:var(--green); border-radius:50%; animation:spin .7s linear infinite; }
@@ -63,8 +73,8 @@
     <div class="top-bar">
         <a href="offerte.html" class="back-btn">← Offerte</a>
         <div>
-            <div class="page-title">Garanzia Bancaria</div>
-            <div class="page-sub">Fondi bloccati fino all'incontro fisico</div>
+            <div class="page-title">Conferma la tua offerta</div>
+            <div class="page-sub">Il tuo posto è riservato</div>
         </div>
     </div>
     <div class="summary">
@@ -77,11 +87,7 @@
         <div class="summary-tx" id="sum-tx"></div>
         <div class="garanzia-badge">🔐 I fondi restano bloccati finché non mostri il QR-B all'esercente</div>
     </div>
-    <div class="info-box">
-        <strong>Come funziona la Garanzia Bancaria INSTANTOWN:</strong><br>
-        I fondi vengono bloccati al momento della prenotazione e rilasciati all'esercente solo quando presenti fisicamente il QR-B. In caso di mancato incontro, i fondi ti vengono rimborsati automaticamente.
-    </div>
-    <button class="btn-attiva" onclick="attivaGaranzia()">🔐 ATTIVA GARANZIA BANCARIA</button>
+    <button class="btn-attiva" onclick="attivaGaranzia()">✅ CONFERMA E PRENOTA</button>
     <button class="btn-back" onclick="window.location.href='offerte.html'">← Torna alle offerte</button>
     <div class="secure-badge">DEMO — Integrazione Stripe in arrivo</div>
 </div>
@@ -116,6 +122,17 @@
         <strong>I fondi restano bloccati</strong> finché la coppia QR-A + QR-B non viene verificata.
     </div>
     <button class="btn-done" onclick="window.location.href='offerte.html'">← Torna alle offerte</button>
+</div>
+<div class="modale-overlay" id="modale-rassicurazione">
+    <div class="modale-box">
+        <div class="modale-icona">🔐</div>
+        <div class="modale-titolo">Una cosa importante</div>
+        <div class="modale-testo">
+            Il tuo pagamento resta <strong>congelato</strong> sino al momento della consumazione — non viene addebitato ora.<br><br>
+            Se cambi idea, il pagamento verrà <strong>annullato entro le prossime 3 ore</strong>, senza nessuna azione da parte tua.
+        </div>
+        <button class="modale-btn" onclick="chiudiModaleRassicurazione()">Ho capito</button>
+    </div>
 </div>
 <script>
 const p = new URLSearchParams(location.search);
@@ -165,6 +182,10 @@ function mostraSuccesso() {
         text: JSON.stringify({type:'INSTANTOWN_QR_B',tx:txId,amount,desc,negozio,indirizzo,lat,lon,inizio,fine,ts:new Date().toISOString(),status:'GARANZIA_ATTIVA'}),
         width:200,height:200,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H
     });
+    document.getElementById('modale-rassicurazione').classList.add('show');
+}
+function chiudiModaleRassicurazione() {
+    document.getElementById('modale-rassicurazione').classList.remove('show');
 }
 </script>
 </body>
