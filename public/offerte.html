@@ -94,7 +94,7 @@ main{max-width:1000px;margin:0 auto;padding:24px 32px 80px;}
 #toast-vicino{
   position:fixed; top:16px; left:50%; transform:translateX(-50%) translateY(-120%);
   z-index:9999; width:min(92vw,420px);
-  background:#fff; border:1px solid rgba(200,134,10,.35); border-left:5px solid var(--verde);
+  background:#FBEAF0; border:1px solid rgba(200,134,10,.35); border-left:5px solid var(--verde);
   border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,.18);
   padding:14px 16px; display:flex; gap:12px; align-items:center;
   transition:transform .35s ease; cursor:pointer;
@@ -542,7 +542,7 @@ function applyI18nDOM() {
   if(footer) footer.innerHTML =
     '<div><strong>INSTANTOWN PROX</strong> &nbsp;·&nbsp; ' + t('footerText') + '</div>' +
     '<div style="margin-top:4px;font-size:13px;color:#fff;">' + t('footerCopyright') + '</div>' +
-    '<div style="margin-top:4px;font-size:11px;color:#2EA85A;">CREDITS: Solari&amp;Partners Communication LTD &nbsp;·&nbsp; <a href="mailto:info@instantown.it" style="color:inherit;">info@instantown.it</a></div>';
+    '<div style="margin-top:4px;font-size:11px;color:#2EA85A;">CREDITS: Solari&amp;Partners Communication &nbsp;·&nbsp; <a href="mailto:info@instantown.it" style="color:inherit;">info@instantown.it</a></div>';
 }
 </script>
 </head>
@@ -699,7 +699,7 @@ function applyI18nDOM() {
 <footer>
   <div><strong>INSTANTOWN PROX</strong> &nbsp;·&nbsp; Foglio: offerte &nbsp;·&nbsp; Roma, 2025</div>
   <div style="margin-top:4px;font-size:13px;color:#fff;" id="footer-copyright">© 2025–2026 INSTANTOWN PROX. Tutti i diritti riservati. Riproduzione, copia o uso non autorizzato del codice, del design o dei contenuti, anche parziali, sono vietati e perseguibili penalmente.</div>
-  <div style="margin-top:4px;font-size:11px;color:#2EA85A;">CREDITS: Solari&amp;Partners Communication LTD &nbsp;·&nbsp; <a href="mailto:info@instantown.it" style="color:inherit;">info@instantown.it</a></div>
+  <div style="margin-top:4px;font-size:11px;color:#2EA85A;">CREDITS: Solari&amp;Partners Communication &nbsp;·&nbsp; <a href="mailto:info@instantown.it" style="color:inherit;">info@instantown.it</a></div>
 </footer>
 
 <script>
@@ -1158,10 +1158,11 @@ let _toastTimeout = null;
 function mostraToastOfferta(o) {
   _toastOffertaCorrente = o;
   const emoji = {CIBO:'🍕',MODA:'👗',TECH:'📱',VIAGGI:'✈️',DIVERTIMENTO:'🎭',ALTRO:'🛍️'};
-  const messaggioProva = "QUESTA È UN'OFFERTA DI PROVA. INSTANTOWN SARÀ DISPONIBILE PRIMA DELLA FINE DELL'ANNO. INTANTO GODETEVI QUESTE OCCASIONI. CE NE SARANNO MOLTE ED IN TUTTI I SETTORI. A RIVEDERCI SU APP STORE E PLAY STORE.";
+  const messaggioProva = "QUESTA È UN'OFFERTA DI PROVA. INSTANTOWN APP SARÀ DISPONIBILE PRIMA DELLA FINE DELL'ANNO. INTANTO GODETEVI QUESTE OCCASIONI. CE NE SARANNO MOLTE ED IN TUTTI I SETTORI. A RIVEDERCI SU APP STORE E PLAY STORE.";
+  const messaggioProvaConLink = messaggioProva + ' <strong style="color:#004225;">www.instantown.it</strong>';
 
   document.getElementById('tv-titolo').textContent = '⚠️ ' + (emoji[o.categoria]||'🛍️') + ' ' + (getDesc(o) || o.negozio || 'Offerta');
-  document.getElementById('tv-desc').textContent = messaggioProva;
+  document.getElementById('tv-desc').innerHTML = messaggioProvaConLink;
   document.getElementById('tv-sotto').textContent = '';
 
   const toast = document.getElementById('toast-vicino');
@@ -1175,7 +1176,7 @@ function mostraToastOfferta(o) {
   if (window.Notification && Notification.permission === 'granted') {
     try {
       const n = new Notification('INSTANTOWN — Offerta di prova', {
-        body: messaggioProva,
+        body: messaggioProva + ' www.instantown.it',
         icon: '/icon-192.png',
         tag: 'offerta-' + (o.idtx || o.descrizione)
       });
