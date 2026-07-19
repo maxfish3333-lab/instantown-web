@@ -117,10 +117,10 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
 .filtro.active-ocra{background:var(--ocra);border-color:var(--ocra-l);color:var(--ink);}
 
 /* 6 categorie principali: sfondo bianco, testo nero, sempre visibili */
-.filtro-pubblico,.filtro-iconico,.filtro-bus,.filtro-bancomat,.filtro-poste,.filtro-parcheggio{
+.filtro-pubblico,.filtro-iconico,.filtro-bus,.filtro-bancomat,.filtro-poste,.filtro-parcheggio,.filtro-scambio{
   background:#fff;border-color:var(--rule);color:#1C1410;
 }
-.filtro-pubblico.active,.filtro-iconico.active,.filtro-bus.active,.filtro-bancomat.active,.filtro-poste.active,.filtro-parcheggio.active{
+.filtro-pubblico.active,.filtro-iconico.active,.filtro-bus.active,.filtro-bancomat.active,.filtro-poste.active,.filtro-parcheggio.active,.filtro-scambio.active{
   color:#fff;border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.3);
 }
 .filtro-pubblico.active{background:#1A7A3A;}
@@ -129,6 +129,7 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
 .filtro-bancomat.active{background:#B8730A;}
 .filtro-poste.active{background:#D4AF00;color:#1C1410;}
 .filtro-parcheggio.active{background:#1C5E8A;}
+.filtro-scambio.active{background:#B20000;}
 
 /* ── SCHEDA POI (bottom sheet) ── */
 .poi-sheet{
@@ -313,6 +314,7 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
     <button class="filtro filtro-bancomat" onclick="filtra('bancomat',this)" data-i18n="sv_filtro_bancomat">🏦 Bancomat</button>
     <button class="filtro filtro-poste" onclick="filtra('poste',this)" data-i18n="sv_filtro_poste">📮 Uffici postali</button>
     <button class="filtro filtro-parcheggio" onclick="filtra('parcheggio',this)" data-i18n="sv_filtro_parcheggio">🅿️ Parcheggi</button>
+    <button class="filtro filtro-scambio" onclick="filtra('scambio',this)" data-i18n="sv_filtro_scambio"><img src="/icons/scambio.png" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"> Piazzole di scambio</button>
   </div>
 </div>
 
@@ -2519,7 +2521,7 @@ function formatDist(m){
 function apriSheet(poiOriginale) {
   var poi = getPoiTradotto(poiOriginale);
   poiSelezionato = poiOriginale;
-  document.getElementById('s-emoji').textContent = poi.emoji;
+  document.getElementById('s-emoji').innerHTML = poi.emoji;
   document.getElementById('s-cat').textContent   = poi.cat;
   document.getElementById('s-name').textContent  = poi.nome;
   document.getElementById('s-desc').textContent  = poi.desc;
@@ -2639,7 +2641,7 @@ function portaMiQui() {
 // ordinata per distanza invece di marker sparsi sulla mappa —
 // più leggibile quando ci sono molti POI vicini tra loro (bancomat,
 // poste, fermate bus/taxi/metro, agenzie).
-const CATEGORIE_LISTA = ['iconico', 'bancomat', 'poste', 'bus', 'taxi', 'metro', 'agenzia', 'parcheggio'];
+const CATEGORIE_LISTA = ['iconico', 'bancomat', 'poste', 'bus', 'taxi', 'metro', 'agenzia', 'parcheggio', 'scambio'];
 
 const META_CATEGORIE_LISTA = {
   iconico:  { emoji:'🛍', titolo:'Luoghi iconici' },
@@ -2649,7 +2651,8 @@ const META_CATEGORIE_LISTA = {
   taxi:     { emoji:'🚕', titolo:'Taxi' },
   metro:    { emoji:'🚇', titolo:'Metro' },
   agenzia:  { emoji:'✈️', titolo:'Agenzie viaggio' },
-  parcheggio: { emoji:'🅿️', titolo:'Parcheggi (strisce blu)' }
+  parcheggio: { emoji:'🅿️', titolo:'Parcheggi (strisce blu)' },
+  scambio:  { emoji:'<img src="/icons/scambio.png" style="width:26px;height:26px;vertical-align:middle;">', titolo:'Piazzole di scambio' }
 };
 
 // "Servizi pubblici" ha un livello in più: cliccando il filtro si apre
@@ -2719,7 +2722,7 @@ function filtra(tipo, btn) {
 function apriListaCategoria(tipo, poiList, metaCustom, erroreCaricamento) {
   const meta = metaCustom || META_CATEGORIE_LISTA[tipo] || { emoji:'📍', titolo:tipo };
 
-  document.getElementById('cl-emoji').textContent = meta.emoji;
+  document.getElementById('cl-emoji').innerHTML = meta.emoji;
   document.getElementById('cl-titolo').textContent = meta.titolo;
 
   const body = document.getElementById('cl-body');
@@ -2913,5 +2916,10 @@ if (typeof _origApplyLangSv === 'function') {
   };
 }
 </script>
+
+<!-- SCRIVICI -->
+<div style="text-align:center;padding:18px 12px 26px;">
+  <a href="mailto:info@instantown.it" style="display:inline-block;background:#B20000;color:#fff;font-family:'DM Sans',Arial,sans-serif;font-size:14px;font-weight:700;padding:11px 26px;border-radius:22px;text-decoration:none;letter-spacing:.02em;box-shadow:0 2px 8px rgba(178,0,0,.3);">✉️ SCRIVICI</a>
+</div>
 </body>
 </html>
