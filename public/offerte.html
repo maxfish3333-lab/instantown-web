@@ -89,6 +89,38 @@ main{max-width:1000px;margin:0 auto;padding:24px 32px 80px;}
 .pill-scaduta{background:#f1f1f1;color:#999;}
 .pill-cat{font-size:10px;font-weight:500;padding:3px 9px;border-radius:20px;background:var(--ocra-p);color:var(--ocra);}
 .pill-raggio{font-size:10px;color:var(--cielo);border:1px solid rgba(74,144,196,.25);padding:3px 9px;border-radius:20px;}
+
+/* ── TOAST OFFERTA VICINA (popup a app aperta, entro raggio) ── */
+#toast-vicino{
+  position:fixed; top:16px; left:50%; transform:translateX(-50%) translateY(-120%);
+  z-index:9999; width:min(92vw,420px);
+  background:#FBEAF0; border:1px solid rgba(200,134,10,.35); border-left:5px solid var(--verde);
+  border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,.18);
+  padding:14px 16px; display:flex; gap:12px; align-items:center;
+  transition:transform .35s ease; cursor:pointer;
+}
+#toast-vicino.show{ transform:translateX(-50%) translateY(0); }
+#toast-vicino .tv-emoji{ font-size:26px; flex-shrink:0; }
+#toast-vicino .tv-testo{ flex:1; min-width:0; }
+#toast-vicino .tv-titolo{ font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--ocra-d); margin-bottom:4px; }
+#toast-vicino .tv-desc{ font-size:12.5px; color:var(--ink); font-weight:600; line-height:1.4; white-space:normal; }
+#toast-vicino .tv-sotto{ font-size:12px; color:var(--ink-mu); margin-top:1px; }
+#toast-vicino .tv-close{ font-size:18px; color:var(--ink-mu); flex-shrink:0; padding:4px; }
+
+/* ── BANNER "AGGIUNGI A HOME" (solo iPhone/Safari, non ancora installata) ── */
+#banner-ios-home{
+  position:fixed; left:0; right:0; bottom:0; z-index:9998;
+  background:#1C1410; color:#fff;
+  padding:14px 16px calc(14px + env(safe-area-inset-bottom));
+  display:none; align-items:center; gap:12px;
+  box-shadow:0 -6px 20px rgba(0,0,0,.25);
+  transform:translateY(100%); transition:transform .4s ease;
+}
+#banner-ios-home.show{ display:flex; transform:translateY(0); }
+#banner-ios-home .bh-emoji{ font-size:22px; flex-shrink:0; }
+#banner-ios-home .bh-testo{ flex:1; font-size:12.5px; line-height:1.45; }
+#banner-ios-home .bh-testo b{ color:var(--ocra-l); }
+#banner-ios-home .bh-close{ font-size:18px; color:rgba(255,255,255,.6); flex-shrink:0; padding:4px; }
 .pill-dist{font-size:10px;color:#1A7A3A;border:1px solid rgba(26,122,58,.3);padding:3px 9px;border-radius:20px;font-weight:600;}
 .card-desc{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:5px;line-height:1.4;text-transform:capitalize;}
 .card-addr{font-size:11.5px;color:var(--ink-mu);}
@@ -230,7 +262,7 @@ const I18N = {
     datiLocali:     'dati locali (Sheet non raggiungibile)',
     aggiornato:     'aggiornato: ',
     ciRipenso:'Ci ripenso',ovIndirizzo:'Indirizzo',ovOrario:'Orario',ovCategoria:'Categoria',ovRaggio:'Raggio',ovPrezzoFlash:'Prezzo Flash',ovPrezzoStd:'Prezzo standard',ovConferma:'Conferma e prenota →',
-    statoAttiva: "ATTIVA", statoScaduta: "SCADUTA", btnAttivaGaranzia: "🔐 Attiva Garanzia Bancaria →",
+    statoAttiva: "ATTIVA", statoScaduta: "SCADUTA", btnAttivaGaranzia: "✅ Prenota →",
   },
   en: {
     offerteTitle:   'Flash Deals',
@@ -274,7 +306,7 @@ const I18N = {
     datiLocali:     'local data (Sheet unreachable)',
     aggiornato:     'updated: ',
     ciRipenso:'Never mind',ovIndirizzo:'Address',ovOrario:'Time',ovCategoria:'Category',ovRaggio:'Radius',ovPrezzoFlash:'Flash Price',ovPrezzoStd:'Standard price',ovConferma:'Confirm & book →',
-    statoAttiva: "ACTIVE", statoScaduta: "EXPIRED", btnAttivaGaranzia: "🔐 Activate Bank Guarantee →",
+    statoAttiva: "ACTIVE", statoScaduta: "EXPIRED", btnAttivaGaranzia: "✅ Book now →",
   },
   zh: {
     offerteTitle:   '闪购优惠',
@@ -318,7 +350,7 @@ const I18N = {
     datiLocali:     '本地数据(无法连接工作表)',
     aggiornato:     '已更新:',
     ciRipenso:'我再想想',ovIndirizzo:'地址',ovOrario:'时间',ovCategoria:'分类',ovRaggio:'范围',ovPrezzoFlash:'闪购价',ovPrezzoStd:'原价',ovConferma:'确认预订 →',
-    statoAttiva: "进行中", statoScaduta: "已过期", btnAttivaGaranzia: "🔐 启用银行担保 →",
+    statoAttiva: "进行中", statoScaduta: "已过期", btnAttivaGaranzia: "✅ 立即预订 →",
   },
   es: {
     offerteTitle:   'Ofertas Flash',
@@ -362,7 +394,7 @@ const I18N = {
     datiLocali:     'datos locales (Hoja no disponible)',
     aggiornato:     'actualizado: ',
     ciRipenso:'Lo reconsidero',ovIndirizzo:'Dirección',ovOrario:'Horario',ovCategoria:'Categoría',ovRaggio:'Radio',ovPrezzoFlash:'Precio Flash',ovPrezzoStd:'Precio estándar',ovConferma:'Confirmar y reservar →',
-    statoAttiva: "ACTIVA", statoScaduta: "CADUCADA", btnAttivaGaranzia: "🔐 Activar Garantía Bancaria →",
+    statoAttiva: "ACTIVA", statoScaduta: "CADUCADA", btnAttivaGaranzia: "✅ Reservar →",
   },
   fr: {
     offerteTitle:   'Offres Flash',
@@ -406,7 +438,7 @@ const I18N = {
     datiLocali:     'données locales (Feuille inaccessible)',
     aggiornato:     'mis à jour : ',
     ciRipenso:"J'hésite",ovIndirizzo:'Adresse',ovOrario:'Horaire',ovCategoria:'Catégorie',ovRaggio:'Rayon',ovPrezzoFlash:'Prix Flash',ovPrezzoStd:'Prix standard',ovConferma:'Confirmer et réserver →',
-    statoAttiva: "ACTIVE", statoScaduta: "EXPIRÉE", btnAttivaGaranzia: "🔐 Activer la Garantie Bancaire →",
+    statoAttiva: "ACTIVE", statoScaduta: "EXPIRÉE", btnAttivaGaranzia: "✅ Réserver →",
   },
   de: {
     offerteTitle: "Blitzangebote",
@@ -459,7 +491,7 @@ const I18N = {
     ovConferma: "Bestätigen und buchen →",
     statoAttiva: "AKTIV",
     statoScaduta: "ABGELAUFEN",
-    btnAttivaGaranzia: "🔐 Bankgarantie aktivieren →"
+    btnAttivaGaranzia: "✅ Jetzt buchen →"
   },
 };
 
@@ -525,7 +557,7 @@ function applyI18nDOM() {
   if(footer) footer.innerHTML =
     '<div><strong>INSTANTOWN PROX</strong> &nbsp;·&nbsp; ' + t('footerText') + '</div>' +
     '<div style="margin-top:4px;font-size:13px;color:#fff;">' + t('footerCopyright') + '</div>' +
-    '<div style="margin-top:4px;font-size:11px;color:#2EA85A;">CREDITS: Solari&amp;Partners Communication LTD &nbsp;·&nbsp; <a href="mailto:info@instantown.it" style="color:inherit;">info@instantown.it</a></div>';
+    '<div style="margin-top:4px;font-size:11px;color:#2EA85A;">CREDITS: Solari&amp;Partners Communication &nbsp;·&nbsp; <a href="mailto:info@instantown.it" style="color:inherit;">info@instantown.it</a></div>';
 }
 </script>
 </head>
@@ -649,6 +681,24 @@ function applyI18nDOM() {
 </main>
 
 <!-- FULL PAGE OFFER OVERLAY -->
+<div id="banner-ios-home">
+  <span class="bh-emoji">📲</span>
+  <div class="bh-testo">
+    <b>Non perdere le occasioni!</b> Tocca <b>Condividi</b> (icona in basso) → <b>"Aggiungi alla schermata Home"</b> per ricevere INSTANTOWN come app e non perdere le notifiche.
+  </div>
+  <span class="bh-close" onclick="chiudiBannerIosHome()">✕</span>
+</div>
+
+<div id="toast-vicino" onclick="apriToastOfferta()">
+  <span class="tv-emoji">🔔</span>
+  <div class="tv-testo">
+    <div class="tv-titolo" id="tv-titolo">Offerta vicina a te</div>
+    <div class="tv-desc" id="tv-desc">—</div>
+    <div class="tv-sotto" id="tv-sotto">—</div>
+  </div>
+  <span class="tv-close" onclick="event.stopPropagation();chiudiToast()">✕</span>
+</div>
+
 <div class="offer-overlay" id="offer-overlay">
   <div class="ov-stripe"></div>
   <div class="ov-header">
@@ -672,7 +722,7 @@ function applyI18nDOM() {
 <footer>
   <div><strong>INSTANTOWN PROX</strong> &nbsp;·&nbsp; Foglio: offerte &nbsp;·&nbsp; Roma, 2025</div>
   <div style="margin-top:4px;font-size:13px;color:#fff;" id="footer-copyright">© 2025–2026 INSTANTOWN PROX. Tutti i diritti riservati. Riproduzione, copia o uso non autorizzato del codice, del design o dei contenuti, anche parziali, sono vietati e perseguibili penalmente.</div>
-  <div style="margin-top:4px;font-size:11px;color:#2EA85A;">CREDITS: Solari&amp;Partners Communication LTD &nbsp;·&nbsp; <a href="mailto:info@instantown.it" style="color:inherit;">info@instantown.it</a></div>
+  <div style="margin-top:4px;font-size:11px;color:#2EA85A;">CREDITS: Solari&amp;Partners Communication &nbsp;·&nbsp; <a href="mailto:info@instantown.it" style="color:inherit;">info@instantown.it</a></div>
 </footer>
 
 <script>
@@ -1101,8 +1151,132 @@ function filtraRaggio(v) {
   renderLista();
 }
 
+// ── POPUP OFFERTE VICINE (a app aperta, anche in background sul telefono) ──
+// Limite noto: su PWA/web non esiste vero geofencing in background come su
+// un'app nativa — questa funzione controlla solo mentre l'app è aperta
+// (anche se la scheda è in secondo piano, grazie alla Notification API).
+// Quando saremo pubblicati sugli store, questa parte verrà sostituita da
+// vere push (Firebase Cloud Messaging) con geofencing reale.
+const NOTIFICATE_KEY = 'it_offerte_notificate';
+const NOTIFICA_TTL_MS = 6 * 60 * 60 * 1000; // dimentica un'offerta notificata dopo 6 ore
+
+function leggiNotificate() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(NOTIFICATE_KEY) || '{}');
+    const ora = Date.now();
+    const pulite = {};
+    Object.keys(raw).forEach(k => { if (ora - raw[k] < NOTIFICA_TTL_MS) pulite[k] = raw[k]; });
+    return pulite;
+  } catch(e) { return {}; }
+}
+function segnaNotificata(idtx) {
+  const raw = leggiNotificate();
+  raw[idtx] = Date.now();
+  localStorage.setItem(NOTIFICATE_KEY, JSON.stringify(raw));
+}
+
+let _toastOffertaCorrente = null;
+let _toastTimeout = null;
+
+function mostraToastOfferta(o) {
+  _toastOffertaCorrente = o;
+  const emoji = {CIBO:'🍕',MODA:'👗',TECH:'📱',VIAGGI:'✈️',DIVERTIMENTO:'🎭',ALTRO:'🛍️'};
+  const messaggioProva = "Questa è un'offerta di prova: Pizza Margherita — Antico Forno Rossini <s>12€</s> ora <strong>8,50€</strong> solo per 3 ore. Acquista il coupon e vai in negozio: hai tempo tutto il giorno. Prossimamente su App Store e Play Store.";
+  const messaggioProvaTestoSemplice = "Questa è un'offerta di prova: Pizza Margherita — Antico Forno Rossini 12€ ora 8,50€ solo per 3 ore. Acquista il coupon e vai in negozio: hai tempo tutto il giorno. Prossimamente su App Store e Play Store.";
+  const messaggioProvaConLink = messaggioProva + ' <strong style="color:#004225;">www.instantown.it</strong><br><strong style="color:#B20000;text-decoration:underline;">👉 CLICCA QUI</strong>';
+
+  document.getElementById('tv-titolo').textContent = '⚠️ Offerta di prova';
+  document.getElementById('tv-desc').innerHTML = messaggioProvaConLink;
+  document.getElementById('tv-sotto').textContent = '';
+
+  const toast = document.getElementById('toast-vicino');
+  toast.classList.add('show');
+  clearTimeout(_toastTimeout);
+  _toastTimeout = setTimeout(chiudiToast, 14000);
+
+  // Notification API del browser: funziona anche se la scheda è in
+  // background (tab non attiva), a differenza del banner in pagina.
+  // Richiede permesso già concesso — non lo chiediamo qui, solo se già dato.
+  if (window.Notification && Notification.permission === 'granted') {
+    try {
+      const n = new Notification('INSTANTOWN — Offerta di prova', {
+        body: messaggioProvaTestoSemplice + ' www.instantown.it',
+        icon: '/icon-192.png',
+        tag: 'offerta-' + (o.idtx || o.descrizione)
+      });
+      n.onclick = () => { window.focus(); apriOverlay(o); n.close(); };
+    } catch(e) { /* alcuni browser mobile non supportano new Notification() diretta, ignoriamo */ }
+  }
+}
+
+function chiudiToast() {
+  document.getElementById('toast-vicino').classList.remove('show');
+}
+
+function apriToastOfferta() {
+  chiudiToast();
+  if (_toastOffertaCorrente) apriOverlay(_toastOffertaCorrente);
+}
+
+// Chiede il permesso di notifica al primo utilizzo (una tantum, non invasivo:
+// solo se il browser lo supporta e non è già stato chiesto prima)
+function chiediPermessoNotifiche() {
+  if (window.Notification && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+}
+
+// Confronta le offerte appena caricate con la posizione utente nota;
+// per ognuna entro il proprio raggio e non ancora notificata, mostra il toast.
+function controllaOfferteVicine(offerte) {
+  if (!window._userLat || !window._userLon) return;
+  const notificate = leggiNotificate();
+  for (const o of offerte) {
+    if (o.stato !== 'ATTIVA' || !o.lat || !o.lon) continue;
+    const idtx = o.idtx || (o.descrizione + '|' + o.lat + ',' + o.lon);
+    if (notificate[idtx]) continue;
+    const dist = haversine(window._userLat, window._userLon, o.lat, o.lon);
+    if (dist <= (o.raggio || 200)) {
+      segnaNotificata(idtx);
+      mostraToastOfferta(o);
+      break; // un toast alla volta, non li accavalliamo
+    }
+  }
+}
+
+// ── BANNER "AGGIUNGI A HOME" — solo iPhone/Safari, non ancora installata ──
+// iOS non permette di far scattare via codice il popup di installazione
+// (a differenza di Android con beforeinstallprompt), quindi mostriamo un
+// banner con le istruzioni manuali. Compare una sola volta (poi resta
+// chiuso per sempre, anche se l'utente non ha installato — non insistiamo).
+const BANNER_IOS_KEY = 'it_banner_ios_home_visto';
+
+function isIosSafariNonInstallata() {
+  const ua = navigator.userAgent;
+  const isIos = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+  const isStandalone = window.navigator.standalone === true; // già installata come app
+  return isIos && !isStandalone;
+}
+
+function mostraBannerIosSeOpportuno() {
+  if (localStorage.getItem(BANNER_IOS_KEY) === '1') return;
+  if (!isIosSafariNonInstallata()) return;
+  document.getElementById('banner-ios-home').classList.add('show');
+}
+
+function chiudiBannerIosHome() {
+  document.getElementById('banner-ios-home').classList.remove('show');
+  localStorage.setItem(BANNER_IOS_KEY, '1');
+}
+
+// Mostra il banner con un piccolo ritardo, dopo che la pagina si è stabilizzata
+// (non subito al caricamento, per non affollare l'utente di richieste insieme
+// al permesso GPS)
+setTimeout(mostraBannerIosSeOpportuno, 3000);
+
 async function init() {
   document.getElementById('ultimo-agg').textContent = t('loading');
+  chiediPermessoNotifiche();
 
   // Acquisisce GPS subito all'avvio — pronto quando l'utente apre la scheda offerta
   if (navigator.geolocation) {
@@ -1114,6 +1288,7 @@ async function init() {
         // Prima volta che arriva il GPS: ridisegna la lista con i colori distanza
         if (aggiorna && tutteOfferte.length > 0) {
           renderLista();
+          controllaOfferteVicine(tutteOfferte);
         }
       },
       () => {},
@@ -1133,6 +1308,7 @@ async function init() {
   aggiornaStats(tutteOfferte);
   mostraPref();
   applyI18nDOM();
+  controllaOfferteVicine(tutteOfferte);
 
   // Se arrivo da homepage con categoria preferita, pre-filtro
   const params = new URLSearchParams(location.search);
@@ -1960,6 +2136,7 @@ window.accettaPropostaHotel = async function(richiestaId, propostaId) {
 <div style="text-align:center;padding:18px 12px 26px;">
   <a href="mailto:info@instantown.it" style="display:inline-block;background:#B20000;color:#fff;font-family:'DM Sans',Arial,sans-serif;font-size:14px;font-weight:700;padding:11px 26px;border-radius:22px;text-decoration:none;letter-spacing:.02em;box-shadow:0 2px 8px rgba(178,0,0,.3);">✉️ SCRIVICI</a>
 </div>
+<script src="/notifiche-push.js"></script>
 </body>
 </html>
 

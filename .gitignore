@@ -77,3 +77,6 @@ patch-*.js
 insert-*.js
 check_syntax.js
 .firebase/
+
+*.json
+!public/manifest.json

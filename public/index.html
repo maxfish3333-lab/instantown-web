@@ -35,6 +35,16 @@
 .pc-row{width:100%;padding:14px;border:none;border-top:1px solid rgba(200,134,10,.18);background:none;color:rgba(255,255,255,.85);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:background .15s;}
 .pc-row:hover{background:rgba(200,134,10,.14);color:#fff;}
 @keyframes load{from{width:0}to{width:100%}}
+
+/* ── OVERLAY CONTENUTI ESTERNI (solo per PWA installata/standalone) ── */
+#overlay-media{ position:fixed; inset:0; background:#000; z-index:99999; display:none; flex-direction:column; }
+#overlay-media.show{ display:flex; }
+#overlay-media .om-bar{ background:#1C1410; padding:12px 16px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+#overlay-media .om-bar-titolo{ color:#fff; font-size:14px; font-weight:600; }
+#overlay-media .om-chiudi{ background:none; border:1px solid rgba(255,255,255,.3); color:#fff; font-size:14px; padding:6px 14px; border-radius:20px; cursor:pointer; }
+#overlay-media iframe{ flex:1; border:none; width:100%; }
+#overlay-media .om-fallback{ background:#1C1410; padding:10px 16px; text-align:center; flex-shrink:0; }
+#overlay-media .om-fallback a{ color:#E8A020; font-size:12.5px; text-decoration:underline; }
 </style>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="INSTANTOWN">
@@ -396,32 +406,32 @@ footer a:hover{color:var(--ocra-l);}
     <div id="media-box" class="hero-img">
       <div class="media-panel" data-langs="it">
         <div class="media-card-wrap">
-          <a class="media-card" href="https://www.raiplay.it" target="_blank" rel="noopener"><div class="media-icon">&#x1F4FA;</div><div class="media-info"><div class="media-name">RAI 1</div><div class="media-desc">Il canale più seguito d’Italia</div></div><div class="media-arrow">↗</div></a>
-          <a class="media-card" href="https://www.corriere.it" target="_blank" rel="noopener"><div class="media-icon">&#x1F4F0;</div><div class="media-info"><div class="media-name">Corriere della Sera</div><div class="media-desc">Il quotidiano più letto d’Italia</div></div><div class="media-arrow">↗</div></a>
+          <a class="media-card" href="https://www.raiplay.it" target="_blank" rel="noopener" onclick="apriMediaEsterno(event, 'https://www.raiplay.it', 'RAI 1')"><div class="media-icon">&#x1F4FA;</div><div class="media-info"><div class="media-name">RAI 1</div><div class="media-desc">Il canale più seguito d’Italia</div></div><div class="media-arrow">↗</div></a>
+          <a class="media-card" href="https://www.corriere.it" target="_blank" rel="noopener" onclick="apriMediaEsterno(event, 'https://www.corriere.it', 'Corriere della Sera')"><div class="media-icon">&#x1F4F0;</div><div class="media-info"><div class="media-name">Corriere della Sera</div><div class="media-desc">Il quotidiano più letto d’Italia</div></div><div class="media-arrow">↗</div></a>
         </div>
       </div>
       <div class="media-panel" data-langs="en" style="display:none;">
         <div class="media-card-wrap">
-          <a class="media-card" href="https://www.euronews.com/live" target="_blank" rel="noopener"><div class="media-icon">&#x1F4FA;</div><div class="media-info"><div class="media-name">Euronews Live</div><div class="media-desc">Free live news — available worldwide</div></div><div class="media-arrow">↗</div></a>
-          <a class="media-card" href="https://www.theguardian.com" target="_blank" rel="noopener"><div class="media-icon">&#x1F4F0;</div><div class="media-info"><div class="media-name">The Guardian</div><div class="media-desc">Leading English-language newspaper</div></div><div class="media-arrow">↗</div></a>
+          <a class="media-card" href="https://www.youtube.com/watch?v=pykpO5kQJ98" target="_blank" rel="noopener" onclick="apriMediaEsterno(event, 'https://www.youtube.com/embed/pykpO5kQJ98', 'Euronews Live', true)"><div class="media-icon">&#x1F4FA;</div><div class="media-info"><div class="media-name">Euronews Live</div><div class="media-desc">Free live news — available worldwide</div></div><div class="media-arrow">↗</div></a>
+          <a class="media-card" href="https://www.theguardian.com" target="_blank" rel="noopener" onclick="apriMediaEsterno(event, 'https://www.theguardian.com', 'The Guardian')"><div class="media-icon">&#x1F4F0;</div><div class="media-info"><div class="media-name">The Guardian</div><div class="media-desc">Leading English-language newspaper</div></div><div class="media-arrow">↗</div></a>
         </div>
       </div>
       <div class="media-panel" data-langs="zh" style="display:none;">
         <div class="media-card-wrap">
-          <a class="media-card" href="https://tv.cctv.com" target="_blank" rel="noopener"><div class="media-icon">&#x1F4FA;</div><div class="media-info"><div class="media-name">CCTV-1 央视</div><div class="media-desc">中国收视率最高的电视频道</div></div><div class="media-arrow">↗</div></a>
-          <a class="media-card" href="http://www.people.com.cn" target="_blank" rel="noopener"><div class="media-icon">&#x1F4F0;</div><div class="media-info"><div class="media-name">人民日报</div><div class="media-desc">中国发行量最大的报纸</div></div><div class="media-arrow">↗</div></a>
+          <a class="media-card" href="https://tv.cctv.com" target="_blank" rel="noopener" onclick="apriMediaEsterno(event, 'https://tv.cctv.com', 'CCTV-1 央视')"><div class="media-icon">&#x1F4FA;</div><div class="media-info"><div class="media-name">CCTV-1 央视</div><div class="media-desc">中国收视率最高的电视频道</div></div><div class="media-arrow">↗</div></a>
+          <a class="media-card" href="http://www.people.com.cn" target="_blank" rel="noopener" onclick="apriMediaEsterno(event, 'http://www.people.com.cn', '人民日报')"><div class="media-icon">&#x1F4F0;</div><div class="media-info"><div class="media-name">人民日报</div><div class="media-desc">中国发行量最大的报纸</div></div><div class="media-arrow">↗</div></a>
         </div>
       </div>
       <div class="media-panel" data-langs="es" style="display:none;">
         <div class="media-card-wrap">
-          <a class="media-card" href="https://www.atresplayer.com" target="_blank" rel="noopener"><div class="media-icon">&#x1F4FA;</div><div class="media-info"><div class="media-name">Antena 3</div><div class="media-desc">El canal más visto de España</div></div><div class="media-arrow">↗</div></a>
-          <a class="media-card" href="https://www.marca.com" target="_blank" rel="noopener"><div class="media-icon">&#x1F4F0;</div><div class="media-info"><div class="media-name">Marca</div><div class="media-desc">El diario más leído de España</div></div><div class="media-arrow">↗</div></a>
+          <a class="media-card" href="https://www.atresplayer.com" target="_blank" rel="noopener" onclick="apriMediaEsterno(event, 'https://www.atresplayer.com', 'Antena 3')"><div class="media-icon">&#x1F4FA;</div><div class="media-info"><div class="media-name">Antena 3</div><div class="media-desc">El canal más visto de España</div></div><div class="media-arrow">↗</div></a>
+          <a class="media-card" href="https://www.marca.com" target="_blank" rel="noopener" onclick="apriMediaEsterno(event, 'https://www.marca.com', 'Marca')"><div class="media-icon">&#x1F4F0;</div><div class="media-info"><div class="media-name">Marca</div><div class="media-desc">El diario más leído de España</div></div><div class="media-arrow">↗</div></a>
         </div>
       </div>
       <div class="media-panel" data-langs="fr" style="display:none;">
         <div class="media-card-wrap">
-          <a class="media-card" href="https://www.lci.fr/direct/" target="_blank" rel="noopener"><div class="media-icon">&#x1F4FA;</div><div class="media-info"><div class="media-name">LCI — Direct</div><div class="media-desc">L’info en continu, gratuit et accessible</div></div><div class="media-arrow">↗</div></a>
-          <a class="media-card" href="https://www.lemonde.fr" target="_blank" rel="noopener"><div class="media-icon">&#x1F4F0;</div><div class="media-info"><div class="media-name">Le Monde</div><div class="media-desc">Le journal de référence en France</div></div><div class="media-arrow">↗</div></a>
+          <a class="media-card" href="https://www.lci.fr/direct/" target="_blank" rel="noopener" onclick="apriMediaEsterno(event, 'https://www.lci.fr/direct/', 'LCI — Direct')"><div class="media-icon">&#x1F4FA;</div><div class="media-info"><div class="media-name">LCI — Direct</div><div class="media-desc">L’info en continu, gratuit et accessible</div></div><div class="media-arrow">↗</div></a>
+          <a class="media-card" href="https://www.lemonde.fr" target="_blank" rel="noopener" onclick="apriMediaEsterno(event, 'https://www.lemonde.fr', 'Le Monde')"><div class="media-icon">&#x1F4F0;</div><div class="media-info"><div class="media-name">Le Monde</div><div class="media-desc">Le journal de référence en France</div></div><div class="media-arrow">↗</div></a>
         </div>
       </div>
     </div>
@@ -638,10 +648,35 @@ footer a:hover{color:var(--ocra-l);}
   <span style="color:rgba(200,134,10,.5);" id="ft-finder">FINDER — prossimamente</span>
   &nbsp;·&nbsp; Roma, Italia, 2025
   <div style="margin-top:6px;font-size:13px;color:#fff;" id="ft-copyright">© 2025–2026 INSTANTOWN PROX. Tutti i diritti riservati. Riproduzione, copia o uso non autorizzato del codice, del design o dei contenuti, anche parziali, sono vietati e perseguibili penalmente.</div>
-  <div style="margin-top:4px;font-size:11px;color:#2EA85A;">CREDITS: Solari&amp;Partners Communication LTD &nbsp;·&nbsp; <a href="mailto:info@instantown.it" style="color:inherit;">info@instantown.it</a></div>
+  <div style="margin-top:4px;font-size:11px;color:#2EA85A;">CREDITS: Solari&amp;Partners Communication &nbsp;·&nbsp; <a href="mailto:info@instantown.it" style="color:inherit;">info@instantown.it</a></div>
 </footer>
 
 <script>
+// ── OVERLAY CONTENUTI ESTERNI ──
+// Quando l'app è installata sulla schermata Home (standalone), aprire un
+// link esterno con target="_blank" porta l'utente fuori dalla PWA in una
+// Safari separata, senza modo di tornare indietro (limite di iOS: la PWA
+// non è una scheda Safari, quindi non compare nello switcher schede).
+// In Safari normale (non installata) il target="_blank" funziona benissimo
+// e resta recuperabile dallo switcher schede — lì non serve l'overlay.
+function isStandalone() {
+  return window.navigator.standalone === true ||
+         window.matchMedia('(display-mode: standalone)').matches;
+}
+
+function apriMediaEsterno(event, url, nome, forzaOverlay) {
+  if (!forzaOverlay && !isStandalone()) return; // Safari normale: lascia fare il target="_blank" di default
+  event.preventDefault();
+  document.getElementById('om-titolo').textContent = nome;
+  document.getElementById('om-iframe').src = url;
+  document.getElementById('om-link-esterno').href = url;
+  document.getElementById('overlay-media').classList.add('show');
+}
+
+function chiudiMediaOverlay() {
+  document.getElementById('overlay-media').classList.remove('show');
+  document.getElementById('om-iframe').src = 'about:blank'; // ferma eventuale audio/video in corso
+}
 // RESET localStorage corrotto
 (function() {
   var saved = localStorage.getItem('it_lang');
@@ -1209,6 +1244,14 @@ function sceltaProfilo(tipo, modalita) {
 <!-- SCRIVICI -->
 <div style="text-align:center;padding:18px 12px 26px;">
   <a href="mailto:info@instantown.it" style="display:inline-block;background:#B20000;color:#fff;font-family:'DM Sans',Arial,sans-serif;font-size:14px;font-weight:700;padding:11px 26px;border-radius:22px;text-decoration:none;letter-spacing:.02em;box-shadow:0 2px 8px rgba(178,0,0,.3);">✉️ SCRIVICI</a>
+</div>
+<div id="overlay-media">
+  <div class="om-bar">
+    <span class="om-bar-titolo" id="om-titolo">INSTANTOWN</span>
+    <button class="om-chiudi" onclick="chiudiMediaOverlay()">✕ Torna a INSTANTOWN</button>
+  </div>
+  <iframe id="om-iframe" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowfullscreen></iframe>
+  <div class="om-fallback">Il contenuto non si vede bene? <a id="om-link-esterno" href="#" target="_blank" rel="noopener">Aprilo in Safari</a></div>
 </div>
 </body>
 </html>
