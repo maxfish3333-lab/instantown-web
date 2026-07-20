@@ -2771,6 +2771,71 @@ function apriListaCategoria(tipo, poiList, metaCustom, erroreCaricamento) {
   }).join('');
 
   document.getElementById('cat-list-panel').classList.add('open');
+  window._categoriaListaCorrente = tipo;
+
+  // Aggiorna con la distanza REALE a piedi (percorso stradale, non linea
+  // d'aria) via OSRM — gratuito, nessuna API key. Limitato ai primi 25
+  // punti (già i più vicini in linea d'aria) per non sovraccaricare il
+  // servizio pubblico OSRM con troppe chiamate insieme.
+  if (userLat) aggiornaDistanzeReali(tipo, ordinati, meta);
+}
+
+// ── DISTANZA REALE A PIEDI (OSRM) ──
+// La linea d'aria (haversine) è sempre più corta del percorso vero — in
+// una città con vicoli e sensi unici la differenza può essere notevole.
+// OSRM calcola il percorso pedonale reale, gratis, senza API key.
+async function calcolaDistanzaReale(lat1, lon1, lat2, lon2) {
+  try {
+    const url = `https://router.project-osrm.org/route/v1/foot/${lon1},${lat1};${lon2},${lat2}?overview=false`;
+    const resp = await fetch(url);
+    const dati = await resp.json();
+    if (dati.routes && dati.routes[0]) return dati.routes[0].distance; // metri, percorso reale
+  } catch(e) {
+    // Server OSRM irraggiungibile o troppe richieste: niente panico,
+    // quella riga resta con la stima in linea d'aria già mostrata.
+  }
+  return null;
+}
+
+async function aggiornaDistanzeReali(tipo, ordinati, meta) {
+  const LIMITE = 25;
+  const risultati = [];
+
+  for (let i = 0; i < ordinati.length; i++) {
+    const poiOriginale = ordinati[i];
+    const poi = getPoiTradotto(poiOriginale);
+    let dist, reale;
+    if (i < LIMITE) {
+      const metriReali = await calcolaDistanzaReale(userLat, userLon, poi.lat, poi.lon);
+      reale = metriReali !== null;
+      dist = reale ? metriReali : haversine(userLat, userLon, poi.lat, poi.lon);
+      await new Promise(r => setTimeout(r, 120)); // pausa cortese verso il server pubblico OSRM
+    } else {
+      reale = false;
+      dist = haversine(userLat, userLon, poi.lat, poi.lon);
+    }
+    risultati.push({ poiOriginale, dist, reale });
+
+    // Se nel frattempo l'utente ha aperto un'altra categoria, interrompiamo
+    // per non sovrascrivere una lista che non è più quella visibile.
+    if (window._categoriaListaCorrente !== tipo) return;
+  }
+
+  risultati.sort((a, b) => a.dist - b.dist);
+
+  const body = document.getElementById('cl-body');
+  body.innerHTML = risultati.map(function(r) {
+    const poi = getPoiTradotto(r.poiOriginale);
+    const distTxt = formatDist(r.dist) + (r.reale ? ' 🚶' : '');
+    return '<div class="cat-list-row" onclick="selezionaDaLista(\'' + r.poiOriginale.id + '\')">' +
+      '<div class="cat-list-emoji">' + poi.emoji + '</div>' +
+      '<div class="cat-list-info">' +
+        '<div class="cat-list-nome">' + poi.nome + '</div>' +
+        '<div class="cat-list-sub">' + poi.cat + '</div>' +
+      '</div>' +
+      '<div class="cat-list-dist">' + distTxt + '</div>' +
+    '</div>';
+  }).join('');
 }
 
 // Menu intermedio per "Servizi pubblici": mostra le sotto-categorie
