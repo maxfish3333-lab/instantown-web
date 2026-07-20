@@ -412,7 +412,7 @@ footer a:hover{color:var(--ocra-l);}
       </div>
       <div class="media-panel" data-langs="en" style="display:none;">
         <div class="media-card-wrap">
-          <a class="media-card" href="https://www.euronews.com/live" target="_blank" rel="noopener" onclick="apriMediaEsterno(event, 'https://www.euronews.com/live', 'Euronews Live')"><div class="media-icon">&#x1F4FA;</div><div class="media-info"><div class="media-name">Euronews Live</div><div class="media-desc">Free live news — available worldwide</div></div><div class="media-arrow">↗</div></a>
+          <a class="media-card" href="https://www.youtube.com/watch?v=pykpO5kQJ98" target="_blank" rel="noopener" onclick="apriMediaEsterno(event, 'https://www.youtube.com/embed/pykpO5kQJ98?autoplay=1', 'Euronews Live', true)"><div class="media-icon">&#x1F4FA;</div><div class="media-info"><div class="media-name">Euronews Live</div><div class="media-desc">Free live news — available worldwide</div></div><div class="media-arrow">↗</div></a>
           <a class="media-card" href="https://www.theguardian.com" target="_blank" rel="noopener" onclick="apriMediaEsterno(event, 'https://www.theguardian.com', 'The Guardian')"><div class="media-icon">&#x1F4F0;</div><div class="media-info"><div class="media-name">The Guardian</div><div class="media-desc">Leading English-language newspaper</div></div><div class="media-arrow">↗</div></a>
         </div>
       </div>
@@ -664,8 +664,8 @@ function isStandalone() {
          window.matchMedia('(display-mode: standalone)').matches;
 }
 
-function apriMediaEsterno(event, url, nome) {
-  if (!isStandalone()) return; // Safari normale: lascia fare il target="_blank" di default
+function apriMediaEsterno(event, url, nome, forzaOverlay) {
+  if (!forzaOverlay && !isStandalone()) return; // Safari normale: lascia fare il target="_blank" di default
   event.preventDefault();
   document.getElementById('om-titolo').textContent = nome;
   document.getElementById('om-iframe').src = url;
@@ -1250,7 +1250,7 @@ function sceltaProfilo(tipo, modalita) {
     <span class="om-bar-titolo" id="om-titolo">INSTANTOWN</span>
     <button class="om-chiudi" onclick="chiudiMediaOverlay()">✕ Torna a INSTANTOWN</button>
   </div>
-  <iframe id="om-iframe" src="about:blank" allow="autoplay; encrypted-media; fullscreen"></iframe>
+  <iframe id="om-iframe" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowfullscreen></iframe>
   <div class="om-fallback">Il contenuto non si vede bene? <a id="om-link-esterno" href="#" target="_blank" rel="noopener">Aprilo in Safari</a></div>
 </div>
 </body>
