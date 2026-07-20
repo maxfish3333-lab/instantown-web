@@ -263,6 +263,7 @@ const I18N = {
     aggiornato:     'aggiornato: ',
     ciRipenso:'Ci ripenso',ovIndirizzo:'Indirizzo',ovOrario:'Orario',ovCategoria:'Categoria',ovRaggio:'Raggio',ovPrezzoFlash:'Prezzo Flash',ovPrezzoStd:'Prezzo standard',ovConferma:'Conferma e prenota →',
     statoAttiva: "ATTIVA", statoScaduta: "SCADUTA", btnAttivaGaranzia: "✅ Prenota →",
+    scriviciBtn: "✉️ SCRIVICI",
   },
   en: {
     offerteTitle:   'Flash Deals',
@@ -307,6 +308,7 @@ const I18N = {
     aggiornato:     'updated: ',
     ciRipenso:'Never mind',ovIndirizzo:'Address',ovOrario:'Time',ovCategoria:'Category',ovRaggio:'Radius',ovPrezzoFlash:'Flash Price',ovPrezzoStd:'Standard price',ovConferma:'Confirm & book →',
     statoAttiva: "ACTIVE", statoScaduta: "EXPIRED", btnAttivaGaranzia: "✅ Book now →",
+    scriviciBtn: "✉️ WRITE TO US",
   },
   zh: {
     offerteTitle:   '闪购优惠',
@@ -351,6 +353,7 @@ const I18N = {
     aggiornato:     '已更新:',
     ciRipenso:'我再想想',ovIndirizzo:'地址',ovOrario:'时间',ovCategoria:'分类',ovRaggio:'范围',ovPrezzoFlash:'闪购价',ovPrezzoStd:'原价',ovConferma:'确认预订 →',
     statoAttiva: "进行中", statoScaduta: "已过期", btnAttivaGaranzia: "✅ 立即预订 →",
+    scriviciBtn: "✉️ 联系我们",
   },
   es: {
     offerteTitle:   'Ofertas Flash',
@@ -395,6 +398,7 @@ const I18N = {
     aggiornato:     'actualizado: ',
     ciRipenso:'Lo reconsidero',ovIndirizzo:'Dirección',ovOrario:'Horario',ovCategoria:'Categoría',ovRaggio:'Radio',ovPrezzoFlash:'Precio Flash',ovPrezzoStd:'Precio estándar',ovConferma:'Confirmar y reservar →',
     statoAttiva: "ACTIVA", statoScaduta: "CADUCADA", btnAttivaGaranzia: "✅ Reservar →",
+    scriviciBtn: "✉️ ESCRÍBENOS",
   },
   fr: {
     offerteTitle:   'Offres Flash',
@@ -439,6 +443,7 @@ const I18N = {
     aggiornato:     'mis à jour : ',
     ciRipenso:"J'hésite",ovIndirizzo:'Adresse',ovOrario:'Horaire',ovCategoria:'Catégorie',ovRaggio:'Rayon',ovPrezzoFlash:'Prix Flash',ovPrezzoStd:'Prix standard',ovConferma:'Confirmer et réserver →',
     statoAttiva: "ACTIVE", statoScaduta: "EXPIRÉE", btnAttivaGaranzia: "✅ Réserver →",
+    scriviciBtn: "✉️ ÉCRIVEZ-NOUS",
   },
   de: {
     offerteTitle: "Blitzangebote",
@@ -493,6 +498,7 @@ const I18N = {
     statoScaduta: "ABGELAUFEN",
     btnAttivaGaranzia: "✅ Jetzt buchen →"
   },
+    scriviciBtn: "✉️ SCHREIB UNS"
 };
 
 function t(key) {
@@ -2134,7 +2140,7 @@ window.accettaPropostaHotel = async function(richiestaId, propostaId) {
 
 <!-- SCRIVICI -->
 <div style="text-align:center;padding:18px 12px 26px;">
-  <a href="mailto:info@instantown.it" style="display:inline-block;background:#B20000;color:#fff;font-family:'DM Sans',Arial,sans-serif;font-size:14px;font-weight:700;padding:11px 26px;border-radius:22px;text-decoration:none;letter-spacing:.02em;box-shadow:0 2px 8px rgba(178,0,0,.3);">✉️ SCRIVICI</a>
+  <a href="mailto:info@instantown.it" data-i18n="scriviciBtn" style="display:inline-block;background:#B20000;color:#fff;font-family:'DM Sans',Arial,sans-serif;font-size:14px;font-weight:700;padding:11px 26px;border-radius:22px;text-decoration:none;letter-spacing:.02em;box-shadow:0 2px 8px rgba(178,0,0,.3);">✉️ SCRIVICI</a>
 </div>
 <script src="/notifiche-push.js"></script>
 </body>
