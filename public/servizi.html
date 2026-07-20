@@ -2519,6 +2519,7 @@ function formatDist(m){
 }
 
 function apriSheet(poiOriginale) {
+  history.pushState({ instantownOverlay: true }, '');
   var poi = getPoiTradotto(poiOriginale);
   poiSelezionato = poiOriginale;
   document.getElementById('s-emoji').innerHTML = poi.emoji;
@@ -2581,7 +2582,30 @@ function chiudiSheet() {
   if (distMarker) { map.removeLayer(distMarker); distMarker = null; }
 }
 
-// Bottone "← Indietro" della topbar: usa lo stack di navigazione
+// ── INTERCETTA IL TASTO/GESTO "INDIETRO" REALE DEL TELEFONO ──
+// Senza questo, lo swipe-indietro su iPhone (o il tasto Android) naviga
+// direttamente alla pagina precedente nella cronologia del browser
+// (es. index.html), scavalcando la scheda/lista aperta — l'utente perde
+// il contesto invece di tornare semplicemente alla vista precedente
+// dentro servizi.html. apriSheet/apriListaCategoria/apriMenuSottoservizi
+// registrano una voce di cronologia "finta" quando si aprono; quando il
+// telefono va indietro, invece di lasciare davvero la pagina, richiudiamo
+// la scheda/lista con la stessa logica già usata dal bottone "← Indietro".
+window.addEventListener('popstate', function(e) {
+  const cEraQualcosaAperto =
+    poiSelezionato ||
+    document.getElementById('cat-list-panel').classList.contains('open');
+
+  if (cEraQualcosaAperto) {
+    gestisciIndietro();
+    // Ripristina una voce di cronologia, così un secondo "indietro"
+    // funziona di nuovo allo stesso modo (chiude il livello successivo,
+    // invece di uscire subito dalla pagina).
+    history.pushState({ instantownOverlay: true }, '');
+  }
+  // Se non c'era nulla di aperto, non facciamo nulla: il browser lascia
+  // che la normale navigazione all'indietro proceda (es. torna a index.html).
+});
 // (navStack). Se c'è una scheda POI aperta, la chiude e fa il pop
 // dell'ultima vista nello stack (es. la lista da cui veniva). Se lo
 // stack è vuoto, semplicemente esce verso index.html.
@@ -2720,6 +2744,7 @@ function filtra(tipo, btn) {
 // PANNELLO LISTA CATEGORIA
 // ═══════════════════════════════════════════════
 function apriListaCategoria(tipo, poiList, metaCustom, erroreCaricamento) {
+  history.pushState({ instantownOverlay: true }, '');
   const meta = metaCustom || META_CATEGORIE_LISTA[tipo] || { emoji:'📍', titolo:tipo };
 
   document.getElementById('cl-emoji').innerHTML = meta.emoji;
@@ -2843,6 +2868,7 @@ async function aggiornaDistanzeReali(tipo, ordinati, meta) {
 // ognuna con il conteggio dei punti disponibili. Cliccando una riga
 // si apre la lista vera e propria di quel sotto-servizio.
 function apriMenuSottoservizi(allPOI) {
+  history.pushState({ instantownOverlay: true }, '');
   document.getElementById('cl-emoji').textContent = '💧';
   document.getElementById('cl-titolo').textContent = 'Servizi pubblici';
   document.getElementById('cl-count').textContent = allPOI.filter(p => p.tipo === 'pubblico' || p.tipo === 'bagni').length;
