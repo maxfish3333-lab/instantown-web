@@ -599,6 +599,9 @@ function applyI18nDOM() {
     <button onclick="applyLang('de')" class="lbtn" data-lang="de"
     style="background:none;border:1px solid rgba(200,134,10,.25);color:rgba(255,255,255,.5);
     font-size:11px;padding:4px 10px;border-radius:3px;cursor:pointer;">🇩🇪 DE</button>
+  <button onclick="applyLang('ja')" class="lbtn" data-lang="ja"
+    style="background:none;border:1px solid rgba(200,134,10,.25);color:rgba(255,255,255,.5);
+    font-size:11px;padding:4px 10px;border-radius:3px;cursor:pointer;">🇯🇵 JA</button>
 </div>
 
 <div class="page-header">
@@ -1429,7 +1432,7 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') chiudiOve
 init();
 setInterval(init, 60000);
 function applyLang(lang) {
-  var ok = ['it','en','zh','es','fr','de'];
+  var ok = ['it','en','zh','es','fr','de','ja'];
   if (!ok.includes(lang)) lang = 'it';
   localStorage.setItem('it_lang', lang);
   document.querySelectorAll('.lbtn').forEach(function(b) {
