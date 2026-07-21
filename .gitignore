@@ -80,3 +80,20 @@ check_syntax.js
 
 *.json
 !public/manifest.json
+# Materiale di lavoro locale (non serve al sito, non va versionato)
+materiale-lavoro/
+20231219-parcheggi_scambio.csv
+opendata_suap_luglio_2025.csv
+outreach_test_pulito.csv
+parcheggi_blu_centro.csv
+servizi_import_piazzole_scambio.csv
+servizi_import_piazzole_scambio_lowercase.csv
+strisce_blu.csv
+lista_sedi_digitromawifi_vs2026_04_11revf (1).csv
+anteprima_email_outreach_test.html
+anteprima_email_outreach_test.pdf
+preview_associazioni.pdf
+tabella_email_ambasciate.pdf
+Logo argento.zip
+Logo argento/
+logo_v3_trill_brrrr_nero.png
