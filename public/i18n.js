@@ -164,6 +164,8 @@ const IT18N = {
     sv_filtro_bus: "🚌 Bus & Tram",
     sv_filtro_bancomat: "🏦 Bancomat",
     sv_filtro_poste: "📮 Uffici postali",
+    sv_filtro_parcheggio: "🅿️ Parcheggi",
+    sv_filtro_scambio: "<img src='/icons/scambio.png' style='width:16px;height:16px;vertical-align:middle;margin-right:4px;'> Piazzole di scambio",
     sv_btn_portami: "PORTAMI QUI",
     sv_dist_da_te: "da te"
   },
@@ -324,6 +326,8 @@ const IT18N = {
     sv_filtro_bus: "🚌 Bus & Tram",
     sv_filtro_bancomat: "🏦 ATMs",
     sv_filtro_poste: "📮 Post offices",
+    sv_filtro_parcheggio: "🅿️ Parking",
+    sv_filtro_scambio: "<img src='/icons/scambio.png' style='width:16px;height:16px;vertical-align:middle;margin-right:4px;'> Park & Ride",
     sv_btn_portami: "TAKE ME THERE",
     sv_dist_da_te: "from you"
   },
@@ -484,6 +488,8 @@ const IT18N = {
     sv_filtro_bus: "🚌 公交与电车",
     sv_filtro_bancomat: "🏦 自动取款机",
     sv_filtro_poste: "📮 邮局",
+    sv_filtro_parcheggio: "🅿️ 停车场",
+    sv_filtro_scambio: "<img src='/icons/scambio.png' style='width:16px;height:16px;vertical-align:middle;margin-right:4px;'> 换乘停车场",
     sv_btn_portami: "带我去那里",
     sv_dist_da_te: "距您"
   },
@@ -644,6 +650,8 @@ const IT18N = {
     sv_filtro_bus: "🚌 Bus y Tranvía",
     sv_filtro_bancomat: "🏦 Cajeros automáticos",
     sv_filtro_poste: "📮 Oficinas de correos",
+    sv_filtro_parcheggio: "🅿️ Aparcamientos",
+    sv_filtro_scambio: "<img src='/icons/scambio.png' style='width:16px;height:16px;vertical-align:middle;margin-right:4px;'> Aparcamientos disuasorios",
     sv_btn_portami: "LLÉVAME AQUÍ",
     sv_dist_da_te: "de ti"
   },
@@ -804,6 +812,8 @@ const IT18N = {
     sv_filtro_bus: "🚌 Bus & Tram",
     sv_filtro_bancomat: "🏦 Distributeurs",
     sv_filtro_poste: "📮 Bureaux de poste",
+    sv_filtro_parcheggio: "🅿️ Parkings",
+    sv_filtro_scambio: "<img src='/icons/scambio.png' style='width:16px;height:16px;vertical-align:middle;margin-right:4px;'> Parcs relais",
     sv_btn_portami: "EMMÈNE-MOI ICI",
     sv_dist_da_te: "de vous"
   },
@@ -962,6 +972,8 @@ const IT18N = {
     sv_filtro_bus: "🚌 Bus & Tram",
     sv_filtro_bancomat: "🏦 Geldautomaten",
     sv_filtro_poste: "📮 Postämter",
+    sv_filtro_parcheggio: "🅿️ Parkplätze",
+    sv_filtro_scambio: "<img src='/icons/scambio.png' style='width:16px;height:16px;vertical-align:middle;margin-right:4px;'> Park-and-Ride",
     sv_btn_portami: "BRING MICH HIN",
     sv_dist_da_te: "von dir"
   },
