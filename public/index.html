@@ -349,6 +349,7 @@ footer a:hover{color:var(--ocra-l);}
   <button onclick="applyLang('es')" class="lbtn" data-lang="es"><img src="https://flagcdn.com/16x12/es.png" width="16" height="12" alt="ES" style="vertical-align:middle;margin-right:4px;border-radius:2px;"> ES</button>
   <button onclick="applyLang('fr')" class="lbtn" data-lang="fr"><img src="https://flagcdn.com/16x12/fr.png" width="16" height="12" alt="FR" style="vertical-align:middle;margin-right:4px;border-radius:2px;"> FR</button>
   <button onclick="applyLang('de')" class="lbtn" data-lang="de"><img src="https://flagcdn.com/16x12/de.png" width="16" height="12" alt="DE" style="vertical-align:middle;margin-right:4px;border-radius:2px;"> DE</button>
+  <button onclick="applyLang('ja')" class="lbtn" data-lang="ja"><img src="https://flagcdn.com/16x12/jp.png" width="16" height="12" alt="JA" style="vertical-align:middle;margin-right:4px;border-radius:2px;"> JA</button>
 </div>
 
 <!-- I 2 PULSANTI PRINCIPALI -->
@@ -643,7 +644,7 @@ function chiudiMediaOverlay() {
 // RESET localStorage corrotto
 (function() {
   var saved = localStorage.getItem('it_lang');
-  var ok = ['it','en','zh','es','fr','de'];
+  var ok = ['it','en','zh','es','fr','de','ja'];
   if (saved && !ok.includes(saved)) localStorage.removeItem('it_lang');
 })();
 
@@ -954,6 +955,73 @@ var I18N = {
     'modal-pref-modifica': "bearbeiten",
     'scrivici-btn': "✉️ SCHREIB UNS"
   },
+  ja: {
+    'vip-title': "ユーザーは常にVIP",
+    'vip-sub': "— 商品やサービスを受け取らない限り、支払いは発生しません",
+    'vip-btn-qr': "🎫<br>マイ<br>QRコード", 'vip-btn-radar': "📍<br>レーダーを<br>開く",
+    'nav-reg': "店舗として登録 →",
+    'hero-kicker': "ローマ — 2025年パイロット都市",
+    'hero-title': "世界が<br><em>あなたの足元に。</em>",
+    'hero-desc': "半径200メートル以内のフラッシュオファー、地図上の公共サービス、保証された支払い。INSTANTOWNは市民、旅行者、店舗をリアルタイムで結びつけます。",
+    'b1t': "本当の近さ、広告ではない",
+    'b1d': "GPSがあなたの周辺にあるものを計算します。徒歩で行ける実店舗のみ。",
+    'b2t': "エスクロー決済、価格固定",
+    'b2d': "お金は実際に会うまで凍結されたままです。表示された価格がそのまま支払う価格です。",
+    'b3t': "統合された公共サービス",
+    'b3d': "給水スポット、公衆トイレ、無料Wi-Fiが同じ地図上に。ローマがタップ一つで手に入ります。",
+    'b4t': "設計段階からの不正防止",
+    'b4d': "すべての店舗は実際のVAT番号で認証されています。二重の物理QRコードにより詐欺は不可能です。",
+    'vip1-t': "ユーザーは常にVIP",
+    'vip1-d': "商品やサービスを受け取らない限り、支払いは発生しません。資金は実際に会うまでエスクローに保持されます。何か問題が起きても、あなたは何も失いません。",
+    'vip2-t': "店舗は何も前払いしません",
+    'vip2-d': "月額料金なし。会費なし。初期費用なし。実際の取引額にのみ手数料が発生します — 入金時1.75%、最初の6ヶ月は0%。銀行振込にかかる費用は、決済会社および各金融機関の規定によるもので、当社の意向とは無関係であり、すべての金融取引に共通するものです。",
+    'vip3-t': "INSTANTOWNはあなたが稼いだときだけ収益を得ます",
+    'vip3-d': "技術的、法的、運営上のすべてのコストはINSTANTOWNが負担します。リスクは私たちが負い、利益はあなたのものです。",
+    'vip-quote': "「誰も前払いはしません。<br><span style=\"color:var(--ocra-l)\">INSTANTOWNはあなたが稼いだときだけ収益を得ます。</span>」",
+    'btn1-label': "必須サービス",
+    'btn1-sub': "給水スポット・トイレ・Wi-Fi<br>ローマの象徴的な場所",
+    'btn2-label': "フラッシュオファー",
+    'btn2-sub': "グルメ・ファッション・テック・旅行<br>エンターテインメント・その他",
+    'finder-badge': "近日公開 — フェーズ2",
+    'finder-sub': "あなたをこれまで見つけられなかった全国市場。",
+    'finder-desc': "イタリアには、ワイン、チーズ、陶芸、機械加工、織物、保存食品など、卓越した品質を生み出す何千もの企業がありますが、国内外の市場にアクセスしたことがありません。品質が足りないからではなく、発信の場がなかったからです。",
+    'f1t': "小さな町が大きな市場を見つける",
+    'f1d': "カラブリアのンドゥイヤ生産者、モリーゼのオリーブ搾油所、バジリカータの陶芸職人。FINDERを通じて彼らは全国カタログに掲載され、彼らを探す人々に見つけてもらえます — 展示会も、代理店も、高額な仲介業者も必要ありません。",
+    'f2t': "仲介業者はすでに顧客を持っている",
+    'f2d': "ファインダーとは、すでに関心のある買い手を持ち、ATECO 2025カタログの中から最適な供給者を探す人のことです。自由なマージンで購入・転売します。エスクロー決済は納品まで双方を保護します。",
+    'f3t': "税務上透明",
+    'f3d': "年間5,000ユーロ未満:イタリア所得税法(TUIR)第67条に基づく臨時所得、手続き不要。上限を超えると:INSTANTOWNがリアルタイムで監視し、VAT番号取得義務を通知します。",
+    'finder-south-t': "南イタリア — 優先展開地域",
+    'finder-south-d': "カンパニア、カラブリア、シチリア、プーリア、バジリカータ、モリーゼ、アブルッツォ — 市場アクセスのない優れた産品が最も集中するこれらの地域が、最初にFINDERカタログに統合されます。",
+    'how-badge': "PROX — 仕組み",
+    'how-title': "3つのステップ。それだけです。",
+    's1t': "レーダーを開く",
+    's1d': "GPSがあなたから半径200メートル以内の店舗のフラッシュオファーを見つけます — 今この瞬間、この通りで。",
+    's2t': "予約してエスクローで支払う",
+    's2d': "価格は予約時に固定されます。支払いはエスクローに入ります — 店舗と会うまで誰も触れません。",
+    's3t': "QRマッチング — 資金解放",
+    's3d': "店舗がQR-Aを提示し、あなたがQR-Bをスキャンします。物理的なペアのみが資金を解放します。詐欺は不可能です。",
+    'radar-btn': "GPSレーダーを開く →",
+    'ft-offerte': "オファー",
+    'ft-servizi': "サービス",
+    'ft-reg': "登録する",
+    'ft-pubblica': "オファーを掲載",
+    'ft-finder': "FINDER — 近日公開",
+    'ft-copyright': "© 2025–2026 INSTANTOWN PROX. 無断複写・転載を禁じます。コード、デザイン、コンテンツの無断複製、コピー、使用は(一部であっても)禁止されており、法的措置の対象となります。",
+    'pwa-store-label1': "ダウンロード", 'pwa-store-label2': "利用可能",
+    'pwa-store-soon': "ネイティブアプリは近日公開予定 — それまでは上の「+ 追加」で同じ体験をお楽しみいただけます。",
+    'modal-occ-title': "⚡ フラッシュオファー",
+    'cat-name-cibo': "グルメ",
+    'cat-name-moda': "ファッション",
+    'cat-name-tech': "テック",
+    'cat-name-viaggi': "旅行",
+    'cat-name-divertimento': "エンターテインメント",
+    'cat-name-altro': "その他",
+    'modal-vedi-tutte': "すべてのオファーを見る →",
+    'modal-pref-prefix': "設定:",
+    'modal-pref-modifica': "編集",
+    'scrivici-btn': "✉️ お問い合わせ"
+  },
 };
 
 function mostraStorePresto() {
@@ -962,7 +1030,7 @@ function mostraStorePresto() {
 }
 
 function applyLang(lang) {
-  var ok = ['it','en','zh','es','fr','de'];
+  var ok = ['it','en','zh','es','fr','de','ja'];
   if (!ok.includes(lang)) lang = 'it';
   localStorage.setItem('it_lang', lang);
   var L = I18N[lang] || I18N.it;
@@ -1089,7 +1157,8 @@ var pwaTexts = {
   zh: { title: '添加INSTANTOWN', sub: '即可从主屏幕访问', btn: '+ 添加', dismiss: '暫不添加' },
   es: { title: 'Añadir INSTANTOWN', sub: 'Acceso rápido desde tu pantalla de inicio', btn: '+ Añadir', dismiss: 'Ahora no' },
   fr: { title: 'Ajouter INSTANTOWN', sub: 'Accès rapide depuis votre écran d’accueil', btn: '+ Ajouter', dismiss: 'Pas maintenant' },
-  de: { title: 'INSTANTOWN hinzufügen', sub: 'Schneller Zugriff vom Startbildschirm', btn: '+ Hinzufügen', dismiss: 'Nicht jetzt' }
+  de: { title: 'INSTANTOWN hinzufügen', sub: 'Schneller Zugriff vom Startbildschirm', btn: '+ Hinzufügen', dismiss: 'Nicht jetzt' },
+  ja: { title: 'INSTANTOWNを追加', sub: 'ホーム画面からすぐにアクセス', btn: '+ 追加', dismiss: '今はしない' }
 };
 
 function updatePwaBannerLang(lang) {
