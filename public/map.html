@@ -179,6 +179,7 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
     <option value="es">🇪🇸 ES</option>
     <option value="fr">🇫🇷 FR</option>
     <option value="de">🇩🇪 DE</option>
+    <option value="ja">🇯🇵 JA</option>
   </select>
   <div class="lang-switch" id="lang-switch">
     <div class="lang-switch-btn" id="lang-switch-btn" onclick="toggleLangSwitch(event)">
@@ -191,6 +192,7 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
       <div class="lang-switch-opt" data-lang="es" onclick="selectLangMap('es')"><span>🇪🇸</span><span>ES</span></div>
       <div class="lang-switch-opt" data-lang="fr" onclick="selectLangMap('fr')"><span>🇫🇷</span><span>FR</span></div>
       <div class="lang-switch-opt" data-lang="de" onclick="selectLangMap('de')"><span>🇩🇪</span><span>DE</span></div>
+      <div class="lang-switch-opt" data-lang="ja" onclick="selectLangMap('ja')"><span>🇯🇵</span><span>JA</span></div>
     </div>
   </div>
   <div class="gps-pill">
@@ -281,7 +283,8 @@ const T = {
   zh: { all:'全部', food:'美食', fashion:'时尚', tech:'科技', travel:'旅游', fun:'娱乐', other:'其他' },
   es: { all:'Todas', food:'Comida', fashion:'Moda', tech:'Tech', travel:'Viajes', fun:'Diversión', other:'Otro' },
   fr: { all:'Toutes', food:'Cuisine', fashion:'Mode', tech:'Tech', travel:'Voyages', fun:'Loisirs', other:'Autre' },
-  de: { all:'Alle', food:'Essen', fashion:'Mode', tech:'Tech', travel:'Reisen', fun:'Freizeit', other:'Sonstiges' }
+  de: { all:'Alle', food:'Essen', fashion:'Mode', tech:'Tech', travel:'Reisen', fun:'Freizeit', other:'Sonstiges' },
+  ja: { all:'すべて', food:'グルメ', fashion:'ファッション', tech:'テック', travel:'旅行', fun:'エンタメ', other:'その他' }
 };
 let lang = localStorage.getItem('it_lang') || 'it';
 function t(k){ return (T[lang]||T.it)[k] || k; }
@@ -308,7 +311,7 @@ function setLang(l){ applyLang(l);
 // LANG SWITCHER custom (vedi commento CSS sopra per il motivo del fix)
 const LANG_SWITCH_DATA_MAP = {
   it:{flag:'🇮🇹',label:'IT'}, en:{flag:'🇬🇧',label:'EN'}, zh:{flag:'🇨🇳',label:'中文'},
-  es:{flag:'🇪🇸',label:'ES'}, fr:{flag:'🇫🇷',label:'FR'}, de:{flag:'🇩🇪',label:'DE'}
+  es:{flag:'🇪🇸',label:'ES'}, fr:{flag:'🇫🇷',label:'FR'}, de:{flag:'🇩🇪',label:'DE'}, ja:{flag:'🇯🇵',label:'JA'}
 };
 function toggleLangSwitch(e){
   if(e) e.stopPropagation();
