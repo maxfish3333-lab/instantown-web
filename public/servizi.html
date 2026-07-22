@@ -273,6 +273,7 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
     <option value="es">🇪🇸 ES</option>
     <option value="fr">🇫🇷 FR</option>
     <option value="de">🇩🇪 DE</option>
+    <option value="ja">🇯🇵 JA</option>
   </select>
   <div class="lang-switch" id="lang-switch">
     <div class="lang-switch-btn" id="lang-switch-btn" onclick="toggleLangSwitch(event)">
@@ -287,6 +288,7 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
       <div class="lang-switch-opt" data-lang="es" onclick="selectLang('es')"><span class="lang-switch-flag">🇪🇸</span><span>ES</span></div>
       <div class="lang-switch-opt" data-lang="fr" onclick="selectLang('fr')"><span class="lang-switch-flag">🇫🇷</span><span>FR</span></div>
       <div class="lang-switch-opt" data-lang="de" onclick="selectLang('de')"><span class="lang-switch-flag">🇩🇪</span><span>DE</span></div>
+      <div class="lang-switch-opt" data-lang="ja" onclick="selectLang('ja')"><span class="lang-switch-flag">🇯🇵</span><span>JA</span></div>
     </div>
   </div>
   <div class="topbar-title">🗺️ <span data-i18n="sv_title">Servizi Essenziali</span></div>
@@ -395,7 +397,8 @@ const LANG_SWITCH_DATA = {
   zh: { flag: '🇨🇳', label: '中文' },
   es: { flag: '🇪🇸', label: 'ES' },
   fr: { flag: '🇫🇷', label: 'FR' },
-  de: { flag: '🇩🇪', label: 'DE' }
+  de: { flag: '🇩🇪', label: 'DE' },
+  ja: { flag: '🇯🇵', label: 'JA' }
 };
 
 function toggleLangSwitch(e) {
