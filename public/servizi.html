@@ -2685,10 +2685,10 @@ const META_CATEGORIE_LISTA = {
 // e solo cliccando una di queste righe si apre la lista vera e propria
 // dei punti specifici di quel sotto-servizio, ordinata per distanza.
 const SOTTOSERVIZI_PUBBLICO = [
-  { id:'nasoni',  emoji:'💧', titolo:'Nasoni',           match: p => p.tipo === 'pubblico' && (p.id === 'nasoni' || p.id.startsWith('nasone-')) },
-  { id:'presa',   emoji:'🔌', titolo:'Prese elettriche', match: p => p.tipo === 'pubblico' && p.id.startsWith('presa-') },
-  { id:'wifi',    emoji:'📶', titolo:'WiFi pubblico',    match: p => p.tipo === 'pubblico' && p.id === 'wifi' },
-  { id:'bagni',   emoji:'🚻', titolo:'Bagni pubblici',   match: p => p.tipo === 'bagni' }
+  { id:'nasoni',  emoji:'💧', key:'sv_sub_nasoni', titolo:'Nasoni',           match: p => p.tipo === 'pubblico' && (p.id === 'nasoni' || p.id.startsWith('nasone-')) },
+  { id:'presa',   emoji:'🔌', key:'sv_sub_presa',  titolo:'Prese elettriche', match: p => p.tipo === 'pubblico' && p.id.startsWith('presa-') },
+  { id:'wifi',    emoji:'📶', key:'sv_sub_wifi',   titolo:'WiFi pubblico',    match: p => p.tipo === 'pubblico' && p.id === 'wifi' },
+  { id:'bagni',   emoji:'🚻', key:'sv_sub_bagni',  titolo:'Bagni pubblici',   match: p => p.tipo === 'bagni' }
 ];
 
 function filtra(tipo, btn) {
@@ -2871,16 +2871,17 @@ async function aggiornaDistanzeReali(tipo, ordinati, meta) {
 function apriMenuSottoservizi(allPOI) {
   history.pushState({ instantownOverlay: true }, '');
   document.getElementById('cl-emoji').textContent = '💧';
-  document.getElementById('cl-titolo').textContent = 'Servizi pubblici';
+  document.getElementById('cl-titolo').textContent = i18nGetSv('sv_sub_titolo', 'Servizi pubblici');
   document.getElementById('cl-count').textContent = allPOI.filter(p => p.tipo === 'pubblico' || p.tipo === 'bagni').length;
 
   const body = document.getElementById('cl-body');
   body.innerHTML = SOTTOSERVIZI_PUBBLICO.map(function(sotto) {
     const n = allPOI.filter(sotto.match).length;
+    const titoloTradotto = i18nGetSv(sotto.key, sotto.titolo);
     return '<div class="cat-list-row" onclick="apriSottoservizio(\'' + sotto.id + '\')">' +
       '<div class="cat-list-emoji">' + sotto.emoji + '</div>' +
       '<div class="cat-list-info">' +
-        '<div class="cat-list-nome">' + sotto.titolo + '</div>' +
+        '<div class="cat-list-nome">' + titoloTradotto + '</div>' +
       '</div>' +
       '<div class="cat-list-dist">' + n + '</div>' +
     '</div>';
@@ -2896,7 +2897,7 @@ function apriSottoservizio(sottoId) {
   // Metto sullo stack il menu sotto-servizi da cui arrivo, così
   // "← Indietro" dalla lista torna al menu, non dritto alla mappa.
   navStack.push({ vista: 'menu-pubblico' });
-  apriListaCategoria(sotto.id, allPOI.filter(sotto.match), { emoji: sotto.emoji, titolo: sotto.titolo });
+  apriListaCategoria(sotto.id, allPOI.filter(sotto.match), { emoji: sotto.emoji, titolo: i18nGetSv(sotto.key, sotto.titolo) });
 }
 
 function chiudiListaCategoria(senzaResetFiltro) {

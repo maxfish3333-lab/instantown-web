@@ -168,6 +168,11 @@ const IT18N = {
     sv_filtro_parcheggio: "🅿️ Parcheggi",
     sv_filtro_scambio: "Piazzole di scambio",
     sv_btn_portami: "PORTAMI QUI",
+    sv_sub_titolo: "Servizi pubblici",
+    sv_sub_nasoni: "Nasoni",
+    sv_sub_presa: "Prese elettriche",
+    sv_sub_wifi: "WiFi pubblico",
+    sv_sub_bagni: "Bagni pubblici",
     sv_dist_da_te: "da te"
   },
 
@@ -331,6 +336,11 @@ const IT18N = {
     sv_filtro_parcheggio: "🅿️ Parking",
     sv_filtro_scambio: "Park & Ride",
     sv_btn_portami: "TAKE ME THERE",
+    sv_sub_titolo: "Public services",
+    sv_sub_nasoni: "Drinking fountains (Nasoni)",
+    sv_sub_presa: "Electrical outlets (Prese elettriche)",
+    sv_sub_wifi: "Public WiFi (WiFi pubblico)",
+    sv_sub_bagni: "Public restrooms (Bagni pubblici)",
     sv_dist_da_te: "from you"
   },
 
@@ -494,6 +504,11 @@ const IT18N = {
     sv_filtro_parcheggio: "🅿️ 停车场",
     sv_filtro_scambio: "换乘停车场",
     sv_btn_portami: "带我去那里",
+    sv_sub_titolo: "公共服务",
+    sv_sub_nasoni: "饮水喷泉 (Nasoni)",
+    sv_sub_presa: "电源插座 (Prese elettriche)",
+    sv_sub_wifi: "公共WiFi (WiFi pubblico)",
+    sv_sub_bagni: "公共卫生间 (Bagni pubblici)",
     sv_dist_da_te: "距您"
   },
 
@@ -657,6 +672,11 @@ const IT18N = {
     sv_filtro_parcheggio: "🅿️ Aparcamientos",
     sv_filtro_scambio: "Aparcamientos disuasorios",
     sv_btn_portami: "LLÉVAME AQUÍ",
+    sv_sub_titolo: "Servicios públicos",
+    sv_sub_nasoni: "Fuentes de agua potable (Nasoni)",
+    sv_sub_presa: "Tomas de corriente (Prese elettriche)",
+    sv_sub_wifi: "WiFi público (WiFi pubblico)",
+    sv_sub_bagni: "Aseos públicos (Bagni pubblici)",
     sv_dist_da_te: "de ti"
   },
 
@@ -820,6 +840,11 @@ const IT18N = {
     sv_filtro_parcheggio: "🅿️ Parkings",
     sv_filtro_scambio: "Parcs relais",
     sv_btn_portami: "EMMÈNE-MOI ICI",
+    sv_sub_titolo: "Services publics",
+    sv_sub_nasoni: "Fontaines d'eau potable (Nasoni)",
+    sv_sub_presa: "Prises électriques (Prese elettriche)",
+    sv_sub_wifi: "WiFi public (WiFi pubblico)",
+    sv_sub_bagni: "Toilettes publiques (Bagni pubblici)",
     sv_dist_da_te: "de vous"
   },
   de: {
@@ -981,6 +1006,11 @@ const IT18N = {
     sv_filtro_parcheggio: "🅿️ Parkplätze",
     sv_filtro_scambio: "Park-and-Ride",
     sv_btn_portami: "BRING MICH HIN",
+    sv_sub_titolo: "Öffentliche Dienste",
+    sv_sub_nasoni: "Trinkbrunnen (Nasoni)",
+    sv_sub_presa: "Steckdosen (Prese elettriche)",
+    sv_sub_wifi: "Öffentliches WLAN (WiFi pubblico)",
+    sv_sub_bagni: "Öffentliche Toiletten (Bagni pubblici)",
     sv_dist_da_te: "von dir"
   },
   ja: {
@@ -1142,6 +1172,11 @@ const IT18N = {
     sv_filtro_parcheggio: "🅿️ 駐車場",
     sv_filtro_scambio: "パークアンドライド",
     sv_btn_portami: "ここへ行く",
+    sv_sub_titolo: "公共サービス",
+    sv_sub_nasoni: "給水スポット（Nasoni）",
+    sv_sub_presa: "電源コンセント（Prese elettriche）",
+    sv_sub_wifi: "公共Wi-Fi（WiFi pubblico）",
+    sv_sub_bagni: "公衆トイレ（Bagni pubblici）",
     sv_dist_da_te: "あなたから"
   },
 };
