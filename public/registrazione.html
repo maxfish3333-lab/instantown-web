@@ -139,10 +139,10 @@ input.invalid{border-color:var(--rosso-l) !important;}
     <div class="info-box info-rosso" data-i18n="rg_info_imp">Compila i dati della tua attività. Verificheremo <strong>Codice Fiscale</strong> e <strong>P.IVA</strong> in tempo reale prima dell'invio.</div>
     <div id="success-impresa" style="display:none;padding:28px 20px;background:#f0fdf4;border:2px solid #16a34a;border-radius:6px;text-align:center;margin-bottom:16px;">
       <div style="font-size:32px;margin-bottom:10px;">&#x2705;</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:#1C1410;margin-bottom:12px;" data-i18n="rg_success_title">Registrazione completata!</div>
-      <div style="font-size:14px;color:#3D2E24;line-height:1.8;background:#fff;border-radius:6px;padding:14px 18px;border:1px solid #16a34a;">
-        &#x1F4E7; <strong>Controlla la tua email</strong> — riceverai il tuo <strong>PIN personale</strong> da <em>info@instantown.it</em> entro pochi minuti.<br>
-        <span style="font-size:12px;color:#6B5A4E;">Il PIN ti servirà per pubblicare offerte e accedere all'area esercente.</span>
+      <div id="success-impresa-title" style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:#1C1410;margin-bottom:12px;" data-i18n="rg_success_title">Registrazione completata!</div>
+      <div id="success-impresa-box" style="font-size:14px;color:#3D2E24;line-height:1.8;background:#fff;border-radius:6px;padding:14px 18px;border:1px solid #16a34a;">
+        <span id="success-impresa-msg">&#x1F4E7; <strong>Controlla la tua email</strong> — riceverai il tuo <strong>PIN personale</strong> da <em>info@instantown.it</em> entro pochi minuti.<br>
+        <span style="font-size:12px;color:#6B5A4E;">Il PIN ti servirà per pubblicare offerte e accedere all'area esercente.</span></span>
       </div>
     </div>
 
@@ -385,9 +385,12 @@ async function inviaRegistrazione(e) {
   btn.disabled = true;
   btn.textContent = i18n('rg_invio');
 
-  // Genera PIN a 6 cifre e lo salva
-  const pin = String(Math.floor(100000 + Math.random() * 900000));
-  localStorage.setItem('it_pin_esercente', pin);
+  // Genera un PIN a 6 cifre come PROPOSTA: è il server (Apps Script) a
+  // decidere se usarlo davvero (prima registrazione) o scartarlo perché
+  // l'esercente è già registrato — nel qual caso il PIN valido è quello
+  // già esistente, reinviato via email. Non lo salviamo subito in
+  // localStorage: aspettiamo di sapere cosa ha deciso il server.
+  const pinProposto = String(Math.floor(100000 + Math.random() * 900000));
 
   const form = document.getElementById('form-impresa');
   const data = new FormData(form);
@@ -411,8 +414,13 @@ async function inviaRegistrazione(e) {
   // Ribalta i dati anche su Apps Script (Google Sheet), indipendentemente
   // dall'esito di Formspree: cosi' l'esercente scrive le sue informazioni
   // una sola volta nel form, e non serve un secondo inserimento manuale.
+  // A DIFFERENZA DI PRIMA: ora leggiamo davvero la risposta JSON, perché
+  // il server può segnalare stato:'duplicato' se l'esercente esiste già
+  // (stessa email/P.IVA/CF) — in quel caso mostriamo il suo messaggio
+  // reale invece del generico "registrazione completata".
+  let esitoAppsScript = null;
   try {
-    await fetch('https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec', {
+    const scriptRes = await fetch('https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec', {
       method: 'POST',
       headers: {'Content-Type': 'text/plain;charset=utf-8'},
       body: JSON.stringify({
@@ -423,15 +431,25 @@ async function inviaRegistrazione(e) {
         cf: form.querySelector('[name=codice_fiscale]').value.trim(),
         telefono: form.querySelector('[name=telefono]').value.trim(),
         email: form.querySelector('[name=_replyto]').value.trim(),
-        pin: pin,
+        pin: pinProposto,
         lat: geoLat,
         lon: geoLon
       })
     });
+    esitoAppsScript = await scriptRes.json();
   } catch (scriptErr) {
     console.warn('Sincronizzazione Apps Script fallita:', scriptErr);
   }
-  data.append('pin_esercente', pin); // lo manda anche nell'email
+
+  // Salviamo in localStorage il PIN proposto SOLO se il server non ha
+  // segnalato un duplicato. In caso di duplicato, il PIN valido è quello
+  // già esistente (inviato via email): sovrascrivere localStorage col
+  // PIN scartato avrebbe fatto vedere all'esercente un PIN sbagliato.
+  if (!esitoAppsScript || esitoAppsScript.stato !== 'duplicato') {
+    localStorage.setItem('it_pin_esercente', pinProposto);
+  }
+
+  data.append('pin_esercente', pinProposto); // lo manda anche nell'email
 
   try {
     const res = await fetch(form.action, {
@@ -446,9 +464,16 @@ async function inviaRegistrazione(e) {
       const nota = document.getElementById('nota-attivazione');
       if(nota) nota.style.display = 'none';
 
-      // Mostra riquadro successo con PIN
+      // Mostra riquadro successo — con il messaggio reale del server se
+      // presente (es. avviso di duplicato con la data della prima
+      // registrazione), altrimenti il testo generico di sempre.
       const box = document.getElementById('success-impresa');
-      var pinEl = document.getElementById('pin-display'); if (pinEl) pinEl.textContent = '••••••';
+      if (esitoAppsScript && esitoAppsScript.stato === 'duplicato') {
+        const titoloEl = document.getElementById('success-impresa-title');
+        const msgEl = document.getElementById('success-impresa-msg');
+        if (titoloEl) titoloEl.textContent = '⚠️ Registrazione già esistente';
+        if (msgEl) msgEl.textContent = esitoAppsScript.messaggio;
+      }
       box.style.display = 'block';
       box.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } else {
