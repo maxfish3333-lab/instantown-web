@@ -9,7 +9,7 @@
 <style>
 :root{
   --rosso:#8B1A1A;--rosso-l:#C0392B;
-  --ocra:#C8860A;--ocra-l:#E8A020;--ocra-p:#FDF3DC;
+  --ocra:#C8860A;--ocra-l:#E8A020;--ocra-p:#FDF3DC;--ocra-d:#9C6B08;
   --cielo:#4A90C4;--cielo-l:#6AAFD8;--blu-mare:#0F5C8C;
   --verde:#16a34a;--verde-p:#f0fdf4;
   --bianco:#FDFAF4;--ink:#1C1410;--ink-m:#3D2E24;--ink-mu:#6B5A4E;
@@ -123,7 +123,8 @@ main{max-width:1000px;margin:0 auto;padding:24px 32px 80px;}
 #banner-ios-home .bh-close{ font-size:18px; color:rgba(255,255,255,.6); flex-shrink:0; padding:4px; }
 .pill-dist{font-size:13px;color:#0F5C8C;border:1.5px solid rgba(15,92,140,.4);padding:5px 14px;border-radius:20px;font-weight:700;}
 .card-desc{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:5px;line-height:1.4;text-transform:capitalize;}
-.card-addr{font-size:11.5px;color:var(--ink-mu);}
+.card-addr{font-size:13px;font-weight:600;color:var(--blu-mare);}
+.card-negozio{font-size:12.5px;font-weight:700;color:var(--ocra);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;}
 .card-prezzi{display:flex;align-items:baseline;gap:8px;margin-top:12px;}
 .prezzo-flash{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--blu-mare);}
 .prezzo-std{font-size:12px;color:var(--ink-mu);text-decoration:line-through;}
@@ -1036,6 +1037,7 @@ function renderCard(o) {
     <div class="card-top">
       <div class="card-orario">${scadenzaBox || restanoDefault}</div>
       <div class="card-desc">${desc}${anom?`<span class="anomalia-tag">${t('anomTag')}</span>`:''}</div>
+      ${o.negozio ? `<div class="card-negozio">🏪 ${o.negozio}</div>` : ''}
       <div class="card-addr">📍 ${o.indirizzo||'—'}</div>
       <div class="card-prezzi">
         <span class="prezzo-flash">€ ${o.prezzoFlash.toFixed(2)}</span>
