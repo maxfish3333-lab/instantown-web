@@ -968,7 +968,7 @@ function formattaMinutiRimanenti(min) {
   if (min < 60) return `${min} ${t('unitMin')}`;
   const h = Math.floor(min / 60);
   const m = min % 60;
-  return m > 0 ? `${h}h ${m}m` : `${h}h`;
+  return m > 0 ? `${h} h ${m} m` : `${h} h`;
 }
 
 function renderCard(o) {
@@ -986,7 +986,7 @@ function renderCard(o) {
     if (minDefault !== null) {
       const testoDefault = formattaMinutiRimanenti(minDefault);
       restanoDefault = (minDefault > 0)
-        ? `⏱ <strong class="restano-grande">${t('restanoPre')} ${testoDefault.toUpperCase()}</strong>`
+        ? `⏱ <strong class="restano-grande">${t('restanoPre')} ${testoDefault}</strong>`
         : `⏱ <strong style="color:var(--ink-mu);">${t('terminata')}</strong>`;
     }
   }
