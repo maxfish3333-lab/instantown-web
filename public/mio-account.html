@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="i18n.js"></script>
 <style>
 :root{
   --rosso:#8B1A1A;--rosso-l:#C0392B;--rosso-p:#FDF0EF;
@@ -14,10 +15,10 @@
   --cielo:#4A90C4;--cielo-l:#6AAFD8;--cielo-p:#E8F4FB;
   --verde:#1A7A3A;--verde-l:#22A050;--verde-p:#EAF5EE;
   --ink:#1C1410;--ink-m:#3D2E24;--ink-mu:#6B5A4E;
-  --bianco:#FDFAF4;--rule:rgba(139,26,26,0.12);
+  --bianco:#FDFAF4;--sfondo-pagina:#E8C0AE;--rule:rgba(139,26,26,0.12);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--ink);min-height:100vh;}
+body{font-family:'DM Sans',sans-serif;background:var(--sfondo-pagina);color:var(--ink);min-height:100vh;}
 .stripe{height:5px;background:linear-gradient(90deg,var(--rosso-l) 33.3%,#fff 33.3%,#fff 66.6%,var(--cielo) 66.6%);}
 nav{background:var(--ink);padding:12px 24px;display:flex;align-items:center;gap:12px;}
 nav a{color:rgba(255,255,255,.5);font-size:13px;text-decoration:none;}.topbar-back{display:flex;align-items:center;justify-content:center;width:44px;height:44px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);border-radius:50%;color:#fff;font-size:22px;text-decoration:none;flex-shrink:0;}.topbar-back:hover{background:rgba(255,255,255,.3);}
