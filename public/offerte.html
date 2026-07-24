@@ -121,7 +121,7 @@ main{max-width:1000px;margin:0 auto;padding:24px 32px 80px;}
 #banner-ios-home .bh-testo{ flex:1; font-size:12.5px; line-height:1.45; }
 #banner-ios-home .bh-testo b{ color:var(--ocra-l); }
 #banner-ios-home .bh-close{ font-size:18px; color:rgba(255,255,255,.6); flex-shrink:0; padding:4px; }
-.pill-dist{font-size:10px;color:#1A7A3A;border:1px solid rgba(26,122,58,.3);padding:3px 9px;border-radius:20px;font-weight:600;}
+.pill-dist{font-size:13px;color:#0F5C8C;border:1.5px solid rgba(15,92,140,.4);padding:5px 14px;border-radius:20px;font-weight:700;}
 .card-desc{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:5px;line-height:1.4;text-transform:capitalize;}
 .card-addr{font-size:11.5px;color:var(--ink-mu);}
 .card-prezzi{display:flex;align-items:baseline;gap:8px;margin-top:12px;}
@@ -1048,8 +1048,6 @@ function renderCard(o) {
         <div>
           <div class="card-row1">
             <span class="pill-stato ${o.stato==='ATTIVA'?'pill-attiva':'pill-scaduta'}">${o.stato==='ATTIVA' ? t('statoAttiva') : t('statoScaduta')}</span>
-            <span class="pill-cat">${emoji[o.categoria]||''} ${traduciCategoria(o.categoria)}</span>
-            <span class="pill-raggio">${o.raggio}m</span>
             ${distHtml}
           </div>
           ${o.idtx?`<div class="card-tx">${o.idtx}</div>`:''}
@@ -1448,8 +1446,6 @@ function apriOverlay(o) {
     ${ovFoto ? `<img src="${ovFoto}" alt="" style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;margin-bottom:16px;" onerror="this.remove()">` : ""}
     <div class="ov-cat-row">
       <span class="pill-stato ${o.stato==='ATTIVA'?'pill-attiva':'pill-scaduta'}">${o.stato==='ATTIVA' ? t('statoAttiva') : t('statoScaduta')}</span>
-      <span class="pill-cat">${emoji[o.categoria]||''} ${traduciCategoria(o.categoria)}</span>
-      <span class="pill-raggio">${o.raggio}m</span>
     </div>
     <div class="ov-negozio" style="font-size:13px;font-weight:700;color:var(--ocra-d);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">🏪 ${o.negozio || ""}</div>
     <div class="ov-title">${descFmt}${anom?` <span class="anomalia-tag">${t('anomTag')}</span>`:''}</div>
