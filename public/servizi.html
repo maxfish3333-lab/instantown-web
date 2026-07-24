@@ -117,10 +117,10 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
 .filtro.active-ocra{background:var(--ocra);border-color:var(--ocra-l);color:var(--ink);}
 
 /* 6 categorie principali: sfondo bianco, testo nero, sempre visibili */
-.filtro-pubblico,.filtro-iconico,.filtro-bus,.filtro-bancomat,.filtro-poste,.filtro-parcheggio,.filtro-scambio{
+.filtro-pubblico,.filtro-iconico,.filtro-bus,.filtro-bancomat,.filtro-poste,.filtro-parcheggio,.filtro-scambio,.filtro-farmacia,.filtro-polizia_locale,.filtro-polizia_stato{
   background:#fff;border-color:var(--rule);color:#1C1410;
 }
-.filtro-pubblico.active,.filtro-iconico.active,.filtro-bus.active,.filtro-bancomat.active,.filtro-poste.active,.filtro-parcheggio.active,.filtro-scambio.active{
+.filtro-pubblico.active,.filtro-iconico.active,.filtro-bus.active,.filtro-bancomat.active,.filtro-poste.active,.filtro-parcheggio.active,.filtro-scambio.active,.filtro-farmacia.active,.filtro-polizia_locale.active,.filtro-polizia_stato.active{
   color:#fff;border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.3);
 }
 .filtro-pubblico.active{background:#1A7A3A;}
@@ -130,6 +130,9 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
 .filtro-poste.active{background:#D4AF00;color:#1C1410;}
 .filtro-parcheggio.active{background:#1C5E8A;}
 .filtro-scambio.active{background:#B20000;}
+.filtro-farmacia.active{background:#1A7A3A;}
+.filtro-polizia_locale.active{background:#1C3D6B;}
+.filtro-polizia_stato.active{background:#0D3B7A;}
 
 /* ── SCHEDA POI (bottom sheet) ── */
 .poi-sheet{
@@ -229,6 +232,9 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
 }
 .marker-wrap:hover{transform:scale(1.08);}
 .marker-pubblico{background:#1A7A3A;color:#fff;}
+.marker-farmacia{background:#1A7A3A;color:#fff;}
+.marker-polizia_locale{background:#1C3D6B;color:#fff;}
+.marker-polizia_stato{background:#0D3B7A;color:#fff;}
 .marker-acqua{background:#1A6FA8;color:#fff;border:2px solid #4A9FD8;}
 .marker-presa{background:#F06595;color:#fff;border:2px solid #FFA8C5;}
 .marker-taxi{background:#C8860A;color:#fff;border:2px solid #E8A020;}
@@ -319,6 +325,9 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
     <button class="filtro filtro-poste" onclick="filtra('poste',this)" data-i18n="sv_filtro_poste">📮 Uffici postali</button>
     <button class="filtro filtro-parcheggio" onclick="filtra('parcheggio',this)" data-i18n="sv_filtro_parcheggio">🅿️ Parcheggi</button>
     <button class="filtro filtro-scambio" onclick="filtra('scambio',this)"><img src="/icons/scambio.png" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"> <span data-i18n="sv_filtro_scambio">Piazzole di scambio</span></button>
+    <button class="filtro filtro-farmacia" onclick="filtra('farmacia',this)"><img src="/icons/farmacia.png" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"> <span data-i18n="sv_filtro_farmacia">Farmacie</span></button>
+    <button class="filtro filtro-polizia_locale" onclick="filtra('polizia_locale',this)"><img src="/icons/vigile_urbano.png" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"> <span data-i18n="sv_filtro_polizia_locale">Polizia Locale</span></button>
+    <button class="filtro filtro-polizia_stato" onclick="filtra('polizia_stato',this)"><img src="/icons/poliziotto.png" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"> <span data-i18n="sv_filtro_polizia_stato">Polizia di Stato</span></button>
   </div>
 </div>
 
@@ -2393,7 +2402,10 @@ function addMarker(poi) {
     poi.tipo === 'bus' ? 'marker-bus' :
     poi.tipo === 'bancomat' ? 'marker-bancomat' :
     poi.tipo === 'poste' ? 'marker-poste' :
-    poi.tipo === 'agenzia' ? 'marker-agenzia' : 'marker-iconico';
+    poi.tipo === 'agenzia' ? 'marker-agenzia' :
+    poi.tipo === 'farmacia' ? 'marker-farmacia' :
+    poi.tipo === 'polizia_locale' ? 'marker-polizia_locale' :
+    poi.tipo === 'polizia_stato' ? 'marker-polizia_stato' : 'marker-iconico';
   const label = getMarkerLabel(poi);
   // FIX overlap marker su mobile: iconSize:[null,36] lasciava a Leaflet
   // un calcolo di centratura basato su una larghezza sconosciuta a runtime
@@ -2431,7 +2443,10 @@ function refreshMarkerLabels() {
       poi.tipo === 'bus' ? 'marker-bus' :
       poi.tipo === 'bancomat' ? 'marker-bancomat' :
       poi.tipo === 'poste' ? 'marker-poste' :
-      poi.tipo === 'agenzia' ? 'marker-agenzia' : 'marker-iconico';
+      poi.tipo === 'agenzia' ? 'marker-agenzia' :
+      poi.tipo === 'farmacia' ? 'marker-farmacia' :
+      poi.tipo === 'polizia_locale' ? 'marker-polizia_locale' :
+      poi.tipo === 'polizia_stato' ? 'marker-polizia_stato' : 'marker-iconico';
     const label = getMarkerLabel(poi);
     const estWidth = calcolaLarghezzaMarker(label);
     const icon = L.divIcon({
@@ -2671,7 +2686,7 @@ function portaMiQui() {
 // ordinata per distanza invece di marker sparsi sulla mappa —
 // più leggibile quando ci sono molti POI vicini tra loro (bancomat,
 // poste, fermate bus/taxi/metro, agenzie).
-const CATEGORIE_LISTA = ['iconico', 'bancomat', 'poste', 'bus', 'taxi', 'metro', 'agenzia', 'parcheggio', 'scambio'];
+const CATEGORIE_LISTA = ['iconico', 'bancomat', 'poste', 'bus', 'taxi', 'metro', 'agenzia', 'parcheggio', 'scambio', 'farmacia', 'polizia_locale', 'polizia_stato'];
 
 const META_CATEGORIE_LISTA = {
   iconico:  { emoji:'🛍', titolo:'Luoghi iconici' },
@@ -2682,7 +2697,10 @@ const META_CATEGORIE_LISTA = {
   metro:    { emoji:'🚇', titolo:'Metro' },
   agenzia:  { emoji:'✈️', titolo:'Agenzie viaggio' },
   parcheggio: { emoji:'🅿️', titolo:'Parcheggi (strisce blu)' },
-  scambio:  { emoji:'<img src="/icons/scambio.png" style="width:26px;height:26px;vertical-align:middle;">', titolo:'Piazzole di scambio' }
+  scambio:  { emoji:'<img src="/icons/scambio.png" style="width:26px;height:26px;vertical-align:middle;">', titolo:'Piazzole di scambio' },
+  farmacia: { emoji:'<img src="/icons/farmacia.png" style="width:26px;height:26px;vertical-align:middle;">', titolo:'Farmacie' },
+  polizia_locale: { emoji:'<img src="/icons/vigile_urbano.png" style="width:26px;height:26px;vertical-align:middle;">', titolo:'Polizia Locale' },
+  polizia_stato:  { emoji:'<img src="/icons/poliziotto.png" style="width:26px;height:26px;vertical-align:middle;">', titolo:'Polizia di Stato' }
 };
 
 // "Servizi pubblici" ha un livello in più: cliccando il filtro si apre
