@@ -263,6 +263,26 @@ setTipo('privato');
    VALIDAZIONE CODICE FISCALE ITALIANO
    Algoritmo ufficiale Agenzia delle Entrate
 ══════════════════════════════════════════ */
+// Checksum ufficiale P.IVA italiana (algoritmo Luhn mod 10) — condiviso tra
+// validaPIVA() e validaCF() (caso azienda): sono matematicamente LO STESSO
+// numero per una società, quindi devono passare per lo stesso identico
+// controllo. Prima, validaCF() accettava ciecamente qualsiasi sequenza di
+// 11 cifre senza calcolare nulla — un numero poteva risultare "Codice
+// Fiscale valido" e "P.IVA non valida" pur essendo lo stesso identico
+// numero, perché solo una delle due funzioni faceva davvero il conto.
+function checkDigitPIVAValido(val) {
+  if (!/^\d{11}$/.test(val)) return false;
+  let t = 0;
+  for (let i = 0; i <= 9; i += 2) t += parseInt(val[i]);
+  let u = 0;
+  for (let i = 1; i <= 9; i += 2) {
+    let d = parseInt(val[i]) * 2;
+    u += (d > 9) ? d - 9 : d;
+  }
+  const check = (10 - ((t + u) % 10)) % 10;
+  return check === parseInt(val[10]);
+}
+
 function validaCF() {
   const input = document.getElementById('cf');
   const msg   = document.getElementById('cf-msg');
@@ -271,8 +291,14 @@ function validaCF() {
 
   if(val.length === 0) return true;
 
-  // Società: CF numerico a 11 cifre (coincide con P.IVA)
+  // Società: CF numerico a 11 cifre (coincide con P.IVA) — stesso
+  // identico numero, quindi stesso identico controllo di validaPIVA().
   if(/^[0-9]{11}$/.test(val)) {
+    if (!checkDigitPIVAValido(val)) {
+      input.classList.remove('valid'); input.classList.add('invalid');
+      msg.textContent = i18n('rg_msg_cf_check'); msg.classList.add('err');
+      return false;
+    }
     input.classList.remove('invalid'); input.classList.add('valid');
     msg.textContent = i18n('rg_msg_cf_corp'); msg.classList.add('ok');
     return true;
@@ -330,23 +356,7 @@ function validaPIVA() {
     return false;
   }
 
-  let s = 0;
-  for(let i = 0; i < 11; i++) {
-    let d = parseInt(val[i]);
-    if(i % 2 === 1) { d *= 2; if(d > 9) d -= 9; }
-    s += d;
-  }
-  // Controllo specifico italiano: posizioni pari
-  let t = 0;
-  for(let i = 0; i <= 9; i += 2) t += parseInt(val[i]);
-  let u = 0;
-  for(let i = 1; i <= 9; i += 2) {
-    let d = parseInt(val[i]) * 2;
-    u += (d > 9) ? d - 9 : d;
-  }
-  const check = (10 - ((t + u) % 10)) % 10;
-
-  if(check !== parseInt(val[10])) {
+  if(!checkDigitPIVAValido(val)) {
     input.classList.remove('valid'); input.classList.add('invalid');
     msg.textContent = i18n('rg_msg_piva_check'); msg.classList.add('err');
     return false;
