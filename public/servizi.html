@@ -1,6 +1,6 @@
 <!--
-  © 2025–2026 INSTANTOWN PROX. Tutti i diritti riservati.
-  Questo codice, il design e i contenuti sono proprietà intellettuale di INSTANTOWN PROX.
+  © 2025–2026 INSTANTOWN. Tutti i diritti riservati.
+  Questo codice, il design e i contenuti sono proprietà intellettuale di INSTANTOWN.
   Riproduzione, copia o uso non autorizzato, anche parziali, sono vietati e perseguibili penalmente.
 -->
 <!DOCTYPE html>
@@ -356,7 +356,7 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
       <span class="btn-portami-icon">🧭</span>
       <span data-i18n="sv_btn_portami">PORTAMI QUI</span>
     </button>
-    <div style="text-align:center;font-size:12.5px;color:#B20000;margin-top:6px;">La distanza effettiva sarà calcolata dal navigatore al prossimo clic</div>
+    <div style="text-align:center;font-size:12.5px;color:#B20000;margin-top:6px;" data-i18n="sv_disclaimer_distanza">La distanza effettiva sarà calcolata dal navigatore al prossimo clic</div>
   </div>
 </div>
 
@@ -2201,10 +2201,12 @@ async function caricaServiziDinamici() {
     const dinamici = dati.servizi.map(s => {
       // Registra le traduzioni nello stesso formato usato da POI_I18N,
       // così getPoiTradotto() le trova senza bisogno di logica dedicata.
-      // Nota: traduciTesto() lato Apps Script copre IT/EN/ZH/ES/FR (manca
-      // il tedesco, coerente col resto del sistema di traduzione offerte).
+      // Il backend (Codice.gs / traduciTesto()) calcola già tutte e 6 le
+      // lingue extra (en/zh/es/fr/de/ja): prima qui se ne leggevano solo
+      // 4, lasciando tedesco e giapponese non tradotti nel popup di
+      // dettaglio anche quando il dato tradotto era già disponibile.
       if (s.traduzioni && s.traduzioni.nome) {
-        const lingue = ['en','zh','es','fr'];
+        const lingue = ['en','zh','es','fr','de','ja'];
         POI_I18N[s.id] = POI_I18N[s.id] || {};
         lingue.forEach(l => {
           POI_I18N[s.id][l] = {
@@ -2780,7 +2782,7 @@ function apriListaCategoria(tipo, poiList, metaCustom, erroreCaricamento) {
   // server, mostriamo "Caricamento…" e ricordiamo quale categoria l'utente
   // vuole: caricaServiziDinamici() la ridisegnerà appena i dati sono pronti.
   // (Molte categorie-lista — parcheggi, wifi — esistono solo lato foglio.)
-  const categoriaDinamica = !['iconico'].includes(tipo); // iconico è statico
+  const categoriaDinamica = true; // tutte le categorie-lista hanno anche dati dal foglio (incluso 'iconico', da quando abbiamo aggiunto i luoghi dal foglio oltre ai 3 statici)
   if (poiList.length === 0 && categoriaDinamica && !window._serviziDinamiciPronti && !erroreCaricamento) {
     window._categoriaInAttesa = tipo;
     document.getElementById('cl-count').textContent = '';
