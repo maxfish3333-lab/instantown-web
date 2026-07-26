@@ -1314,5 +1314,43 @@ function sceltaProfilo(tipo, modalita) {
   <iframe id="om-iframe" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowfullscreen></iframe>
   <div class="om-fallback">Il contenuto non si vede bene? <a id="om-link-esterno" href="#" target="_blank" rel="noopener">Aprilo in Safari</a></div>
 </div>
+<!-- INTRO UNA TANTUM — spiega il concetto di offerta flash a chi non conosce ancora l'app -->
+<div class="modal-overlay" id="intro-overlay" style="z-index:600;">
+  <div class="modal" style="max-width:440px;">
+    <div class="modal-handle"></div>
+    <div style="padding:8px 24px 4px;text-align:center;">
+      <div style="font-size:38px;margin-bottom:6px;">🍕</div>
+      <div class="modal-title" style="margin-bottom:10px;">⚠️ Come funziona INSTANTOWN</div>
+      <p style="font-size:14.5px;color:var(--ink-m);line-height:1.6;text-align:left;">
+        Questa è un'offerta di prova: <strong>Pizza Margherita</strong> — Antico Forno Rossini
+        <s>12€</s> ora <strong>8,50€</strong> solo per 3 ore.
+        Acquista il coupon e vai in negozio: hai tempo tutto il giorno.
+        <br><br>
+        Le offerte flash vere e proprie arriveranno con il lancio ufficiale —
+        prossimamente su App Store e Play Store.
+      </p>
+      <button onclick="chiudiIntroOverlay()" style="margin:18px 0 24px;width:100%;background:var(--rosso);color:#fff;border:none;padding:14px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;">Ho capito, continua →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Mostra l'overlay introduttivo solo alla primissima visita (una tantum),
+// prima che l'utente navighi verso offerte.html — chi ha già visto questo
+// messaggio non lo rivede più, su questo stesso dispositivo/browser.
+(function() {
+  const GIA_VISTO_KEY = 'it_intro_offerta_prova_vista';
+  if (!localStorage.getItem(GIA_VISTO_KEY)) {
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('intro-overlay').classList.add('open');
+    });
+  }
+})();
+
+function chiudiIntroOverlay() {
+  localStorage.setItem('it_intro_offerta_prova_vista', '1');
+  document.getElementById('intro-overlay').classList.remove('open');
+}
+</script>
 </body>
 </html>
