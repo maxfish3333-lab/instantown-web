@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>INSTANTOWN — Conferma offerta</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
     <style>
         :root { --green:#22c55e; --black:#050505; --grey:#1a1a1a; --gold:#C8860A; --gold-l:#E8A020; }
         *{ box-sizing:border-box; margin:0; padding:0; }
@@ -73,7 +74,6 @@
     <div class="proc-text" id="proc-text">ATTIVAZIONE IN CORSO...</div>
 </div>
 <div id="checkout-flow" style="width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;">
-    <div class="demo-banner">⚠ Modalità demo — pagamento reale non attivo</div>
     <div class="top-bar">
         <a href="offerte.html" class="back-btn">← Offerte</a>
         <div>
@@ -94,9 +94,14 @@
     <div class="box-congelamento">
         I fondi restano congelati sino al momento della consumazione mostrando il tuo QR-code. Se cambi idea, entro 3 ore, la transazione sarà annullata dalla tua banca.
     </div>
-    <button class="btn-attiva" onclick="attivaGaranzia()">✅ CONFERMA PRENOTAZIONE</button>
+    <div style="width:100%;background:#0d0d0d;border:1px solid #2a2a2a;border-radius:14px;padding:18px;margin-bottom:16px;">
+        <div style="font-size:11px;color:#666;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">💳 Dati carta</div>
+        <div id="card-element" style="padding:12px;background:#1a1a1a;border-radius:8px;border:1px solid #2a2a2a;"></div>
+        <div id="card-errors" style="color:#ff6b6b;font-size:12.5px;margin-top:8px;"></div>
+    </div>
+    <button class="btn-attiva" id="btn-conferma" onclick="attivaGaranzia()" disabled>✅ CONFERMA PRENOTAZIONE</button>
     <button class="btn-back" onclick="window.location.href='offerte.html'">← Torna alle offerte</button>
-    <div class="secure-badge">DEMO — Integrazione Stripe in arrivo</div>
+    <div class="secure-badge">🔒 Pagamento protetto da Stripe</div>
 </div>
 <div id="success-screen">
     <div class="success-header">
@@ -143,6 +148,8 @@
     </div>
 </div>
 <script>
+const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
+
 const p = new URLSearchParams(location.search);
 const txId     = p.get('tx')        || 'TX-' + Date.now();
 const amount   = parseFloat(p.get('amount')) || 0;
@@ -162,20 +169,161 @@ if(negozio){ document.getElementById('sum-negozio').textContent = '🏪 ' + nego
 if(indirizzo){ const a=document.getElementById('sum-addr'); a.textContent='📍 '+indirizzo+' →'; a.href=mapsUrl; }
 if(inizio&&fine){ document.getElementById('sum-orario').textContent='⏱ '+inizio+' → '+fine; }
 document.getElementById('sum-tx').textContent = txId;
-function attivaGaranzia() {
-    document.getElementById('proc-text').textContent = 'VERIFICA IN CORSO...';
-    document.getElementById('processing').classList.add('show');
-    setTimeout(()=>{
-        document.getElementById('proc-text').textContent = 'ATTIVAZIONE GARANZIA...';
-        setTimeout(()=>{
-            document.getElementById('proc-text').textContent = 'GENERAZIONE QR-B...';
-            setTimeout(()=>{
-                document.getElementById('processing').classList.remove('show');
-                mostraSuccesso();
-            }, 800);
-        }, 1000);
-    }, 1200);
+
+// PIN cliente: stesso meccanismo di map.html — generato una volta sola
+// per dispositivo, riusato per ogni prenotazione futura.
+if(!localStorage.getItem('it_pin')){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let pin='';
+  for(let i=0;i<6;i++) pin+=chars[Math.floor(Math.random()*chars.length)];
+  localStorage.setItem('it_pin',pin);
 }
+const mioPin = localStorage.getItem('it_pin');
+
+// ── STRIPE ELEMENTS ──
+const stripe = Stripe('pk_test_51Tk0hVLGO8hHl4J0hB1mu2Az6LMZa3ePQurULrvTSSN0inqMsoRqwQXqql5j7fTL23SH2zjhY0LHYaGAu7cRIH3A00vkH9n443');
+const elements = stripe.elements();
+const cardElement = elements.create('card', {
+  style: {
+    base: {
+      color: '#fff', fontSize: '15px', '::placeholder': { color: '#666' }
+    },
+    invalid: { color: '#ff6b6b' }
+  }
+});
+cardElement.mount('#card-element');
+
+let clientSecret = null;
+let cardCompleta = false;
+
+function aggiornaStatoBottone() {
+  document.getElementById('btn-conferma').disabled = !(cardCompleta && clientSecret);
+}
+
+cardElement.on('change', function(event) {
+  cardCompleta = event.complete;
+  document.getElementById('card-errors').textContent = event.error ? event.error.message : '';
+  aggiornaStatoBottone();
+});
+
+// Crea il PaymentIntent (autorizzazione, non addebito) appena la pagina
+// carica, così è già pronto quando il cliente finisce di inserire la carta.
+(async function creaPaymentIntentIniziale() {
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: {'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({ tipo:'creaPaymentIntent', amount, desc, negozio, idtx: txId })
+    });
+    const dati = await res.json();
+    if (dati.stato === 'ok' && dati.clientSecret) {
+      clientSecret = dati.clientSecret;
+      aggiornaStatoBottone();
+    } else {
+      document.getElementById('card-errors').textContent = 'Impossibile avviare il pagamento. Riprova tra poco.';
+    }
+  } catch(err) {
+    document.getElementById('card-errors').textContent = 'Errore di rete. Ricarica la pagina e riprova.';
+  }
+})();
+
+let bookingId = null;
+let qrBData = null;
+
+async function attivaGaranzia() {
+  const btn = document.getElementById('btn-conferma');
+  btn.disabled = true;
+  document.getElementById('card-errors').textContent = '';
+  document.getElementById('proc-text').textContent = 'VERIFICA CARTA IN CORSO...';
+  document.getElementById('processing').classList.add('show');
+
+  if (!clientSecret) {
+    mostraErroreCarta('Pagamento non ancora pronto. Riprova tra qualche istante.');
+    return;
+  }
+
+  try {
+    const risultato = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: { card: cardElement }
+    });
+
+    if (risultato.error) {
+      mostraErroreCarta(risultato.error.message || 'Pagamento rifiutato. Controlla i dati della carta.');
+      return;
+    }
+
+    const stato = risultato.paymentIntent.status;
+    if (stato !== 'requires_capture' && stato !== 'succeeded') {
+      mostraErroreCarta('Pagamento non completato (stato: ' + stato + ').');
+      return;
+    }
+
+    document.getElementById('proc-text').textContent = 'ATTIVAZIONE GARANZIA...';
+    await completaPrenotazione(risultato.paymentIntent.id);
+
+    document.getElementById('proc-text').textContent = 'GENERAZIONE QR-B...';
+    await new Promise(r => setTimeout(r, 500));
+
+    document.getElementById('processing').classList.remove('show');
+    mostraSuccesso();
+
+  } catch (err) {
+    mostraErroreCarta('Errore imprevisto. Riprova.');
+  }
+}
+
+function mostraErroreCarta(msg) {
+  document.getElementById('processing').classList.remove('show');
+  document.getElementById('card-errors').textContent = msg;
+  document.getElementById('btn-conferma').disabled = false;
+}
+
+// Autorizzazione carta riuscita: ora sì che generiamo il QR-B vero (stesso
+// schema letto da esercente-scan.html) e salviamo la prenotazione ovunque
+// serve — localStorage, Firestore (se il cliente è loggato via magic
+// link), e il Google Sheet 'prenotazioni' — includendo il PaymentIntent ID
+// per permettere la cattura+Transfer al momento dello scan dell'esercente.
+async function completaPrenotazione(paymentIntentId) {
+  bookingId = 'BK-' + Date.now();
+
+  qrBData = JSON.stringify({
+    type: 'QR-B',
+    booking: bookingId,
+    idtx: txId,
+    negozio, desc, prezzo: amount,
+    pin: mioPin,
+    paymentIntentId,
+    ts: new Date().toISOString()
+  });
+
+  const prenotazioni = JSON.parse(localStorage.getItem('it_prenotazioni') || '[]');
+  prenotazioni.push({ bookingId, idtx:txId, negozio, desc, prezzo:amount, ts:new Date().toISOString(), stato:'IN_ATTESA', paymentIntentId });
+  localStorage.setItem('it_prenotazioni', JSON.stringify(prenotazioni));
+
+  if (typeof window.scriviQrSuFirestore === 'function') {
+    try {
+      await window.scriviQrSuFirestore(bookingId, {
+        negozio, descrizione:desc, indirizzo, lat, lon, prezzoFlash:amount, idtx:txId, foto:''
+      }, mioPin, paymentIntentId);
+    } catch(e) { console.error('Scrittura Firestore fallita (prenotazione comunque valida):', e); }
+  }
+
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method:'POST', mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        azione:'prenotazione',
+        bookingId, idtx:txId,
+        negozio, descrizione:desc,
+        prezzo:amount, lang:(navigator.language||'it').slice(0,2),
+        paymentIntentId,
+        foglio:'prenotazioni'
+      })
+    });
+  } catch(e) { /* la prenotazione resta comunque valida in locale/Firestore */ }
+}
+
 function mostraSuccesso() {
     document.getElementById('checkout-flow').style.display='none';
     document.getElementById('success-screen').style.display='block';
@@ -184,10 +332,10 @@ function mostraSuccesso() {
     document.getElementById('qr-desc').textContent    = desc;
     document.getElementById('qr-negozio').textContent = negozio||'—';
     document.getElementById('qr-orario').textContent  = (inizio&&fine)?inizio+' → '+fine:'—';
-    document.getElementById('qr-tx').textContent      = txId;
+    document.getElementById('qr-tx').textContent      = bookingId+' · '+txId;
     const ml=document.getElementById('qr-maps'); ml.href=mapsUrl; ml.textContent='📍 '+(indirizzo||'Apri Maps')+' →';
     new QRCode(document.getElementById('qrcode'),{
-        text: JSON.stringify({type:'INSTANTOWN_QR_B',tx:txId,amount,desc,negozio,indirizzo,lat,lon,inizio,fine,ts:new Date().toISOString(),status:'GARANZIA_ATTIVA'}),
+        text: qrBData,
         width:200,height:200,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H
     });
     document.getElementById('modale-rassicurazione').classList.add('show');
@@ -195,6 +343,51 @@ function mostraSuccesso() {
 function chiudiModaleRassicurazione() {
     document.getElementById('modale-rassicurazione').classList.remove('show');
 }
+</script>
+
+<!-- FIREBASE — scrive il QR-B su qr_b_emessi SOLO se il cliente è loggato
+     via magic link (mio-account.html/chat.html), per il recupero cross-
+     device. Stessa config usata in map.html/mio-account.html. -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, setDoc, doc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBez4L85HA1__NPKOzagfmKeoGLniIQeAc",
+  authDomain: "instantown-app.firebaseapp.com",
+  projectId: "instantown-app",
+  storageBucket: "instantown-app.firebasestorage.app",
+  messagingSenderId: "469598782572",
+  appId: "1:469598782572:web:7fc20afb17a3c3c6d68449"
+};
+const fbApp = initializeApp(firebaseConfig);
+const fbDb = getFirestore(fbApp);
+const fbAuth = getAuth(fbApp);
+setPersistence(fbAuth, browserLocalPersistence).catch(()=>{});
+
+let utenteFb = null;
+onAuthStateChanged(fbAuth, (u) => { utenteFb = (u && u.email) ? u : null; });
+
+window.scriviQrSuFirestore = async function(bookingId, o, pin, paymentIntentId) {
+  if (!utenteFb || !utenteFb.email) return; // non loggato: solo locale, nessun errore
+  await setDoc(doc(fbDb, 'qr_b_emessi', bookingId), {
+    email: utenteFb.email,
+    negozio: o.negozio || '',
+    descrizione: o.descrizione || '',
+    indirizzo: o.indirizzo || '',
+    foto: o.foto || '',
+    lat: o.lat || null,
+    lon: o.lon || null,
+    prezzo: o.prezzoFlash || 0,
+    tx: o.idtx || '',
+    pin: pin || '',
+    paymentIntentId: paymentIntentId || '',
+    tipo: 'flash',
+    stato: 'attivo',
+    ts: serverTimestamp()
+  });
+};
 </script>
 </body>
 </html>

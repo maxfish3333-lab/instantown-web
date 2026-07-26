@@ -122,9 +122,33 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff;
 .no-camera{display:none;position:absolute;inset:0;background:#111;
   align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:32px;}
 .no-camera.visible{display:flex;}
+/* GATE PIN ESERCENTE */
+#pin-gate{position:fixed;inset:0;background:var(--ink);z-index:2000;display:flex;align-items:center;justify-content:center;padding:32px 20px;}
+.pin-box{background:rgba(255,255,255,.04);border:1px solid rgba(200,134,10,.25);border-radius:16px;padding:36px 32px;max-width:380px;width:100%;text-align:center;}
+.pin-box-icon{font-size:48px;margin-bottom:14px;}
+.pin-box-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:#fff;margin-bottom:8px;}
+.pin-box-desc{font-size:13px;color:rgba(255,255,255,.5);line-height:1.6;margin-bottom:24px;}
+.pin-box-input{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(200,134,10,.3);border-radius:8px;padding:14px 16px;font-size:22px;color:#fff;font-family:monospace;letter-spacing:.2em;text-align:center;outline:none;}
+.pin-box-input:focus{border-color:var(--ocra-l);}
+.pin-box-btn{width:100%;margin-top:14px;background:var(--ocra);color:#1C1410;border:none;border-radius:8px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;}
+.pin-box-btn:hover{background:var(--ocra-l);}
+.pin-box-error{color:#ff6b6b;font-size:12px;margin-top:10px;display:none;}
+.pin-box-nome{color:var(--verde-l);font-size:13px;margin-top:12px;display:none;}
 </style>
 </head>
 <body>
+
+<div id="pin-gate">
+  <div class="pin-box">
+    <div class="pin-box-icon">🔐</div>
+    <div class="pin-box-title">Accesso esercente</div>
+    <div class="pin-box-desc">Inserisci il tuo PIN per scansionare i QR-B dei clienti. Serve per sapere a quale negozio accreditare l'incasso.</div>
+    <input class="pin-box-input" id="pin-input-scan" type="password" placeholder="PIN" maxlength="10" autocomplete="off">
+    <button class="pin-box-btn" onclick="verificaPinEsercenteScan()">Verifica PIN →</button>
+    <div class="pin-box-error" id="pin-scan-error">PIN non trovato. Controlla e riprova.</div>
+    <div class="pin-box-nome" id="pin-scan-nome"></div>
+  </div>
+</div>
 
 <div class="stripe"></div>
 
@@ -192,6 +216,39 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff;
 
 <script>
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
+
+// ── GATE PIN ESERCENTE ──
+// Prima non c'era nessuna verifica di chi stesse scansionando: chiunque
+// apriva questa pagina poteva "sbloccare" i fondi di qualsiasi negozio.
+// Ora serve il PIN dell'esercente, verificato contro lo stesso endpoint
+// già usato altrove (verificaPin) — necessario per sapere a quale account
+// Stripe accreditare l'incasso quando arriveremo alla cattura+Transfer.
+let pinEsercenteVerificato = null;
+let nomeEsercenteVerificato = null;
+
+async function verificaPinEsercenteScan() {
+  const pin = document.getElementById('pin-input-scan').value.trim();
+  const errEl = document.getElementById('pin-scan-error');
+  errEl.style.display = 'none';
+  if (!pin) return;
+
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?azione=verificaPin&pin=' + encodeURIComponent(pin));
+    const dati = await res.json();
+    if (dati.stato === 'ok' && dati.negozio) {
+      pinEsercenteVerificato = pin;
+      nomeEsercenteVerificato = dati.negozio.nome || '';
+      document.getElementById('pin-gate').style.display = 'none';
+      avviaCamera();
+    } else {
+      errEl.textContent = dati.messaggio || 'PIN non trovato. Controlla e riprova.';
+      errEl.style.display = 'block';
+    }
+  } catch (err) {
+    errEl.textContent = 'Errore di rete. Riprova.';
+    errEl.style.display = 'block';
+  }
+}
 
 let videoStream = null;
 let scanning = true;
@@ -329,35 +386,49 @@ function mostraErrore(msg) {
 // ══════════════════════
 // SBLOCCA FONDI
 // ══════════════════════
-function sbloccaFondi() {
+async function sbloccaFondi() {
   if(!qrLetto) return;
   const btn = document.getElementById('btn-sblocca');
   btn.textContent = 'Sblocco in corso...';
   btn.disabled = true;
 
-  // Invia conferma ad Apps Script
-  fetch(APPS_SCRIPT_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      azione:    'sbloccaFondi',
-      bookingId: qrLetto.booking,
-      idtx:      qrLetto.idtx,
-      pinCliente:qrLetto.pin,
-      prezzo:    qrLetto.prezzo,
-      foglio:    'transazioni'
-    })
-  }).finally(() => {
-    // Con no-cors non riceviamo risposta — mostriamo successo
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({
+        azione:       'sbloccaFondi',
+        bookingId:    qrLetto.booking,
+        idtx:         qrLetto.idtx,
+        pinCliente:   qrLetto.pin,
+        pinEsercente: pinEsercenteVerificato,
+        prezzo:       qrLetto.prezzo,
+        negozio:      qrLetto.negozio
+      })
+    });
+    const dati = await res.json();
+
+    if (dati.stato !== 'ok') {
+      btn.textContent = '✅ Conferma e sblocca fondi';
+      btn.disabled = false;
+      alert(dati.messaggio || 'Sblocco fondi non riuscito. Riprova.');
+      return;
+    }
+
     document.getElementById('risultato').classList.remove('open');
     const sub = `Booking: ${qrLetto.booking}<br>
-      Importo: € ${parseFloat(qrLetto.prezzo).toFixed(2)}<br>
+      Importo: € ${(dati.importoTotale||qrLetto.prezzo).toFixed ? (dati.importoTotale||parseFloat(qrLetto.prezzo)).toFixed(2) : qrLetto.prezzo}<br>
+      Tua quota netta: € ${dati.nettoEsercente!=null ? dati.nettoEsercente.toFixed(2) : '—'}<br>
       PIN cliente: ${qrLetto.pin||'—'}`;
     document.getElementById('succ-sub').innerHTML = sub;
     document.getElementById('successo').classList.add('open');
     fermaCamera();
-  });
+
+  } catch (err) {
+    btn.textContent = '✅ Conferma e sblocca fondi';
+    btn.disabled = false;
+    alert('Errore di rete. Riprova.');
+  }
 }
 
 // ══════════════════════
@@ -396,7 +467,8 @@ function fermaCamera() {
 window.addEventListener('beforeunload', fermaCamera);
 window.addEventListener('pagehide', fermaCamera);
 
-avviaCamera();
+// La camera si avvia SOLO dopo la verifica del PIN esercente (vedi
+// verificaPinEsercenteScan sopra) — non più automaticamente al caricamento.
 </script>
 
 <!-- SCRIVICI -->
