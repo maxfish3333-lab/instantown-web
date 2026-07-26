@@ -612,18 +612,33 @@ footer a:hover{color:var(--ocra-l);}
 </section>
 
 <footer>
-  <strong>INSTANTOWN PROX</strong> &nbsp;·&nbsp;
+  <strong>INSTANTOWN</strong> &nbsp;·&nbsp;
   <a href="offerte.html" id="ft-offerte">Offerte</a>
   <a href="servizi.html" id="ft-servizi">Servizi</a>
   <a href="registrazione.html" id="ft-reg">Registrati</a>
   <a href="nuova-offerta.html" id="ft-pubblica">Pubblica offerta</a>
   <a href="instantown_presentation.html">Presentazione istituzionale</a>
   &nbsp;·&nbsp; Roma, Italia, 2025
-  <div style="margin-top:6px;font-size:13px;color:#fff;" id="ft-copyright">© 2025–2026 INSTANTOWN PROX. Tutti i diritti riservati. Riproduzione, copia o uso non autorizzato del codice, del design o dei contenuti, anche parziali, sono vietati e perseguibili penalmente.</div>
+  <div style="margin-top:6px;font-size:13px;color:#fff;" id="ft-copyright">© 2025–2026 INSTANTOWN. Tutti i diritti riservati. Riproduzione, copia o uso non autorizzato del codice, del design o dei contenuti, anche parziali, sono vietati e perseguibili penalmente.</div>
   <div style="margin-top:4px;font-size:11px;color:#2EA85A;">CREDITS: Solari&amp;Partners Communication &nbsp;·&nbsp; <a href="mailto:info@instantown.it" style="color:inherit;">info@instantown.it</a></div>
 </footer>
 
 <script>
+// ── FIX: schermata congelata al rientro nell'app su iOS ──
+// Su iOS, quando riapri la PWA dall'icona home dopo che era rimasta in
+// background, Safari a volte ripropone una schermata "congelata" presa
+// dalla bfcache (back/forward cache) invece di ricaricare la pagina: il
+// contenuto si vede ma i pulsanti onclick (es. scelta utente/esercente)
+// non rispondono più al tocco, perché il motore JS è sospeso in quello
+// stato. Il click sul logo funzionava perché è una navigazione vera
+// (<a href>), non un semplice onclick — questo forza lo stesso effetto
+// automaticamente, senza dover ricliccare il logo a mano.
+window.addEventListener('pageshow', function(e) {
+  if (e.persisted) {
+    window.location.reload();
+  }
+});
+
 // ── OVERLAY CONTENUTI ESTERNI ──
 // Quando l'app è installata sulla schermata Home (standalone), aprire un
 // link esterno con target="_blank" porta l'utente fuori dalla PWA in una
@@ -697,7 +712,7 @@ var I18N = {
     's3t': "QR match — fondi sbloccati", 's3d': "L’esercente mostra QR-A, tu scansioni QR-B. Solo la coppia fisica sblocca i fondi. Impossibile frodare.",
     'radar-btn': "Apri il Radar GPS →",
     'ft-offerte': "Offerte", 'ft-servizi': "Servizi", 'ft-reg': "Registrati", 'ft-pubblica': "Pubblica offerta", 'ft-finder': "FINDER — prossimamente",
-    'ft-copyright': "© 2025–2026 INSTANTOWN PROX. Tutti i diritti riservati. Riproduzione, copia o uso non autorizzato del codice, del design o dei contenuti, anche parziali, sono vietati e perseguibili penalmente.",
+    'ft-copyright': "© 2025–2026 INSTANTOWN. Tutti i diritti riservati. Riproduzione, copia o uso non autorizzato del codice, del design o dei contenuti, anche parziali, sono vietati e perseguibili penalmente.",
     'pwa-store-label1': "Scarica su", 'pwa-store-label2': "Disponibile su",
     'pwa-store-soon': "App native in arrivo a breve — nel frattempo usa \"+ Aggiungi\" qui sopra per un'esperienza identica.",
     'modal-occ-title': "⚡ Occasioni flash",
@@ -743,7 +758,7 @@ var I18N = {
     's3t': "QR match — funds released", 's3d': "The merchant shows QR-A, you scan QR-B. Only the physical pair releases the funds. Impossible to defraud.",
     'radar-btn': "Open GPS Radar →",
     'ft-offerte': "Offers", 'ft-servizi': "Services", 'ft-reg': "Register", 'ft-pubblica': "Post an offer", 'ft-finder': "FINDER — coming soon",
-    'ft-copyright': "© 2025–2026 INSTANTOWN PROX. All rights reserved. Unauthorized reproduction, copying, or use of the code, design, or content, in whole or in part, is prohibited and subject to criminal prosecution.",
+    'ft-copyright': "© 2025–2026 INSTANTOWN. All rights reserved. Unauthorized reproduction, copying, or use of the code, design, or content, in whole or in part, is prohibited and subject to criminal prosecution.",
     'pwa-store-label1': "Download on the", 'pwa-store-label2': "Available on",
     'pwa-store-soon': "Native apps coming soon — in the meantime use \"+ Add\" above for an identical experience.",
     'modal-occ-title': "⚡ Flash deals",
@@ -789,7 +804,7 @@ var I18N = {
     's3t': "QR匹配—资金释放", 's3d': "商家出示QR-A，您扫QR-B。只有实体双码匹配才能释放资金。",
     'radar-btn': "打开GPS雷达 →",
     'ft-offerte': "优惠", 'ft-servizi': "服务", 'ft-reg': "注册", 'ft-pubblica': "发布优惠", 'ft-finder': "FINDER — 即将推出",
-    'ft-copyright': "© 2025–2026 INSTANTOWN PROX。保留所有权利。未经授权复制、抄袭或使用代码、设计或内容（包括部分内容）均属违法行为，将依法追究刑事责任。",
+    'ft-copyright': "© 2025–2026 INSTANTOWN。保留所有权利。未经授权复制、抄袭或使用代码、设计或内容（包括部分内容）均属违法行为，将依法追究刑事责任。",
     'pwa-store-label1': "下载于", 'pwa-store-label2': "现已上架",
     'pwa-store-soon': "原生应用即将推出 — 在此之前请使用上方的 \"添加\" 获得相同的体验。",
     'modal-occ-title': "⚡ 闪购优惠",
@@ -835,7 +850,7 @@ var I18N = {
     's3t': "QR match — fondos desbloqueados", 's3d': "El comerciante muestra QR-A, tú escaneas QR-B. Solo el par físico libera los fondos.",
     'radar-btn': "Abrir Radar GPS →",
     'ft-offerte': "Ofertas", 'ft-servizi': "Servicios", 'ft-reg': "Registrarse", 'ft-pubblica': "Publicar oferta", 'ft-finder': "FINDER — próximamente",
-    'ft-copyright': "© 2025–2026 INSTANTOWN PROX. Todos los derechos reservados. Está prohibida la reproducción, copia o uso no autorizado del código, diseño o contenido, total o parcial, y será objeto de responsabilidad penal.",
+    'ft-copyright': "© 2025–2026 INSTANTOWN. Todos los derechos reservados. Está prohibida la reproducción, copia o uso no autorizado del código, diseño o contenido, total o parcial, y será objeto de responsabilidad penal.",
     'pwa-store-label1': "Descárgalo en", 'pwa-store-label2': "Disponible en",
     'pwa-store-soon': "Apps nativas próximamente — mientras tanto usa \"+ Añadir\" arriba para una experiencia idéntica.",
     'modal-occ-title': "⚡ Ofertas flash",
@@ -881,7 +896,7 @@ var I18N = {
     's3t': "QR match — fonds débloqués", 's3d': "Le commerçant montre QR-A, vous scannez QR-B. Seul le couple physique libère les fonds.",
     'radar-btn': "Ouvrir le Radar GPS →",
     'ft-offerte': "Offres", 'ft-servizi': "Services", 'ft-reg': "S’inscrire", 'ft-pubblica': "Publier une offre", 'ft-finder': "FINDER — prochainement",
-    'ft-copyright': "© 2025–2026 INSTANTOWN PROX. Tous droits réservés. La reproduction, la copie ou l’utilisation non autorisée du code, du design ou du contenu, même partielle, est interdite et passible de sanctions pénales.",
+    'ft-copyright': "© 2025–2026 INSTANTOWN. Tous droits réservés. La reproduction, la copie ou l’utilisation non autorisée du code, du design ou du contenu, même partielle, est interdite et passible de sanctions pénales.",
     'pwa-store-label1': "Télécharger sur", 'pwa-store-label2': "Disponible sur",
     'pwa-store-soon': "Applications natives bientôt disponibles — en attendant, utilisez « + Ajouter » ci-dessus pour une expérience identique.",
     'modal-occ-title': "⚡ Offres flash",
@@ -948,7 +963,7 @@ var I18N = {
     'ft-reg': "Registrieren",
     'ft-pubblica': "Angebot veröffentlichen",
     'ft-finder': "FINDER — demnächst",
-    'ft-copyright': "© 2025–2026 INSTANTOWN PROX. Alle Rechte vorbehalten. Die unbefugte Vervielfältigung, Kopie oder Nutzung des Codes, Designs oder Inhalts, auch teilweise, ist untersagt und wird strafrechtlich verfolgt.",
+    'ft-copyright': "© 2025–2026 INSTANTOWN. Alle Rechte vorbehalten. Die unbefugte Vervielfältigung, Kopie oder Nutzung des Codes, Designs oder Inhalts, auch teilweise, ist untersagt und wird strafrechtlich verfolgt.",
     'pwa-store-label1': "Laden im", 'pwa-store-label2': "Erhältlich bei",
     'pwa-store-soon': "Native Apps kommen bald — nutze bis dahin \"+ Hinzufügen\" oben für ein identisches Erlebnis.",
     'modal-occ-title': "⚡ Blitzangebote",
@@ -1015,7 +1030,7 @@ var I18N = {
     'ft-reg': "登録する",
     'ft-pubblica': "オファーを掲載",
     'ft-finder': "FINDER — 近日公開",
-    'ft-copyright': "© 2025–2026 INSTANTOWN PROX. 無断複写・転載を禁じます。コード、デザイン、コンテンツの無断複製、コピー、使用は(一部であっても)禁止されており、法的措置の対象となります。",
+    'ft-copyright': "© 2025–2026 INSTANTOWN. 無断複写・転載を禁じます。コード、デザイン、コンテンツの無断複製、コピー、使用は(一部であっても)禁止されており、法的措置の対象となります。",
     'pwa-store-label1': "ダウンロード", 'pwa-store-label2': "利用可能",
     'pwa-store-soon': "ネイティブアプリは近日公開予定 — それまでは上の「+ 追加」で同じ体験をお楽しみいただけます。",
     'modal-occ-title': "⚡ フラッシュオファー",
