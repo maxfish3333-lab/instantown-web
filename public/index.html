@@ -639,6 +639,28 @@ window.addEventListener('pageshow', function(e) {
   }
 });
 
+// ── SECONDO AGGANCIO: visibilitychange ──
+// Il fix sopra (pageshow/persisted) copre il caso "torno indietro con i
+// gesti di navigazione". Ma su iOS, riaprire una PWA dall'icona home dopo
+// che è rimasta in background usa un meccanismo diverso, che a volte NON
+// imposta e.persisted a true — quindi quel fix da solo non basta sempre.
+// visibilitychange si attiva in modo più affidabile ogni volta che l'app
+// torna visibile, qualunque sia il motivo tecnico interno di iOS.
+// Ricarichiamo solo se erano passati più di 2 minuti da quando l'app è
+// finita in background: evita ricaricamenti fastidiosi se l'utente cambia
+// solo per un attimo app e torna subito indietro.
+let _ultimoNascosto = null;
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'hidden') {
+    _ultimoNascosto = Date.now();
+  } else if (document.visibilityState === 'visible' && _ultimoNascosto) {
+    const fuoriDaPiuDi2Min = (Date.now() - _ultimoNascosto) > 120000;
+    if (fuoriDaPiuDi2Min) {
+      window.location.reload();
+    }
+  }
+});
+
 // ── OVERLAY CONTENUTI ESTERNI ──
 // Quando l'app è installata sulla schermata Home (standalone), aprire un
 // link esterno con target="_blank" porta l'utente fuori dalla PWA in una
