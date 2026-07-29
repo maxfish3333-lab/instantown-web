@@ -1297,8 +1297,13 @@ window.addEventListener('load', function() {
       splash.classList.add('hidden');
       setTimeout(function(){ splash.remove(); }, giaVistoSplash ? 0 : 600);
     }
-    // Se non è ancora stata fatta una scelta di profilo, la chiediamo ora
-    if (!localStorage.getItem('it_profilo')) {
+    // Se non è ancora stata fatta una scelta di profilo, la chiediamo ora.
+    // MODALITA_TEST=true forza il chooser ad ogni apertura, ignorando
+    // 'it_profilo' salvato: comodo in fase di test per passare da un
+    // account all'altro senza dover cancellare a mano il localStorage.
+    // Passare a false (o rimuovere questo blocco) prima del lancio pubblico.
+    var MODALITA_TEST = true;
+    if (MODALITA_TEST || !localStorage.getItem('it_profilo')) {
       var chooser = document.getElementById('profilo-chooser');
       if (chooser) chooser.style.display = 'flex';
     }
