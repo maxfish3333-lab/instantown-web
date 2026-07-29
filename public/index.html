@@ -1334,14 +1334,43 @@ function sceltaProfilo(tipo, modalita) {
   if (chooser) chooser.style.display = 'none';
 }
 
+function mostraDebug(msg) {
+  var box = document.getElementById('debug-box');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'debug-box';
+    box.style.cssText = 'position:fixed;top:10px;left:10px;right:10px;z-index:2147483647;background:#B20000;color:#fff;font-family:monospace;font-size:15px;line-height:1.5;padding:16px;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.6);word-break:break-word;';
+    document.body.appendChild(box);
+  }
+  box.textContent = msg;
+  var chiudi = document.createElement('div');
+  chiudi.textContent = '✕ Chiudi';
+  chiudi.style.cssText = 'margin-top:10px;text-align:right;text-decoration:underline;cursor:pointer;';
+  chiudi.onclick = function() { box.remove(); };
+  box.appendChild(chiudi);
+}
+
 function riapriChooser() {
   // Richiamata dal link "Cambia profilo" nel footer: cancella la scelta
   // salvata così il chooser (impresa/utente/visitatore) torna a comparire
   // esattamente come al primo avvio.
-  localStorage.removeItem('it_profilo');
-  localStorage.removeItem('it_modalita');
-  var chooser = document.getElementById('profilo-chooser');
-  if (chooser) chooser.style.display = 'flex';
+  try {
+    localStorage.removeItem('it_profilo');
+    localStorage.removeItem('it_modalita');
+    var chooser = document.getElementById('profilo-chooser');
+    if (!chooser) {
+      mostraDebug('DEBUG: elemento #profilo-chooser non trovato nella pagina.');
+      return;
+    }
+    chooser.style.display = 'flex';
+    chooser.style.zIndex = '999999';
+    setTimeout(function() {
+      var visibile = window.getComputedStyle(chooser).display;
+      mostraDebug('DEBUG: riapriChooser eseguita senza errori. Display attuale del chooser: ' + visibile + '.');
+    }, 100);
+  } catch (err) {
+    mostraDebug('DEBUG errore in riapriChooser: ' + err.message);
+  }
 }
 
 </script>
