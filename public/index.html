@@ -330,6 +330,7 @@ footer a:hover{color:var(--ocra-l);}
 
 <!-- SCELTA PROFILO: utente o esercente, login o visitatore -->
 <div id="profilo-chooser">
+  <button onclick="chiudiChooser()" aria-label="Chiudi" style="position:absolute;top:18px;right:20px;background:rgba(255,255,255,.12);border:none;color:#fff;font-size:22px;width:44px;height:44px;border-radius:50%;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;">&#x2715;</button>
   <img src="Nuovo_logo_3_diss.png" onerror="this.src='icon-192.png'" alt="INSTANTOWN">
   <h1>Benvenuto su INSTANTOWN</h1>
   <p>Come vuoi continuare?</p>
@@ -1302,6 +1303,16 @@ window.addEventListener('load', function() {
     }
   }, attesa);
 });
+
+function chiudiChooser() {
+  // L'utente chiude la scelta per esplorare liberamente il sito.
+  // Salviamo un profilo 'visitatore' così il chooser non riappare a ogni
+  // caricamento (altrimenti si riproporrebbe restando senza via d'uscita).
+  localStorage.setItem('it_profilo', 'visitatore');
+  localStorage.setItem('it_modalita', 'visitatore');
+  var chooser = document.getElementById('profilo-chooser');
+  if (chooser) chooser.style.display = 'none';
+}
 
 function sceltaProfilo(tipo, modalita) {
   localStorage.setItem('it_profilo', tipo);
