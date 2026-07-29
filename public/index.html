@@ -619,6 +619,7 @@ footer a:hover{color:var(--ocra-l);}
   <a href="registrazione.html" id="ft-reg">Registrati</a>
   <a href="nuova-offerta.html" id="ft-pubblica">Pubblica offerta</a>
   <a href="instantown_presentation.html">Presentazione istituzionale</a>
+  <a href="#" id="ft-cambia-profilo" onclick="riapriChooser();return false;">Cambia profilo</a>
   &nbsp;·&nbsp; Roma, Italia, 2025
   <div style="margin-top:6px;font-size:13px;color:#fff;" id="ft-copyright">© 2025–2026 INSTANTOWN. Tutti i diritti riservati. Riproduzione, copia o uso non autorizzato del codice, del design o dei contenuti, anche parziali, sono vietati e perseguibili penalmente.</div>
   <div style="margin-top:4px;font-size:11px;color:#2EA85A;">CREDITS: Solari&amp;Partners Communication &nbsp;·&nbsp; <a href="mailto:info@instantown.it" style="color:inherit;">info@instantown.it</a></div>
@@ -1331,6 +1332,16 @@ function sceltaProfilo(tipo, modalita) {
   // Visitatore: resta su index.html, chiude semplicemente la schermata di scelta
   var chooser = document.getElementById('profilo-chooser');
   if (chooser) chooser.style.display = 'none';
+}
+
+function riapriChooser() {
+  // Richiamata dal link "Cambia profilo" nel footer: cancella la scelta
+  // salvata così il chooser (impresa/utente/visitatore) torna a comparire
+  // esattamente come al primo avvio.
+  localStorage.removeItem('it_profilo');
+  localStorage.removeItem('it_modalita');
+  var chooser = document.getElementById('profilo-chooser');
+  if (chooser) chooser.style.display = 'flex';
 }
 
 </script>
