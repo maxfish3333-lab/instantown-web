@@ -50,6 +50,15 @@ main{max-width:720px;margin:0 auto;padding:32px 20px 60px;}
 
 .pin-footer{margin-top:32px;text-align:center;font-size:12px;color:var(--ink-mu);}
 .pin-footer button{background:none;border:none;color:var(--cielo);font-size:12px;cursor:pointer;text-decoration:underline;font-family:inherit;}
+
+/* ── GATE PIN: schermata di accesso mostrata prima del menu ── */
+#pin-gate{max-width:360px;margin:60px auto 0;padding:0 20px;text-align:center;}
+#pin-gate h2{font-family:'Cormorant Garamond',serif;font-size:22px;margin-bottom:8px;}
+#pin-gate p{font-size:13px;color:var(--ink-mu);margin-bottom:20px;}
+#pin-gate input{width:100%;padding:12px 16px;border:1px solid var(--rule-s);border-radius:10px;font-size:16px;text-align:center;letter-spacing:.15em;margin-bottom:12px;}
+#pin-gate button{width:100%;background:var(--rosso);color:#fff;border:none;padding:13px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;}
+#pin-gate button:disabled{opacity:.6;cursor:default;}
+#pin-gate-status{margin-top:10px;font-size:12.5px;min-height:16px;}
 </style>
 </head>
 <body>
@@ -71,6 +80,24 @@ main{max-width:720px;margin:0 auto;padding:32px 20px 60px;}
 </div>
 
 <main>
+  <!-- GATE PIN: senza questo, chiunque avesse il telefono sbloccato (o
+       trovasse questo URL) vedeva subito Nuova Offerta/Radar/Chat/QR,
+       cioè tutta l'operatività dell'esercente, senza alcun controllo.
+       Usa la verificaPin() già esistente in Codice.gs (con rate-limiting
+       anti-forzatura). Superato il controllo, salviamo l'esito in
+       sessionStorage (non localStorage): resta valido finché l'app/il
+       browser restano aperti — comodo per navigare tra le sezioni senza
+       reinserire il PIN — ma un telefono smarrito ad app chiusa richiede
+       comunque il PIN da capo. -->
+  <div id="pin-gate">
+    <h2>Accesso Esercente</h2>
+    <p>Inserisci il tuo PIN INSTANTOWN per continuare.</p>
+    <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" id="pin-gate-input" placeholder="——————" autocomplete="off">
+    <button id="pin-gate-btn" onclick="verificaPinGate()">Accedi</button>
+    <div id="pin-gate-status"></div>
+  </div>
+
+  <div id="area-content" style="display:none;">
   <div class="tile-grid">
     <a class="tile" href="nuova-offerta.html">
       <div class="tile-icon">⚡</div>
@@ -103,10 +130,66 @@ main{max-width:720px;margin:0 auto;padding:32px 20px 60px;}
       <div id="recupero-esito" style="margin-top:8px;font-size:12px;color:var(--ink-mu);"></div>
     </div>
     <br>
-    Non sei un esercente? <button onclick="localStorage.removeItem('it_profilo'); window.location.href='index.html';">Cambia profilo</button>
+    Non sei un esercente? <button onclick="localStorage.removeItem('it_profilo'); sessionStorage.removeItem('it_esercente_pin'); window.location.href='index.html';">Cambia profilo</button>
+  </div>
   </div>
 
   <script>
+  const APPS_SCRIPT_URL_GATE = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
+
+  // Se il PIN è già stato verificato in questa sessione del browser
+  // (sessionStorage, non localStorage — vedi commento sopra), saltiamo
+  // direttamente al menu senza richiederlo di nuovo.
+  (function initGate() {
+    if (sessionStorage.getItem('it_esercente_pin')) {
+      document.getElementById('pin-gate').style.display = 'none';
+      document.getElementById('area-content').style.display = 'block';
+    }
+  })();
+
+  async function verificaPinGate() {
+    const input = document.getElementById('pin-gate-input');
+    const btn = document.getElementById('pin-gate-btn');
+    const status = document.getElementById('pin-gate-status');
+    const pin = (input.value || '').trim();
+
+    if (!pin) {
+      status.style.color = 'var(--rosso)';
+      status.textContent = 'Inserisci il PIN.';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Verifica in corso...';
+    status.textContent = '';
+
+    try {
+      const url = APPS_SCRIPT_URL_GATE + '?azione=verificaPin&pin=' + encodeURIComponent(pin);
+      const resp = await fetch(url, {cache:'no-store'});
+      const dati = await resp.json();
+
+      if (dati.stato === 'ok') {
+        sessionStorage.setItem('it_esercente_pin', pin);
+        document.getElementById('pin-gate').style.display = 'none';
+        document.getElementById('area-content').style.display = 'block';
+      } else {
+        status.style.color = 'var(--rosso)';
+        status.textContent = dati.messaggio || 'PIN non valido.';
+        btn.disabled = false;
+        btn.textContent = 'Accedi';
+      }
+    } catch (err) {
+      status.style.color = 'var(--rosso)';
+      status.textContent = 'Errore di rete, riprova.';
+      btn.disabled = false;
+      btn.textContent = 'Accedi';
+    }
+  }
+
+  document.getElementById('pin-gate-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') verificaPinGate();
+  });
+
   function mostraRecuperoPin(e) {
     e.preventDefault();
     document.getElementById('recupero-pin-form').style.display = 'block';
@@ -118,8 +201,7 @@ main{max-width:720px;margin:0 auto;padding:32px 20px 60px;}
     if (!email) { esito.textContent = 'Inserisci un indirizzo email.'; return; }
     esito.textContent = 'Invio in corso...';
     try {
-      const url = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec'
-        + '?azione=recuperaPinDaEmail&email=' + encodeURIComponent(email);
+      const url = APPS_SCRIPT_URL_GATE + '?azione=recuperaPinDaEmail&email=' + encodeURIComponent(email);
       const resp = await fetch(url, {cache:'no-store'});
       const dati = await resp.json();
       esito.textContent = dati.messaggio || "Se l'indirizzo è registrato, riceverai il PIN via email a breve.";
@@ -128,7 +210,6 @@ main{max-width:720px;margin:0 auto;padding:32px 20px 60px;}
     }
   }
   </script>
-</main>
 
 
 <!-- SCRIVICI -->
