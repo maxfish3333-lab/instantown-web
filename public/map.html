@@ -594,13 +594,15 @@ function prenota(){
   if(!offertaCorrente) return;
 
   // ── SOLO UTENTI REGISTRATI POSSONO PRENOTARE ──
-  // Un visitatore (scelta "Visitatore" nel chooser di index.html) non ha
-  // fatto login con email/magic link: non esiste un account a cui
-  // associare il PIN nel QR-B, né un modo per l'esercente di risalire a
-  // chi ha prenotato in caso di problemi col pagamento. Prima di questo
-  // controllo, un visitatore poteva prenotare esattamente come un utente
-  // loggato — bug di sicurezza/logica segnalato in test.
-  if(localStorage.getItem('it_profilo') === 'visitatore'){
+  // index.html usa due chiavi separate in localStorage: 'it_profilo'
+  // (utente/esercente) e 'it_modalita' (login/visitatore). Scegliendo
+  // "Utente → Visitatore", it_profilo resta 'utente' e SOLO it_modalita
+  // diventa 'visitatore' — controllare it_profilo qui non intercettava
+  // questo caso, il più comune. Un visitatore non ha fatto login con
+  // email/magic link: non esiste un account a cui associare il PIN nel
+  // QR-B, né un modo per l'esercente di risalire a chi ha prenotato in
+  // caso di problemi col pagamento.
+  if(localStorage.getItem('it_modalita') === 'visitatore'){
     alert(i18n('solo_utenti_registrati') || 'Solo gli utenti registrati possono prenotare. Accedi o registrati per continuare.');
     return;
   }
