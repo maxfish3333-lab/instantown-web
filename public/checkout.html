@@ -148,6 +148,19 @@
     </div>
 </div>
 <script>
+// ── SOLO UTENTI REGISTRATI POSSONO ARRIVARE FINO AL PAGAMENTO ──
+// Controllo ripetuto qui (oltre che in map.html/prenota()) perché il
+// bottone "PRENOTA E PAGA" porta l'utente direttamente su questa pagina:
+// un blocco solo in map.html non basterebbe se checkout.html fosse
+// raggiunta con un link diretto, un redirect, o in futuro da un altro
+// punto dell'app. Va PRIMA di qualunque altra cosa: prima di creare il
+// PaymentIntent Stripe, prima di montare il modulo carta.
+if (localStorage.getItem('it_modalita') === 'visitatore') {
+  alert('Solo gli utenti registrati possono prenotare. Accedi o registrati per continuare.');
+  window.location.href = 'index.html';
+  throw new Error('Checkout bloccato: profilo visitatore');
+}
+
 const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
 
 const p = new URLSearchParams(location.search);
