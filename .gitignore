@@ -80,6 +80,7 @@ check_syntax.js
 
 *.json
 !public/manifest.json
+!public/.well-known/assetlinks.json
 # Materiale di lavoro locale (non serve al sito, non va versionato)
 materiale-lavoro/
 20231219-parcheggi_scambio.csv
