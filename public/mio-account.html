@@ -153,6 +153,8 @@ main{max-width:600px;margin:0 auto;padding:28px 20px 80px;}
       <button class="pin-copy" onclick="copiaPIN()" data-i18n="ma_pin_copy">📋 Copia PIN</button>
       <div style="margin-top:10px;text-align:center;">
         <a href="#" onclick="esciDaAccount();return false;" style="font-size:12px;color:rgba(0,0,0,.45);text-decoration:underline;">Esci / Cambia account</a>
+        &nbsp;·&nbsp;
+        <a href="elimina-account.html" style="font-size:12px;color:rgba(0,0,0,.45);text-decoration:underline;">Elimina account</a>
       </div>
     </div>
 
@@ -209,6 +211,17 @@ function mostraStato(stato) {
   document.getElementById('account-content').style.display = stato === 'attivo' ? 'block' : 'none';
 }
 
+// ── ACCESSO DEDICATO PER LA REVISIONE GOOGLE PLAY ──
+// I revisori Google non hanno accesso alla tua casella email per cliccare
+// il magic link — serve un modo affidabile e automatico di farli entrare,
+// senza inoltro manuale (rischio di timeout della revisione). Questa
+// email fissa bypassa il magic link SOLO per sé stessa: qualsiasi altra
+// email continua a passare dal vero flusso Firebase, invariato.
+// Cambia questo valore con l'email che deciderai di comunicare a Google
+// Play nel campo "Istruzioni per l'accesso".
+const EMAIL_REVISORE_GOOGLE = 'revisore.google@instantown.it';
+const PIN_REVISORE_GOOGLE = '000000';
+
 async function inviaEmailAccesso() {
   const input = document.getElementById('login-email-input');
   const statusEl = document.getElementById('login-email-status');
@@ -218,6 +231,17 @@ async function inviaEmailAccesso() {
   if (!email || !email.includes('@')) {
     statusEl.style.color = 'var(--rosso)';
     statusEl.textContent = 'Inserisci un indirizzo email valido.';
+    return;
+  }
+
+  // ── Corsia dedicata revisore: nessun magic link, accesso immediato ──
+  if (email === EMAIL_REVISORE_GOOGLE) {
+    localStorage.setItem('it_email', email);
+    localStorage.setItem('it_pin', PIN_REVISORE_GOOGLE);
+    mioPin = PIN_REVISORE_GOOGLE;
+    document.getElementById('pin-display').textContent = mioPin;
+    mostraStato('attivo');
+    caricaQR();
     return;
   }
 
