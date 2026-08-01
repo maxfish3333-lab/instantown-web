@@ -676,7 +676,18 @@ function isStandalone() {
 }
 
 function apriMediaEsterno(event, url, nome, forzaOverlay) {
-  if (!forzaOverlay && !isStandalone()) return; // Safari normale: lascia fare il target="_blank" di default
+  // Prima: in modalità standalone (cioè esattamente come gira l'app
+  // pubblicata su Play Store via TWA) TUTTI i link finivano in iframe,
+  // non solo quelli con embedding ufficiale come YouTube. Incorniciare
+  // siti di terzi (giornali/TV) che non hanno autorizzato l'embedding è
+  // un rischio legale/di affidabilità (molti bloccano l'iframe da un
+  // giorno all'altro senza preavviso). Ora l'iframe si apre SOLO per i
+  // link che lo richiedono esplicitamente passando forzaOverlay=true
+  // (imposta questo flag solo per URL di embedding ufficiale, come
+  // youtube.com/embed/...). Tutti gli altri seguono sempre il comportamento
+  // di default del link (apertura esterna in Custom Tabs/nuova scheda),
+  // indipendentemente dal fatto che l'app sia standalone o meno.
+  if (!forzaOverlay) return;
   event.preventDefault();
   document.getElementById('om-titolo').textContent = nome;
   document.getElementById('om-iframe').src = url;
