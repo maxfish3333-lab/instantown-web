@@ -1300,7 +1300,21 @@ if ('serviceWorker' in navigator) {
 // che l'app si stia riavviando da zero invece di tornare semplicemente
 // alla home. sessionStorage tiene traccia di questo per tutta la sessione
 // del browser (si resetta da solo se l'utente chiude del tutto la scheda).
-window.addEventListener('load', function() {
+//
+// IMPORTANTE: prima questo blocco partiva solo su window.addEventListener
+// ('load', ...), che scatta solo quando OGNI risorsa della pagina (font
+// esterni, immagini, script CDN) ha finito di caricare. Su iOS, con
+// connessione debole o una singola risorsa lenta/bloccata, 'load' può non
+// scattare mai — utente bloccato in eterno sullo splash. Ora usiamo
+// DOMContentLoaded (molto più affidabile, non aspetta risorse esterne) più
+// un timeout di sicurezza che forza comunque la rivelazione dopo 5s,
+// qualunque cosa succeda. Il flag 'rivelato' evita che la funzione parta
+// due volte se sia DOMContentLoaded sia il timeout scattano.
+var splashRivelato = false;
+function rivelaApp() {
+  if (splashRivelato) return;
+  splashRivelato = true;
+
   var giaVistoSplash = sessionStorage.getItem('it_splash_visto');
   var attesa = giaVistoSplash ? 0 : 1800;
   if (!giaVistoSplash) sessionStorage.setItem('it_splash_visto', '1');
@@ -1329,7 +1343,10 @@ window.addEventListener('load', function() {
       if (chooser) chooser.style.display = 'flex';
     }
   }, attesa);
-});
+}
+
+document.addEventListener('DOMContentLoaded', rivelaApp);
+setTimeout(rivelaApp, 5000); // rete di sicurezza: mai più bloccati sullo splash
 
 function chiudiChooser() {
   // L'utente chiude la scelta per esplorare liberamente il sito.
