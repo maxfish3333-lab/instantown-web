@@ -443,7 +443,7 @@ footer a:hover{color:var(--ocra-l);}
 </div>
 
 <!-- SEZIONE VIP -->
-<section style="background:linear-gradient(135deg,#1C1410 0%,#2D1F14 100%);padding:48px 32px;">
+<section id="perche-esercente" style="background:linear-gradient(135deg,#1C1410 0%,#2D1F14 100%);padding:48px 32px;">
   <div style="max-width:960px;margin:0 auto;">
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;">
       <div style="background:rgba(200,134,10,.06);border:1px solid rgba(200,134,10,.2);border-top:3px solid var(--ocra);border-radius:8px;padding:28px 24px;">
@@ -464,6 +464,9 @@ footer a:hover{color:var(--ocra-l);}
     </div>
     <div style="text-align:center;margin-top:36px;padding:24px;border:1px solid rgba(200,134,10,.15);border-radius:8px;background:rgba(200,134,10,.04);">
       <p style="font-family:'Cormorant Garamond',serif;font-size:clamp(18px,2.5vw,26px);font-weight:600;color:#fff;line-height:1.5;margin:0;" id="vip-quote">“Nessuno paga nulla in anticipo.<br><span style="color:var(--ocra-l);">INSTANTOWN guadagna solo quando guadagnate voi.</span>”</p>
+    </div>
+    <div style="text-align:center;margin-top:20px;">
+      <a href="map.html" style="display:inline-block;background:rgba(200,134,10,.15);border:1px solid rgba(200,134,10,.4);color:var(--ocra-l);font-size:13px;font-weight:600;padding:12px 24px;border-radius:24px;text-decoration:none;">📡 Guarda le offerte già attive vicino a te</a>
     </div>
   </div>
 </section>
@@ -1343,7 +1346,17 @@ function sceltaProfilo(tipo, modalita) {
   localStorage.setItem('it_modalita', modalita);
 
   if (tipo === 'esercente') {
-    window.location.href = (modalita === 'login') ? 'area-esercente.html' : 'registrazione.html';
+    var chooserE = document.getElementById('profilo-chooser');
+    if (modalita === 'login') {
+      window.location.href = 'area-esercente.html';
+    } else {
+      // Visitatore: niente registrazione forzata. Chiudiamo il chooser e
+      // mostriamo la sezione con i vantaggi per l'esercente (commissioni,
+      // zero canoni), lasciando la scelta di registrarsi a lui.
+      if (chooserE) chooserE.style.display = 'none';
+      var sez = document.getElementById('perche-esercente');
+      if (sez) sez.scrollIntoView({behavior:'smooth'});
+    }
     return;
   }
 
