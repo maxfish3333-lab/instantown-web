@@ -528,10 +528,10 @@ footer strong{color:var(--ocra-l);}
     <div class="success-icon">🎉</div>
     <div class="success-title">Offerta pubblicata!</div>
     <div class="success-sub">La tua offerta flash è ora visibile ai clienti nel raggio selezionato.<br>
-    La riceverai via email a <strong>info@instantown.it</strong> come conferma.</div>
+    La riceverai via email a <strong id="email-conferma-offerta">info@instantown.it</strong> come conferma.</div>
     <div style="margin-top:20px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
       <a href="nuova-offerta.html" style="background:var(--rosso);color:#fff;padding:10px 22px;border-radius:3px;text-decoration:none;font-size:13px;">+ Nuova offerta</a>
-      <a href="vendor-wallet.html" style="background:var(--bianco);color:var(--ink);border:1px solid var(--rule);padding:10px 22px;border-radius:3px;text-decoration:none;font-size:13px;">Vai al pannello</a>
+      <a href="area-esercente.html" style="background:var(--bianco);color:var(--ink);border:1px solid var(--rule);padding:10px 22px;border-radius:3px;text-decoration:none;font-size:13px;">Vai al pannello</a>
     </div>
   </div>
 
@@ -971,6 +971,16 @@ aggiornaAnteprima();
 let datiNegozio = null;
 const SHEET_ID = '1m5ovESlhcbVwafN3EOpuYpWUGm1tbH6CtNPTBNZZrOI';
 
+// ── VERIFICA PIN ESERCENTE ──
+// PRIMA: questa funzione leggeva DIRETTAMENTE il foglio Google Sheets
+// 'anagrafica_negozi' via URL pubblico gviz, dal browser del cliente.
+// Chiunque conoscesse SHEET_ID (visibile nel codice sorgente della
+// pagina) poteva costruire da solo quell'URL e vedere in chiaro il PIN
+// di TUTTI gli esercenti registrati — senza nessun rate-limiting,
+// aggirando completamente la protezione anti-forzatura già presente
+// sull'endpoint verificaPin di Apps Script. Corretto il 2 agosto 2026:
+// ora usa lo stesso endpoint protetto già impiegato da area-esercente.html,
+// chat-esercente.html ed esercente-scan.html.
 async function verificaPin() {
   const pin = document.getElementById('pin-input-offerta').value.trim();
   if (!pin) return;
@@ -979,41 +989,28 @@ async function verificaPin() {
   btn.disabled = true;
 
   try {
-    const url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:json&sheet=anagrafica_negozi';
-    const res = await fetch(url);
-    const text = await res.text();
-    const json = JSON.parse(text.substring(47).slice(0,-2));
-    const cols = json.table.cols.map(c => c.label.toLowerCase().trim());
-    const pinIdx  = cols.findIndex(c => c.includes('pin'));
-    const nomeIdx = cols.findIndex(c => c.includes('nome') || c.includes('insegna') || c.includes('negozio'));
-    const indiIdx = cols.findIndex(c => c.includes('indirizz'));
-    const pivaIdx = cols.findIndex(c => c.includes('p.iva') || c.includes('piva') || c.includes('cf'));
-    const latIdx  = cols.findIndex(c => c.includes('lat'));
-    const lonIdx  = cols.findIndex(c => c.includes('lon'));
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
+    const url = APPS_SCRIPT_URL + '?azione=verificaPin&pin=' + encodeURIComponent(pin);
+    const res = await fetch(url, { cache: 'no-store' });
+    const dati = await res.json();
 
-    let trovato = null;
-    for (const row of json.table.rows) {
-      if (!row.c[pinIdx]) continue;
-      const val = (row.c[pinIdx].v || '').toString().trim();
-      if (val === pin) {
-        trovato = {
-          pin,
-          nome:     row.c[nomeIdx]  ? (row.c[nomeIdx].v  || '') : '',
-          indirizzo:row.c[indiIdx]  ? (row.c[indiIdx].v  || '') : '',
-          piva:     row.c[pivaIdx]  ? (row.c[pivaIdx].v  || '') : '',
-          lat:      row.c[latIdx]   ? (row.c[latIdx].v   || '') : '',
-          lon:      row.c[lonIdx]   ? (row.c[lonIdx].v   || '') : '',
-        };
-        break;
-      }
-    }
-
-    if (!trovato) {
+    if (dati.stato !== 'ok' || !dati.negozio) {
+      document.getElementById('pin-error').textContent = dati.messaggio || 'PIN non valido.';
       document.getElementById('pin-error').style.display = 'block';
       btn.textContent = 'Verifica PIN →';
       btn.disabled = false;
       return;
     }
+
+    const trovato = {
+      pin,
+      nome:      dati.negozio.nome || '',
+      indirizzo: dati.negozio.indirizzo || '',
+      piva:      dati.negozio.piva || '',
+      lat:       dati.negozio.lat || '',
+      lon:       dati.negozio.lon || '',
+      email:     dati.negozio.email || ''
+    };
 
     datiNegozio = trovato;
     document.getElementById('pin-neg-nome').textContent = trovato.nome;
@@ -1060,6 +1057,15 @@ function precompilaForm(neg) {
   if (infoEl) {
     infoEl.textContent = neg.nome + ' · ' + neg.indirizzo;
     infoEl.style.display = 'block';
+  }
+
+  // Mostra l'email reale dell'esercente nel testo di conferma pubblicazione
+  // (prima mostrava sempre info@instantown.it, l'email del supporto, invece
+  // di quella dell'esercente — fuorviante: sembrava che la conferma non
+  // sarebbe arrivata a lui).
+  const emailConfermaEl = document.getElementById('email-conferma-offerta');
+  if (emailConfermaEl) {
+    emailConfermaEl.textContent = neg.email || 'info@instantown.it';
   }
 }
 

@@ -591,10 +591,6 @@ footer a:hover{color:var(--ocra-l);}
         <span style="font-size:28px;">⚡</span>
         <div><div style="font-size:15px;font-weight:600;color:#fff;">Pubblica offerta</div><div style="font-size:11px;color:rgba(255,255,255,.75);margin-top:2px;">Crea nuova offerta flash</div></div>
       </a>
-      <a href="vendor-wallet.html" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(200,134,10,.2);border-left:4px solid var(--verde-l,#22A050);border-radius:10px;padding:16px 18px;text-decoration:none;transition:background .2s;" onmouseover="this.style.background='rgba(34,160,80,.1)'" onmouseout="this.style.background='rgba(255,255,255,.05)'">
-        <span style="font-size:28px;">💰</span>
-        <div><div style="font-size:15px;font-weight:600;color:#fff;">Portafoglio</div><div style="font-size:11px;color:rgba(255,255,255,.75);margin-top:2px;">Saldo e transazioni</div></div>
-      </a>
       <a href="chat-esercente.html" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(200,134,10,.2);border-left:4px solid var(--cielo,#4A90C4);border-radius:10px;padding:16px 18px;text-decoration:none;transition:background .2s;" onmouseover="this.style.background='rgba(74,144,196,.1)'" onmouseout="this.style.background='rgba(255,255,255,.05)'">
         <span style="font-size:28px;">💬</span>
         <div><div style="font-size:15px;font-weight:600;color:#fff;">Messaggi clienti</div><div style="font-size:11px;color:rgba(255,255,255,.75);margin-top:2px;">Dashboard chat</div></div>
@@ -1238,11 +1234,18 @@ function updatePwaBannerLang(lang) {
 window.addEventListener('beforeinstallprompt', function(e) {
   e.preventDefault();
   deferredPrompt = e;
-  // Mostra il banner dopo 3 secondi
-  setTimeout(function() {
-    var banner = document.getElementById('pwa-banner');
-    if (banner) banner.style.display = 'block';
-  }, 3000);
+  _pwaPromptEvent = e;
+  // Se il primo onboarding (chooser + intro demo) è già concluso, mostra
+  // il banner subito (comportamento originale). Altrimenti resta in coda:
+  // sarà mostraPwaBannerSeInCoda() a farlo comparire al momento giusto,
+  // una volta chiusi chooser e intro — mai prima, per evitare che si
+  // sovrapponga a loro.
+  if (_primoOnboardingCompletato) {
+    setTimeout(function() {
+      var banner = document.getElementById('pwa-banner');
+      if (banner) banner.style.display = 'block';
+    }, 3000);
+  }
 });
 
 document.getElementById('pwa-btn-install').addEventListener('click', function() {
@@ -1341,12 +1344,55 @@ function rivelaApp() {
     if (MODALITA_TEST || !localStorage.getItem('it_profilo')) {
       var chooser = document.getElementById('profilo-chooser');
       if (chooser) chooser.style.display = 'flex';
+      // Il resto della sequenza (modal intro, banner PWA) NON parte qui:
+      // partirà quando il chooser viene chiuso, da chiudiChooser() o
+      // sceltaProfilo() — vedi coordinamento più sotto.
+    } else {
+      // Nessun chooser da mostrare (profilo già scelto in una sessione
+      // precedente): si passa comunque dal coordinatore, che decide se
+      // mostrare l'intro o il banner PWA.
+      mostraIntroOverlaySeNecessario();
     }
   }, attesa);
 }
 
 document.addEventListener('DOMContentLoaded', rivelaApp);
 setTimeout(rivelaApp, 5000); // rete di sicurezza: mai più bloccati sullo splash
+
+// ── COORDINAMENTO PRIMO AVVIO (fix bug: doppio modal sovrapposto) ──
+// Prima, tre elementi comparivano in modo completamente indipendente al
+// primo avvio: il chooser Utente/Esercente, il modal "Come funziona
+// INSTANTOWN" (demo pizza, su DOMContentLoaded) e il banner PWA "Aggiungi
+// INSTANTOWN" (su beforeinstallprompt, solo Android/Chrome — mai su iOS,
+// per questo il bug si notava solo lì). Nessuno dei tre sapeva se gli
+// altri fossero già aperti: il modal della pizza si apriva già SOTTO al
+// chooser mentre l'utente lo stava ancora guardando, e diventava visibile
+// non appena il chooser si chiudeva — a volte insieme al banner PWA.
+// Ora la sequenza è forzata in ordine: chooser (se serve) → intro demo
+// (se non ancora vista) → banner PWA (se disponibile) — un elemento alla
+// volta, mai sovrapposti.
+var _primoOnboardingCompletato = false;
+var _pwaPromptEvent = null;
+
+function mostraIntroOverlaySeNecessario() {
+  var giaVisto = localStorage.getItem('it_intro_offerta_prova_vista');
+  var intro = document.getElementById('intro-overlay');
+  if (!giaVisto && intro) {
+    intro.classList.add('open');
+    return;
+  }
+  mostraPwaBannerSeInCoda();
+}
+
+function mostraPwaBannerSeInCoda() {
+  _primoOnboardingCompletato = true;
+  if (_pwaPromptEvent) {
+    setTimeout(function() {
+      var banner = document.getElementById('pwa-banner');
+      if (banner) banner.style.display = 'block';
+    }, 500);
+  }
+}
 
 function chiudiChooser() {
   // L'utente chiude la scelta per esplorare liberamente il sito.
@@ -1356,6 +1402,7 @@ function chiudiChooser() {
   localStorage.setItem('it_modalita', 'visitatore');
   var chooser = document.getElementById('profilo-chooser');
   if (chooser) chooser.style.display = 'none';
+  mostraIntroOverlaySeNecessario();
 }
 
 function sceltaProfilo(tipo, modalita) {
@@ -1371,6 +1418,7 @@ function sceltaProfilo(tipo, modalita) {
       // mostriamo la sezione con i vantaggi per l'esercente (commissioni,
       // zero canoni), lasciando la scelta di registrarsi a lui.
       if (chooserE) chooserE.style.display = 'none';
+      mostraIntroOverlaySeNecessario();
       var sez = document.getElementById('perche-esercente');
       if (sez) sez.scrollIntoView({behavior:'smooth'});
     }
@@ -1385,6 +1433,7 @@ function sceltaProfilo(tipo, modalita) {
   // Visitatore: resta su index.html, chiude semplicemente la schermata di scelta
   var chooser = document.getElementById('profilo-chooser');
   if (chooser) chooser.style.display = 'none';
+  mostraIntroOverlaySeNecessario();
 }
 
 function riapriChooser() {
@@ -1437,21 +1486,17 @@ function riapriChooser() {
 </div>
 
 <script>
-// Mostra l'overlay introduttivo solo alla primissima visita (una tantum),
-// prima che l'utente navighi verso offerte.html — chi ha già visto questo
-// messaggio non lo rivede più, su questo stesso dispositivo/browser.
-(function() {
-  const GIA_VISTO_KEY = 'it_intro_offerta_prova_vista';
-  if (!localStorage.getItem(GIA_VISTO_KEY)) {
-    document.addEventListener('DOMContentLoaded', function() {
-      document.getElementById('intro-overlay').classList.add('open');
-    });
-  }
-})();
+// L'apertura dell'overlay introduttivo NON parte più da sola su
+// DOMContentLoaded (causava la sovrapposizione con chooser e banner PWA,
+// vedi commento nel blocco di coordinamento più sopra). Ora è
+// mostraIntroOverlaySeNecessario() a deciderlo, chiamata solo dopo che
+// il chooser è stato chiuso (o subito, se il chooser non doveva comparire).
 
 function chiudiIntroOverlay() {
   localStorage.setItem('it_intro_offerta_prova_vista', '1');
   document.getElementById('intro-overlay').classList.remove('open');
+  // Prossimo anello della catena: mostra il banner PWA se in coda.
+  mostraPwaBannerSeInCoda();
 }
 </script>
 </body>
