@@ -317,6 +317,19 @@ footer a:hover{color:var(--ocra-l);}
 @keyframes pulse-reg{0%,100%{box-shadow:0 0 0 0 rgba(74,144,196,.6);}70%{box-shadow:0 0 0 10px rgba(74,144,196,0);}}
 .nav-link-cta{background:var(--cielo);color:#fff!important;font-weight:500!important;padding:9px 18px!important;border-radius:4px;text-decoration:none!important;font-size:13px;letter-spacing:.04em;animation:pulse-reg 2s infinite;transition:background .2s;}
 .nav-link-cta:hover{background:var(--cielo-l);animation:none;}
+
+/* ── NAV: pulsante "Cambia profilo" — lampeggia un minuto poi si acquieta ── */
+@keyframes pulse-cambia-profilo{0%,100%{box-shadow:0 0 0 0 rgba(200,134,10,.65);}70%{box-shadow:0 0 0 9px rgba(200,134,10,0);}}
+.nav-cambia-profilo{
+  background:var(--ocra,#C8860A);color:var(--ink,#1C1410)!important;font-weight:700!important;
+  padding:8px 16px!important;border-radius:4px;text-decoration:none!important;
+  font-size:12px;letter-spacing:.03em;transition:background .2s, box-shadow .2s;
+  animation:pulse-cambia-profilo 1.6s infinite;
+}
+.nav-cambia-profilo:hover{background:var(--ocra-l,#E8A020);}
+/* Aggiunta via JS dopo 60 secondi: ferma il lampeggio senza nascondere il
+   pulsante, che resta comunque cliccabile e visibile — vedi script in fondo. */
+.nav-cambia-profilo.quieto{animation:none;box-shadow:none;}
 </style>
 </head>
 <body>
@@ -386,6 +399,7 @@ footer a:hover{color:var(--ocra-l);}
     <span class="nav-brand">INSTANTOWN</span>
   </div>
   <div style="display:flex;align-items:center;gap:10px;">
+    <a href="#" onclick="riapriChooser();return false;" class="nav-cambia-profilo" id="nav-cambia-profilo">↺ Cambia profilo</a>
     <a href="area-esercente.html" style="font-size:12px;color:rgba(255,255,255,.6);text-decoration:underline;">Sei già registrato? Accedi</a>
     <a href="registrazione.html" class="nav-link-cta" id="nav-reg">Registrati come esercente →</a>
   </div>
@@ -720,6 +734,7 @@ var I18N = {
     'vip-sub': "— non paga mai se non riceve il prodotto o il servizio",
     'vip-btn-qr': "🎫<br>I MIEI QR CODE", 'vip-btn-radar': "📍<br>APRI RADAR",
     'nav-reg': "Registrati come esercente →",
+    'nav-cambia-profilo': "↺ Cambia profilo",
     'hero-kicker': "Roma — Città Pilota 2025",
     'hero-title': "Il mondo<br><em>ai tuoi piedi.</em>",
     'hero-desc': "Offerte flash a 200 metri, servizi pubblici sulla mappa, pagamenti garantiti. INSTANTOWN connette cittadini, turisti ed esercenti in tempo reale.",
@@ -766,6 +781,7 @@ var I18N = {
     'vip-sub': "— never pays if the product or service is not received",
     'vip-btn-qr': "🎫<br>MY QR CODES", 'vip-btn-radar': "📍<br>OPEN RADAR",
     'nav-reg': "Register as a merchant →",
+    'nav-cambia-profilo': "↺ Switch profile",
     'hero-kicker': "Rome — Pilot City 2025",
     'hero-title': "The world<br><em>at your feet.</em>",
     'hero-desc': "Flash offers within 200 metres, public services on the map, guaranteed payments. INSTANTOWN connects citizens, tourists and merchants in real time.",
@@ -812,6 +828,7 @@ var I18N = {
     'vip-sub': "— 未收到产品或服务则无需付款",
     'vip-btn-qr': "🎫<br>我的二维码", 'vip-btn-radar': "📍<br>打开雷达",
     'nav-reg': "注册为商家 →",
+    'nav-cambia-profilo': "↺ 切换身份",
     'hero-kicker': "罗马 — 试点城市 2025",
     'hero-title': "世界<br><em>在您脚下。</em>",
     'hero-desc': "200米内的闪购优惠，地图上的公共服务，有保障的付款。INSTANTOWN实时连接市民、游客和商家。",
@@ -858,6 +875,7 @@ var I18N = {
     'vip-sub': "— nunca paga si no recibe el producto o servicio",
     'vip-btn-qr': "🎫<br>MIS CÓDIGOS QR", 'vip-btn-radar': "📍<br>ABRIR RADAR",
     'nav-reg': "Regístrate como comerciante →",
+    'nav-cambia-profilo': "↺ Cambiar de perfil",
     'hero-kicker': "Roma — Ciudad Piloto 2025",
     'hero-title': "El mundo<br><em>a tus pies.</em>",
     'hero-desc': "Ofertas flash a 200 metros, servicios públicos en el mapa, pagos garantizados. INSTANTOWN conecta ciudadanos, turistas y comerciantes en tiempo real.",
@@ -904,6 +922,7 @@ var I18N = {
     'vip-sub': "— ne paie jamais s’il ne reçoit pas le produit ou le service",
     'vip-btn-qr': "🎫<br>MES QR CODES", 'vip-btn-radar': "📍<br>OUVRIR LE RADAR",
     'nav-reg': "S’inscrire comme commerçant →",
+    'nav-cambia-profilo': "↺ Changer de profil",
     'hero-kicker': "Rome — Ville Pilote 2025",
     'hero-title': "Le monde<br><em>à vos pieds.</em>",
     'hero-desc': "Offres flash à 200 mètres, services publics sur la carte, paiements garantis. INSTANTOWN connecte citoyens, touristes et commerçants en temps réel.",
@@ -950,6 +969,7 @@ var I18N = {
     'vip-sub': "— zahlt nie, wenn das Produkt oder die Dienstleistung nicht erhalten wird",
     'vip-btn-qr': "🎫<br>MEINE QR-CODES", 'vip-btn-radar': "📍<br>RADAR ÖFFNEN",
     'nav-reg': "Als Geschäft registrieren →",
+    'nav-cambia-profilo': "↺ Profil wechseln",
     'hero-kicker': "Rom — Pilotstadt 2025",
     'hero-title': "Die Welt<br><em>zu deinen Füßen.</em>",
     'hero-desc': "Blitzangebote im Umkreis von 200 Metern, öffentliche Dienste auf der Karte, garantierte Zahlungen. INSTANTOWN verbindet Bürger, Touristen und Geschäfte in Echtzeit.",
@@ -1017,6 +1037,7 @@ var I18N = {
     'vip-sub': "— 商品やサービスを受け取らない限り、支払いは発生しません",
     'vip-btn-qr': "🎫<br>マイQRコード", 'vip-btn-radar': "📍<br>レーダーを開く",
     'nav-reg': "店舗として登録 →",
+    'nav-cambia-profilo': "↺ プロフィールを切り替える",
     'hero-kicker': "ローマ — 2025年パイロット都市",
     'hero-title': "世界が<br><em>あなたの足元に。</em>",
     'hero-desc': "半径200メートル以内のフラッシュオファー、地図上の公共サービス、保証された支払い。INSTANTOWNは市民、旅行者、店舗をリアルタイムで結びつけます。",
@@ -1368,6 +1389,15 @@ function rivelaApp() {
 }
 
 document.addEventListener('DOMContentLoaded', rivelaApp);
+
+// ── Ferma il lampeggio di "Cambia profilo" dopo 60 secondi ──
+// Serve solo a farsi notare all'apertura della pagina; dopo un minuto
+// diventa una distrazione inutile per chi non ne ha bisogno. Il pulsante
+// resta comunque visibile e cliccabile, si ferma solo l'animazione.
+setTimeout(function() {
+  var btn = document.getElementById('nav-cambia-profilo');
+  if (btn) btn.classList.add('quieto');
+}, 60000);
 setTimeout(rivelaApp, 5000); // rete di sicurezza: mai più bloccati sullo splash
 
 // ── COORDINAMENTO PRIMO AVVIO (fix bug: doppio modal sovrapposto) ──
