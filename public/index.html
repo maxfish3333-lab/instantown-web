@@ -1336,12 +1336,23 @@ function rivelaApp() {
     // all'altro. Passare a false (o rimuovere questo blocco) prima del
     // lancio pubblico.
     var MODALITA_TEST = false;
-    if (MODALITA_TEST) {
-      localStorage.removeItem('it_pin');
-      localStorage.removeItem('it_email');
-      localStorage.removeItem('it_device');
+    var profiloGiaScelto;
+    try {
+      if (MODALITA_TEST) {
+        localStorage.removeItem('it_pin');
+        localStorage.removeItem('it_email');
+        localStorage.removeItem('it_device');
+      }
+      profiloGiaScelto = localStorage.getItem('it_profilo');
+    } catch (e) {
+      // localStorage non accessibile (Safari/Samsung Internet con
+      // restrizioni sui dati sito): trattiamo come "nessun profilo
+      // salvato", che è la scelta più sicura — mostra il chooser invece
+      // di bloccare l'intera pagina (bug riscontrato il 3 agosto 2026).
+      console.error('localStorage non accessibile, mostro comunque il chooser:', e);
+      profiloGiaScelto = null;
     }
-    if (MODALITA_TEST || !localStorage.getItem('it_profilo')) {
+    if (MODALITA_TEST || !profiloGiaScelto) {
       var chooser = document.getElementById('profilo-chooser');
       if (chooser) chooser.style.display = 'flex';
       // Il resto della sequenza (modal intro, banner PWA) NON parte qui:
@@ -1398,16 +1409,32 @@ function chiudiChooser() {
   // L'utente chiude la scelta per esplorare liberamente il sito.
   // Salviamo un profilo 'visitatore' così il chooser non riappare a ogni
   // caricamento (altrimenti si riproporrebbe restando senza via d'uscita).
-  localStorage.setItem('it_profilo', 'visitatore');
-  localStorage.setItem('it_modalita', 'visitatore');
+  // Try/catch: vedi nota in sceltaProfilo() più sotto sullo stesso principio.
+  try {
+    localStorage.setItem('it_profilo', 'visitatore');
+    localStorage.setItem('it_modalita', 'visitatore');
+  } catch (e) {
+    console.error('Impossibile salvare la preferenza visitatore (si procede comunque):', e);
+  }
   var chooser = document.getElementById('profilo-chooser');
   if (chooser) chooser.style.display = 'none';
   mostraIntroOverlaySeNecessario();
 }
 
 function sceltaProfilo(tipo, modalita) {
-  localStorage.setItem('it_profilo', tipo);
-  localStorage.setItem('it_modalita', modalita);
+  // Il salvataggio della preferenza NON deve mai bloccare l'ingresso
+  // nell'app. Su alcuni browser (Safari e Samsung Internet con
+  // impostazioni di blocco dati/cookie più severe) localStorage.setItem
+  // può lanciare un'eccezione silenziosa: senza questo try/catch, il
+  // codice si fermava lì e il redirect a mio-account.html/area-esercente.html
+  // non partiva mai, con l'utente bloccato su index.html senza nessun
+  // messaggio d'errore visibile (bug riscontrato in test il 3 agosto 2026).
+  try {
+    localStorage.setItem('it_profilo', tipo);
+    localStorage.setItem('it_modalita', modalita);
+  } catch (e) {
+    console.error('Impossibile salvare la preferenza di profilo (si procede comunque):', e);
+  }
 
   if (tipo === 'esercente') {
     var chooserE = document.getElementById('profilo-chooser');
@@ -1442,11 +1469,19 @@ function riapriChooser() {
   // esattamente come al primo avvio. Cancella anche PIN/email/device
   // salvati, altrimenti mio-account.html riconoscerebbe comunque il
   // dispositivo e salterebbe dritto all'account precedente.
-  localStorage.removeItem('it_profilo');
-  localStorage.removeItem('it_modalita');
-  localStorage.removeItem('it_pin');
-  localStorage.removeItem('it_email');
-  localStorage.removeItem('it_device');
+  // Try/catch: senza questo, se localStorage.removeItem lanciava un
+  // errore (Safari/Samsung Internet con restrizioni sui dati sito), il
+  // chooser non si riapriva nemmeno — l'utente restava bloccato senza
+  // nessun modo di cambiare profilo (bug riscontrato il 3 agosto 2026).
+  try {
+    localStorage.removeItem('it_profilo');
+    localStorage.removeItem('it_modalita');
+    localStorage.removeItem('it_pin');
+    localStorage.removeItem('it_email');
+    localStorage.removeItem('it_device');
+  } catch (e) {
+    console.error('Impossibile pulire i dati salvati (si riapre comunque il chooser):', e);
+  }
   var chooser = document.getElementById('profilo-chooser');
   if (chooser) chooser.style.display = 'flex';
 }
