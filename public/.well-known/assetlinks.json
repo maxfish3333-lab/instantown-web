@@ -3,6 +3,6 @@
       "target": {
         "namespace": "android_app",
         "package_name": "it.instantown.app",
-        "sha256_cert_fingerprints": ["0E:95:FB:32:AE:DC:01:42:F9:68:AA:68:A5:E8:3C:F7:A0:B4:7A:1C:FE:13:00:30:85:51:FF:0C:74:A6:7B:D2"]
+        "sha256_cert_fingerprints": ["94:5A:11:BC:00:60:22:D8:48:BD:BF:95:87:11:35:DB:1D:3E:D2:DD:1D:24:73:47:62:55:61:F1:E6:75:F5:C9"]
       }
     }]
