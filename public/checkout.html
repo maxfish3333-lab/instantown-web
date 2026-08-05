@@ -6,6 +6,7 @@
     <title>INSTANTOWN — Conferma offerta</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://js.stripe.com/v3/"></script>
+    <script src="i18n.js"></script>
     <style>
         :root { --green:#22c55e; --black:#050505; --grey:#1a1a1a; --gold:#C8860A; --gold-l:#E8A020; }
         *{ box-sizing:border-box; margin:0; padding:0; }
@@ -156,7 +157,7 @@
 // punto dell'app. Va PRIMA di qualunque altra cosa: prima di creare il
 // PaymentIntent Stripe, prima di montare il modulo carta.
 if (localStorage.getItem('it_modalita') === 'visitatore') {
-  alert('Solo gli utenti registrati possono prenotare. Accedi o registrati per continuare.');
+  alert(i18n('soloUtentiRegistrati'));
   window.location.href = 'index.html';
   throw new Error('Checkout bloccato: profilo visitatore');
 }

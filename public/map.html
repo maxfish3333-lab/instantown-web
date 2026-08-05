@@ -603,7 +603,7 @@ function prenota(){
   // QR-B, né un modo per l'esercente di risalire a chi ha prenotato in
   // caso di problemi col pagamento.
   if(localStorage.getItem('it_modalita') === 'visitatore'){
-    alert(i18n('solo_utenti_registrati') || 'Solo gli utenti registrati possono prenotare. Accedi o registrati per continuare.');
+    alert(i18n('soloUtentiRegistrati'));
     return;
   }
 

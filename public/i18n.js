@@ -8,6 +8,7 @@ const IT18N = {
     // NAV
     back:        '←',
     register:    'Registrati come esercente →',
+    soloUtentiRegistrati: 'Solo gli utenti registrati possono prenotare. Accedi o registrati per continuare.',
     myqr:        '🎫 I miei QR',
     // HOME
     kicker:      'Roma — Città Pilota 2025',
@@ -185,6 +186,7 @@ const IT18N = {
   en: {
     back:        '←',
     register:    'Register as merchant →',
+    soloUtentiRegistrati: 'Only registered users can book. Please log in or sign up to continue.',
     myqr:        '🎫 My QRs',
     kicker:      'Rome — Pilot City 2025',
     title:       'The world<br><em>at your feet.</em>',
@@ -359,6 +361,7 @@ const IT18N = {
   zh: {
     back:        '←',
     register:    '注册为商家 →',
+    soloUtentiRegistrati: '只有注册用户才能预订。请登录或注册以继续。',
     myqr:        '🎫 我的二维码',
     kicker:      '意大利·罗马 — 2025年试点城市',
     title:       '世界<br><em>触手可及。</em>',
@@ -533,6 +536,7 @@ const IT18N = {
   es: {
     back:        '←',
     register:    'Regístrate como comerciante →',
+    soloUtentiRegistrati: 'Solo los usuarios registrados pueden reservar. Inicia sesión o regístrate para continuar.',
     myqr:        '🎫 Mis QRs',
     kicker:      'Roma — Ciudad Piloto 2025',
     title:       'El mundo<br><em>a tus pies.</em>',
@@ -707,6 +711,7 @@ const IT18N = {
   fr: {
     back:        '←',
     register:    'S\'inscrire comme commerçant →',
+    soloUtentiRegistrati: 'Seuls les utilisateurs inscrits peuvent réserver. Connectez-vous ou inscrivez-vous pour continuer.',
     myqr:        '🎫 Mes QR',
     kicker:      'Rome — Ville Pilote 2025',
     title:       'Le monde<br><em>à vos pieds.</em>',
@@ -880,6 +885,7 @@ const IT18N = {
   de: {
     back: "←",
     register: "Als Geschäft registrieren →",
+    soloUtentiRegistrati: "Nur registrierte Nutzer können buchen. Bitte melde dich an oder registriere dich, um fortzufahren.",
     myqr: "🎫 Meine QRs",
     kicker: "Rom — Pilotstadt 2025",
     title: "Die Welt<br><em>zu deinen Füßen.</em>",
@@ -1052,6 +1058,7 @@ const IT18N = {
   ja: {
     back: "←",
     register: "店舗として登録 →",
+    soloUtentiRegistrati: "登録済みのユーザーのみ予約できます。続行するにはログインまたは登録してください。",
     myqr: "🎫 マイQR",
     kicker: "ローマ — 2025年パイロット都市",
     title: "世界が<br><em>あなたの足元に。</em>",
