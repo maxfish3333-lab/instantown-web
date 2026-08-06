@@ -510,7 +510,7 @@ footer a:hover{color:var(--ocra-l);}
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-header"><span class="modal-title" id="modal-occ-title">⚡ Occasioni flash</span><button class="modal-close" onclick="chiudi('modal-occasioni')">&#x2715;</button></div>
-    <div id="pref-bar-occasioni" style="display:none" class="cat-pref-bar"><span>&#x2B50;</span><span id="pref-bar-text"></span><a href="#" onclick="chiudi('modal-occasioni')" style="margin-left:auto;color:var(--cielo);font-size:11px;text-decoration:none;">modifica</a></div>
+    <div id="pref-bar-occasioni" style="display:none" class="cat-pref-bar"><span>&#x2B50;</span><span id="pref-bar-text"></span><a href="#" id="modal-pref-modifica" onclick="chiudi('modal-occasioni')" style="margin-left:auto;color:var(--cielo);font-size:11px;text-decoration:none;">modifica</a></div>
     <div class="cat-grid-modal" id="cat-grid-modal">
       <a class="cat-card-modal" href="offerte.html?cat=CIBO" id="cat-CIBO"><div class="cat-emoji">&#x1F355;</div><div class="cat-name-modal" id="cat-name-cibo">Cibo</div><div class="cat-count-modal" id="ccnt-CIBO">— offerte</div></a>
       <a class="cat-card-modal" href="offerte.html?cat=MODA" id="cat-MODA"><div class="cat-emoji">&#x1F457;</div><div class="cat-name-modal" id="cat-name-moda">Moda</div><div class="cat-count-modal" id="ccnt-MODA">— offerte</div></a>
@@ -519,7 +519,7 @@ footer a:hover{color:var(--ocra-l);}
       <a class="cat-card-modal" href="offerte.html?cat=DIVERTIMENTO" id="cat-DIVERTIMENTO"><div class="cat-emoji">&#x1F3AD;</div><div class="cat-name-modal" id="cat-name-divertimento">Divertimento</div><div class="cat-count-modal" id="ccnt-DIVERTIMENTO">— offerte</div></a>
       <a class="cat-card-modal" href="offerte.html?cat=ALTRO" id="cat-ALTRO"><div class="cat-emoji">&#x1F6CD;&#xFE0F;</div><div class="cat-name-modal" id="cat-name-altro">Altro</div><div class="cat-count-modal" id="ccnt-ALTRO">— offerte</div></a>
     </div>
-    <div style="padding:4px 20px 8px;"><a href="offerte.html" style="display:block;text-align:center;background:var(--rosso);color:#fff;padding:13px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:500;" onmouseover="this.style.background='var(--rosso-l)'" onmouseout="this.style.background='var(--rosso)'">Vedi tutte le offerte →</a></div>
+    <div style="padding:4px 20px 8px;"><a href="offerte.html" id="modal-vedi-tutte" style="display:block;text-align:center;background:var(--rosso);color:#fff;padding:13px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:500;" onmouseover="this.style.background='var(--rosso-l)'" onmouseout="this.style.background='var(--rosso)'">Vedi tutte le offerte →</a></div>
   </div>
 </div>
 
@@ -1127,6 +1127,7 @@ function applyLang(lang) {
   document.querySelectorAll('.lbtn').forEach(function(b) {
     b.classList.toggle('active', b.getAttribute('data-lang') === lang);
   });
+  if (typeof mostraPref === 'function') mostraPref();
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -1147,9 +1148,13 @@ var CATS = ['CIBO','MODA','TECH','VIAGGI','DIVERTIMENTO','ALTRO'];
 var EMOJI = {CIBO:'\uD83C\uDF55',MODA:'\uD83D\uDC57',TECH:'\uD83D\uDCF1',VIAGGI:'\u2708\uFE0F',DIVERTIMENTO:'\uD83C\uDFAD',ALTRO:'\uD83D\uDECD\uFE0F'};
 var prefCats = JSON.parse(localStorage.getItem('it_categorie') || '[]');
 
+var CAT_NAME_KEY = {CIBO:'cat-name-cibo',MODA:'cat-name-moda',TECH:'cat-name-tech',VIAGGI:'cat-name-viaggi',DIVERTIMENTO:'cat-name-divertimento',ALTRO:'cat-name-altro'};
+
 function mostraPref() {
   var bar = document.getElementById('pref-bar-occasioni');
   var txt = document.getElementById('pref-bar-text');
+  var lang = localStorage.getItem('it_lang') || 'it';
+  var L = I18N[lang] || I18N.it;
   CATS.forEach(function(c) {
     var el = document.getElementById('cat-' + c);
     if (!el) return;
@@ -1160,7 +1165,13 @@ function mostraPref() {
   });
   if (prefCats.length > 0) {
     if (bar) bar.style.display = 'flex';
-    if (txt) txt.textContent = 'Preferenze: ' + prefCats.map(function(c){ return EMOJI[c]+' '+c; }).join(' \u00B7 ');
+    if (txt) {
+      var prefix = L['modal-pref-prefix'] || 'Preferenze:';
+      txt.textContent = prefix + ' ' + prefCats.map(function(c){
+        var nome = L[CAT_NAME_KEY[c]] || c;
+        return EMOJI[c] + ' ' + nome;
+      }).join(' \u00B7 ');
+    }
   } else {
     if (bar) bar.style.display = 'none';
   }

@@ -338,11 +338,11 @@ const I18N = {
     noOffers:       '该分类暂无优惠。',
     catTutte:       '全部',
     catCibo:        '餐饮',
-    catModa:        'æ—¶å°š',
+    catModa:        '时尚',
     catTech:        '科技',
     catViaggi:      '旅行',
     catDivert:      '娱乐',
-    catAltro:       'å…¶ä»–',
+    catAltro:       '其他',
     subTutte:       '全部',
     subAttive:      '仅限有效',
     subScadute:     '已过期',
@@ -1004,9 +1004,10 @@ function mostraPref() {
   const inner  = document.getElementById('pref-inner');
   if(prefCats.length === 0) { banner.style.display='none'; return; }
   banner.style.display = '';
+  var catMapLocal = {TUTTE:'catTutte',CIBO:'catCibo',MODA:'catModa',TECH:'catTech',VIAGGI:'catViaggi',DIVERTIMENTO:'catDivert',ALTRO:'catAltro'};
   const emoji = {CIBO:'🍕',MODA:'👗',TECH:'📱',VIAGGI:'✈️',DIVERTIMENTO:'🎭',ALTRO:'🛍️'};
   inner.innerHTML = `<span style="font-size:12px;font-weight:500;">${t('prefLabel')}</span> `
-    + prefCats.map(c=>`<span class="pref-tag">${emoji[c]||''} ${c}</span>`).join('')
+    + prefCats.map(c=>`<span class="pref-tag">${emoji[c]||''} ${t(catMapLocal[c]||c)}</span>`).join('')
     + ` <a href="index.html?apriOccasioni=1" style="color:var(--cielo);font-size:11px;margin-left:8px;">${t('prefModifica')}</a>`;
 }
 
