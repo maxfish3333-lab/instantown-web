@@ -1526,11 +1526,16 @@ function apriOverlay(o) {
     cat:      o.categoria || '',
   }).toString();
 
-  const ovFoto = (o.foto || "").split(",").map(s => s.trim()).filter(Boolean)[0] || "";
+  const ovFotoArr = (o.foto || "").split(",").map(s => s.trim()).filter(Boolean);
   const ovMapsUrl = (o.lat && o.lon) ? "https://www.google.com/maps/dir/?api=1&destination=" + o.lat + "," + o.lon : "";
   document.getElementById('ov-back-btn').textContent = '← ' + t('ciRipenso');
   document.getElementById('ov-body').innerHTML = `
-    ${ovFoto ? `<img src="${ovFoto}" alt="" style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;margin-bottom:16px;" onerror="this.remove()">` : ""}
+    ${ovFotoArr.length > 0 ? `<div style="position:relative;margin-bottom:16px;">
+      <div style="display:flex;overflow-x:auto;scroll-snap-type:x mandatory;border-radius:12px;gap:0;" id="ov-gallery">
+        ${ovFotoArr.map(url => `<img src="${url}" alt="" style="width:100%;flex:0 0 100%;max-height:220px;object-fit:cover;scroll-snap-align:start;" onerror="this.style.display='none'">`).join('')}
+      </div>
+      ${ovFotoArr.length > 1 ? `<div style="text-align:center;margin-top:6px;font-size:11px;color:var(--ink);opacity:.55;">1 / ${ovFotoArr.length} &mdash; scorri per vedere le altre foto</div>` : ''}
+    </div>` : ""}
     <div class="ov-cat-row">
       <span class="pill-stato ${o.stato==='ATTIVA'?'pill-attiva':'pill-scaduta'}">${o.stato==='ATTIVA' ? t('statoAttiva') : t('statoScaduta')}</span>
     </div>
