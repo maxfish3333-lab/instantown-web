@@ -658,6 +658,8 @@ function applyI18nDOM() {
   if(btnAlloggio && typeof rt === 'function') btnAlloggio.textContent = '🏨 ' + rt('titolo');
   var campoCerca = document.getElementById('campo-cerca');
   if(campoCerca) campoCerca.placeholder = t('cercaPlaceholder');
+  var reverseChiudiBtn = document.getElementById('reverse-chiudi-btn');
+  if(reverseChiudiBtn && typeof rt === 'function') reverseChiudiBtn.textContent = rt('chiudiBtn');
   // Cat tabs (preserva il contatore)
   var catMap = {TUTTE:'catTutte',CIBO:'catCibo',MODA:'catModa',TECH:'catTech',VIAGGI:'catViaggi',DIVERTIMENTO:'catDivert',ALTRO:'catAltro'};
   var emojiMap = {TUTTE:'🗂',CIBO:'🍕',MODA:'👗',TECH:'📱',VIAGGI:'✈️',DIVERTIMENTO:'🎭',ALTRO:'🛍️'};
@@ -851,7 +853,7 @@ function applyI18nDOM() {
   <div class="ov-stripe"></div>
   <div class="ov-header">
     <span class="ov-brand">INSTANTOWN</span>
-    <button class="ov-back" onclick="chiudiReverseOverlay()">← Chiudi</button>
+    <button class="ov-back" id="reverse-chiudi-btn" onclick="chiudiReverseOverlay()">← Chiudi</button>
   </div>
   <div class="reverse-body" id="reverse-body"></div>
 </div>
@@ -1635,6 +1637,12 @@ function haversine(lat1, lon1, lat2, lon2) {
 }
 
 const REVERSE_LABELS = {
+  chiudiBtn:        { it:'← Chiudi', en:'← Close', zh:'← 关闭', es:'← Cerrar', fr:'← Fermer', de:'← Schließen', ja:'← 閉じる' },
+  confermaHotelBtn: { it:'✓ Conferma questo hotel', en:'✓ Confirm this hotel', zh:'✓ 确认此酒店', es:'✓ Confirmar este hotel', fr:'✓ Confirmer cet hôtel', de:'✓ Dieses Hotel bestätigen', ja:'✓ このホテルを確定' },
+  nessunRisultato:  { it:'Nessun risultato', en:'No results', zh:'无结果', es:'Sin resultados', fr:'Aucun résultat', de:'Keine Ergebnisse', ja:'結果なし' },
+  ricercaNonDisp:   { it:'Ricerca non disponibile al momento', en:'Search unavailable right now', zh:'搜索暂时不可用', es:'Búsqueda no disponible en este momento', fr:'Recherche indisponible pour le moment', de:'Suche derzeit nicht verfügbar', ja:'現在検索は利用できません' },
+  alertHotelDati:   { it:"Inserisci nome ed email validi per l'hotel.", en:'Please enter a valid hotel name and email.', zh:'请输入有效的酒店名称和邮箱。', es:'Introduce un nombre y correo válidos para el hotel.', fr:"Veuillez saisir un nom et un e-mail valides pour l'hôtel.", de:'Bitte gültigen Hotelnamen und E-Mail eingeben.', ja:'有効なホテル名とメールアドレスを入力してください。' },
+  alertSelezionaHotel: { it:'Seleziona o inserisci un hotel prima di continuare.', en:'Select or enter a hotel before continuing.', zh:'请先选择或输入酒店后再继续。', es:'Selecciona o introduce un hotel antes de continuar.', fr:"Sélectionnez ou saisissez un hôtel avant de continuer.", de:'Bitte wähle oder gib ein Hotel ein, bevor du fortfährst.', ja:'続行する前にホテルを選択または入力してください。' },
   titolo:        { it:'Cerca alloggio last minute', en:'Find last-minute lodging', zh:'寻找临时住宿', es:'Buscar alojamiento de última hora', fr:'Chercher un hébergement de dernière minute', de:'Last-Minute-Unterkunft suchen' },
   budgetMax:     { it:'Budget massimo (€)', en:'Maximum budget (€)', zh:'最高预算(欧元)', es:'Presupuesto máximo (€)', fr:'Budget maximum (€)', de:'Maximalbudget (€)' },
   notti:         { it:'Numero di notti', en:'Number of nights', zh:'住宿晚数', es:'Número de noches', fr:'Nombre de nuits', de:'Anzahl der Nächte' },
@@ -1829,7 +1837,7 @@ function renderModalitaSpecifica() {
       <input type="text" id="rev-contatto-turista" placeholder="email@esempio.com o +39...">
       <div style="font-size:11px;color:var(--ink-mu);margin-top:4px;">${rt('tuoContattoNota')}</div>
     </div>
-    <button type="button" onclick="confermaHotelManuale()" class="sub-btn active" style="width:100%;">✓ Conferma questo hotel</button>
+    <button type="button" onclick="confermaHotelManuale()" class="sub-btn active" style="width:100%;">${rt('confermaHotelBtn')}</button>
     `}
   `;
 };
@@ -1855,7 +1863,7 @@ window.cercaHotelInput = function() {
       // che si avrebbe passando l'oggetto JSON direttamente nell'attributo onclick.
       window._revUltimiRisultati = risultati;
       if (risultati.length === 0) {
-        resultsBox.innerHTML = `<div style="font-size:12px;color:var(--ink-mu);padding:6px 2px;">Nessun risultato</div>`;
+        resultsBox.innerHTML = `<div style="font-size:12px;color:var(--ink-mu);padding:6px 2px;">${rt('nessunRisultato')}</div>`;
         return;
       }
       resultsBox.innerHTML = risultati.map((r, i) => `
@@ -1869,7 +1877,7 @@ window.cercaHotelInput = function() {
       `).join('');
     } catch(e) {
       console.warn('Ricerca hotel fallita:', e);
-      resultsBox.innerHTML = `<div style="font-size:12px;color:var(--ink-mu);">Ricerca non disponibile al momento</div>`;
+      resultsBox.innerHTML = `<div style="font-size:12px;color:var(--ink-mu);">${rt('ricercaNonDisp')}</div>`;
     }
   }, 350);
 };
@@ -2042,7 +2050,7 @@ window.confermaHotelManuale = function() {
   // sostituisca il DOM e azzeri il campo.
   const contattoGiaCompilato = (document.getElementById('rev-contatto-turista')?.value || '').trim();
   if (!nome || !email || !email.includes('@')) {
-    alert('Inserisci nome ed email validi per l\'hotel.');
+    alert(rt('alertHotelDati'));
     return;
   }
   revHotelSelezionato = { nome, email, lat: null, lon: null, registrato: false, contattoTurista: contattoGiaCompilato };
@@ -2140,7 +2148,7 @@ window.pubblicaRichiestaReverse = async function() {
 
   // ── MODALITÀ MIRATA: serve un hotel selezionato (registrato o manuale) ──
   if (!revHotelSelezionato) {
-    alert('Seleziona o inserisci un hotel prima di continuare.');
+    alert(rt('alertSelezionaHotel'));
     return;
   }
 
