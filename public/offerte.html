@@ -1560,9 +1560,9 @@ function apriOverlay(o) {
     </div>
     ${o.idtx?`<div class="ov-tx">${o.idtx}</div>`:''}
   `;
-  if (ovFotoArr.length > 1) { var gal = document.getElementById('ov-gallery'); var prevBtn = document.getElementById('ov-gal-prev'); var nextBtn = document.getElementById('ov-gal-next'); var counter = document.getElementById('ov-gal-counter'); window.ovGalScroll = function(dir) { gal.scrollBy({ left: dir * gal.clientWidth, behavior: 'smooth' }); }; var aggiornaFrecce = function() { var idx = Math.round(gal.scrollLeft / gal.clientWidth); prevBtn.style.display = idx > 0 ? 'flex' : 'none'; nextBtn.style.display = idx < ovFotoArr.length - 1 ? 'flex' : 'none'; if (counter) counter.textContent = (idx + 1) + ' / ' + ovFotoArr.length; }; gal.addEventListener('scroll', aggiornaFrecce); aggiornaFrecce(); }
   const overlay = document.getElementById('offer-overlay');
   overlay.classList.add('open');
+  if (ovFotoArr.length > 1) { var gal = document.getElementById('ov-gallery'); var prevBtn = document.getElementById('ov-gal-prev'); var nextBtn = document.getElementById('ov-gal-next'); var counter = document.getElementById('ov-gal-counter'); window.ovGalScroll = function(dir) { gal.scrollBy({ left: dir * gal.clientWidth, behavior: 'smooth' }); }; var aggiornaFrecce = function() { var idx = Math.round(gal.scrollLeft / gal.clientWidth); prevBtn.style.display = idx > 0 ? 'flex' : 'none'; nextBtn.style.display = idx < ovFotoArr.length - 1 ? 'flex' : 'none'; if (counter) counter.textContent = (idx + 1) + ' / ' + ovFotoArr.length; }; gal.addEventListener('scroll', aggiornaFrecce); aggiornaFrecce(); }
   document.body.style.overflow = 'hidden';
   overlay.scrollTop = 0;
 }
