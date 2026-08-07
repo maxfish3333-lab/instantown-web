@@ -126,6 +126,15 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
   display:none;align-items:center;justify-content:center;font-weight:700;
 }
 .foto-check.visible{display:flex;}
+.foto-trash{
+  position:absolute;bottom:6px;left:6px;z-index:3;
+  background:var(--rosso);color:#fff;border-radius:50%;
+  width:22px;height:22px;font-size:11px;
+  display:none;align-items:center;justify-content:center;font-weight:700;
+  cursor:pointer;border:none;
+}
+.foto-trash.visible{display:flex;}
+
 
 /* ── CATEGORIA PILLS ── */
 .cat-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px;}
@@ -296,6 +305,7 @@ footer strong{color:var(--ocra-l);}
               <div class="foto-hint">Foto esterna<br>del negozio</div>
             </div>
             <div class="foto-check" id="check-insegna">✓</div>
+            <button type="button" class="foto-trash" id="trash-insegna" onclick="event.stopPropagation();rimuoviFoto('insegna')">🗑</button>
           </div>
           <input type="file" accept="image/*" capture="environment" id="file-insegna" style="display:none" onchange="prevFoto(this,'prev-insegna','check-insegna','ph-insegna')">
         </div>
@@ -310,6 +320,7 @@ footer strong{color:var(--ocra-l);}
               <div class="foto-hint">Foto interna<br>del locale</div>
             </div>
             <div class="foto-check" id="check-interni">✓</div>
+            <button type="button" class="foto-trash" id="trash-interni" onclick="event.stopPropagation();rimuoviFoto('interni')">🗑</button>
           </div>
           <input type="file" accept="image/*" capture="environment" id="file-interni" style="display:none" onchange="prevFoto(this,'prev-interni','check-interni','ph-interni')">
         </div>
@@ -324,6 +335,7 @@ footer strong{color:var(--ocra-l);}
               <div class="foto-hint">Foto del<br>prodotto</div>
             </div>
             <div class="foto-check" id="check-prodotti">✓</div>
+            <button type="button" class="foto-trash" id="trash-prodotti" onclick="event.stopPropagation();rimuoviFoto('prodotti')">🗑</button>
           </div>
           <input type="file" accept="image/*" capture="environment" id="file-prodotti" style="display:none" onchange="prevFoto(this,'prev-prodotti','check-prodotti','ph-prodotti')">
         </div>
@@ -389,10 +401,17 @@ footer strong{color:var(--ocra-l);}
         </div>
       </div>
 
-      <div class="field">
-        <label>Descrizione del prodotto / servizio *</label>
-        <textarea name="descrizione" id="desc-input" placeholder="Es: Pizza margherita con fior di latte DOP, impasto a lunga lievitazione 48h. Cotta in forno a legna." maxlength="300" oninput="aggiornaAnteprima()" required></textarea>
-        <div style="font-size:11px;color:var(--ink-mu);margin-top:4px;text-align:right;"><span id="desc-count">0</span>/300 caratteri</div>
+      <div class="field" id="prodotto-tag-field" style="display:none;">
+        <label>Cosa vendi? *</label>
+        <div class="cat-pills" id="prodotto-tag-grid"></div>
+        <input id="prodotto-tag-val" type="hidden" name="prodotto_tag" value="">
+      </div>
+
+      <div class="field" style="margin-top:18px;padding-top:16px;border-top:1px dashed var(--rule-s);">
+        <label style="margin-bottom:2px;">Prosegui la descrizione</label>
+        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:700;font-size:18px;color:var(--rosso);margin-bottom:8px;">"L'occhio compra prima del portafoglio"</div>
+        <textarea name="descrizione" id="desc-input" placeholder="Es: fior di latte DOP, impasto a lunga lievitazione 48h, cotta in forno a legna." maxlength="220" oninput="aggiornaAnteprima()" required></textarea>
+        <div style="font-size:11px;color:var(--ink-mu);margin-top:4px;text-align:right;"><span id="desc-count">0</span>/20 parole</div>
       </div>
 
       <div class="field">
@@ -613,6 +632,12 @@ function ridimensionaComprimiImmagine(file, maxLato = 1280, qualita = 0.8) {
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext('2d');
+        // Senza questo, il browser usa di default una qualità di scaling
+        // bassa/media quando riduce molto un'immagine in un solo passaggio
+        // (es. da 4000px a 1280px), risultando in foto visibilmente sfocate
+        // rispetto all'originale — soprattutto su testo/dettagli fini.
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
         ctx.drawImage(img, 0, 0, width, height);
         // Le PNG con trasparenza restano PNG, il resto viene compresso come JPEG
         const isPng = file.type === 'image/png';
@@ -671,6 +696,9 @@ function mostraPreview(prevId, checkId, phId, src) {
   img.src = src;
   img.classList.add('visible');
   document.getElementById(checkId).classList.add('visible');
+  const tipo = prevId.replace('prev-','');
+  const trash = document.getElementById('trash-' + tipo);
+  if(trash) trash.classList.add('visible');
   if(phId) document.getElementById(phId).style.display = 'none';
   // Aggiorna anteprima card
   if(prevId === 'prev-prodotti') {
@@ -682,13 +710,71 @@ function mostraPreview(prevId, checkId, phId, src) {
   aggiornaStep();
 }
 
+// ── RIMUOVI FOTO — riporta il riquadro allo stato vuoto ──
+function rimuoviFoto(tipo) {
+  const img   = document.getElementById('prev-' + tipo);
+  const check = document.getElementById('check-' + tipo);
+  const trash = document.getElementById('trash-' + tipo);
+  const ph    = document.getElementById('ph-' + tipo);
+  const input = document.getElementById('file-' + tipo);
+
+  img.src = '';
+  img.classList.remove('visible');
+  check.classList.remove('visible');
+  trash.classList.remove('visible');
+  if(ph) ph.style.display = 'flex';
+  if(input) input.value = '';
+
+  if(tipo === 'prodotti') {
+    const apImg = document.getElementById('ap-img');
+    apImg.src = '';
+    apImg.style.display = 'none';
+    document.getElementById('ap-foto-placeholder').style.display = 'flex';
+  }
+  aggiornaStep();
+}
+
+// ── GRIGLIA "COSA VENDI" — scelta forzata per categoria ──
+// Parole scelte per essere concrete e immediate (non lasciate al testo
+// libero del singolo esercente): guidano l'occhio del turista sulla
+// pillola della mappa (map.html), dove lo spazio è troppo piccolo per
+// far leggere una descrizione intera.
+const TAG_GRID = {
+  CIBO: ['Pizza','Pasta fresca','Menu cena','Aperitivo','Vino & salumi','Gelato','Colazione','Street food'],
+  MODA: ['Pelletteria','Abiti','Scarpe','Borse','Gioielli','Accessori'],
+  TECH: ['Cuffie','Accessori phone','Powerbank','Elettronica'],
+  VIAGGI: ['Notte hotel','Weekend','Transfer','Tour guidato','Taxi'],
+  DIVERTIMENTO: ['Museo','Concerto','Degustazione','Tour a piedi','Aperitivo bar'],
+  ALTRO: ['Souvenir','Ceramiche','Artigianato','Idea regalo']
+};
+
+function renderTagGrid(cat) {
+  const wrap = document.getElementById('prodotto-tag-grid');
+  const field = document.getElementById('prodotto-tag-field');
+  document.getElementById('prodotto-tag-val').value = '';
+  const tags = TAG_GRID[cat] || [];
+  wrap.innerHTML = tags.map(t =>
+    `<div class="cat-pill" onclick="selTag('${t.replace(/'/g,"\\'")}',this)">${t}</div>`
+  ).join('');
+  field.style.display = tags.length ? 'block' : 'none';
+}
+
+function selTag(tag, el) {
+  document.querySelectorAll('#prodotto-tag-grid .cat-pill').forEach(p => p.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('prodotto-tag-val').value = tag;
+  aggiornaAnteprima();
+  aggiornaStep();
+}
+
 // ── CATEGORIA ──
 function selCat(cat, el) {
-  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('sel'));
+  document.querySelectorAll('.cat-pills:not(#prodotto-tag-grid) .cat-pill').forEach(p => p.classList.remove('sel'));
   el.classList.add('sel');
   document.getElementById('cat-val').value = cat;
   const emoji = {CIBO:'🍕',MODA:'👗',TECH:'📱',VIAGGI:'✈️',DIVERTIMENTO:'🎭',ALTRO:'🛍️'};
   document.getElementById('ap-cat').textContent = (emoji[cat]||'') + ' ' + cat;
+  renderTagGrid(cat);
   aggiornaStep();
 }
 
@@ -717,19 +803,28 @@ function aggiornaSconto() {
 
 // ── ANTEPRIMA CARD ──
 function aggiornaAnteprima() {
-  const desc  = document.getElementById('desc-input').value;
+  // Limite 20 parole sulla descrizione libera — tronca in tempo reale
+  // se l'esercente incolla o digita oltre il limite.
+  const descEl = document.getElementById('desc-input');
+  const paroleArr = descEl.value.trim().length ? descEl.value.trim().split(/\s+/) : [];
+  if (paroleArr.length > 20) {
+    descEl.value = paroleArr.slice(0, 20).join(' ');
+  }
+  const desc  = descEl.value;
   const qty   = document.getElementById('qty-input').value;
   const unit  = document.getElementById('unit-input').value;
   const std   = parseFloat(document.getElementById('std-input').value)||0;
   const flash = parseFloat(document.getElementById('flash-input').value)||0;
   const ini   = document.getElementById('inizio-input').value;
   const fin   = document.getElementById('fine-input').value;
+  const tag   = document.getElementById('prodotto-tag-val')?.value || '';
 
-  // Contatore chars
-  document.getElementById('desc-count').textContent = desc.length;
+  // Contatore parole
+  const paroleAttuali = desc.trim().length ? desc.trim().split(/\s+/).length : 0;
+  document.getElementById('desc-count').textContent = paroleAttuali;
 
-  // Desc
-  document.getElementById('ap-desc').textContent = desc || 'Descrizione prodotto';
+  // Desc — mostra il tag scelto in grassetto, poi la descrizione libera sotto
+  document.getElementById('ap-desc').textContent = (tag ? tag + ' — ' : '') + (desc || 'Descrizione prodotto');
 
   // Misura
   document.getElementById('ap-misura').textContent = (qty && unit) ? qty + ' ' + unit : '—';
@@ -840,6 +935,9 @@ async function pubblicaOfferta(e) {
   const cat = document.getElementById('cat-val').value;
   if(!cat) { alert('Seleziona una categoria merceologica.'); return; }
 
+  const prodottoTag = document.getElementById('prodotto-tag-val')?.value || '';
+  if(!prodottoTag) { alert('Seleziona cosa vendi dalla griglia (es. Pizza, Abiti, Souvenir...).'); return; }
+
   const std   = parseFloat(document.getElementById('std-input').value)||0;
   const flash = parseFloat(document.getElementById('flash-input').value)||0;
   if(flash >= std) { alert('Il prezzo flash deve essere inferiore al prezzo standard.'); return; }
@@ -883,6 +981,7 @@ async function pubblicaOfferta(e) {
     insegna:      document.querySelector('[name=negozio]')?.value || document.getElementById('negozio-hidden')?.value || '',
     denominazione:document.querySelector('[name=denominazione]')?.value || '',
     categoria:    document.getElementById('cat-val')?.value || '',
+    prodotto_tag: document.getElementById('prodotto-tag-val')?.value || '',
     descrizione:  document.getElementById('desc-input')?.value || '',
     quantita:     document.getElementById('qty-input')?.value || '',
     unita:        document.getElementById('unit-input')?.value || '',

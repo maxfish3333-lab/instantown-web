@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>INSTANTOWN — Radar</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -86,8 +88,14 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
   transition:bottom .35s cubic-bezier(.32,1,.52,.98);max-height:88vh;overflow-y:auto;}
 .offerta-sheet.open{bottom:0;}
 .sheet-handle{width:36px;height:4px;background:var(--rule);border-radius:2px;margin:12px auto 0;}
-.sheet-close{position:absolute;top:14px;right:16px;background:none;border:none;
-  font-size:20px;color:var(--ink-mu);cursor:pointer;padding:4px 8px;border-radius:4px;z-index:10;}
+.sheet-close{position:absolute;top:14px;right:16px;background:#fff;border:3px solid #000;
+  font-size:18px;font-weight:900;color:#000;cursor:pointer;padding:0;width:38px;height:38px;border-radius:50%;
+  z-index:10;box-shadow:0 2px 10px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;}
+
+/* Fascia scura dietro alla foto: garantisce contrasto per la X qualunque sia la foto */
+#sheet-foto-wrap{position:relative;}
+#sheet-foto-wrap::after{content:'';position:absolute;top:0;left:0;right:0;height:60px;
+  background:linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,0));pointer-events:none;}
 
 .sheet-foto{width:100%;height:180px;object-fit:cover;display:block;}
 .sheet-foto-ph{width:100%;height:100px;background:var(--bianco);
@@ -246,6 +254,20 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
       cursor:pointer;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px;">
       🧭 <span id="btn-portami-txt">PORTAMI LÌ</span>
     </button>
+
+    <!-- BLOCCO TAXI — visibile solo per offerte con tag "Taxi" -->
+    <div id="taxi-gps-block" style="display:none;margin-top:14px;padding-top:14px;border-top:1px dashed var(--rule-s,rgba(139,26,26,.2));">
+      <label style="display:block;font-size:11px;font-weight:500;color:var(--ink-mu);margin-bottom:5px;letter-spacing:.06em;text-transform:uppercase;">Indirizzo di destinazione</label>
+      <input type="text" id="taxi-dest-input" placeholder="Es: Via del Corso 45, Roma" style="width:100%;padding:11px 14px;border:1px solid rgba(139,26,26,.15);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;margin-bottom:10px;">
+      <button id="btn-taxi-gps" onclick="inviaGpsTaxi()" style="
+        width:100%;padding:14px;background:var(--ocra);color:#fff;border:none;
+        border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
+        cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+        📍 <span id="btn-taxi-gps-txt">INVIA POSIZIONE GPS</span>
+      </button>
+      <div style="font-size:10px;color:var(--ink-mu);margin-top:6px;text-align:center;">La posizione inviata resta registrata come prova in caso di controversie.</div>
+    </div>
+
     <div class="escrow-note" id="escrow-note">🔐 Fondi bloccati in escrow fino all'incontro fisico</div>
   </div>
 </div>
@@ -270,6 +292,7 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 // Dizionario per i filtri categoria (bottoni con data-t).
@@ -353,6 +376,7 @@ let map,userMarker,userCircle;
 let userLat=null,userLon=null;
 let tutteOfferte=[];
 let markers=[];
+let markerClusterGroup;
 let raggioAttivo=200;
 let catAttiva='TUTTE';
 let offertaCorrente=null;
@@ -368,6 +392,15 @@ function haversine(a,b,c,d){
   return Math.round(R*2*Math.atan2(Math.sqrt(e),Math.sqrt(1-e)));
 }
 function fmtDist(m){return m<1000?m+'m':(m/1000).toFixed(1)+'km';}
+function escHtml(s){
+  return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function shortLabel(s,max){
+  s=String(s||'').trim();
+  if(!s) return '';
+  s=s.charAt(0).toUpperCase()+s.slice(1);
+  return s.length>max?s.slice(0,max).trim()+'…':s;
+}
 function parseLon(v){
   if(v === null || v === undefined || v === '') return 0;
   var n = parseFloat(v);
@@ -433,6 +466,26 @@ function initMappa(lat,lon){
     fillColor:'rgba(139,26,26,.04)',fillOpacity:1,weight:1.5,dashArray:'6,4'
   }).addTo(map);
 
+  // Cluster: raggruppa le pillole quando sono troppo vicine per stare leggibili.
+  // maxClusterRadius piccolo perché le pillole sono larghe (non pin puntiformi):
+  // vogliamo raggruppare solo quando c'è vera sovrapposizione visiva.
+  markerClusterGroup=L.markerClusterGroup({
+    maxClusterRadius:45,
+    spiderfyOnMaxZoom:true,
+    showCoverageOnHover:false,
+    zoomToBoundsOnClick:true,
+    iconCreateFunction:function(cluster){
+      const n=cluster.getChildCount();
+      return L.divIcon({
+        html:`<div style="background:var(--ocra);color:#fff;border:3px solid #fff;
+          border-radius:50%;width:40px;height:40px;display:flex;align-items:center;
+          justify-content:center;font-family:'DM Sans',sans-serif;font-weight:700;
+          font-size:14px;box-shadow:0 3px 10px rgba(0,0,0,.4);">${n}</div>`,
+        iconSize:[40,40],className:''
+      });
+    }
+  }).addTo(map);
+
   caricaOfferte().then(o=>{
     tutteOfferte=o;
     renderMarkers();
@@ -470,7 +523,7 @@ function jitterCoords(offerte){
 // ═══════════════════════
 function renderMarkers(){
   if(!map) return;
-  markers.forEach(m=>map.removeLayer(m));
+  markerClusterGroup.clearLayers();
   markers=[];
 
   // Mostra TUTTE le offerte attive sulla mappa
@@ -508,12 +561,13 @@ function renderMarkers(){
         white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.4);
         font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:4px;
         opacity:${nelR?1:.55};">
-        ${emoji} €${o.prezzoFlash.toFixed(0)}${sc>0?` <span style="background:rgba(255,255,255,.25);border-radius:10px;padding:1px 5px;font-size:10px;">-${sc}%</span>`:''}
+        ${emoji} <span style="font-weight:500;">${escHtml(shortLabel(o.descrizione,14))}</span> €${o.prezzoFlash.toFixed(0)}${sc>0?` <span style="background:rgba(255,255,255,.25);border-radius:10px;padding:1px 5px;font-size:10px;">-${sc}%</span>`:''}
       </div>`,
       iconSize:[null,32],iconAnchor:[0,16],className:''
     });
-    const m=L.marker([o.lat,o.lon],{icon}).addTo(map);
+    const m=L.marker([o.lat,o.lon],{icon});
     m.on('click',()=>apriScheda(o));
+    markerClusterGroup.addLayer(m);
     markers.push(m);
   });
 }
@@ -565,6 +619,17 @@ function apriScheda(o){
   document.getElementById('btn-prenota-txt').textContent=i18n('book')+' — €'+o.prezzoFlash.toFixed(2);
   btn.disabled=false;
 
+  // Blocco taxi: visibile solo se il tag prodotto scelto dall'esercente è "Taxi"
+  const taxiBlock=document.getElementById('taxi-gps-block');
+  const isTaxi=String(o.prodottoTag||'').trim().toLowerCase()==='taxi';
+  taxiBlock.style.display=isTaxi?'block':'none';
+  if(isTaxi){
+    document.getElementById('taxi-dest-input').value='';
+    const bTxi=document.getElementById('btn-taxi-gps');
+    bTxi.disabled=false;
+    document.getElementById('btn-taxi-gps-txt').textContent='INVIA POSIZIONE GPS';
+  }
+
   document.getElementById('offerta-sheet').classList.add('open');
   map.panTo([o.lat,o.lon],{animate:true,duration:.4});
 }
@@ -572,6 +637,42 @@ function apriScheda(o){
 function chiudiSheet(){
   document.getElementById('offerta-sheet').classList.remove('open');
   offertaCorrente=null;
+}
+
+// ── TAXI — invia posizione GPS + destinazione al tassista ──
+function inviaGpsTaxi(){
+  if(!offertaCorrente) return;
+  const o=offertaCorrente;
+  const destInput=document.getElementById('taxi-dest-input');
+  const dest=destInput.value.trim();
+  if(!dest){ alert('Inserisci l\'indirizzo di destinazione prima di inviare la posizione.'); return; }
+  if(!userLat||!userLon){ alert('Posizione GPS non ancora disponibile. Attendi qualche secondo e riprova.'); return; }
+
+  // Solo utenti registrati con email verificata (magic link) possono
+  // chiamare un taxi — riduce il rischio di chiamate da persone non
+  // affidabili, e il tassista vede la conferma nella sua card.
+  const utenteVer=window.getUtenteVerificato?window.getUtenteVerificato():null;
+  if(!utenteVer){
+    alert('Per chiamare un taxi devi prima accedere con la tua email (link di conferma). Vai al tuo profilo per completare la registrazione.');
+    return;
+  }
+
+  const btn=document.getElementById('btn-taxi-gps');
+  const txt=document.getElementById('btn-taxi-gps-txt');
+  btn.disabled=true;
+  txt.textContent='Invio in corso...';
+
+  window.scriviRichiestaTaxi({
+    lat:userLat, lon:userLon, destinazione:dest,
+    negozio:o.negozio||'', idtx:o.idtx||'',
+    emailCliente:utenteVer.email, registratoDal:utenteVer.dalData
+  }).then(()=>{
+    txt.textContent='✓ Posizione inviata';
+  }).catch(err=>{
+    console.error('Invio posizione taxi fallito:', err);
+    txt.textContent='Errore — riprova';
+    btn.disabled=false;
+  });
 }
 
 function portamiLi(){
@@ -776,7 +877,7 @@ startGPS();
      fatto login ottiene in più il recupero del QR da qualsiasi dispositivo. -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, setDoc, doc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, setDoc, doc, serverTimestamp, addDoc, collection } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 import { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
 const firebaseConfig = {
@@ -796,6 +897,25 @@ setPersistence(fbAuth, browserLocalPersistence).catch(()=>{});
 // automaticamente da Firebase se il cliente ha già fatto il magic link).
 let utenteFb = null;
 onAuthStateChanged(fbAuth, (u) => { utenteFb = (u && u.email) ? u : null; });
+
+// Esposta allo script classico: restituisce { email, dalData } SOLO se
+// l'utente ha fatto login (magic link) E l'email risulta verificata da
+// Firebase Auth — mai un semplice flag locale, che potrebbe essere
+// manomesso lato client. dalData è la data di PRIMA registrazione su
+// INSTANTOWN (Firebase Auth creationTime) — NON l'età della casella email
+// vera e propria, che non è un dato a cui abbiamo accesso: è un segnale
+// di quanto tempo il cliente usa la nostra app, utile al tassista come
+// indicatore di affidabilità.
+window.getUtenteVerificato = function() {
+  if (!utenteFb || !utenteFb.email || !utenteFb.emailVerified) return null;
+  let dalData = '';
+  try {
+    if (utenteFb.metadata && utenteFb.metadata.creationTime) {
+      dalData = new Date(utenteFb.metadata.creationTime).toLocaleDateString('it-IT');
+    }
+  } catch(e) {}
+  return { email: utenteFb.email, dalData: dalData };
+};
 
 // Esposta allo script classico. Scrive il QR-B della prenotazione flash su
 // qr_b_emessi SOLO se c'è un utente autenticato con email verificata; in caso
@@ -822,6 +942,26 @@ window.scriviQrSuFirestore = async function(bookingId, o, pin) {
   } catch (e) {
     console.error('Scrittura QR-B su Firestore fallita (prenotazione salvata comunque in locale):', e);
   }
+};
+
+// ── TAXI — invia posizione GPS al tassista, tramite lo stesso meccanismo
+// in tempo reale già usato per le richieste reverse hotel (chat-esercente.html),
+// ma in una collection dedicata ('richieste-taxi') perché lo schema hotel
+// (budgetMax, notti, trattativa prezzo) non si applica a una chiamata taxi.
+// Il documento resta come prova (timestamp + posizione + destinazione) in
+// caso di controversie tra cliente e tassista.
+window.scriviRichiestaTaxi = async function(dati) {
+  return addDoc(collection(fbDb, 'richieste-taxi'), {
+    lat: dati.lat,
+    lon: dati.lon,
+    destinazione: dati.destinazione || '',
+    negozioTarget: dati.negozio || '',
+    idtx: dati.idtx || '',
+    emailCliente: dati.emailCliente || '',
+    registratoDal: dati.registratoDal || '',
+    stato: 'aperta',
+    ts: serverTimestamp()
+  });
 };
 </script>
 

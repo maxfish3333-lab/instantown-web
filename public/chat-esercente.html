@@ -164,6 +164,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--cielo-p);color:var(--ink)
     <div id="prenotazioni-accettate-list"></div>
     <div class="chat-list-header" id="richieste-reverse-header" style="display:none;">🏨 Richieste alloggio vicine</div>
     <div id="richieste-reverse-list"></div>
+    <div class="chat-list-header" id="richieste-taxi-header" style="display:none;">🚕 Richieste taxi</div>
+    <div id="richieste-taxi-list"></div>
     <div class="chat-list-header">Conversazioni</div>
     <div class="no-chats" id="no-chats">Nessun messaggio ancora.</div>
   </div>
@@ -212,6 +214,7 @@ let currentTX = null;
 let unsubMessages = null;
 let unsubChats = null;
 let unsubRichiesteReverse = null;
+let unsubRichiesteTaxi = null;
 
 // ── Verifica PIN con retry automatico + cache-busting ──
 // Google Apps Script può occasionalmente restituire una risposta di
@@ -287,6 +290,7 @@ window.accediDashboard = async function() {
 
     caricaChats(trovato.nome);
     if (negozioLat && negozioLon) caricaRichiesteReverseCompatibili();
+    caricaRichiesteTaxiCompatibili();
     caricaPrenotazioniAccettate(trovato.nome);
 
   } catch(e) {
@@ -397,6 +401,54 @@ function aggiornaTotale(richiestaId, notti) {
     totaleDiv.style.display = 'none';
   }
 }
+
+// ── RICHIESTE TAXI — posizione GPS + destinazione inviate dal cliente ──
+// Collection dedicata ('richieste-taxi'), separata da 'richieste-reverse':
+// lo schema hotel richiede budgetMax/notti/trattativa prezzo, che non hanno
+// senso per una chiamata taxi. Mostriamo solo le richieste rivolte per nome
+// a questo esercente (stesso concetto di "mirata a me" già usato per gli
+// hotel), aperte (stato==='aperta'), con link diretto a Google Maps per la
+// posizione del cliente.
+function caricaRichiesteTaxiCompatibili() {
+  if (unsubRichiesteTaxi) unsubRichiesteTaxi();
+  unsubRichiesteTaxi = onSnapshot(collection(db, 'richieste-taxi'), (snap) => {
+    const list = document.getElementById('richieste-taxi-list');
+    const header = document.getElementById('richieste-taxi-header');
+    list.innerHTML = '';
+    let count = 0;
+    snap.forEach(richDoc => {
+      const r = richDoc.data();
+      if (r.stato !== 'aperta') return;
+      if (String(r.negozioTarget || '').trim().toLowerCase() !== String(negozioCorrente || '').trim().toLowerCase()) return;
+      if (typeof r.lat !== 'number' || typeof r.lon !== 'number') return;
+
+      count++;
+      const mapsUrl = 'https://www.google.com/maps?q=' + r.lat + ',' + r.lon;
+      const card = document.createElement('div');
+      card.className = 'richiesta-card';
+      card.innerHTML = `
+        <div style="font-size:11px;font-weight:600;color:var(--ocra-d);margin-bottom:4px;">🚕 Cliente in attesa</div>
+        ${r.emailCliente ? `<div style="font-size:11px;color:#1A7A3A;font-weight:600;margin-bottom:2px;">✓ Cliente registrato — email verificata: ${r.emailCliente}</div>` : `<div style="font-size:11px;color:#B20000;font-weight:600;margin-bottom:4px;">⚠ Email non verificata</div>`}
+        ${r.registratoDal ? `<div style="font-size:10px;color:var(--ink-mu,#6B5A4E);margin-bottom:4px;">Su INSTANTOWN dal ${r.registratoDal}</div>` : ''}
+        <a href="${mapsUrl}" target="_blank" class="richiesta-card-dist" style="display:block;text-decoration:none;color:inherit;">📍 Apri posizione su Google Maps</a>
+        ${r.destinazione ? `<div class="richiesta-card-note">🏁 Destinazione: ${r.destinazione}</div>` : ''}
+        <div class="richiesta-propose-row" id="taxi-form-${richDoc.id}">
+          <button class="richiesta-propose-btn" style="flex:1;" onclick="presaInCaricoTaxi('${richDoc.id}')">✓ Presa in carico</button>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+    header.style.display = count > 0 ? 'block' : 'none';
+  });
+}
+
+window.presaInCaricoTaxi = async function(richiestaId) {
+  try {
+    await updateDoc(doc(db, 'richieste-taxi', richiestaId), { stato: 'presa_in_carico' });
+    const formRow = document.getElementById('taxi-form-' + richiestaId);
+    if (formRow) formRow.innerHTML = `<span class="richiesta-inviata">✓ Presa in carico</span>`;
+  } catch(e) { console.error(e); }
+};
 
 window.inviaPropostaHotel = async function(richiestaId, notti) {
   const input = document.getElementById('rev-prezzo-' + richiestaId);
