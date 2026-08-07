@@ -9,6 +9,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>INSTANTOWN — Servizi Essenziali</title>
+<meta name="description" content="Servizi pubblici essenziali a Roma: fontanelle, bagni pubblici, Wi-Fi gratuito, parcheggi e trasporti sulla mappa.">
 <script src="i18n.js"></script>
 
 <!-- Leaflet CSS -->
@@ -267,6 +268,9 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
 <body>
 
 <div class="stripe"></div>
+
+<!-- Paragrafo SEO statico: visibile senza JS (la mappa lo copre con z-index:1 quando JS è attivo) -->
+<p id="seo-intro-servizi" style="position:relative;z-index:0;padding:80px 20px 16px;font-size:14px;color:var(--ink-mu);text-align:center;line-height:1.6;">Servizi pubblici essenziali a Roma: fontanelle, bagni pubblici, Wi-Fi gratuito, parcheggi e trasporti sulla mappa.</p>
 
 <!-- TOP BAR -->
 <div class="topbar">
