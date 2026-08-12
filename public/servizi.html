@@ -360,6 +360,10 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
       <span class="btn-portami-icon">🧭</span>
       <span data-i18n="sv_btn_portami">PORTAMI QUI</span>
     </button>
+    <button class="btn-portami" id="btn-trova-totem" onclick="trovaTotemVicino()" style="display:none;background:#1C5E8A;margin-top:8px;">
+      <span class="btn-portami-icon">💲</span>
+      <span id="btn-trova-totem-testo">Trova il totem piu vicino</span>
+    </button>
     <div style="text-align:center;font-size:12.5px;color:#B20000;margin-top:6px;" data-i18n="sv_disclaimer_distanza">La distanza effettiva sarà calcolata dal navigatore al prossimo clic</div>
   </div>
 </div>
@@ -2556,6 +2560,27 @@ function apriSheet(poiOriginale) {
   document.getElementById('s-meta').innerHTML    =
     poi.badges.map(b=>`<span class="sheet-badge badge-${b.c}">${b.t}</span>`).join('');
 
+  const btnTotem = document.getElementById('btn-trova-totem');
+  if (poiOriginale.tipo === 'parcheggio') {
+    const tuttiPOI = window._tuttiPOI || [];
+    const totems = tuttiPOI.filter(p => p.tipo === 'totem_sosta');
+    let totemVicino = null, distMin = Infinity;
+    for (const t of totems) {
+      const d = haversine(poiOriginale.lat, poiOriginale.lon, t.lat, t.lon);
+      if (d < distMin) { distMin = d; totemVicino = t; }
+    }
+    if (totemVicino) {
+      window._totemVicinoCorrente = totemVicino;
+      const distTxt = distMin < 1000 ? Math.round(distMin) + ' m' : (distMin/1000).toFixed(1) + ' km';
+      document.getElementById('btn-trova-totem-testo').textContent = `Trova il totem piu vicino (${distTxt})`;
+      btnTotem.style.display = 'flex';
+    } else {
+      btnTotem.style.display = 'none';
+    }
+  } else {
+    btnTotem.style.display = 'none';
+  }
+
   // Distanza dall utente
   const distEl = document.getElementById('s-dist');
   if(userLat && userLon){
@@ -2681,6 +2706,18 @@ function portaMiQui() {
   } else {
     // Senza GPS — apre solo la destinazione
     url = `https://www.google.com/maps/dir/?api=1&destination=${dest}&travelmode=walking`;
+  }
+  window.open(url, '_blank');
+}
+
+function trovaTotemVicino() {
+  const totem = window._totemVicinoCorrente;
+  if (!totem) return;
+  let url;
+  if (userLat && userLon) {
+    url = `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLon}&destination=${totem.lat},${totem.lon}&travelmode=walking`;
+  } else {
+    url = `https://www.google.com/maps/dir/?api=1&destination=${totem.lat},${totem.lon}&travelmode=walking`;
   }
   window.open(url, '_blank');
 }
