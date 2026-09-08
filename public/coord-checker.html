@@ -1,0 +1,418 @@
+<title>INSTANTOWN Coord Check</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --bg:       #0d1520;
+    --surface:  #1a2535;
+    --border:   #263347;
+    --ink:      #c9d8e8;
+    --ink-mu:   #6a85a0;
+    --accent:   #4a9eff;
+    --ok:       #2ecc71;
+    --warn:     #f5a623;
+    --bad:      #e74c3c;
+    --mono:     'IBM Plex Mono', monospace;
+    --sans:     'IBM Plex Sans', system-ui, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .logo {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .subtitle {
+    font-size: 12px;
+    color: var(--ink-mu);
+    margin-top: 1px;
+  }
+
+  /* ── STAT TILES ── */
+  .stats {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    min-width: 90px;
+    text-align: center;
+  }
+  .stat-n {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-n.ok   { color: var(--ok); }
+  .stat-n.warn { color: var(--warn); }
+  .stat-n.bad  { color: var(--bad); }
+  .stat-n.all  { color: var(--accent); }
+  .stat-label  { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-mu); margin-top: 4px; }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    padding: 14px 28px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border);
+  }
+  .filter-btn {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--ink-mu);
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--ink); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .spacer { flex: 1; }
+  .search {
+    font-family: var(--sans);
+    font-size: 13px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--ink);
+    padding: 5px 12px;
+    width: 200px;
+    outline: none;
+  }
+  .search:focus { border-color: var(--accent); }
+  .search::placeholder { color: var(--ink-mu); }
+
+  /* ── TABLE ── */
+  .table-wrap {
+    overflow-x: auto;
+    padding: 0 28px 40px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 16px;
+    min-width: 800px;
+  }
+  thead th {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-mu);
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    white-space: nowrap;
+  }
+  tbody tr {
+    border-bottom: 1px solid rgba(38,51,71,.6);
+    transition: background .1s;
+  }
+  tbody tr:hover { background: var(--surface); }
+  tbody tr.row-bad  { background: rgba(231,76,60,.06); }
+  tbody tr.row-bad:hover  { background: rgba(231,76,60,.12); }
+  tbody tr.row-warn { background: rgba(245,166,35,.05); }
+  tbody tr.row-warn:hover { background: rgba(245,166,35,.10); }
+
+  td {
+    padding: 9px 12px;
+    vertical-align: middle;
+  }
+  .td-id {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-mu);
+    white-space: nowrap;
+  }
+  .td-nome { font-weight: 500; max-width: 220px; }
+  .td-cat {
+    font-size: 11px;
+    color: var(--ink-mu);
+    white-space: nowrap;
+  }
+  .td-coord {
+    font-family: var(--mono);
+    font-size: 12px;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .coord-ok   { color: var(--ok); }
+  .coord-warn { color: var(--warn); font-weight: 600; }
+  .coord-bad  { color: var(--bad);  font-weight: 600; }
+
+  .badge-dec {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .badge-ok   { background: rgba(46,204,113,.15); color: var(--ok); }
+  .badge-warn { background: rgba(245,166,35,.18); color: var(--warn); }
+  .badge-bad  { background: rgba(231,76,60,.18);  color: var(--bad); }
+
+  .maps-link {
+    display: inline-block;
+    font-size: 11px;
+    color: var(--accent);
+    text-decoration: none;
+    padding: 3px 8px;
+    border: 1px solid rgba(74,158,255,.3);
+    border-radius: 4px;
+    white-space: nowrap;
+    transition: background .15s;
+  }
+  .maps-link:hover { background: rgba(74,158,255,.1); }
+
+  /* ── LOADING / ERROR ── */
+  .state {
+    text-align: center;
+    padding: 60px 28px;
+    color: var(--ink-mu);
+  }
+  .spinner {
+    width: 32px; height: 32px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    margin: 0 auto 16px;
+    animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .state-label { font-size: 13px; }
+
+  .empty { padding: 40px; text-align: center; color: var(--ink-mu); font-size: 13px; }
+
+  /* ── LEGEND ── */
+  .legend {
+    padding: 12px 28px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    font-size: 11px;
+    color: var(--ink-mu);
+    flex-wrap: wrap;
+  }
+  .leg { display: flex; align-items: center; gap: 6px; }
+  .leg-dot { width: 8px; height: 8px; border-radius: 2px; }
+  .leg-ok   { background: var(--ok); }
+  .leg-warn { background: var(--warn); }
+  .leg-bad  { background: var(--bad); }
+</style>
+
+<div class="header">
+  <div class="header-left">
+    <div>
+      <div class="logo">INSTANTOWN</div>
+      <div class="title">Coordinate Checker</div>
+      <div class="subtitle">Diagnostica precisione lat/lon — Sheet dinamico</div>
+    </div>
+  </div>
+  <div class="stats" id="stats">
+    <div class="stat"><div class="stat-n all" id="s-tot">—</div><div class="stat-label">Totali</div></div>
+    <div class="stat"><div class="stat-n ok"   id="s-ok">—</div><div class="stat-label">OK ≥5 dec</div></div>
+    <div class="stat"><div class="stat-n warn" id="s-warn">—</div><div class="stat-label">Sospetti 4 dec</div></div>
+    <div class="stat"><div class="stat-n bad"  id="s-bad">—</div><div class="stat-label">Critici &lt;4 dec</div></div>
+  </div>
+</div>
+
+<div class="toolbar">
+  <button class="filter-btn active" data-f="all">Tutti</button>
+  <button class="filter-btn" data-f="bad">Solo problematici</button>
+  <button class="filter-btn" data-f="ok">Solo OK</button>
+  <div class="spacer"></div>
+  <input class="search" id="search" type="search" placeholder="Cerca nome / id…">
+</div>
+
+<div class="legend">
+  <span class="leg"><span class="leg-dot leg-ok"></span> ≥5 decimali — precisione adeguata (~1m)</span>
+  <span class="leg"><span class="leg-dot leg-warn"></span> 4 decimali — precisione ~11m (accettabile)</span>
+  <span class="leg"><span class="leg-dot leg-bad"></span> &lt;4 decimali — impreciso, verifica su Maps</span>
+</div>
+
+<div class="table-wrap">
+  <div class="state" id="loading">
+    <div class="spinner"></div>
+    <div class="state-label">Caricamento dati dal foglio Google…</div>
+  </div>
+  <div class="state" id="error" hidden>
+    <div class="state-label" id="error-msg"></div>
+  </div>
+  <table id="tbl" hidden>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Categoria</th>
+        <th>Latitudine</th>
+        <th>Longitudine</th>
+        <th>Dec (min)</th>
+        <th>Maps</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+  <div class="empty" id="empty" hidden>Nessun risultato.</div>
+</div>
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
+
+const decimals = v => {
+  const s = String(v).trim();
+  const dot = s.indexOf('.');
+  return dot === -1 ? 0 : s.length - dot - 1;
+};
+
+const minDec = p => Math.min(decimals(p.lat), decimals(p.lon));
+
+const rowClass = d => d >= 5 ? '' : d === 4 ? 'row-warn' : 'row-bad';
+const coordClass = d => d >= 5 ? 'coord-ok' : d === 4 ? 'coord-warn' : 'coord-bad';
+const badgeClass = d => d >= 5 ? 'badge-ok' : d === 4 ? 'badge-warn' : 'badge-bad';
+
+let allPOI = [];
+let currentFilter = 'all';
+let currentSearch = '';
+
+function render() {
+  let list = allPOI;
+  if (currentFilter === 'bad')  list = list.filter(p => minDec(p) < 5);
+  if (currentFilter === 'ok')   list = list.filter(p => minDec(p) >= 5);
+  if (currentSearch) {
+    const q = currentSearch.toLowerCase();
+    list = list.filter(p =>
+      p.nome.toLowerCase().includes(q) ||
+      p.id.toLowerCase().includes(q) ||
+      (p.cat || '').toLowerCase().includes(q)
+    );
+  }
+
+  const tbody = document.getElementById('tbody');
+  if (list.length === 0) {
+    tbody.innerHTML = '';
+    document.getElementById('empty').hidden = false;
+    document.getElementById('tbl').hidden = true;
+    return;
+  }
+  document.getElementById('empty').hidden = true;
+  document.getElementById('tbl').hidden = false;
+
+  tbody.innerHTML = list.map((p, i) => {
+    const d = minDec(p);
+    const dl = decimals(p.lat);
+    const dlo = decimals(p.lon);
+    const mapsUrl = `https://maps.google.com/?q=${p.lat},${p.lon}`;
+    const searchUrl = `https://maps.google.com/maps?q=${encodeURIComponent(p.nome + ' Roma')}`;
+    return `<tr class="${rowClass(d)}">
+      <td class="td-id">${i + 1}</td>
+      <td class="td-id">${p.id}</td>
+      <td class="td-nome">${p.nome}</td>
+      <td class="td-cat">${p.cat || '—'}</td>
+      <td class="td-coord"><span class="${coordClass(dl)}">${p.lat}</span></td>
+      <td class="td-coord"><span class="${coordClass(dlo)}">${p.lon}</span></td>
+      <td><span class="badge-dec ${badgeClass(d)}">${d} dec</span></td>
+      <td>
+        <a class="maps-link" href="${mapsUrl}" target="_blank" title="Vedi posizione attuale">📍 Vedi</a>
+        &nbsp;
+        <a class="maps-link" href="${searchUrl}" target="_blank" title="Cerca su Maps per trovare coords corrette">🔍 Cerca</a>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function load() {
+  try {
+    const url = `${SCRIPT_URL}?azione=getServizi&t=${Date.now()}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (data.stato !== 'ok' || !Array.isArray(data.servizi)) throw new Error(data.messaggio || 'Risposta inattesa');
+
+    allPOI = data.servizi;
+
+    const tot  = allPOI.length;
+    const ok   = allPOI.filter(p => minDec(p) >= 5).length;
+    const warn = allPOI.filter(p => minDec(p) === 4).length;
+    const bad  = allPOI.filter(p => minDec(p) < 4).length;
+
+    document.getElementById('s-tot').textContent  = tot;
+    document.getElementById('s-ok').textContent   = ok;
+    document.getElementById('s-warn').textContent = warn;
+    document.getElementById('s-bad').textContent  = bad;
+
+    document.getElementById('loading').hidden = true;
+    render();
+  } catch(e) {
+    document.getElementById('loading').hidden = true;
+    document.getElementById('error-msg').textContent = '⚠ Errore: ' + e.message;
+    document.getElementById('error').hidden = false;
+  }
+}
+
+// Filter buttons
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.f;
+    render();
+  });
+});
+
+// Search
+document.getElementById('search').addEventListener('input', e => {
+  currentSearch = e.target.value.trim();
+  render();
+});
+
+load();
+</script>
