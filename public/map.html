@@ -806,6 +806,41 @@ function inviaRegistrazione(){
     alert('Inserisci un indirizzo email valido.');
     return;
   }
+  // FIX: se già verificato con questa email → checkout diretto, no magic link
+  const _utenteGiaVer = window.getUtenteVerificato ? window.getUtenteVerificato() : null;
+  if (_utenteGiaVer && _utenteGiaVer.email.toLowerCase() === email.toLowerCase() && offertaCorrente) {
+    chiudiRegistrazioneModal();
+    chiudiAvvisoRegistrati();
+    const _params = new URLSearchParams({
+      tx: offertaCorrente.idtx || '',
+      amount: offertaCorrente.prezzoFlash || 0,
+      desc: offertaCorrente.descrizione || '',
+      negozio: offertaCorrente.negozio || '',
+      indirizzo: offertaCorrente.indirizzo || '',
+      lat: offertaCorrente.lat || '',
+      lon: offertaCorrente.lon || '',
+      inizio: offertaCorrente.inizio || '',
+      fine: offertaCorrente.fine || ''
+    });
+    window.location.href = 'checkout.html?' + _params.toString();
+    return;
+  }
+  // FIX: salva URL checkout in localStorage prima del magic link
+  // così al ritorno andiamo direttamente a checkout senza secondo click
+  if (offertaCorrente) {
+    const _params = new URLSearchParams({
+      tx: offertaCorrente.idtx || '',
+      amount: offertaCorrente.prezzoFlash || 0,
+      desc: offertaCorrente.descrizione || '',
+      negozio: offertaCorrente.negozio || '',
+      indirizzo: offertaCorrente.indirizzo || '',
+      lat: offertaCorrente.lat || '',
+      lon: offertaCorrente.lon || '',
+      inizio: offertaCorrente.inizio || '',
+      fine: offertaCorrente.fine || ''
+    });
+    localStorage.setItem('it_checkout_pending_map', 'checkout.html?' + _params.toString());
+  }
   const btn=document.getElementById('btn-reg-invia');
   btn.disabled=true;
   btn.textContent='Invio in corso...';
@@ -1071,6 +1106,15 @@ if (isSignInWithEmailLink(fbAuth, window.location.href)) {
       localStorage.removeItem('it_email_pending');
       // Pulisce i parametri del magic link dall'URL, mantenendo il resto
       window.history.replaceState({}, document.title, window.location.pathname);
+      // FIX: se c'è un checkout in sospeso salvato prima del magic link → vai diretto
+      const _checkoutPendingMap = localStorage.getItem('it_checkout_pending_map');
+      if (_checkoutPendingMap) {
+        localStorage.removeItem('it_checkout_pending_map');
+        localStorage.removeItem('it_idtx_pending');
+        window.location.href = _checkoutPendingMap;
+        return;
+      }
+      // Fallback: riapri la card (comportamento precedente)
       const idtxSalvato = localStorage.getItem('it_idtx_pending');
       if (idtxSalvato && typeof window.riaperturaOffertaDopoLogin === 'function') {
         window.riaperturaOffertaDopoLogin(idtxSalvato);

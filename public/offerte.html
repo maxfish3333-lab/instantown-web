@@ -1546,6 +1546,19 @@ function chiudiRegistrazioneModalOfferte(){ document.getElementById('reg-email-o
 function inviaRegistrazioneOfferte(){
   const email=document.getElementById('reg-email-input').value.trim();
   if(!email || !email.includes('@')){ alert('Inserisci un indirizzo email valido.'); return; }
+  // FIX: se l'utente è già verificato con questa email, vai direttamente al checkout
+  // (evita il magic link quando Firebase Auth non era ancora caricato al primo click)
+  const _utenteGiaVer = window.getUtenteVerificato ? window.getUtenteVerificato() : null;
+  if (_utenteGiaVer && _utenteGiaVer.email.toLowerCase() === email.toLowerCase()) {
+    chiudiRegistrazioneModalOfferte();
+    chiudiAvvisoRegistratiOfferte();
+    const _checkoutPending = localStorage.getItem('it_checkout_pending');
+    if (_checkoutPending) {
+      localStorage.removeItem('it_checkout_pending');
+      window.location.href = _checkoutPending;
+    }
+    return;
+  }
   const btn=document.getElementById('btn-reg-invia');
   btn.disabled=true;
   btn.textContent='Invio in corso...';
