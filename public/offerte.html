@@ -25,7 +25,7 @@ nav{background:var(--ink);padding:13px 32px;display:flex;align-items:center;just
 .nav-logo img{width:36px;height:36px;object-fit:contain;border-radius:7px;background:#fff;}
 .nav-brand{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:#fff;}
 .nav-brand span{color:var(--ocra-l);}
-.nav-back{color:rgba(255,255,255,.45);font-size:13px;text-decoration:none;}
+.nav-back{color:rgba(255,255,255,.85);font-size:13px;text-decoration:none;}
 .nav-back:hover{color:var(--ocra-l);}
 
 .page-header{background:var(--ink);padding:28px 32px;position:relative;overflow:hidden;}
@@ -707,7 +707,12 @@ function applyI18nDOM() {
       <span class="nav-brand">INSTANTOWN</span>
     </a>
   </div>
-  <a href="index.html" class="nav-back" data-i18n="navBack">← Homepage</a>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <span id="email-loggato-pill" style="display:none;background:rgba(34,160,80,.18);border:1px solid rgba(34,160,80,.4);
+      color:#4ADE80;font-size:11px;font-weight:600;padding:5px 10px;border-radius:20px;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;" title=""></span>
+    <a href="index.html" class="nav-back" data-i18n="navBack">← Homepage</a>
+  </div>
 </nav>
 <div id="lang-bar" style="background:var(--ink);border-bottom:1px solid rgba(200,134,10,.15);
   padding:6px 32px;display:flex;align-items:center;gap:6px;position:sticky;z-index:95;">
@@ -858,6 +863,47 @@ function applyI18nDOM() {
     <button class="ov-back" id="reverse-chiudi-btn" onclick="chiudiReverseOverlay()">← Chiudi</button>
   </div>
   <div class="reverse-body" id="reverse-body"></div>
+</div>
+
+<!-- REGISTRAZIONE GUIDATA — stesso flusso di map.html, aggiunto perché
+     offerte.html mandava chiunque dritto a checkout.html senza mai
+     chiedere un account: le prenotazioni fatte da qui restavano solo
+     in locale, invisibili da "I miei QR" su altri dispositivi. -->
+<style>
+.reg-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);
+  z-index:1200;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.reg-modal-overlay.open{display:flex;}
+.reg-modal-box{background:#fff;border-radius:16px;padding:28px 24px;max-width:340px;width:90%;text-align:center;}
+</style>
+<div class="reg-modal-overlay" id="reg-avviso-overlay">
+  <div class="reg-modal-box">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:var(--ink);margin-bottom:4px;">Accedi o registrati</div>
+    <div style="font-size:12px;color:var(--ink-mu);margin-bottom:20px;">Per prenotare un'offerta serve un'email verificata — bastano 30 secondi. Se hai già un account, usa la stessa email di sempre: ti farà entrare senza crearne uno nuovo.</div>
+    <button onclick="chiudiAvvisoRegistratiOfferte();apriRegistrazioneModalOfferte()" style="
+      width:100%;background:#fff;color:var(--rosso);border:2px solid var(--rosso);
+      font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;
+      padding:14px;border-radius:8px;cursor:pointer;margin-bottom:10px;">Accedi / Registrati</button>
+    <button onclick="chiudiAvvisoRegistratiOfferte()" style="
+      width:100%;background:transparent;color:var(--ink-mu);border:none;
+      font-family:'DM Sans',sans-serif;font-size:13px;padding:8px;cursor:pointer;">Annulla</button>
+  </div>
+</div>
+<div class="reg-modal-overlay" id="reg-email-overlay">
+  <div class="reg-modal-box">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:var(--ink);margin-bottom:4px;">Inserisci la tua email</div>
+    <div id="reg-email-sub" style="margin-bottom:18px;font-size:14px;font-weight:600;color:#1C1410;
+      background:#FDF3DC;border:1.5px solid var(--ocra);border-radius:8px;padding:12px 14px;line-height:1.5;">Se nuovo utente scrivi la tua mail e confermala nella posta in arrivo. Se utente registrato scrivi solo la tua mail</div>
+    <input type="email" id="reg-email-input" placeholder="latua@email.it" autocomplete="email" style="
+      width:100%;padding:14px;border:1px solid var(--rule);border-radius:8px;
+      font-family:'DM Sans',sans-serif;font-size:15px;margin-bottom:14px;text-align:center;">
+    <button id="btn-reg-invia" onclick="inviaRegistrazioneOfferte()" style="
+      width:100%;background:var(--rosso);color:#fff;border:none;
+      font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;
+      padding:14px;border-radius:8px;cursor:pointer;margin-bottom:10px;">Invia</button>
+    <button onclick="chiudiRegistrazioneModalOfferte()" style="
+      width:100%;background:transparent;color:var(--ink-mu);border:none;
+      font-family:'DM Sans',sans-serif;font-size:13px;padding:8px;cursor:pointer;">Annulla</button>
+  </div>
 </div>
 
 <div class="stripe"></div>
@@ -1473,6 +1519,54 @@ async function init() {
   }
 }
 
+// ═══════════════════════
+// REGISTRAZIONE GUIDATA (avviso → email → magic link) — stesso
+// controllo già usato in map.html (getUtenteVerificato()), applicato
+// anche qui perché prima si poteva prenotare senza nessun account.
+// ═══════════════════════
+function confermaPrenotazioneOfferta(checkoutUrl) {
+  const utenteVer = window.getUtenteVerificato ? window.getUtenteVerificato() : null;
+  if (!utenteVer) {
+    localStorage.setItem('it_checkout_pending', checkoutUrl);
+    apriAvvisoRegistratiOfferte();
+    return;
+  }
+  window.location.href = checkoutUrl;
+}
+function apriAvvisoRegistratiOfferte(){ document.getElementById('reg-avviso-overlay').classList.add('open'); }
+function chiudiAvvisoRegistratiOfferte(){ document.getElementById('reg-avviso-overlay').classList.remove('open'); }
+function apriRegistrazioneModalOfferte(){
+  document.getElementById('reg-email-input').value='';
+  document.getElementById('reg-email-sub').textContent = "Se nuovo utente scrivi la tua mail e confermala nella posta in arrivo. Se utente registrato scrivi solo la tua mail";
+  document.getElementById('btn-reg-invia').disabled=false;
+  document.getElementById('btn-reg-invia').textContent='Invia';
+  document.getElementById('reg-email-overlay').classList.add('open');
+}
+function chiudiRegistrazioneModalOfferte(){ document.getElementById('reg-email-overlay').classList.remove('open'); }
+function inviaRegistrazioneOfferte(){
+  const email=document.getElementById('reg-email-input').value.trim();
+  if(!email || !email.includes('@')){ alert('Inserisci un indirizzo email valido.'); return; }
+  const btn=document.getElementById('btn-reg-invia');
+  btn.disabled=true;
+  btn.textContent='Invio in corso...';
+  window.inviaMagicLinkPrenotazioneOfferte(email).then(()=>{
+    document.getElementById('reg-email-sub').innerHTML =
+      '✓ Email inviata! Apri la tua posta e clicca il pulsante di conferma — tornerai qui automaticamente.';
+    btn.textContent='Email inviata ✓';
+  }).catch(err=>{
+    console.error('Invio magic link fallito:', err);
+    alert('Invio non riuscito. Controlla l\'indirizzo e riprova.');
+    btn.disabled=false;
+    btn.textContent='Invia';
+  });
+}
+document.addEventListener('DOMContentLoaded', function(){
+  const a = document.getElementById('reg-avviso-overlay');
+  const e = document.getElementById('reg-email-overlay');
+  if(a) a.addEventListener('click', ev=>{ if(ev.target===ev.currentTarget) chiudiAvvisoRegistratiOfferte(); });
+  if(e) e.addEventListener('click', ev=>{ if(ev.target===ev.currentTarget) chiudiRegistrazioneModalOfferte(); });
+});
+
 function apriOverlayBtn(btn) {
   try { apriOverlay(JSON.parse(btn.getAttribute('data-offer'))); } catch(e) { console.error(e); }
 }
@@ -1556,7 +1650,7 @@ function apriOverlay(o) {
       ${sc>0&&!anom?`<span class="ov-sconto">-${sc}%</span>`:''}
     </div>
     <div class="ov-actions">
-      <a href="${checkoutUrl}" class="btn-conferma">${t('btnAttivaGaranzia')}</a>
+      <a id="ov-btn-conferma" class="btn-conferma" href="javascript:void(0)" onclick="confermaPrenotazioneOfferta('${checkoutUrl.replace(/'/g, "\\'")}')">${t('btnAttivaGaranzia')}</a>
       <button class="btn-ci-ripenso" onclick="chiudiOverlay()">← ${t('ciRipenso')}</button>
       ${ovMapsUrl ? `<a href="${ovMapsUrl}" target="_blank" rel="noopener" class="btn-ci-ripenso" style="text-decoration:none;">🧭 Indicazioni stradali</a>` : ""}
     </div>
@@ -1618,7 +1712,8 @@ function posizionaBarreFisse() {
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, collection, addDoc, doc, updateDoc, onSnapshot, query, where, orderBy, serverTimestamp, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getAuth, signInAnonymously, onAuthStateChanged, setPersistence, browserLocalPersistence,
+  isSignInWithEmailLink, signInWithEmailLink } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBez4L85HA1__NPKOzagfmKeoGLniIQeAc",
@@ -1632,9 +1727,80 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+setPersistence(auth, browserLocalPersistence).catch(()=>{});
 
-// Login anonimo non bloccante — non ferma il caricamento offerte se fallisce
+// Login anonimo non bloccante — non ferma il caricamento offerte se fallisce.
+// Non interferisce con un login email già fatto: se un utente risulta già
+// autenticato (anche anonimo), Firebase non ne crea uno nuovo qui sopra.
 signInAnonymously(auth).catch(e => console.warn('Auth anonima:', e.code));
+
+// ── Tracciamento login "vero" (email verificata), stessa fonte di
+// verità usata in map.html — un utente anonimo NON conta come
+// registrato: window.getUtenteVerificato() torna null finché non ha
+// fatto il login via magic link.
+let utenteEmailFb = null;
+onAuthStateChanged(auth, (u) => {
+  utenteEmailFb = (u && u.email) ? u : null;
+  const pill = document.getElementById('email-loggato-pill');
+  if (pill) {
+    if (utenteEmailFb) {
+      pill.textContent = '✓ ' + utenteEmailFb.email;
+      pill.title = utenteEmailFb.email;
+      pill.style.display = 'inline-block';
+    } else {
+      pill.style.display = 'none';
+    }
+  }
+});
+
+window.getUtenteVerificato = function() {
+  if (!utenteEmailFb || !utenteEmailFb.email || !utenteEmailFb.emailVerified) return null;
+  return { email: utenteEmailFb.email };
+};
+
+window.inviaMagicLinkPrenotazioneOfferte = function(email) {
+  localStorage.setItem('it_email_pending', email);
+  return fetch('https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec', {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({
+      azione: 'inviaLinkAccesso',
+      email: email,
+      continueUrl: window.location.origin + '/offerte.html'
+    })
+  }).then(r => r.json()).then(json => {
+    if (json.stato !== 'ok') throw new Error(json.messaggio || 'Invio email non riuscito');
+    return json;
+  });
+};
+
+// Al ritorno dal magic link: completa il login, poi se c'era una
+// prenotazione in sospeso (l'utente aveva cliccato "Conferma e
+// prenota" prima di essere fermato) va DIRETTO a checkout.html con
+// gli stessi parametri, senza dover ritrovare e riaprire l'offerta —
+// un passaggio in meno rispetto al Radar, dove serve invece un
+// secondo click sulla mappa per riaprire la scheda.
+if (isSignInWithEmailLink(auth, window.location.href)) {
+  let emailSalvata = localStorage.getItem('it_email_pending');
+  if (!emailSalvata) {
+    emailSalvata = window.prompt('Per completare l\'accesso, confermaci la tua email:');
+  }
+  if (emailSalvata) {
+    signInWithEmailLink(auth, emailSalvata, window.location.href).then(() => {
+      localStorage.removeItem('it_email_pending');
+      window.history.replaceState({}, document.title, window.location.pathname);
+      const checkoutPending = localStorage.getItem('it_checkout_pending');
+      if (checkoutPending) {
+        localStorage.removeItem('it_checkout_pending');
+        window.location.href = checkoutPending;
+      }
+    }).catch(err => {
+      console.error('Completamento magic link fallito:', err);
+      alert('Accesso non riuscito: ' + (err.message || 'riprova ad aprire il link dalla mail.'));
+    });
+  }
+}
+
 
 function haversine(lat1, lon1, lat2, lon2) {
   const R = 6371000;

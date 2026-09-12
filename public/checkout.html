@@ -74,6 +74,31 @@
     <div class="proc-spinner"></div>
     <div class="proc-text" id="proc-text">ATTIVAZIONE IN CORSO...</div>
 </div>
+<div id="scelta-accesso" style="display:none;width:100%;max-width:420px;flex-direction:column;align-items:center;">
+    <div class="top-bar">
+        <a href="offerte.html" class="back-btn">→ Offerte</a>
+        <div>
+            <div class="page-title">Prima di continuare</div>
+            <div class="page-sub">Scegli come procedere</div>
+        </div>
+    </div>
+    <div class="info-box" style="width:100%;">
+        Per completare l acquisto puoi accedere rapidamente con la tua email (còsò ritrovi i tuoi QR anche da un altro dispositivo), oppure continuare come ospite: il QR resterà valido solo su questo dispositivo.
+    </div>
+    <div id="sa-guest-view" style="width:100%;">
+        <button class="btn-attiva" onclick="mostraFormAccessoRapido()">✉️ Accedi rapidamente</button>
+        <button class="btn-back" style="margin-bottom:12px;" onclick="continuaComeOspite()">→ Continua come ospite</button>
+    </div>
+    <div id="sa-login-view" style="display:none;width:100%;">
+        <div style="width:100%;background:#0d0d0d;border:1px solid #2a2a2a;border-radius:14px;padding:18px;margin-bottom:16px;">
+            <div style="font-size:11px;color:#666;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">✉️ La tua email</div>
+            <input id="sa-email-input" type="email" placeholder="nome@esempio.it" style="width:100%;padding:12px;background:#1a1a1a;border-radius:8px;border:1px solid #2a2a2a;color:#fff;font-size:15px;">
+            <div id="sa-email-status" style="font-size:12.5px;margin-top:8px;"></div>
+        </div>
+        <button class="btn-attiva" id="sa-invia-btn" onclick="inviaAccessoRapidoDaCheckout()">Invia il link di accesso</button>
+        <button class="btn-back" style="margin-bottom:12px;" onclick="continuaComeOspite()">→ Continua come ospite</button>
+    </div>
+</div>
 <div id="checkout-flow" style="width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;">
     <div class="top-bar">
         <a href="offerte.html" class="back-btn">← Offerte</a>
@@ -156,10 +181,50 @@
 // raggiunta con un link diretto, un redirect, o in futuro da un altro
 // punto dell'app. Va PRIMA di qualunque altra cosa: prima di creare il
 // PaymentIntent Stripe, prima di montare il modulo carta.
-if (localStorage.getItem('it_modalita') === 'visitatore') {
-  alert(i18n('soloUtentiRegistrati'));
-  window.location.href = 'index.html';
-  throw new Error('Checkout bloccato: profilo visitatore');
+const modalitaVisitatore = localStorage.getItem('it_modalita') === 'visitatore';
+
+function continuaComeOspite() {
+  document.getElementById('scelta-accesso').style.display = 'none';
+  document.getElementById('checkout-flow').style.display = 'flex';
+}
+
+function mostraFormAccessoRapido() {
+  document.getElementById('sa-guest-view').style.display = 'none';
+  document.getElementById('sa-login-view').style.display = 'block';
+}
+
+async function inviaAccessoRapidoDaCheckout() {
+  const input = document.getElementById('sa-email-input');
+  const statusEl = document.getElementById('sa-email-status');
+  const btn = document.getElementById('sa-invia-btn');
+  const email = (input.value || '').trim().toLowerCase();
+  if (!email || email.indexOf('@') === -1) {
+    statusEl.style.color = '#ff6b6b';
+    statusEl.textContent = 'Inserisci un indirizzo email valido.';
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = 'Invio in corso...';
+  try {
+    try { localStorage.setItem('it_checkout_return_url', window.location.href); } catch(e) {}
+    if (typeof window.inviaMagicLink === 'function') {
+      await window.inviaMagicLink(email);
+    }
+    localStorage.setItem('it_email', email);
+    statusEl.style.color = 'var(--green)';
+    statusEl.innerHTML = '✓ Controlla la tua casella email (anche SPAM) e apri il link su questo dispositivo: tornerai automaticamente qui per completare l acquisto.';
+    input.disabled = true;
+  } catch (e) {
+    statusEl.style.color = '#ff6b6b';
+    statusEl.textContent = 'Errore nell invio del link. Riprova, oppure continua come ospite qui sotto.';
+    btn.disabled = false;
+    btn.textContent = 'Invia il link di accesso';
+  }
+}
+
+if (modalitaVisitatore) {
+  document.getElementById('checkout-flow').style.display = 'none';
+  document.getElementById('scelta-accesso').style.display = 'flex';
 }
 
 const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
@@ -365,7 +430,7 @@ function chiudiModaleRassicurazione() {
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, setDoc, doc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-import { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence, sendSignInLinkToEmail } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBez4L85HA1__NPKOzagfmKeoGLniIQeAc",
@@ -382,6 +447,14 @@ setPersistence(fbAuth, browserLocalPersistence).catch(()=>{});
 
 let utenteFb = null;
 onAuthStateChanged(fbAuth, (u) => { utenteFb = (u && u.email) ? u : null; });
+const magicLinkSettings = {
+  url: 'https://instantown.it/mio-account.html',
+  handleCodeInApp: true
+};
+window.inviaMagicLink = async function(email) {
+  await sendSignInLinkToEmail(fbAuth, email, magicLinkSettings);
+  window.localStorage.setItem('emailMagicLink', email);
+};
 
 window.scriviQrSuFirestore = async function(bookingId, o, pin, paymentIntentId) {
   if (!utenteFb || !utenteFb.email) return; // non loggato: solo locale, nessun errore

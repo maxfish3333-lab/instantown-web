@@ -9,7 +9,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>INSTANTOWN — Servizi Essenziali</title>
-<meta name="description" content="Servizi pubblici essenziali a Roma: fontanelle, bagni pubblici, Wi-Fi gratuito, parcheggi e trasporti sulla mappa.">
 <script src="i18n.js"></script>
 
 <!-- Leaflet CSS -->
@@ -174,6 +173,16 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
 }
 .sheet-close:hover{background:var(--rule);}
 
+/* ── CLICK-TO-CALL ── */
+.tel-link{
+  display:inline-flex;align-items:center;gap:5px;
+  color:var(--verde);font-weight:600;text-decoration:none;
+  background:var(--verde-p);padding:5px 12px;border-radius:20px;
+  border:1px solid rgba(26,122,58,.2);margin-top:6px;
+  font-size:13px;line-height:1.4;
+}
+.tel-link:hover,.tel-link:active{background:#d0edda;}
+
 /* ── PANNELLO LISTA CATEGORIA ── */
 .cat-list-panel{
   position:absolute;bottom:-70%;left:0;right:0;z-index:850;
@@ -269,9 +278,6 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
 
 <div class="stripe"></div>
 
-<!-- Paragrafo SEO statico: visibile senza JS (la mappa lo copre con z-index:1 quando JS è attivo) -->
-<p id="seo-intro-servizi" style="position:relative;z-index:0;padding:80px 20px 16px;font-size:14px;color:var(--ink-mu);text-align:center;line-height:1.6;">Servizi pubblici essenziali a Roma: fontanelle, bagni pubblici, Wi-Fi gratuito, parcheggi e trasporti sulla mappa.</p>
-
 <!-- TOP BAR -->
 <div class="topbar">
   <a href="#" class="topbar-back" onclick="return gestisciIndietro()">&#8592;</a>
@@ -359,10 +365,6 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
     <button class="btn-portami" id="btn-portami" onclick="portaMiQui()">
       <span class="btn-portami-icon">🧭</span>
       <span data-i18n="sv_btn_portami">PORTAMI QUI</span>
-    </button>
-    <button class="btn-portami" id="btn-trova-totem" onclick="trovaTotemVicino()" style="display:none;background:#1C5E8A;margin-top:8px;">
-      <span class="btn-portami-icon">💲</span>
-      <span id="btn-trova-totem-testo">Trova il totem piu vicino</span>
     </button>
     <div style="text-align:center;font-size:12.5px;color:#B20000;margin-top:6px;" data-i18n="sv_disclaimer_distanza">La distanza effettiva sarà calcolata dal navigatore al prossimo clic</div>
   </div>
@@ -1043,6 +1045,88 @@ const POI_I18N = {
     "es": { "nome": "Correos — Monti", "cat": "Oficinas de correos", "desc": "Oficina de correos en la zona de Monti, cerca de Via Nazionale.", "badges": ["Monti"] },
     "fr": { "nome": "Poste — Monti", "cat": "Bureaux de poste", "desc": "Bureau de poste dans le quartier de Monti, près de la Via Nazionale.", "badges": ["Monti"] },
     "de": { "nome": "Post — Monti", "cat": "Postämter", "desc": "Postamt im Stadtteil Monti, in der Nähe der Via Nazionale.", "badges": ["Monti"] }
+  }
+,
+  // ── UFFICI POSTALI MUNICIPIO III ──
+  "poste-adriatico": {
+    "it": { "nome": "Poste — Viale Adriatico", "cat": "Uffici postali", "desc": "Ufficio postale in zona Montesacro, Viale Adriatico 136. Tel: 06 8174135.", "badges": ["Montesacro", "Mun. III"] },
+    "en": { "nome": "Post Office — Viale Adriatico", "cat": "Post offices", "desc": "Post office in the Montesacro area, Viale Adriatico 136. Tel: 06 8174135.", "badges": ["Montesacro", "Dist. III"] },
+    "zh": { "nome": "邮局 — 亚得里亚大道", "cat": "邮局", "desc": "邮局，位于蒙特萨克罗区，亚得里亚大道136号。电话：06 8174135。", "badges": ["蒙特萨克罗", "第三区"] },
+    "es": { "nome": "Correos — Viale Adriatico", "cat": "Oficinas de correos", "desc": "Oficina de correos en la zona de Montesacro, Viale Adriatico 136. Tel: 06 8174135.", "badges": ["Montesacro", "Mun. III"] },
+    "fr": { "nome": "Poste — Viale Adriatico", "cat": "Bureaux de poste", "desc": "Bureau de poste dans le quartier de Montesacro, Viale Adriatico 136. Tél : 06 8174135.", "badges": ["Montesacro", "Mun. III"] },
+    "de": { "nome": "Post — Viale Adriatico", "cat": "Postämter", "desc": "Postamt im Stadtteil Montesacro, Viale Adriatico 136. Tel: 06 8174135.", "badges": ["Montesacro", "Bez. III"] }
+  },
+  "poste-val-pellice": {
+    "it": { "nome": "Poste — Via Val Pellice", "cat": "Uffici postali", "desc": "Ufficio postale in zona Conca d'Oro, Via Val Pellice 34. Tel: 06 88640053.", "badges": ["Conca d'Oro", "Mun. III"] },
+    "en": { "nome": "Post Office — Via Val Pellice", "cat": "Post offices", "desc": "Post office in the Conca d'Oro area, Via Val Pellice 34. Tel: 06 88640053.", "badges": ["Conca d'Oro", "Dist. III"] },
+    "zh": { "nome": "邮局 — 佩利切谷路", "cat": "邮局", "desc": "邮局，位于孔卡多罗区，佩利切谷路34号。电话：06 88640053。", "badges": ["孔卡多罗", "第三区"] },
+    "es": { "nome": "Correos — Via Val Pellice", "cat": "Oficinas de correos", "desc": "Oficina de correos en la zona de Conca d'Oro, Via Val Pellice 34. Tel: 06 88640053.", "badges": ["Conca d'Oro", "Mun. III"] },
+    "fr": { "nome": "Poste — Via Val Pellice", "cat": "Bureaux de poste", "desc": "Bureau de poste dans le quartier de Conca d'Oro, Via Val Pellice 34. Tél : 06 88640053.", "badges": ["Conca d'Oro", "Mun. III"] },
+    "de": { "nome": "Post — Via Val Pellice", "cat": "Postämter", "desc": "Postamt im Stadtteil Conca d'Oro, Via Val Pellice 34. Tel: 06 88640053.", "badges": ["Conca d'Oro", "Bez. III"] }
+  },
+  "poste-monte-berico": {
+    "it": { "nome": "Poste — Via Monte Berico", "cat": "Uffici postali", "desc": "Ufficio postale in zona Montesacro, Via Monte Berico 3. Tel: 06 3244389.", "badges": ["Montesacro", "Mun. III"] },
+    "en": { "nome": "Post Office — Via Monte Berico", "cat": "Post offices", "desc": "Post office in the Montesacro area, Via Monte Berico 3. Tel: 06 3244389.", "badges": ["Montesacro", "Dist. III"] },
+    "zh": { "nome": "邮局 — 贝里科山路", "cat": "邮局", "desc": "邮局，位于蒙特萨克罗区，贝里科山路3号。电话：06 3244389。", "badges": ["蒙特萨克罗", "第三区"] },
+    "es": { "nome": "Correos — Via Monte Berico", "cat": "Oficinas de correos", "desc": "Oficina de correos en la zona de Montesacro, Via Monte Berico 3. Tel: 06 3244389.", "badges": ["Montesacro", "Mun. III"] },
+    "fr": { "nome": "Poste — Via Monte Berico", "cat": "Bureaux de poste", "desc": "Bureau de poste dans le quartier de Montesacro, Via Monte Berico 3. Tél : 06 3244389.", "badges": ["Montesacro", "Mun. III"] },
+    "de": { "nome": "Post — Via Monte Berico", "cat": "Postämter", "desc": "Postamt im Stadtteil Montesacro, Via Monte Berico 3. Tel: 06 3244389.", "badges": ["Montesacro", "Bez. III"] }
+  },
+  "poste-sempione": {
+    "it": { "nome": "Poste — Piazza Sempione", "cat": "Uffici postali", "desc": "Ufficio postale in zona Conca d'Oro, Piazza Sempione 6. Tel: 06 86899210.", "badges": ["Conca d'Oro", "Mun. III"] },
+    "en": { "nome": "Post Office — Piazza Sempione", "cat": "Post offices", "desc": "Post office in the Conca d'Oro area, Piazza Sempione 6. Tel: 06 86899210.", "badges": ["Conca d'Oro", "Dist. III"] },
+    "zh": { "nome": "邮局 — 森皮奥内广场", "cat": "邮局", "desc": "邮局，位于孔卡多罗区，森皮奥内广场6号。电话：06 86899210。", "badges": ["孔卡多罗", "第三区"] },
+    "es": { "nome": "Correos — Piazza Sempione", "cat": "Oficinas de correos", "desc": "Oficina de correos en la zona de Conca d'Oro, Piazza Sempione 6. Tel: 06 86899210.", "badges": ["Conca d'Oro", "Mun. III"] },
+    "fr": { "nome": "Poste — Piazza Sempione", "cat": "Bureaux de poste", "desc": "Bureau de poste dans le quartier de Conca d'Oro, Piazza Sempione 6. Tél : 06 86899210.", "badges": ["Conca d'Oro", "Mun. III"] },
+    "de": { "nome": "Post — Piazza Sempione", "cat": "Postämter", "desc": "Postamt im Stadtteil Conca d'Oro, Piazza Sempione 6. Tel: 06 86899210.", "badges": ["Conca d'Oro", "Bez. III"] }
+  },
+  "poste-monte-baldo": {
+    "it": { "nome": "Poste — Piazza Monte Baldo", "cat": "Uffici postali", "desc": "Ufficio postale in zona Conca d'Oro, Piazza Monte Baldo 5. Tel: 06 4474081.", "badges": ["Conca d'Oro", "Mun. III"] },
+    "en": { "nome": "Post Office — Piazza Monte Baldo", "cat": "Post offices", "desc": "Post office in the Conca d'Oro area, Piazza Monte Baldo 5. Tel: 06 4474081.", "badges": ["Conca d'Oro", "Dist. III"] },
+    "zh": { "nome": "邮局 — 蒙特巴尔多广场", "cat": "邮局", "desc": "邮局，位于孔卡多罗区，蒙特巴尔多广场5号。电话：06 4474081。", "badges": ["孔卡多罗", "第三区"] },
+    "es": { "nome": "Correos — Piazza Monte Baldo", "cat": "Oficinas de correos", "desc": "Oficina de correos en la zona de Conca d'Oro, Piazza Monte Baldo 5. Tel: 06 4474081.", "badges": ["Conca d'Oro", "Mun. III"] },
+    "fr": { "nome": "Poste — Piazza Monte Baldo", "cat": "Bureaux de poste", "desc": "Bureau de poste dans le quartier de Conca d'Oro, Piazza Monte Baldo 5. Tél : 06 4474081.", "badges": ["Conca d'Oro", "Mun. III"] },
+    "de": { "nome": "Post — Piazza Monte Baldo", "cat": "Postämter", "desc": "Postamt im Stadtteil Conca d'Oro, Piazza Monte Baldo 5. Tel: 06 4474081.", "badges": ["Conca d'Oro", "Bez. III"] }
+  },
+  "poste-adua": {
+    "it": { "nome": "Poste — Via Adua", "cat": "Uffici postali", "desc": "Ufficio postale in zona Prati Fiscali, Via Adua 14. Tel: 06 86328057.", "badges": ["Prati Fiscali", "Mun. III"] },
+    "en": { "nome": "Post Office — Via Adua", "cat": "Post offices", "desc": "Post office in the Prati Fiscali area, Via Adua 14. Tel: 06 86328057.", "badges": ["Prati Fiscali", "Dist. III"] },
+    "zh": { "nome": "邮局 — 阿杜亚路", "cat": "邮局", "desc": "邮局，位于普拉蒂菲斯卡利区，阿杜亚路14号。电话：06 86328057。", "badges": ["普拉蒂菲斯卡利", "第三区"] },
+    "es": { "nome": "Correos — Via Adua", "cat": "Oficinas de correos", "desc": "Oficina de correos en la zona de Prati Fiscali, Via Adua 14. Tel: 06 86328057.", "badges": ["Prati Fiscali", "Mun. III"] },
+    "fr": { "nome": "Poste — Via Adua", "cat": "Bureaux de poste", "desc": "Bureau de poste dans le quartier de Prati Fiscali, Via Adua 14. Tél : 06 86328057.", "badges": ["Prati Fiscali", "Mun. III"] },
+    "de": { "nome": "Post — Via Adua", "cat": "Postämter", "desc": "Postamt im Stadtteil Prati Fiscali, Via Adua 14. Tel: 06 86328057.", "badges": ["Prati Fiscali", "Bez. III"] }
+  },
+  "poste-de-roberto": {
+    "it": { "nome": "Poste — Via De Roberto", "cat": "Uffici postali", "desc": "Ufficio postale in zona Talenti, Via Federico De Roberto 35. Tel: 06 82081522.", "badges": ["Talenti", "Mun. III"] },
+    "en": { "nome": "Post Office — Via De Roberto", "cat": "Post offices", "desc": "Post office in the Talenti area, Via Federico De Roberto 35. Tel: 06 82081522.", "badges": ["Talenti", "Dist. III"] },
+    "zh": { "nome": "邮局 — 德罗贝托路", "cat": "邮局", "desc": "邮局，位于塔伦蒂区，费德里科德罗贝托路35号。电话：06 82081522。", "badges": ["塔伦蒂", "第三区"] },
+    "es": { "nome": "Correos — Via De Roberto", "cat": "Oficinas de correos", "desc": "Oficina de correos en la zona de Talenti, Via Federico De Roberto 35. Tel: 06 82081522.", "badges": ["Talenti", "Mun. III"] },
+    "fr": { "nome": "Poste — Via De Roberto", "cat": "Bureaux de poste", "desc": "Bureau de poste dans le quartier de Talenti, Via Federico De Roberto 35. Tél : 06 82081522.", "badges": ["Talenti", "Mun. III"] },
+    "de": { "nome": "Post — Via De Roberto", "cat": "Postämter", "desc": "Postamt im Stadtteil Talenti, Via Federico De Roberto 35. Tel: 06 82081522.", "badges": ["Talenti", "Bez. III"] }
+  },
+  "poste-monte-cervialto": {
+    "it": { "nome": "Poste — Via Monte Cervialto", "cat": "Uffici postali", "desc": "Ufficio postale in zona Fidene / Vigne Nuove, Via Monte Cervialto 125. Tel: 06 81082888.", "badges": ["Fidene", "Mun. III"] },
+    "en": { "nome": "Post Office — Via Monte Cervialto", "cat": "Post offices", "desc": "Post office in the Fidene / Vigne Nuove area, Via Monte Cervialto 125. Tel: 06 81082888.", "badges": ["Fidene", "Dist. III"] },
+    "zh": { "nome": "邮局 — 切尔维亚尔托山路", "cat": "邮局", "desc": "邮局，位于菲德内/维涅诺韦区，切尔维亚尔托山路125号。电话：06 81082888。", "badges": ["菲德内", "第三区"] },
+    "es": { "nome": "Correos — Via Monte Cervialto", "cat": "Oficinas de correos", "desc": "Oficina de correos en la zona de Fidene / Vigne Nuove, Via Monte Cervialto 125. Tel: 06 81082888.", "badges": ["Fidene", "Mun. III"] },
+    "fr": { "nome": "Poste — Via Monte Cervialto", "cat": "Bureaux de poste", "desc": "Bureau de poste dans le quartier de Fidene / Vigne Nuove, Via Monte Cervialto 125. Tél : 06 81082888.", "badges": ["Fidene", "Mun. III"] },
+    "de": { "nome": "Post — Via Monte Cervialto", "cat": "Postämter", "desc": "Postamt im Stadtteil Fidene / Vigne Nuove, Via Monte Cervialto 125. Tel: 06 81082888.", "badges": ["Fidene", "Bez. III"] }
+  },
+  "poste-montecassiano": {
+    "it": { "nome": "Poste — Via Montecassiano", "cat": "Uffici postali", "desc": "Ufficio postale in zona Val Melaina, Via Montecassiano 110. Tel: 06 4103176.", "badges": ["Val Melaina", "Mun. III"] },
+    "en": { "nome": "Post Office — Via Montecassiano", "cat": "Post offices", "desc": "Post office in the Val Melaina area, Via Montecassiano 110. Tel: 06 4103176.", "badges": ["Val Melaina", "Dist. III"] },
+    "zh": { "nome": "邮局 — 蒙卡西诺路", "cat": "邮局", "desc": "邮局，位于瓦尔梅莱纳区，蒙卡西诺路110号。电话：06 4103176。", "badges": ["瓦尔梅莱纳", "第三区"] },
+    "es": { "nome": "Correos — Via Montecassiano", "cat": "Oficinas de correos", "desc": "Oficina de correos en la zona de Val Melaina, Via Montecassiano 110. Tel: 06 4103176.", "badges": ["Val Melaina", "Mun. III"] },
+    "fr": { "nome": "Poste — Via Montecassiano", "cat": "Bureaux de poste", "desc": "Bureau de poste dans le quartier de Val Melaina, Via Montecassiano 110. Tél : 06 4103176.", "badges": ["Val Melaina", "Mun. III"] },
+    "de": { "nome": "Post — Via Montecassiano", "cat": "Postämter", "desc": "Postamt im Stadtteil Val Melaina, Via Montecassiano 110. Tel: 06 4103176.", "badges": ["Val Melaina", "Bez. III"] }
+  },
+  "poste-deledda": {
+    "it": { "nome": "Poste — Via Grazia Deledda", "cat": "Uffici postali", "desc": "Ufficio postale in zona Talenti, Via Grazia Deledda 43. Tel: 06 82003881.", "badges": ["Talenti", "Mun. III"] },
+    "en": { "nome": "Post Office — Via Grazia Deledda", "cat": "Post offices", "desc": "Post office in the Talenti area, Via Grazia Deledda 43. Tel: 06 82003881.", "badges": ["Talenti", "Dist. III"] },
+    "zh": { "nome": "邮局 — 格拉齐亚·德莱达路", "cat": "邮局", "desc": "邮局，位于塔伦蒂区，格拉齐亚·德莱达路43号。电话：06 82003881。", "badges": ["塔伦蒂", "第三区"] },
+    "es": { "nome": "Correos — Via Grazia Deledda", "cat": "Oficinas de correos", "desc": "Oficina de correos en la zona de Talenti, Via Grazia Deledda 43. Tel: 06 82003881.", "badges": ["Talenti", "Mun. III"] },
+    "fr": { "nome": "Poste — Via Grazia Deledda", "cat": "Bureaux de poste", "desc": "Bureau de poste dans le quartier de Talenti, Via Grazia Deledda 43. Tél : 06 82003881.", "badges": ["Talenti", "Mun. III"] },
+    "de": { "nome": "Post — Via Grazia Deledda", "cat": "Postämter", "desc": "Postamt im Stadtteil Talenti, Via Grazia Deledda 43. Tel: 06 82003881.", "badges": ["Talenti", "Bez. III"] }
   }
 ,
   "nasone-trastevere": {
@@ -2168,6 +2252,97 @@ const POIS = [
     lat:41.8967, lon:12.4881,
     dest:'poste+italiane+monti+Roma'
   },
+  // ── UFFICI POSTALI MUNICIPIO III ──
+  {
+    id:'poste-adriatico', tipo:'poste', emoji:'📮',
+    nome:'Poste — Viale Adriatico',
+    cat:'Uffici postali',
+    desc:'Ufficio postale in zona Montesacro, Viale Adriatico 136. Tel: 06 8174135.',
+    badges:[{t:'Montesacro',c:'verde'},{t:'Mun. III',c:'cielo'}],
+    lat:41.941893, lon:12.536755,
+    dest:'poste+italiane+viale+adriatico+136+Roma'
+  },
+  {
+    id:'poste-val-pellice', tipo:'poste', emoji:'📮',
+    nome:'Poste — Via Val Pellice',
+    cat:'Uffici postali',
+    desc:'Ufficio postale in zona Conca d\'Oro, Via Val Pellice 34. Tel: 06 88640053.',
+    badges:[{t:'Conca d\'Oro',c:'verde'},{t:'Mun. III',c:'cielo'}],
+    lat:41.944830, lon:12.519984,
+    dest:'poste+italiane+via+val+pellice+34+Roma'
+  },
+  {
+    id:'poste-monte-berico', tipo:'poste', emoji:'📮',
+    nome:'Poste — Via Monte Berico',
+    cat:'Uffici postali',
+    desc:'Ufficio postale in zona Montesacro, Via Monte Berico 3. Tel: 06 3244389.',
+    badges:[{t:'Montesacro',c:'verde'},{t:'Mun. III',c:'cielo'}],
+    lat:41.941357, lon:12.537720,
+    dest:'poste+italiane+via+monte+berico+3+Roma'
+  },
+  {
+    id:'poste-sempione', tipo:'poste', emoji:'📮',
+    nome:'Poste — Piazza Sempione',
+    cat:'Uffici postali',
+    desc:'Ufficio postale in zona Conca d\'Oro, Piazza Sempione 6. Tel: 06 86899210.',
+    badges:[{t:'Conca d\'Oro',c:'verde'},{t:'Mun. III',c:'cielo'}],
+    lat:41.935947, lon:12.534921,
+    dest:'poste+italiane+piazza+sempione+6+Roma'
+  },
+  {
+    id:'poste-monte-baldo', tipo:'poste', emoji:'📮',
+    nome:'Poste — Piazza Monte Baldo',
+    cat:'Uffici postali',
+    desc:'Ufficio postale in zona Conca d\'Oro, Piazza Monte Baldo 5. Tel: 06 4474081.',
+    badges:[{t:'Conca d\'Oro',c:'verde'},{t:'Mun. III',c:'cielo'}],
+    lat:41.937100, lon:12.534000,
+    dest:'poste+italiane+piazza+monte+baldo+5+Roma'
+  },
+  {
+    id:'poste-adua', tipo:'poste', emoji:'📮',
+    nome:'Poste — Via Adua',
+    cat:'Uffici postali',
+    desc:'Ufficio postale in zona Prati Fiscali, Via Adua 14. Tel: 06 86328057.',
+    badges:[{t:'Prati Fiscali',c:'verde'},{t:'Mun. III',c:'cielo'}],
+    lat:41.930500, lon:12.524450,
+    dest:'poste+italiane+via+adua+14+Roma'
+  },
+  {
+    id:'poste-de-roberto', tipo:'poste', emoji:'📮',
+    nome:'Poste — Via De Roberto',
+    cat:'Uffici postali',
+    desc:'Ufficio postale in zona Talenti, Via Federico De Roberto 35. Tel: 06 82081522.',
+    badges:[{t:'Talenti',c:'verde'},{t:'Mun. III',c:'cielo'}],
+    lat:41.950772, lon:12.548307,
+    dest:'poste+italiane+via+de+roberto+35+Roma'
+  },
+  {
+    id:'poste-monte-cervialto', tipo:'poste', emoji:'📮',
+    nome:'Poste — Via Monte Cervialto',
+    cat:'Uffici postali',
+    desc:'Ufficio postale in zona Fidene / Vigne Nuove, Via Monte Cervialto 125. Tel: 06 81082888.',
+    badges:[{t:'Fidene',c:'verde'},{t:'Mun. III',c:'cielo'}],
+    lat:41.953563, lon:12.522356,
+    dest:'poste+italiane+via+monte+cervialto+125+Roma'
+  },
+  {
+    id:'poste-montecassiano', tipo:'poste', emoji:'📮',
+    nome:'Poste — Via Montecassiano',
+    cat:'Uffici postali',
+    desc:'Ufficio postale in zona Val Melaina, Via Montecassiano 110. Tel: 06 4103176.',
+    badges:[{t:'Val Melaina',c:'verde'},{t:'Mun. III',c:'cielo'}],
+    lat:41.944000, lon:12.572300,
+    dest:'poste+italiane+via+montecassiano+110+Roma'
+  },
+  {
+    id:'poste-deledda', tipo:'poste', emoji:'📮',
+    nome:'Poste — Via Grazia Deledda',
+    cat:'Uffici postali',
+    desc:'Ufficio postale in zona Talenti, Via Grazia Deledda 43. Tel: 06 82003881.',
+    badges:[{t:'Talenti',c:'verde'},{t:'Mun. III',c:'cielo'}],
+    lat:41.945627, lon:12.560789,
+    dest:'poste+italiane+via+grazia+deledda+43+Roma'
+  },
   // ── AGENZIE VIAGGIO ──
   {
     id:'agenzia-1', tipo:'agenzia', emoji:'✈️',
@@ -2260,6 +2435,34 @@ async function caricaServiziDinamici() {
       apriListaCategoria(t, (window._tuttiPOI || POIS).filter(p => p.tipo === t), null, true);
     }
   }
+}
+
+// ── CLICK-TO-CALL: rileva numeri di telefono italiani nel testo ──────────────
+// Riconosce: 06 1234567  •  +39 06 1234567  •  320 123 4567  •  06/1234567
+// Restituisce HTML sicuro (testo escape-ato, solo il tag <a> viene iniettato).
+function _escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderDescConTelefono(desc) {
+  if (!desc) return '';
+  // Regex: prefisso +39 opzionale + numero fisso (0xx…) o cellulare (3xx…)
+  var telRegex = /(\+39[\s\-]?)?(0\d{1,3}[\s\/\-]?\d{4,8}|\d{3}[\s\-]?\d{3,4}[\s\-]?\d{3,4})/g;
+  var result = '';
+  var lastIndex = 0;
+  var m;
+  while ((m = telRegex.exec(desc)) !== null) {
+    var digits = m[0].replace(/[^\d]/g, '');
+    if (digits.length < 6) continue;                  // falso positivo — salta
+    result += _escHtml(desc.slice(lastIndex, m.index));
+    var isIntl = m[0].trimStart().startsWith('+');
+    var href = isIntl ? ('tel:+' + digits) : ('tel:+39' + digits);
+    result += '<a href="' + href + '" class="tel-link" onclick="event.stopPropagation()">📞 ' +
+              _escHtml(m[0].trim()) + '</a>';
+    lastIndex = telRegex.lastIndex;
+  }
+  result += _escHtml(desc.slice(lastIndex));
+  return result;
 }
 
 function getPoiTradotto(poi) {
@@ -2556,30 +2759,9 @@ function apriSheet(poiOriginale) {
   document.getElementById('s-emoji').innerHTML = poi.emoji;
   document.getElementById('s-cat').textContent   = poi.cat;
   document.getElementById('s-name').textContent  = poi.nome;
-  document.getElementById('s-desc').textContent  = poi.desc;
+  document.getElementById('s-desc').innerHTML = renderDescConTelefono(poi.desc);
   document.getElementById('s-meta').innerHTML    =
     poi.badges.map(b=>`<span class="sheet-badge badge-${b.c}">${b.t}</span>`).join('');
-
-  const btnTotem = document.getElementById('btn-trova-totem');
-  if (poiOriginale.tipo === 'parcheggio') {
-    const tuttiPOI = window._tuttiPOI || [];
-    const totems = tuttiPOI.filter(p => p.tipo === 'totem_sosta');
-    let totemVicino = null, distMin = Infinity;
-    for (const t of totems) {
-      const d = haversine(poiOriginale.lat, poiOriginale.lon, t.lat, t.lon);
-      if (d < distMin) { distMin = d; totemVicino = t; }
-    }
-    if (totemVicino) {
-      window._totemVicinoCorrente = totemVicino;
-      const distTxt = distMin < 1000 ? Math.round(distMin) + ' m' : (distMin/1000).toFixed(1) + ' km';
-      document.getElementById('btn-trova-totem-testo').textContent = `Trova il totem piu vicino (${distTxt})`;
-      btnTotem.style.display = 'flex';
-    } else {
-      btnTotem.style.display = 'none';
-    }
-  } else {
-    btnTotem.style.display = 'none';
-  }
 
   // Distanza dall utente
   const distEl = document.getElementById('s-dist');
@@ -2710,18 +2892,6 @@ function portaMiQui() {
   window.open(url, '_blank');
 }
 
-function trovaTotemVicino() {
-  const totem = window._totemVicinoCorrente;
-  if (!totem) return;
-  let url;
-  if (userLat && userLon) {
-    url = `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLon}&destination=${totem.lat},${totem.lon}&travelmode=walking`;
-  } else {
-    url = `https://www.google.com/maps/dir/?api=1&destination=${totem.lat},${totem.lon}&travelmode=walking`;
-  }
-  window.open(url, '_blank');
-}
-
 // ═══════════════════════════════════════════════
 // FILTRI
 // ═══════════════════════════════════════════════
@@ -2813,6 +2983,11 @@ function filtra(tipo, btn) {
 function apriListaCategoria(tipo, poiList, metaCustom, erroreCaricamento) {
   history.pushState({ instantownOverlay: true }, '');
   const meta = metaCustom || META_CATEGORIE_LISTA[tipo] || { emoji:'📍', titolo:tipo };
+  // Snapshot GPS: congela la posizione per tutta la durata di questa apertura
+  // della lista (sort iniziale + loop OSRM async). watchPosition aggiorna
+  // userLat/userLon in background — senza snapshot le distanze potrebbero
+  // essere calcolate da posizioni diverse e la lista cambierebbe da sola.
+  const snapLat = userLat, snapLon = userLon;
 
   document.getElementById('cl-emoji').innerHTML = meta.emoji;
   document.getElementById('cl-titolo').textContent = meta.titolo;
@@ -2842,15 +3017,15 @@ function apriListaCategoria(tipo, poiList, metaCustom, erroreCaricamento) {
 
   // Ordina per distanza crescente dal pin utente
   const ordinati = poiList.slice().sort(function(a, b) {
-    if (!userLat) return 0;
-    return haversine(userLat, userLon, a.lat, a.lon) - haversine(userLat, userLon, b.lat, b.lon);
+    if (!snapLat) return 0;
+    return haversine(snapLat, snapLon, a.lat, a.lon) - haversine(snapLat, snapLon, b.lat, b.lon);
   });
 
   document.getElementById('cl-count').textContent = ordinati.length;
   body.innerHTML = ordinati.map(function(poiOriginale) {
     const poi = getPoiTradotto(poiOriginale);
-    const distTxt = userLat
-      ? formatDist(haversine(userLat, userLon, poi.lat, poi.lon))
+    const distTxt = snapLat
+      ? formatDist(haversine(snapLat, snapLon, poi.lat, poi.lon))
       : '—';
     return '<div class="cat-list-row" onclick="selezionaDaLista(\'' + poiOriginale.id + '\')">' +
       '<div class="cat-list-emoji">' + poi.emoji + '</div>' +
@@ -2864,12 +3039,18 @@ function apriListaCategoria(tipo, poiList, metaCustom, erroreCaricamento) {
 
   document.getElementById('cat-list-panel').classList.add('open');
   window._categoriaListaCorrente = tipo;
+  // Contatore sessione: ogni nuova apertura/aggiornamento della lista incrementa
+  // il token. Il loop OSRM verifica che il token non sia cambiato prima di ogni
+  // scrittura: se è cambiato (nuova chiamata apriListaCategoria) si ferma subito,
+  // evitando che due loop paralleli si sovrascrivano e cambino la distanza più volte.
+  window._osrmSessionToken = (window._osrmSessionToken || 0) + 1;
+  const myToken = window._osrmSessionToken;
 
   // Aggiorna con la distanza REALE a piedi (percorso stradale, non linea
   // d'aria) via OSRM — gratuito, nessuna API key. Limitato ai primi 25
   // punti (già i più vicini in linea d'aria) per non sovraccaricare il
   // servizio pubblico OSRM con troppe chiamate insieme.
-  if (userLat) aggiornaDistanzeReali(tipo, ordinati, meta);
+  if (snapLat) aggiornaDistanzeReali(tipo, ordinati, meta, snapLat, snapLon, myToken);
 }
 
 // ── DISTANZA REALE A PIEDI (OSRM) ──
@@ -2889,29 +3070,40 @@ async function calcolaDistanzaReale(lat1, lon1, lat2, lon2) {
   return null;
 }
 
-async function aggiornaDistanzeReali(tipo, ordinati, meta) {
+async function aggiornaDistanzeReali(tipo, ordinati, meta, snapLat, snapLon, sessionToken) {
   const LIMITE = 25;
   const risultati = [];
+  // snapLat/snapLon arrivano da apriListaCategoria: stessa posizione usata per
+  // l'ordinamento iniziale e il render haversine, così le distanze OSRM sono
+  // sempre coerenti con ciò che l'utente ha visto aprendo la lista.
+  // sessionToken: se cambia, significa che una nuova apriListaCategoria è partita
+  // (stessa o diversa categoria) → questo loop è obsoleto, si ferma.
 
   for (let i = 0; i < ordinati.length; i++) {
     const poiOriginale = ordinati[i];
     const poi = getPoiTradotto(poiOriginale);
     let dist, reale;
     if (i < LIMITE) {
-      const metriReali = await calcolaDistanzaReale(userLat, userLon, poi.lat, poi.lon);
+      const metriReali = await calcolaDistanzaReale(snapLat, snapLon, poi.lat, poi.lon);
       reale = metriReali !== null;
-      dist = reale ? metriReali : haversine(userLat, userLon, poi.lat, poi.lon);
+      dist = reale ? metriReali : haversine(snapLat, snapLon, poi.lat, poi.lon);
       await new Promise(r => setTimeout(r, 120)); // pausa cortese verso il server pubblico OSRM
     } else {
       reale = false;
-      dist = haversine(userLat, userLon, poi.lat, poi.lon);
+      dist = haversine(snapLat, snapLon, poi.lat, poi.lon);
     }
     risultati.push({ poiOriginale, dist, reale });
 
-    // Se nel frattempo l'utente ha aperto un'altra categoria, interrompiamo
-    // per non sovrascrivere una lista che non è più quella visibile.
+    // Ferma il loop se la lista è cambiata (altra categoria) OPPURE se è
+    // partita una nuova sessione dello stesso tipo (GPS aggiornato, re-render).
     if (window._categoriaListaCorrente !== tipo) return;
+    if (window._osrmSessionToken !== sessionToken) return;
   }
+
+  // Ultima verifica prima di scrivere nel DOM: se nel frattempo è partita
+  // un'altra sessione (GPS aggiornato mentre OSRM stava ancora girando),
+  // non sovrascrivere la lista già aggiornata.
+  if (window._osrmSessionToken !== sessionToken) return;
 
   risultati.sort((a, b) => a.dist - b.dist);
 
@@ -3022,7 +3214,12 @@ function startGPS() {
   }
 
   navigator.geolocation.getCurrentPosition(
-    pos => initMappa(pos.coords.latitude, pos.coords.longitude),
+    pos => {
+      initMappa(pos.coords.latitude, pos.coords.longitude);
+      // Se una lista era già aperta con il fallback Roma centro (GPS non ancora
+      // pronto), la aggiorniamo ora che abbiamo la posizione reale.
+      _aggiornListaSeAperta();
+    },
     () => {
       // Fallback Roma centro
       initMappa(41.9028, 12.4964);
@@ -3037,6 +3234,16 @@ function startGPS() {
     userLat = lat; userLon = lon;
     if(userMarker) userMarker.setLatLng([lat,lon]);
   }, null, {enableHighAccuracy:true});
+}
+
+// Aggiorna la lista aperta se la posizione GPS è cambiata rispetto a quando
+// era stata aperta (tipicamente: lista aperta col fallback Roma centro, poi
+// arriva il fix reale). Chiamato solo dopo getCurrentPosition → posizione certa.
+function _aggiornListaSeAperta() {
+  if (!window._categoriaListaCorrente || !window._serviziDinamiciPronti) return;
+  const allPOI = window._tuttiPOI || POIS;
+  apriListaCategoria(window._categoriaListaCorrente,
+    allPOI.filter(p => p.tipo === window._categoriaListaCorrente));
 }
 
 // Chiudi sheet cliccando sulla mappa

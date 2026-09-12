@@ -101,3 +101,20 @@ logo_v3_trill_brrrr_nero.png
 
 play console/signing.keystore
 play console/signing-key-info.txt
+
+# Documenti e materiale locale - non versionare
+*.docx
+*.zip
+*.mp4
+*.pdf
+*.bat
+fix_*.ps1
+deploy_now.bat
+resolve-conflict-keep-head.js
+verifica-salute-progetto.js
+modifiche_commissione.js
+testi_store_instantown.md
+"Caccia al Tesoro/"
+"Filmati x Pubblicare/"
+"TESTER 48/"
+~$*

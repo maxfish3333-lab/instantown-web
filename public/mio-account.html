@@ -309,6 +309,12 @@ function copiaPIN() {
       window.completaMagicLinkSePresente().then(function(emailVerificata) {
         if (emailVerificata) {
           localStorage.setItem('it_email', emailVerificata);
+          const urlDiRitorno = localStorage.getItem('it_checkout_return_url');
+          if (urlDiRitorno) {
+            localStorage.removeItem('it_checkout_return_url');
+            window.location.href = urlDiRitorno;
+            return;
+          }
           const pinSalvato = localStorage.getItem('it_pin');
           if (pinSalvato) {
             mioPin = pinSalvato;

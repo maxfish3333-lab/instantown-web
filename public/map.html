@@ -63,9 +63,9 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
 #map{position:absolute;top:0;left:0;right:0;bottom:0;z-index:1;}
 
 /* BADGE */
-.badge-count{position:absolute;top:58px;left:50%;transform:translateX(-50%);
-  z-index:800;background:var(--rosso);color:#fff;border-radius:20px;padding:6px 16px;
-  font-size:12px;font-weight:500;box-shadow:0 2px 12px rgba(139,26,26,.4);
+.badge-count{position:absolute;top:64px;left:50%;transform:translateX(-50%);
+  z-index:800;background:var(--rosso);color:#fff;border-radius:24px;padding:10px 22px;
+  font-size:16px;font-weight:700;box-shadow:0 4px 16px rgba(139,26,26,.5);
   white-space:nowrap;display:none;}
 
 /* FILTRI */
@@ -170,6 +170,9 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
 <!-- TOP BAR -->
 <div class="topbar">
   <a href="index.html" class="topbar-back" title="Torna alla home"><img src="Nuovo_logo_3_diss.png" alt="INSTANTOWN" style="width:30px;height:30px;border-radius:7px;object-fit:contain;"></a>
+  <span id="email-loggato-pill" style="display:none;background:rgba(34,160,80,.18);border:1px solid rgba(34,160,80,.4);
+    color:var(--verde-l);font-size:11px;font-weight:600;padding:5px 10px;border-radius:20px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px;flex-shrink:0;" title=""></span>
   <a href="mio-account.html" style="background:rgba(200,134,10,.2);border:1px solid rgba(200,134,10,.35);
     color:var(--ocra-l);font-size:11px;padding:5px 11px;border-radius:20px;
     text-decoration:none;white-space:nowrap;flex-shrink:0;">🎫 I miei QR</a>
@@ -288,6 +291,50 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;}
       🎫 Ritrova questo QR in "I miei QR" →
     </a>
     <button class="btn-qr-close" onclick="chiudiQR()" id="btn-qr-close">Ho capito — vai all'esercente</button>
+  </div>
+</div>
+
+<!-- AVVISO "SOLO UTENTI REGISTRATI" — sostituisce il vecchio alert() nudo -->
+<div class="qr-overlay" id="reg-avviso-overlay">
+  <div class="qr-box">
+    <div class="qr-title" style="font-size:19px;">Accedi o registrati</div>
+    <div class="qr-sub" style="margin-bottom:20px;">Per prenotare un'offerta serve un'email verificata — bastano 30 secondi. Se hai già un account, usa la stessa email di sempre: ti farà entrare senza crearne uno nuovo.</div>
+    <button onclick="chiudiAvvisoRegistrati();apriRegistrazioneModal()" style="
+      width:100%;background:#fff;color:var(--rosso);border:2px solid var(--rosso);
+      font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;
+      padding:14px;border-radius:8px;cursor:pointer;margin-bottom:10px;">
+      Accedi / Registrati
+    </button>
+    <button onclick="chiudiAvvisoRegistrati()" style="
+      width:100%;background:transparent;color:var(--ink-mu);border:none;
+      font-family:'DM Sans',sans-serif;font-size:13px;padding:8px;cursor:pointer;">
+      Annulla
+    </button>
+  </div>
+</div>
+
+<!-- BOX EMAIL — invio magic link -->
+<div class="qr-overlay" id="reg-email-overlay">
+  <div class="qr-box">
+    <div class="qr-title" style="font-size:19px;">Inserisci la tua email</div>
+    <div id="reg-email-sub" style="margin-bottom:18px;font-size:14px;font-weight:600;color:#1C1410;
+      background:#FDF3DC;border:1.5px solid var(--ocra);border-radius:8px;padding:12px 14px;line-height:1.5;">
+      Se nuovo utente scrivi la tua mail e confermala nella posta in arrivo. Se utente registrato scrivi solo la tua mail
+    </div>
+    <input type="email" id="reg-email-input" placeholder="latua@email.it" autocomplete="email" style="
+      width:100%;padding:14px;border:1px solid var(--rule);border-radius:8px;
+      font-family:'DM Sans',sans-serif;font-size:15px;margin-bottom:14px;text-align:center;">
+    <button id="btn-reg-invia" onclick="inviaRegistrazione()" style="
+      width:100%;background:var(--rosso);color:#fff;border:none;
+      font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;
+      padding:14px;border-radius:8px;cursor:pointer;margin-bottom:10px;">
+      Invia
+    </button>
+    <button onclick="chiudiRegistrazioneModal()" style="
+      width:100%;background:transparent;color:var(--ink-mu);border:none;
+      font-family:'DM Sans',sans-serif;font-size:13px;padding:8px;cursor:pointer;">
+      Annulla
+    </button>
   </div>
 </div>
 
@@ -449,9 +496,9 @@ function initMappa(lat,lon){
   userLat=lat;userLon=lon;
 
   map=L.map('map',{center:[lat,lon],zoom:15,zoomControl:false});
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
-    attribution:'© OpenStreetMap contributors © CARTO',
-    subdomains:'abcd',maxZoom:20
+  L.tileLayer('https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=TeYyMS4gE1YAzQWzrjp0',{
+    attribution:'© MapTiler © OpenStreetMap contributors',
+    maxZoom:20
   }).addTo(map);
 
   // Utente
@@ -695,75 +742,105 @@ function prenota(){
   if(!offertaCorrente) return;
 
   // ── SOLO UTENTI REGISTRATI POSSONO PRENOTARE ──
-  // index.html usa due chiavi separate in localStorage: 'it_profilo'
-  // (utente/esercente) e 'it_modalita' (login/visitatore). Scegliendo
-  // "Utente → Visitatore", it_profilo resta 'utente' e SOLO it_modalita
-  // diventa 'visitatore' — controllare it_profilo qui non intercettava
-  // questo caso, il più comune. Un visitatore non ha fatto login con
-  // email/magic link: non esiste un account a cui associare il PIN nel
-  // QR-B, né un modo per l'esercente di risalire a chi ha prenotato in
-  // caso di problemi col pagamento.
-  if(localStorage.getItem('it_modalita') === 'visitatore'){
-    alert(i18n('soloUtentiRegistrati'));
+  // Prima il controllo si basava su 'it_modalita' in localStorage — una
+  // stringa che poteva restare disallineata dal vero stato di login
+  // (es. dopo un login fatto su un'altra pagina/dispositivo, o dopo un
+  // localStorage.clear() di test): l'utente restava bloccato su "solo
+  // registrati" anche se aveva già fatto il login altrove, senza modo di
+  // capire perché. Ora controlliamo lo stato Firebase reale — la stessa
+  // fonte di verità già usata per il taxi (getUtenteVerificato()) — e se
+  // manca apriamo qui il flusso guidato di registrazione, senza mai
+  // lasciare il Radar.
+  const utenteVer = window.getUtenteVerificato ? window.getUtenteVerificato() : null;
+  if(!utenteVer){
+    apriAvvisoRegistrati();
     return;
   }
 
   const o=offertaCorrente;
 
-  // Genera ID univoco per questa prenotazione
-  const bookingId='BK-'+Date.now();
-
-  // Genera il PIN PRIMA di costruire il QR, così il QR contiene sempre un
-  // PIN valido (prima veniva generato dopo, e la primissima prenotazione di
-  // un utente nuovo finiva nel QR con pin 'NESSUNO').
-  if(!localStorage.getItem('it_pin')){
-    const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    let pin='';
-    for(let i=0;i<6;i++) pin+=chars[Math.floor(Math.random()*chars.length)];
-    localStorage.setItem('it_pin',pin);
-  }
-  const mioPin = localStorage.getItem('it_pin');
-
-  const qrBData=JSON.stringify({
-    type:'QR-B',
-    booking:bookingId,
-    idtx:o.idtx,
-    negozio:o.negozio,
-    desc:o.descrizione,
-    prezzo:o.prezzoFlash,
-    pin:mioPin,
-    ts:new Date().toISOString(),
+  // Reindirizza a checkout.html per il pagamento reale (Stripe Elements +
+  // PaymentIntent con capture manuale). Il QR-B viene generato SOLO lì,
+  // dopo che il pagamento è stato autorizzato — prima, questa funzione
+  // generava il QR-B direttamente qui, saltando del tutto il pagamento:
+  // la prenotazione finiva nel foglio 'prenotazioni' senza PaymentIntent
+  // ID, e sbloccaFondiECattura() falliva sempre lato esercente con
+  // "Nessun pagamento associato a questa prenotazione".
+  const params = new URLSearchParams({
+    tx: o.idtx || '',
+    amount: o.prezzoFlash || 0,
+    desc: o.descrizione || '',
+    negozio: o.negozio || '',
+    indirizzo: o.indirizzo || '',
+    lat: o.lat || '',
+    lon: o.lon || '',
+    inizio: o.inizio || '',
+    fine: o.fine || ''
   });
-
-  // Salva prenotazione in localStorage
-  const prenotazioni=JSON.parse(localStorage.getItem('it_prenotazioni')||'[]');
-  prenotazioni.push({bookingId,idtx:o.idtx,negozio:o.negozio,
-    desc:o.descrizione,prezzo:o.prezzoFlash,ts:new Date().toISOString(),stato:'IN_ATTESA'});
-  localStorage.setItem('it_prenotazioni',JSON.stringify(prenotazioni));
-
-  // Mostra QR-B per il cliente
-  mostraQR(bookingId,qrBData,o);
-
-  // Se l'utente è loggato (magic link), salva il QR anche su Firestore per
-  // il recupero cross-device da mio-account.html. Se non loggato, non fa
-  // nulla: la prenotazione resta comunque in locale + Google Sheet.
-  if(typeof window.scriviQrSuFirestore === 'function'){
-    window.scriviQrSuFirestore(bookingId, o, mioPin);
-  }
-
-  // Invia notifica al server (Apps Script)
-  fetch(APPS_SCRIPT_URL,{
-    method:'POST',mode:'no-cors',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      azione:'prenotazione',
-      bookingId,idtx:o.idtx,
-      negozio:o.negozio,descrizione:o.descrizione,
-      prezzo:o.prezzoFlash,lang,
-      foglio:'prenotazioni'
-    })
-  }).catch(()=>{});
+  window.location.href = 'checkout.html?' + params.toString();
 }
+
+// ═══════════════════════
+// REGISTRAZIONE GUIDATA (avviso → email → magic link)
+// ═══════════════════════
+function apriAvvisoRegistrati(){
+  document.getElementById('reg-avviso-overlay').classList.add('open');
+}
+function chiudiAvvisoRegistrati(){
+  document.getElementById('reg-avviso-overlay').classList.remove('open');
+}
+function apriRegistrazioneModal(){
+  document.getElementById('reg-email-input').value='';
+  document.getElementById('reg-email-sub').textContent =
+    "Se nuovo utente scrivi la tua mail e confermala nella posta in arrivo. Se utente registrato scrivi solo la tua mail";
+  document.getElementById('btn-reg-invia').disabled=false;
+  document.getElementById('btn-reg-invia').textContent='Invia';
+  document.getElementById('reg-email-overlay').classList.add('open');
+}
+function chiudiRegistrazioneModal(){
+  document.getElementById('reg-email-overlay').classList.remove('open');
+}
+function inviaRegistrazione(){
+  const email=document.getElementById('reg-email-input').value.trim();
+  if(!email || !email.includes('@')){
+    alert('Inserisci un indirizzo email valido.');
+    return;
+  }
+  const btn=document.getElementById('btn-reg-invia');
+  btn.disabled=true;
+  btn.textContent='Invio in corso...';
+  const idtxInSospeso = offertaCorrente ? offertaCorrente.idtx : '';
+  window.inviaMagicLinkPrenotazione(email, idtxInSospeso).then(()=>{
+    document.getElementById('reg-email-sub').innerHTML =
+      '✓ Email inviata! Apri la tua posta e clicca il pulsante di conferma — tornerai qui automaticamente.';
+    btn.textContent='Email inviata ✓';
+  }).catch(err=>{
+    console.error('Invio magic link fallito:', err);
+    alert('Invio non riuscito. Controlla l\'indirizzo e riprova.');
+    btn.disabled=false;
+    btn.textContent='Invia';
+  });
+}
+
+// Richiamata dal modulo Firebase dopo che il magic link è stato
+// completato con successo, per riportare l'utente esattamente
+// sull'offerta che stava prenotando prima di essere fermato dal
+// controllo "solo utenti registrati".
+window.riaperturaOffertaDopoLogin = function(idtx){
+  function tentaRiapertura(){
+    const o = tutteOfferte.find(x => x.idtx === idtx);
+    if(o){ apriScheda(o); return true; }
+    return false;
+  }
+  if(tentaRiapertura()) return;
+  // Le offerte potrebbero non essere ancora caricate (pagina appena
+  // ricaricata dal link email): riprova per qualche secondo.
+  let tentativi=0;
+  const interval=setInterval(()=>{
+    tentativi++;
+    if(tentaRiapertura() || tentativi>10) clearInterval(interval);
+  },500);
+};
 
 // ═══════════════════════
 // GENERA QR
@@ -857,6 +934,12 @@ document.getElementById('offerta-sheet').addEventListener('touchend',e=>{
 document.getElementById('qr-overlay').addEventListener('click',e=>{
   if(e.target===e.currentTarget)chiudiQR();
 });
+document.getElementById('reg-avviso-overlay').addEventListener('click',e=>{
+  if(e.target===e.currentTarget)chiudiAvvisoRegistrati();
+});
+document.getElementById('reg-email-overlay').addEventListener('click',e=>{
+  if(e.target===e.currentTarget)chiudiRegistrazioneModal();
+});
 
 // Ricarica ogni 60s
 setInterval(()=>{
@@ -869,6 +952,24 @@ setInterval(()=>{
 
 // Apply saved lang
 applyLang(lang);
+// Posiziona il badge "N offerte nel raggio" subito sotto alla topbar
+// reale, invece di un valore fisso (top:64px) che presumeva una topbar
+// a una sola riga — su schermi stretti gli elementi vanno a capo su due
+// righe (logo, pillola email, "I miei QR", brand, raggio, lingua, GPS
+// sono troppi per stare su una riga sola), rendendo la topbar più alta
+// e nascondendo il badge sotto di essa.
+function posizionaBadge(){
+  const topbar=document.querySelector('.topbar');
+  const badge=document.getElementById('badge-count');
+  if(!topbar||!badge) return;
+  badge.style.top=(topbar.offsetHeight+12)+'px';
+}
+window.addEventListener('resize',posizionaBadge);
+// Ricontrolla anche dopo un istante: il logo (img) potrebbe caricarsi
+// dopo il primo calcolo e cambiare l'altezza della topbar.
+setTimeout(posizionaBadge,50);
+setTimeout(posizionaBadge,500);
+
 startGPS();
 </script>
 
@@ -878,7 +979,8 @@ startGPS();
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, setDoc, doc, serverTimestamp, addDoc, collection } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-import { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence,
+  sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBez4L85HA1__NPKOzagfmKeoGLniIQeAc",
@@ -896,7 +998,91 @@ setPersistence(fbAuth, browserLocalPersistence).catch(()=>{});
 // Teniamo traccia dell'utente loggato (sessione persistente ripristinata
 // automaticamente da Firebase se il cliente ha già fatto il magic link).
 let utenteFb = null;
-onAuthStateChanged(fbAuth, (u) => { utenteFb = (u && u.email) ? u : null; });
+onAuthStateChanged(fbAuth, (u) => {
+  utenteFb = (u && u.email) ? u : null;
+  const pill = document.getElementById('email-loggato-pill');
+  if (pill) {
+    if (utenteFb) {
+      pill.textContent = '✓ ' + utenteFb.email;
+      pill.title = utenteFb.email;
+      pill.style.display = 'inline-block';
+    } else {
+      pill.style.display = 'none';
+    }
+  }
+  if (typeof window.posizionaBadge === 'function') setTimeout(window.posizionaBadge, 50);
+});
+
+// ── REGISTRAZIONE RAPIDA DAL RADAR (magic link) ──
+// Prima, la prenotazione era bloccata da una stringa in localStorage
+// ('it_modalita') che poteva restare disallineata rispetto al vero stato
+// di login Firebase (es. dopo aver fatto login su un'altra pagina/scheda,
+// o dopo un localStorage.clear()) — l'utente si ritrovava bloccato senza
+// un modo chiaro per uscirne. Ora il blocco (in prenota(), script
+// classico più sotto) controlla lo stato Firebase reale via
+// window.getUtenteVerificato(), e se manca offriamo qui un modulo
+// email→magic link autocontenuto, senza mai lasciare il Radar.
+window.inviaMagicLinkPrenotazione = function(email, idtxInSospeso) {
+  // Salviamo l'email e l'offerta in sospeso PRIMA di inviare il link:
+  // quando l'utente clicca il link nella mail, la pagina si ricarica da
+  // zero (nuova scheda del browser Mail su iOS) e le variabili JS in
+  // memoria (offertaCorrente) sono perse — solo localStorage sopravvive.
+  localStorage.setItem('it_email_pending', email);
+  if (idtxInSospeso) localStorage.setItem('it_idtx_pending', idtxInSospeso);
+
+  // Non usiamo più sendSignInLinkToEmail(): Firebase non offre nessun
+  // template personalizzabile per "Email link sign-in" in console (solo
+  // testo semplice, niente bottone colorato). Chiediamo invece al nostro
+  // backend (Apps Script) di generare il link via l'API Identity Toolkit
+  // e spedire lui l'email, con lo stesso stile HTML delle altre email
+  // INSTANTOWN — il completamento del login (signInWithEmailLink più
+  // sotto) funziona comunque, qualunque sia la fonte del link.
+  return fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({
+      azione: 'inviaLinkAccesso',
+      email: email,
+      continueUrl: window.location.origin + '/map.html'
+    })
+  }).then(r => r.json()).then(json => {
+    if (json.stato !== 'ok') throw new Error(json.messaggio || 'Invio email non riuscito');
+    return json;
+  });
+};
+
+// Al caricamento della pagina: se l'URL è quello di ritorno dal magic
+// link (Firebase aggiunge parametri specifici), completa il login e
+// riporta l'utente sull'offerta che stava prenotando.
+if (isSignInWithEmailLink(fbAuth, window.location.href)) {
+  let emailSalvata = localStorage.getItem('it_email_pending');
+  if (!emailSalvata) {
+    // Il link è stato aperto in un contesto diverso da quello in cui è
+    // stata scritta l'email (es. la mail si apre in Safari, ma l'email
+    // era stata inserita dentro la PWA installata, o viceversa): il
+    // localStorage di quel contesto non la contiene. Firebase richiede
+    // esplicitamente di richiederla di nuovo in questo caso — non è un
+    // nuovo giro di email, solo una conferma per completare l'accesso
+    // sullo stesso link già ricevuto.
+    emailSalvata = window.prompt('Per completare l\'accesso, confermaci la tua email:');
+  }
+  if (emailSalvata) {
+    signInWithEmailLink(fbAuth, emailSalvata, window.location.href).then(() => {
+      localStorage.removeItem('it_email_pending');
+      // Pulisce i parametri del magic link dall'URL, mantenendo il resto
+      window.history.replaceState({}, document.title, window.location.pathname);
+      const idtxSalvato = localStorage.getItem('it_idtx_pending');
+      if (idtxSalvato && typeof window.riaperturaOffertaDopoLogin === 'function') {
+        window.riaperturaOffertaDopoLogin(idtxSalvato);
+      }
+      localStorage.removeItem('it_idtx_pending');
+    }).catch(err => {
+      console.error('Completamento magic link fallito:', err);
+      alert('Accesso non riuscito: ' + (err.message || 'controlla di aver scritto l\'email corretta e riprova ad aprire il link dalla mail.'));
+    });
+  }
+}
+
 
 // Esposta allo script classico: restituisce { email, dalData } SOLO se
 // l'utente ha fatto login (magic link) E l'email risulta verificata da

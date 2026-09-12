@@ -180,12 +180,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--cielo-p);color:var(--ink)
     </div>
   </div>
   <div class="offerta-banner" id="offerta-banner" style="display:none;">
-    <div>Prezzo offerta: <strong id="offerta-amount"></strong></div>
-    <div class="offerta-banner-min">min. proponibile <span id="offerta-min"></span></div>
+    <div><span id="lbl-prezzo-offerta">Prezzo offerta:</span> <strong id="offerta-amount"></strong></div>
+    <div class="offerta-banner-min"><span id="lbl-min-proponibile">min. proponibile</span> <span id="offerta-min"></span></div>
   </div>
   <button class="trading-toggle-btn" id="trading-toggle-btn" style="display:none;" onclick="toggleTradingPanel()">🔄 Proponi un prezzo</button>
   <div class="trading-panel" id="trading-panel">
-    <div class="trading-panel-label">Quanto vuoi proporre?</div>
+    <div class="trading-panel-label" id="lbl-quanto-proponi">Quanto vuoi proporre?</div>
     <div class="trading-input-row">
       <input type="number" class="trading-input" id="trading-input" placeholder="0.00" step="0.50">
       <button class="trading-send-btn" id="trading-send-btn" onclick="inviaProposta()">Invia proposta</button>
@@ -196,7 +196,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cielo-p);color:var(--ink)
   <div class="messages" id="messages">
     <div class="empty-chat" id="empty-msg">
       <div class="empty-chat-icon">✉️</div>
-      <div>Nessun messaggio ancora.<br>Scrivi all'esercente qui sotto.</div>
+      <div id="empty-msg-text">Nessun messaggio ancora.<br>Scrivi all'esercente qui sotto.</div>
     </div>
   </div>
     <div class="quick-phrases" id="quick-phrases"></div>
@@ -314,12 +314,36 @@ const TRADING_LABELS = {
   propostaScaduta: { it:'Proposta scaduta', en:'Offer expired', zh:'提议已过期', es:'Propuesta caducada', fr:'Proposition expirée', de:'Angebot abgelaufen' },
   procediPagamento:{ it:'Procedi al pagamento →', en:'Proceed to payment →', zh:'前往付款 →', es:'Proceder al pago →', fr:'Procéder au paiement →', de:'Weiter zur Zahlung →' },
   scadeIn:         { it:'scade in', en:'expires in', zh:'剩余', es:'caduca en', fr:'expire dans', de:'läuft ab in' },
-  emailRichiesta:  { it:'Inserisci la tua email per ricevere il QR-B', en:'Enter your email to receive the QR-B', zh:'请输入您的电子邮箱以接收QR-B', es:'Introduce tu email para recibir el QR-B', fr:'Indiquez votre email pour recevoir le QR-B', de:'Gib deine E-Mail ein, um den QR-B zu erhalten' }
+  emailRichiesta:  { it:'Inserisci la tua email per ricevere il QR-B', en:'Enter your email to receive the QR-B', zh:'请输入您的电子邮箱以接收QR-B', es:'Introduce tu email para recibir el QR-B', fr:'Indiquez votre email pour recevoir le QR-B', de:'Gib deine E-Mail ein, um den QR-B zu erhalten' },
+  nessunMessaggio: { it:'Nessun messaggio ancora.<br>Scrivi all\'esercente qui sotto.', en:'No messages yet.<br>Write to the merchant below.', zh:'暂无消息。<br>请在下方给商家留言。', es:'Aún no hay mensajes.<br>Escribe al comercio aquí abajo.', fr:'Aucun message pour l\'instant.<br>Écrivez au commerce ci-dessous.', de:'Noch keine Nachrichten.<br>Schreibe dem Geschäft unten.' },
+  notaPlaceholder: { it:'Aggiungi una nota (es. siamo in 6 persone)', en:'Add a note (e.g. we are 6 people)', zh:'添加备注（例如：我们有6人）', es:'Añade una nota (p. ej. somos 6 personas)', fr:'Ajoutez une note (ex. nous sommes 6 personnes)', de:'Notiz hinzufügen (z. B. wir sind 6 Personen)' },
+  scriviMessaggio: { it:'Scrivi un messaggio...', en:'Write a message...', zh:'写一条消息...', es:'Escribe un mensaje...', fr:'Écrivez un message...', de:'Schreibe eine Nachricht...' },
+  scriviciWord: { it:'SCRIVICI', en:'CONTACT US', zh:'联系我们', es:'ESCRÍBENOS', fr:'ÉCRIVEZ-NOUS', de:'SCHREIB UNS' }
 };
 
 function tt(key) {
   const lang = getCurrentLang();
   return (TRADING_LABELS[key] && (TRADING_LABELS[key][lang] || TRADING_LABELS[key].it)) || key;
+}
+function applicaTraduzioniStatiche() {
+  var elPrezzo = document.getElementById('lbl-prezzo-offerta');
+  if (elPrezzo) elPrezzo.textContent = tt('prezzoOfferta');
+  var elMin = document.getElementById('lbl-min-proponibile');
+  if (elMin) elMin.textContent = tt('minProponibile');
+  var elToggle = document.getElementById('trading-toggle-btn');
+  if (elToggle) elToggle.textContent = tt('proponiPrezzo');
+  var elQuanto = document.getElementById('lbl-quanto-proponi');
+  if (elQuanto) elQuanto.textContent = tt('quantoProponi');
+  var elInvia = document.getElementById('trading-send-btn');
+  if (elInvia) elInvia.textContent = tt('inviaProposta');
+  var elNota = document.getElementById('trading-nota-input');
+  if (elNota) elNota.setAttribute('placeholder', tt('notaPlaceholder'));
+  var elEmpty = document.getElementById('empty-msg-text');
+  if (elEmpty) elEmpty.innerHTML = tt('nessunMessaggio');
+  var elMsgInput = document.getElementById('msg-input');
+  if (elMsgInput) elMsgInput.setAttribute('placeholder', tt('scriviMessaggio'));
+  var elScrivici = document.getElementById('lbl-scrivici');
+  if (elScrivici) elScrivici.textContent = tt('scriviciWord');
 }
 
 function initTrading() {
@@ -553,8 +577,8 @@ window.accediChat = async function() {
     currentTX = tx;
     document.getElementById('info-tx').textContent = tx;
     document.getElementById('info-negozio').textContent = trovato.negozio;
-    if (trovato.descrizione || trovato.foto) {
-      document.getElementById('offerta-preview-desc').textContent = trovato.descrizione || '';
+    if (offertaDesc || trovato.descrizione || trovato.foto) {
+      document.getElementById('offerta-preview-desc').textContent = offertaDesc || trovato.descrizione || '';
       if (trovato.foto) {
         const primaFoto = String(trovato.foto).split(',')[0].trim();
         if (primaFoto) document.getElementById('offerta-preview-img').src = primaFoto;
@@ -780,6 +804,7 @@ document.getElementById('msg-input').addEventListener('input', function() {
 
 document.addEventListener('DOMContentLoaded', async function() {
   initTrading();
+  applicaTraduzioniStatiche();
 
   // 1) Se stiamo tornando da un magic link, completiamo l'accesso verificato.
   if (isSignInWithEmailLink(auth, window.location.href)) {
@@ -809,7 +834,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   //    onAuthStateChanged sotto ci fa entrare; altrimenti, se abbiamo almeno
   //    l'email salvata, procediamo come prima.
   const emailNota = localStorage.getItem('it_email');
-  if (emailNota && auth.currentUser) {
+  if (emailNota) {
     document.getElementById('email-login-screen').style.display = 'none';
     mostraLoginTxOAutoEntra();
   }
@@ -831,7 +856,7 @@ onAuthStateChanged(auth, function(user) {
 
 <!-- SCRIVICI -->
 <div style="text-align:center;padding:18px 12px 26px;">
-  <a href="mailto:info@instantown.it" style="display:inline-block;background:#B20000;color:#fff;font-family:'DM Sans',Arial,sans-serif;font-size:14px;font-weight:700;padding:11px 26px;border-radius:22px;text-decoration:none;letter-spacing:.02em;box-shadow:0 2px 8px rgba(178,0,0,.3);">✉️ SCRIVICI</a>
+  <a href="mailto:info@instantown.it" style="display:inline-block;background:#B20000;color:#fff;font-family:'DM Sans',Arial,sans-serif;font-size:14px;font-weight:700;padding:11px 26px;border-radius:22px;text-decoration:none;letter-spacing:.02em;box-shadow:0 2px 8px rgba(178,0,0,.3);">✉️ <span id="lbl-scrivici">SCRIVICI</span></a>
 </div>
 </body>
 </html>
