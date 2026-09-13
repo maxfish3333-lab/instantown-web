@@ -1773,11 +1773,14 @@ window.getUtenteVerificato = function() {
 
 window.inviaMagicLinkPrenotazioneOfferte = function(email) {
   localStorage.setItem('it_email_pending', email);
-  // FIX iOS: embed checkout URL nel continueUrl così funziona anche se localStorage
-  // è isolato (mail app WKWebView diverso da Safari/PWA)
+  // FIX iOS: usa auth-complete.html come landing page con email e cr nell'URL
+  // così funziona anche se la mail app apre il link in un browser separato (WKWebView)
+  // senza bisogno di localStorage
   const _checkoutUrl = localStorage.getItem('it_checkout_pending') || '';
-  const _base = window.location.origin + '/offerte.html';
-  const _continueUrl = _checkoutUrl ? _base + '?cr=' + encodeURIComponent(_checkoutUrl) : _base;
+  const _base = window.location.origin + '/auth-complete.html';
+  const _continueUrl = _base
+    + '?email=' + encodeURIComponent(email)
+    + (_checkoutUrl ? '&cr=' + encodeURIComponent(_checkoutUrl) : '');
   return fetch('https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec', {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
