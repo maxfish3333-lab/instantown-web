@@ -1546,34 +1546,40 @@ function chiudiRegistrazioneModalOfferte(){ document.getElementById('reg-email-o
 function inviaRegistrazioneOfferte(){
   const email=document.getElementById('reg-email-input').value.trim();
   if(!email || !email.includes('@')){ alert('Inserisci un indirizzo email valido.'); return; }
-  // FIX: se l'utente è già verificato con questa email, vai direttamente al checkout
-  // (evita il magic link quando Firebase Auth non era ancora caricato al primo click)
-  const _utenteGiaVer = window.getUtenteVerificato ? window.getUtenteVerificato() : null;
-  if (_utenteGiaVer && _utenteGiaVer.email.toLowerCase() === email.toLowerCase()) {
-    chiudiRegistrazioneModalOfferte();
-    chiudiAvvisoRegistratiOfferte();
-    const _checkoutPending = localStorage.getItem('it_checkout_pending');
-    if (_checkoutPending) {
-      localStorage.removeItem('it_checkout_pending');
-      window.location.href = _checkoutPending;
-    }
-    return;
-  }
   const btn=document.getElementById('btn-reg-invia');
   btn.disabled=true;
-  btn.textContent='Invio in corso...';
-  window.inviaMagicLinkPrenotazioneOfferte(email).then(()=>{
-    document.getElementById('reg-email-sub').innerHTML =
-      '✓ Email inviata! Apri la tua posta e clicca il pulsante di conferma — tornerai qui automaticamente.';
-    btn.textContent='Email inviata ✓';
-  }).catch(err=>{
-    console.error('Invio magic link fallito:', err);
-    alert('Invio non riuscito. Controlla l\'indirizzo e riprova.');
-    btn.disabled=false;
-    btn.textContent='Invia';
+  btn.textContent='Verifica…';
+
+  // FIX: aspetta Firebase Auth (max 2 sec) — evita magic link se utente già loggato
+  new Promise(resolve => {
+    if (utenteEmailFb !== null) { resolve(utenteEmailFb); return; }
+    let done = false;
+    const timer = setTimeout(() => { if (!done) { done=true; resolve(null); } }, 2000);
+    const unsub = onAuthStateChanged(auth, (u) => {
+      if (!done) { done=true; clearTimeout(timer); unsub(); resolve(u); }
+    });
+  }).then(u => {
+    if (u && u.email && u.emailVerified && u.email.toLowerCase() === email.toLowerCase()) {
+      chiudiRegistrazioneModalOfferte();
+      chiudiAvvisoRegistratiOfferte();
+      const _cp = localStorage.getItem('it_checkout_pending');
+      if (_cp) { localStorage.removeItem('it_checkout_pending'); window.location.href = _cp; }
+      return;
+    }
+    btn.textContent='Invio in corso...';
+    window.inviaMagicLinkPrenotazioneOfferte(email).then(()=>{
+      document.getElementById('reg-email-sub').innerHTML =
+        '✓ Email inviata! Apri la tua posta e clicca il pulsante di conferma — tornerai qui automaticamente.';
+      btn.textContent='Email inviata ✓';
+    }).catch(err=>{
+      console.error('Invio magic link fallito:', err);
+      alert('Invio non riuscito. Controlla l'indirizzo e riprova.');
+      btn.disabled=false;
+      btn.textContent='Invia';
+    });
   });
 }
-document.addEventListener('DOMContentLoaded', function(){
+ocument.addEventListener('DOMContentLoaded', function(){
   const a = document.getElementById('reg-avviso-overlay');
   const e = document.getElementById('reg-email-overlay');
   if(a) a.addEventListener('click', ev=>{ if(ev.target===ev.currentTarget) chiudiAvvisoRegistratiOfferte(); });
