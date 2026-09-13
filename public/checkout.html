@@ -446,7 +446,18 @@ const fbAuth = getAuth(fbApp);
 setPersistence(fbAuth, browserLocalPersistence).catch(()=>{});
 
 let utenteFb = null;
-onAuthStateChanged(fbAuth, (u) => { utenteFb = (u && u.email) ? u : null; });
+onAuthStateChanged(fbAuth, (u) => {
+  utenteFb = (u && u.email) ? u : null;
+  // FIX: se l'utente è loggato, nascondi il form di accesso e mostra il checkout
+  if (utenteFb) {
+    const sceltaEl = document.getElementById('scelta-accesso');
+    const flowEl   = document.getElementById('checkout-flow');
+    if (sceltaEl && sceltaEl.style.display !== 'none') {
+      sceltaEl.style.display = 'none';
+      if (flowEl) flowEl.style.display = 'flex';
+    }
+  }
+});
 const magicLinkSettings = {
   url: 'https://instantown.it/mio-account.html',
   handleCodeInApp: true

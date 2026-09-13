@@ -1801,6 +1801,7 @@ if (isSignInWithEmailLink(auth, window.location.href)) {
   if (emailSalvata) {
     signInWithEmailLink(auth, emailSalvata, window.location.href).then(() => {
       localStorage.removeItem('it_email_pending');
+      localStorage.removeItem('it_modalita'); // FIX: utente ora loggato, non è più visitatore
       window.history.replaceState({}, document.title, window.location.pathname);
       const checkoutPending = localStorage.getItem('it_checkout_pending');
       if (checkoutPending) {
