@@ -1525,13 +1525,22 @@ async function init() {
 // anche qui perché prima si poteva prenotare senza nessun account.
 // ═══════════════════════
 function confermaPrenotazioneOfferta(checkoutUrl) {
-  const utenteVer = window.getUtenteVerificato ? window.getUtenteVerificato() : null;
-  if (!utenteVer) {
-    localStorage.setItem('it_checkout_pending', checkoutUrl);
-    apriAvvisoRegistratiOfferte();
-    return;
-  }
-  window.location.href = checkoutUrl;
+  // Aspetta Firebase Auth (max 2 sec) prima di decidere — evita modal su utenti già registrati
+  const _t0 = Date.now();
+  (function _waitAuth(){
+    const _wU = window._utenteEmailFb;
+    if (_wU !== undefined || Date.now() - _t0 >= 2000) {
+      const utenteVer = window.getUtenteVerificato ? window.getUtenteVerificato() : null;
+      if (!utenteVer) {
+        localStorage.setItem('it_checkout_pending', checkoutUrl);
+        apriAvvisoRegistratiOfferte();
+      } else {
+        window.location.href = checkoutUrl;
+      }
+    } else {
+      setTimeout(_waitAuth, 100);
+    }
+  })();
 }
 function apriAvvisoRegistratiOfferte(){ document.getElementById('reg-avviso-overlay').classList.add('open'); }
 function chiudiAvvisoRegistratiOfferte(){ document.getElementById('reg-avviso-overlay').classList.remove('open'); }
@@ -1550,36 +1559,35 @@ function inviaRegistrazioneOfferte(){
   btn.disabled=true;
   btn.textContent='Verifica…';
 
-  // FIX: aspetta Firebase Auth (max 2 sec) — evita magic link se utente già loggato
-  new Promise(resolve => {
-    if (utenteEmailFb !== null) { resolve(utenteEmailFb); return; }
-    let done = false;
-    const timer = setTimeout(() => { if (!done) { done=true; resolve(null); } }, 2000);
-    const unsub = onAuthStateChanged(auth, (u) => {
-      if (!done) { done=true; clearTimeout(timer); unsub(); resolve(u); }
-    });
-  }).then(u => {
-    if (u && u.email && u.emailVerified && u.email.toLowerCase() === email.toLowerCase()) {
-      chiudiRegistrazioneModalOfferte();
-      chiudiAvvisoRegistratiOfferte();
-      const _cp = localStorage.getItem('it_checkout_pending');
-      if (_cp) { localStorage.removeItem('it_checkout_pending'); window.location.href = _cp; }
-      return;
+  // Polling su window._utenteEmailFb (aggiornato dal modulo Firebase) — max 2 sec
+  const _t0 = Date.now();
+  (function _poll(){
+    const _wU = window._utenteEmailFb;
+    if (_wU !== undefined || Date.now() - _t0 >= 2000) {
+      if (_wU && _wU.email && _wU.emailVerified && _wU.email.toLowerCase() === email.toLowerCase()) {
+        chiudiRegistrazioneModalOfferte();
+        chiudiAvvisoRegistratiOfferte();
+        const _cp = localStorage.getItem('it_checkout_pending');
+        if (_cp) { localStorage.removeItem('it_checkout_pending'); window.location.href = _cp; }
+        return;
+      }
+      btn.textContent='Invio in corso...';
+      window.inviaMagicLinkPrenotazioneOfferte(email).then(function(){
+        document.getElementById('reg-email-sub').innerHTML =
+          '✓ Email inviata! Apri la tua posta e clicca il pulsante di conferma — tornerai qui automaticamente.';
+        btn.textContent='Email inviata ✓';
+      }).catch(function(err){
+        console.error('Invio magic link fallito:', err);
+        alert('Invio non riuscito. Controlla l’indirizzo e riprova.');
+        btn.disabled=false;
+        btn.textContent='Invia';
+      });
+    } else {
+      setTimeout(_poll, 100);
     }
-    btn.textContent='Invio in corso...';
-    window.inviaMagicLinkPrenotazioneOfferte(email).then(()=>{
-      document.getElementById('reg-email-sub').innerHTML =
-        '✓ Email inviata! Apri la tua posta e clicca il pulsante di conferma — tornerai qui automaticamente.';
-      btn.textContent='Email inviata ✓';
-    }).catch(err=>{
-      console.error('Invio magic link fallito:', err);
-      alert('Invio non riuscito. Controlla l'indirizzo e riprova.');
-      btn.disabled=false;
-      btn.textContent='Invia';
-    });
-  });
+  })();
 }
-ocument.addEventListener('DOMContentLoaded', function(){
+document.addEventListener('DOMContentLoaded', function(){
   const a = document.getElementById('reg-avviso-overlay');
   const e = document.getElementById('reg-email-overlay');
   if(a) a.addEventListener('click', ev=>{ if(ev.target===ev.currentTarget) chiudiAvvisoRegistratiOfferte(); });
@@ -1758,8 +1766,10 @@ signInAnonymously(auth).catch(e => console.warn('Auth anonima:', e.code));
 // registrato: window.getUtenteVerificato() torna null finché non ha
 // fatto il login via magic link.
 let utenteEmailFb = null;
+window._utenteEmailFb = undefined; // undefined=non ancora caricato, null=non loggato
 onAuthStateChanged(auth, (u) => {
   utenteEmailFb = (u && u.email) ? u : null;
+  window._utenteEmailFb = utenteEmailFb;
   const pill = document.getElementById('email-loggato-pill');
   if (pill) {
     if (utenteEmailFb) {
