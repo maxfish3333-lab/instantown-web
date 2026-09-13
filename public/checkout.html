@@ -417,7 +417,7 @@ function mostraSuccesso() {
         text: qrBData,
         width:200,height:200,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H
     });
-    document.getElementById('modale-rassicurazione').classList.add('show');
+    // Modal rimosso: le info "fondi congelati" sono già nelle istruzioni del success-screen
 }
 function chiudiModaleRassicurazione() {
     document.getElementById('modale-rassicurazione').classList.remove('show');
