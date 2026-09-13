@@ -83,7 +83,7 @@
         </div>
     </div>
     <div class="info-box" style="width:100%;">
-        Per completare l acquisto puoi accedere rapidamente con la tua email (còsò ritrovi i tuoi QR anche da un altro dispositivo), oppure continuare come ospite: il QR resterà valido solo su questo dispositivo.
+        Per completare l'acquisto puoi accedere rapidamente con la tua email (così ritrovi i tuoi QR anche da un altro dispositivo), oppure continuare come ospite: il QR resterà valido solo su questo dispositivo.
     </div>
     <div id="sa-guest-view" style="width:100%;">
         <button class="btn-attiva" onclick="mostraFormAccessoRapido()">✉️ Accedi rapidamente</button>
@@ -212,7 +212,7 @@ async function inviaAccessoRapidoDaCheckout() {
     }
     localStorage.setItem('it_email', email);
     statusEl.style.color = 'var(--green)';
-    statusEl.innerHTML = '✓ Controlla la tua casella email (anche SPAM) e apri il link su questo dispositivo: tornerai automaticamente qui per completare l acquisto.';
+    statusEl.innerHTML = '✓ Controlla la tua casella email (anche SPAM) e apri il link su questo dispositivo: tornerai automaticamente qui per completare l&#39;acquisto.';
     input.disabled = true;
   } catch (e) {
     statusEl.style.color = '#ff6b6b';
