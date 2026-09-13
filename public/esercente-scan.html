@@ -225,22 +225,44 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMA
 let pinEsercenteVerificato = null;
 let nomeEsercenteVerificato = null;
 
+// ── Rate limiting PIN: max 5 tentativi, poi blocco 30 secondi ──
+let _pinTentativi = 0;
+let _pinBloccatoFino = 0;
+
 async function verificaPinEsercenteScan() {
   const pin = document.getElementById('pin-input-scan').value.trim();
   const errEl = document.getElementById('pin-scan-error');
   errEl.style.display = 'none';
   if (!pin) return;
 
+  // Blocco temporaneo attivo?
+  const ora = Date.now();
+  if (ora < _pinBloccatoFino) {
+    const secondiRimasti = Math.ceil((_pinBloccatoFino - ora) / 1000);
+    errEl.textContent = 'Troppi tentativi. Riprova tra ' + secondiRimasti + ' secondi.';
+    errEl.style.display = 'block';
+    return;
+  }
+
   try {
     const res = await fetch(APPS_SCRIPT_URL + '?azione=verificaPin&pin=' + encodeURIComponent(pin));
     const dati = await res.json();
     if (dati.stato === 'ok' && dati.negozio) {
+      _pinTentativi = 0; // reset su successo
       pinEsercenteVerificato = pin;
       nomeEsercenteVerificato = dati.negozio.nome || '';
       document.getElementById('pin-gate').style.display = 'none';
       avviaCamera();
     } else {
-      errEl.textContent = dati.messaggio || 'PIN non trovato. Controlla e riprova.';
+      _pinTentativi++;
+      if (_pinTentativi >= 5) {
+        _pinBloccatoFino = Date.now() + 30000; // blocco 30 sec
+        _pinTentativi = 0;
+        errEl.textContent = 'Troppi tentativi errati. Attendi 30 secondi.';
+      } else {
+        const rimasti = 5 - _pinTentativi;
+        errEl.textContent = (dati.messaggio || 'PIN non trovato.') + ' Tentativi rimasti: ' + rimasti + '.';
+      }
       errEl.style.display = 'block';
     }
   } catch (err) {
