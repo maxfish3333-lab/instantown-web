@@ -61,8 +61,14 @@ if (!isSignInWithEmailLink(auth, window.location.href)) {
     .then(() => {
       // Rimuovi it_modalita in tutti i contesti accessibili
       try { localStorage.removeItem('it_modalita'); } catch(e) {}
-      // Redirect al checkout (o a offerte.html se non c'è cr)
-      const dest = crEncoded || 'offerte.html';
+      // Aggiungi email come param URL (?ev=EMAIL) — il PWA legge ?ev= e imposta it_email_verificata
+      // Questo funziona anche con WKWebView/PWA isolation: l'URL si condivide, il localStorage no
+      let dest = crEncoded || 'offerte.html';
+      try {
+        const destUrl = new URL(dest, window.location.href);
+        destUrl.searchParams.set('ev', email);
+        dest = destUrl.toString();
+      } catch(e) {}
       window.location.replace(dest);
     })
     .catch(err => {

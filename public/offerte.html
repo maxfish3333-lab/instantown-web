@@ -1922,6 +1922,20 @@ function rt(key) {
 }
 window.rt = rt; // esportata su window: gli script "module" hanno scope isolato,
                 // serve per essere richiamabile da applyI18nDOM() in un altro <script>
+// Legge ?ev=EMAIL dall'URL (impostato da auth-complete.html dopo magic link)
+// Risolve WKWebView/PWA isolation: l'URL si condivide tra contesti, localStorage no
+(function(){
+  try {
+    var _p = new URLSearchParams(window.location.search);
+    var _ev = _p.get('ev');
+    if (_ev) {
+      localStorage.setItem('it_email_verificata', _ev);
+      var _u = new URL(window.location.href);
+      _u.searchParams.delete('ev');
+      history.replaceState(null, '', _u.toString());
+    }
+  } catch(e) {}
+})();
 
 let reverseUserLat = null, reverseUserLon = null;
 let currentRichiestaId = null;
