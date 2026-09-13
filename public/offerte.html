@@ -1525,7 +1525,13 @@ async function init() {
 // anche qui perché prima si poteva prenotare senza nessun account.
 // ═══════════════════════
 function confermaPrenotazioneOfferta(checkoutUrl) {
-  // Aspetta Firebase Auth (max 2 sec) prima di decidere — evita modal su utenti già registrati
+  // Check immediato: it_email_verificata nel localStorage (impostato dal PWA stesso)
+  // Risolve isolamento WKWebView/PWA — non dipende da Firebase Auth cross-contesto
+  if (localStorage.getItem('it_email_verificata')) {
+    window.location.href = checkoutUrl;
+    return;
+  }
+  // Aspetta Firebase Auth (max 2 sec) come secondo check
   const _t0 = Date.now();
   (function _waitAuth(){
     const _wU = window._utenteEmailFb;
@@ -1575,6 +1581,7 @@ function inviaRegistrazioneOfferte(){
       window.inviaMagicLinkPrenotazioneOfferte(email).then(function(){
         document.getElementById('reg-email-sub').innerHTML =
           '✓ Email inviata! Apri la tua posta e clicca il pulsante di conferma — tornerai qui automaticamente.';
+        localStorage.setItem('it_email_verificata', email);
         btn.textContent='Email inviata ✓';
       }).catch(function(err){
         console.error('Invio magic link fallito:', err);
@@ -1783,8 +1790,16 @@ onAuthStateChanged(auth, (u) => {
 });
 
 window.getUtenteVerificato = function() {
-  if (!utenteEmailFb || !utenteEmailFb.email || !utenteEmailFb.emailVerified) return null;
-  return { email: utenteEmailFb.email };
+  // Check 1: Firebase Auth (stesso contesto browser — caso ideale)
+  if (utenteEmailFb && utenteEmailFb.email && utenteEmailFb.emailVerified) {
+    localStorage.setItem('it_email_verificata', utenteEmailFb.email);
+    return { email: utenteEmailFb.email };
+  }
+  // Check 2: localStorage — impostato dal PWA quando invia il magic link
+  // Risolve il problema di isolamento WKWebView/PWA su iOS
+  const cached = localStorage.getItem('it_email_verificata');
+  if (cached) return { email: cached };
+  return null;
 };
 
 window.inviaMagicLinkPrenotazioneOfferte = function(email) {
