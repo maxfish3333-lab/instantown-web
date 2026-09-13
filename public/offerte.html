@@ -1773,13 +1773,18 @@ window.getUtenteVerificato = function() {
 
 window.inviaMagicLinkPrenotazioneOfferte = function(email) {
   localStorage.setItem('it_email_pending', email);
+  // FIX iOS: embed checkout URL nel continueUrl così funziona anche se localStorage
+  // è isolato (mail app WKWebView diverso da Safari/PWA)
+  const _checkoutUrl = localStorage.getItem('it_checkout_pending') || '';
+  const _base = window.location.origin + '/offerte.html';
+  const _continueUrl = _checkoutUrl ? _base + '?cr=' + encodeURIComponent(_checkoutUrl) : _base;
   return fetch('https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec', {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify({
       azione: 'inviaLinkAccesso',
       email: email,
-      continueUrl: window.location.origin + '/offerte.html'
+      continueUrl: _continueUrl
     })
   }).then(r => r.json()).then(json => {
     if (json.stato !== 'ok') throw new Error(json.messaggio || 'Invio email non riuscito');
@@ -1802,8 +1807,12 @@ if (isSignInWithEmailLink(auth, window.location.href)) {
     signInWithEmailLink(auth, emailSalvata, window.location.href).then(() => {
       localStorage.removeItem('it_email_pending');
       localStorage.removeItem('it_modalita'); // FIX: utente ora loggato, non è più visitatore
+      // FIX iOS: leggi checkout URL dal parametro 'cr' nel URL (embedded nel magic link)
+      // come fallback quando localStorage è isolato (WKWebView mail app)
+      const _urlParams = new URLSearchParams(window.location.search);
+      const _crFromUrl = _urlParams.get('cr');
       window.history.replaceState({}, document.title, window.location.pathname);
-      const checkoutPending = localStorage.getItem('it_checkout_pending');
+      const checkoutPending = localStorage.getItem('it_checkout_pending') || _crFromUrl;
       if (checkoutPending) {
         localStorage.removeItem('it_checkout_pending');
         window.location.href = checkoutPending;
