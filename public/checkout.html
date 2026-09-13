@@ -260,7 +260,7 @@ if(!localStorage.getItem('it_pin')){
 const mioPin = localStorage.getItem('it_pin');
 
 // ── STRIPE ELEMENTS ──
-const stripe = Stripe('pk_test_51Tk0hVLGO8hHl4J0hB1mu2Az6LMZa3ePQurULrvTSSN0inqMsoRqwQXqql5j7fTL23SH2zjhY0LHYaGAu7cRIH3A00vkH9n443');
+const stripe = Stripe('pk_live_51Tk0hKLPSk94QBFtE7g0j6EpRjAhmkR0RM60Jdom3027rceAVKhq2ozcFkipXQfHaZW1817eyctZI5P5ftiom3Kg00ddCMwFH0');
 const elements = stripe.elements();
 const cardElement = elements.create('card', {
   style: {
