@@ -890,19 +890,23 @@ function applyI18nDOM() {
 </div>
 <div class="reg-modal-overlay" id="reg-email-overlay">
   <div class="reg-modal-box">
-    <div style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:var(--ink);margin-bottom:4px;">Inserisci la tua email</div>
-    <div id="reg-email-sub" style="margin-bottom:18px;font-size:14px;font-weight:600;color:#1C1410;
-      background:#FDF3DC;border:1.5px solid var(--ocra);border-radius:8px;padding:12px 14px;line-height:1.5;">Se nuovo utente scrivi la tua mail e confermala nella posta in arrivo. Se utente registrato scrivi solo la tua mail</div>
-    <input type="email" id="reg-email-input" placeholder="latua@email.it" autocomplete="email" style="
-      width:100%;padding:14px;border:1px solid var(--rule);border-radius:8px;
-      font-family:'DM Sans',sans-serif;font-size:15px;margin-bottom:14px;text-align:center;">
-    <button id="btn-reg-invia" onclick="inviaRegistrazioneOfferte()" style="
-      width:100%;background:var(--rosso);color:#fff;border:none;
-      font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;
-      padding:14px;border-radius:8px;cursor:pointer;margin-bottom:10px;">Invia</button>
-    <button onclick="chiudiRegistrazioneModalOfferte()" style="
-      width:100%;background:transparent;color:var(--ink-mu);border:none;
-      font-family:'DM Sans',sans-serif;font-size:13px;padding:8px;cursor:pointer;">Annulla</button>
+    <!-- Panel Email (prima volta) -->
+    <div id="reg-panel-email">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:var(--ink);margin-bottom:4px;">Accedi a INSTANTOWN</div>
+      <div id="reg-email-sub" style="margin-bottom:18px;font-size:14px;color:var(--ink-mu);">Inserisci la tua email — ti mandiamo un PIN personale per accedere. Le prossime volte ti basterà il PIN.</div>
+      <input type="email" id="reg-email-input" placeholder="latua@email.it" autocomplete="email" style="width:100%;padding:14px;border:1px solid var(--rule);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:15px;margin-bottom:14px;text-align:center;">
+      <button id="btn-reg-invia" onclick="inviaRegistrazioneOfferte()" style="width:100%;background:var(--rosso);color:#fff;border:none;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;padding:14px;border-radius:8px;cursor:pointer;margin-bottom:10px;">Manda il mio PIN</button>
+      <button onclick="mostraPanelPin()" style="width:100%;background:transparent;color:var(--rosso);border:1.5px solid var(--rosso);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:10px;border-radius:8px;cursor:pointer;margin-bottom:6px;">Ho già il mio PIN</button>
+      <button onclick="chiudiRegistrazioneModalOfferte()" style="width:100%;background:transparent;color:var(--ink-mu);border:none;font-family:'DM Sans',sans-serif;font-size:13px;padding:8px;cursor:pointer;">Annulla</button>
+    </div>
+    <!-- Panel PIN (accesso con PIN) -->
+    <div id="reg-panel-pin" style="display:none;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:var(--ink);margin-bottom:4px;">Inserisci il tuo PIN</div>
+      <div id="reg-pin-sub" style="margin-bottom:18px;font-size:14px;color:var(--ink-mu);">Il PIN a 6 cifre che hai ricevuto via email.</div>
+      <input type="text" id="reg-pin-input" placeholder="123456" maxlength="6" inputmode="numeric" pattern="[0-9]*" style="width:100%;padding:14px;border:1px solid var(--rule);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:26px;margin-bottom:14px;text-align:center;letter-spacing:8px;">
+      <button id="btn-pin-accedi" onclick="verificaPinUtente()" style="width:100%;background:var(--rosso);color:#fff;border:none;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;padding:14px;border-radius:8px;cursor:pointer;margin-bottom:10px;">Accedi</button>
+      <button onclick="mostraPanelEmail()" style="width:100%;background:transparent;color:var(--ink-mu);border:none;font-family:'DM Sans',sans-serif;font-size:13px;padding:8px;cursor:pointer;">Non ricordo il PIN — rimandamelo via email</button>
+    </div>
   </div>
 </div>
 
@@ -1520,80 +1524,86 @@ async function init() {
 }
 
 // ═══════════════════════
-// REGISTRAZIONE GUIDATA (avviso → email → magic link) — stesso
-// controllo già usato in map.html (getUtenteVerificato()), applicato
-// anche qui perché prima si poteva prenotare senza nessun account.
-// ═══════════════════════
+// REGISTRAZIONE GUIDATA â sistema PIN (email â PIN via mail â accesso immediato)
+// Niente magic link: l'utente riceve un PIN personale che usa per sempre.
+// âââââââââââââââââââââââ
+var _IT_AS = 'https://script.google.com/macros/s/AKfycbzkkLUMGYiPXLMAozZgbWaMZoG-oKfj5chDCXus2bsrienwjPD9YcTRH3o8FVksX24L/exec';
+
 function confermaPrenotazioneOfferta(checkoutUrl) {
-  // Check immediato: it_email_verificata nel localStorage (impostato dal PWA stesso)
-  // Risolve isolamento WKWebView/PWA — non dipende da Firebase Auth cross-contesto
   if (localStorage.getItem('it_email_verificata')) {
     window.location.href = checkoutUrl;
     return;
   }
-  // Aspetta Firebase Auth (max 2 sec) come secondo check
-  const _t0 = Date.now();
-  (function _waitAuth(){
-    const _wU = window._utenteEmailFb;
-    if (_wU !== undefined || Date.now() - _t0 >= 2000) {
-      const utenteVer = window.getUtenteVerificato ? window.getUtenteVerificato() : null;
-      if (!utenteVer) {
-        localStorage.setItem('it_checkout_pending', checkoutUrl);
-        apriAvvisoRegistratiOfferte();
-      } else {
-        window.location.href = checkoutUrl;
-      }
-    } else {
-      setTimeout(_waitAuth, 100);
-    }
-  })();
+  localStorage.setItem('it_checkout_pending', checkoutUrl);
+  apriAvvisoRegistratiOfferte();
 }
 function apriAvvisoRegistratiOfferte(){ document.getElementById('reg-avviso-overlay').classList.add('open'); }
 function chiudiAvvisoRegistratiOfferte(){ document.getElementById('reg-avviso-overlay').classList.remove('open'); }
-function apriRegistrazioneModalOfferte(){
+
+function mostraPanelEmail(){
+  document.getElementById('reg-panel-email').style.display='';
+  document.getElementById('reg-panel-pin').style.display='none';
   document.getElementById('reg-email-input').value='';
-  document.getElementById('reg-email-sub').textContent = "Se nuovo utente scrivi la tua mail e confermala nella posta in arrivo. Se utente registrato scrivi solo la tua mail";
   document.getElementById('btn-reg-invia').disabled=false;
-  document.getElementById('btn-reg-invia').textContent='Invia';
+  document.getElementById('btn-reg-invia').textContent='Manda il mio PIN';
+  document.getElementById('reg-email-sub').textContent='Inserisci la tua email â ti mandiamo un PIN personale per accedere. Le prossime volte ti basterà il PIN.';
+}
+function mostraPanelPin(){
+  document.getElementById('reg-panel-email').style.display='none';
+  document.getElementById('reg-panel-pin').style.display='';
+  document.getElementById('reg-pin-input').value='';
+  document.getElementById('btn-pin-accedi').disabled=false;
+  document.getElementById('btn-pin-accedi').textContent='Accedi';
+  document.getElementById('reg-pin-sub').textContent='Il PIN a 6 cifre che hai ricevuto via email.';
+  setTimeout(function(){ try{document.getElementById('reg-pin-input').focus();}catch(e){} }, 100);
+}
+function apriRegistrazioneModalOfferte(){
+  mostraPanelEmail();
   document.getElementById('reg-email-overlay').classList.add('open');
 }
 function chiudiRegistrazioneModalOfferte(){ document.getElementById('reg-email-overlay').classList.remove('open'); }
-function inviaRegistrazioneOfferte(){
-  const email=document.getElementById('reg-email-input').value.trim();
-  if(!email || !email.includes('@')){ alert('Inserisci un indirizzo email valido.'); return; }
-  const btn=document.getElementById('btn-reg-invia');
-  btn.disabled=true;
-  btn.textContent='Verifica…';
 
-  // Polling su window._utenteEmailFb (aggiornato dal modulo Firebase) — max 2 sec
-  const _t0 = Date.now();
-  (function _poll(){
-    const _wU = window._utenteEmailFb;
-    if (_wU !== undefined || Date.now() - _t0 >= 2000) {
-      if (_wU && _wU.email && _wU.emailVerified && _wU.email.toLowerCase() === email.toLowerCase()) {
+function inviaRegistrazioneOfferte(){
+  var email=document.getElementById('reg-email-input').value.trim();
+  if(!email||!email.includes('@')){ alert('Inserisci un indirizzo email valido.'); return; }
+  var btn=document.getElementById('btn-reg-invia');
+  btn.disabled=true; btn.textContent='Invio in corso...';
+  fetch(_IT_AS+'?azione=recuperaPinDaEmail&email='+encodeURIComponent(email))
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.stato==='ok'){
+        document.getElementById('reg-email-sub').innerHTML='<b>✓ PIN inviato!</b> Controlla la tua email e inserisci il PIN qui sotto.';
+        btn.textContent='PIN inviato ✓';
+        window._regEmailTemp=email;
+        setTimeout(function(){ mostraPanelPin(); },800);
+      } else {
+        alert(d.messaggio||'Errore. Riprova.'); btn.disabled=false; btn.textContent='Manda il mio PIN';
+      }
+    }).catch(function(){ alert('Errore di rete. Riprova.'); btn.disabled=false; btn.textContent='Manda il mio PIN'; });
+}
+
+function verificaPinUtente(){
+  var pin=document.getElementById('reg-pin-input').value.trim();
+  if(!pin||pin.length<4){ alert('Inserisci il PIN ricevuto via email.'); return; }
+  var btn=document.getElementById('btn-pin-accedi');
+  btn.disabled=true; btn.textContent='Verifica...';
+  fetch(_IT_AS+'?azione=trovaEmailDaPin&pin='+encodeURIComponent(pin))
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.stato==='ok'){
+        localStorage.setItem('it_email_verificata', d.email);
+        localStorage.setItem('it_pin_utente', pin);
         chiudiRegistrazioneModalOfferte();
         chiudiAvvisoRegistratiOfferte();
-        const _cp = localStorage.getItem('it_checkout_pending');
-        if (_cp) { localStorage.removeItem('it_checkout_pending'); window.location.href = _cp; }
-        return;
+        var _cp=localStorage.getItem('it_checkout_pending');
+        if(_cp){ localStorage.removeItem('it_checkout_pending'); window.location.href=_cp; }
+      } else {
+        document.getElementById('reg-pin-sub').innerHTML='<span style="color:red;">PIN non riconosciuto. Riprova o torna indietro per riceverne uno nuovo.</span>';
+        btn.disabled=false; btn.textContent='Accedi';
       }
-      btn.textContent='Invio in corso...';
-      window.inviaMagicLinkPrenotazioneOfferte(email).then(function(){
-        document.getElementById('reg-email-sub').innerHTML =
-          '✓ Email inviata! Apri la tua posta e clicca il pulsante di conferma — tornerai qui automaticamente.';
-        localStorage.setItem('it_email_verificata', email);
-        btn.textContent='Email inviata ✓';
-      }).catch(function(err){
-        console.error('Invio magic link fallito:', err);
-        alert('Invio non riuscito. Controlla l’indirizzo e riprova.');
-        btn.disabled=false;
-        btn.textContent='Invia';
-      });
-    } else {
-      setTimeout(_poll, 100);
-    }
-  })();
+    }).catch(function(){ alert('Errore di rete. Riprova.'); btn.disabled=false; btn.textContent='Accedi'; });
 }
+
 document.addEventListener('DOMContentLoaded', function(){
   const a = document.getElementById('reg-avviso-overlay');
   const e = document.getElementById('reg-email-overlay');
